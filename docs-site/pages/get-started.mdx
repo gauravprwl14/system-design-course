@@ -1,0 +1,210 @@
+---
+title: Getting Started
+---
+
+# Getting Started
+
+Welcome to the System Design Knowledge Base! This guide will help you navigate and make the most of this learning resource.
+
+> **Note:** This knowledge base contains **100+ articles** covering databases, caching, queues, load balancing, design patterns, and real-world case studies.
+
+## 🎯 Choose Your Learning Path
+
+---
+
+### 🟢 For Beginners (30 days)
+
+**Start Here**: Learn fundamentals in this order
+
+#### 1. Database Basics
+Understand how data is stored and scaled
+- [Database Replication Basics](/system-design/databases/replication-basics)
+- [Read Replicas Explained](/system-design/databases/read-replicas)
+- [Database Sharding Strategies](/system-design/databases/sharding-strategies)
+
+#### 2. Caching Layer
+Learn to speed up applications 10-100×
+- [Caching Fundamentals](/system-design/caching/caching-fundamentals)
+
+#### 3. Async Processing
+Handle background jobs and event-driven architecture
+- [Message Queue Basics](/system-design/queues/message-queue-basics)
+
+#### 4. Reliability Patterns
+Build resilient systems
+- [Circuit Breaker Pattern](/system-design/patterns/circuit-breaker)
+
+#### 5. Practice
+Apply concepts with real-world designs
+- [URL Shortener Case Study](/system-design/case-studies/url-shortener)
+
+---
+
+### 🟡 For Interview Prep (1-2 weeks)
+
+**Goal**: Quickly review concepts and practice explaining them
+
+#### Quick Review Strategy
+1. **Day 1-3**: Review [149 Real Interview Questions](/interview-prep)
+2. **Day 4-7**: Study key topics:
+   - [Security & Encryption](/interview-prep/security-encryption/rsa-vs-aes)
+   - [Database Scaling](/system-design/databases/sharding-strategies)
+   - [Caching Strategies](/system-design/caching/caching-fundamentals)
+3. **Day 8-14**: Practice system design problems:
+   - [PDF Converter System](/interview-prep/system-design/pdf-converter)
+   - [URL Shortener](/system-design/case-studies/url-shortener)
+
+#### Interview Tips
+- Focus on **Quick Answer** sections (30 seconds)
+- Practice explaining trade-offs
+- Draw architecture diagrams
+- Discuss real company examples
+
+---
+
+### 🔴 For Production Systems (As needed)
+
+**Goal**: Find specific solutions for production problems
+
+#### Common Scenarios
+
+**Need to scale database reads?**
+→ [Read Replicas](/system-design/databases/read-replicas) or [Sharding](/system-design/databases/sharding-strategies)
+
+**Need to reduce database load?**
+→ [Caching Fundamentals](/system-design/caching/caching-fundamentals)
+
+**Need to handle background jobs?**
+→ [Message Queue Basics](/system-design/queues/message-queue-basics)
+
+**Need to prevent cascading failures?**
+→ [Circuit Breaker Pattern](/system-design/patterns/circuit-breaker)
+
+**Need better query performance?**
+→ [Database Indexing Strategies](/system-design/databases/indexing-strategies)
+
+---
+
+### 🏢 Company Examples Path
+
+**Goal**: Learn from how big companies solve problems
+
+#### By Company
+- **Instagram**: [Database Sharding](/system-design/databases/sharding-strategies#real-world-example-instagram) - 1000+ shards
+- **Netflix**: [Circuit Breaker](/system-design/patterns/circuit-breaker#real-world-examples) - Hystrix library
+- **Pinterest**: [Caching](/system-design/caching/caching-fundamentals#real-world-context) - 88% cache hit rate
+- **Uber**: [Geographic Sharding](/system-design/databases/sharding-strategies#geographic-sharding)
+- **Twitter**: [Read Replicas](/system-design/databases/read-replicas#real-world-context)
+
+---
+
+## 📚 Study Plans
+
+### 30-Day Comprehensive (Beginners)
+
+**Week 1: Databases**
+- Day 1-2: [Replication Basics](/system-design/databases/replication-basics)
+- Day 3-4: [Read Replicas](/system-design/databases/read-replicas)
+- Day 5-7: [Sharding Strategies](/system-design/databases/sharding-strategies)
+
+**Week 2: Caching & Queues**
+- Day 8-10: [Caching Fundamentals](/system-design/caching/caching-fundamentals)
+- Day 11-14: [Message Queue Basics](/system-design/queues/message-queue-basics)
+
+**Week 3: Advanced Topics**
+- Day 15-17: [Database Indexing](/system-design/databases/indexing-strategies)
+- Day 18-21: [Circuit Breaker Pattern](/system-design/patterns/circuit-breaker)
+
+**Week 4: Practice & Case Studies**
+- Day 22-24: [URL Shortener](/system-design/case-studies/url-shortener)
+- Day 25-27: [PDF Converter System](/interview-prep/system-design/pdf-converter)
+- Day 28-30: Review and practice explaining all concepts
+
+---
+
+### 2-Week Interview Prep (Intermediate)
+
+**Week 1: Core Concepts**
+- Day 1-2: Database scaling ([Replication](/system-design/databases/replication-basics), [Sharding](/system-design/databases/sharding-strategies))
+- Day 3-4: [Caching strategies](/system-design/caching/caching-fundamentals)
+- Day 5-7: [Design patterns](/system-design/patterns/circuit-breaker) and [queues](/system-design/queues/message-queue-basics)
+
+**Week 2: Practice & Interview Questions**
+- Day 8-10: [149 Interview Questions](/interview-prep) - focus on Quick Answers
+- Day 11-12: [Security topics](/interview-prep/security-encryption/rsa-vs-aes)
+- Day 13-14: Practice system design problems
+
+---
+
+### 1-Week Crash Course (Advanced/Review)
+
+**Focus on breadth, not depth**
+
+- **Day 1**: Databases - Read all Quick Answer sections
+- **Day 2**: Caching & CDN - Skim implementations, focus on trade-offs
+- **Day 3**: Queues & Async - Understand when to use
+- **Day 4**: Patterns - Circuit breaker, retry, bulkhead
+- **Day 5**: [Interview Questions](/interview-prep) - All Quick Answers
+- **Day 6-7**: Practice 2-3 system design problems
+
+---
+
+## 📖 How to Use This Site
+
+### Navigation
+- **Sidebar**: Browse all topics and articles
+- **Search**: Press `Cmd/Ctrl + K` to search
+- **Breadcrumbs**: Track your location
+- **Difficulty Badges**: 🟢 Beginner, 🟡 Intermediate, 🔴 Advanced
+
+### Article Structure
+Every article follows this format:
+1. **Problem Statement** - What problem does this solve?
+2. **Real-World Context** - When you need this
+3. **Architecture** - How it works (with diagrams)
+4. **Implementation** - Production-ready code
+5. **Trade-offs** - Pros, cons, alternatives
+6. **Common Pitfalls** - Mistakes to avoid
+7. **Real Examples** - How companies use it
+8. **Key Takeaways** - TL;DR summary
+
+### Reading Tips
+- Start with **Quick Answer** sections for overview
+- Use **Mermaid diagrams** for visual understanding
+- Copy **code examples** and adapt to your stack
+- Study **trade-offs tables** for interviews
+- Check **Real-World Examples** for context
+
+---
+
+## 🎯 What's Next?
+
+Choose your path above and start learning! If you're unsure where to begin:
+
+- **Never done system design?** → [Database Replication Basics](/system-design/databases/replication-basics)
+- **Interview in 1-2 weeks?** → [Interview Prep Section](/interview-prep)
+- **Building something now?** → [Navigation Guide](/navigation)
+- **Want to see what's here?** → [System Design Overview](/system-design)
+
+---
+
+## 📊 Content Stats
+
+- **100+** Total Articles (11 complete, 89 planned)
+- **70K+** Words Written
+- **50+** Code Examples
+- **40+** Architecture Diagrams
+- **149** Interview Questions Categorized
+
+---
+
+## 💡 Tips for Success
+
+1. **Don't rush** - Understanding concepts > memorizing facts
+2. **Practice explaining** - Can you explain it in 2 minutes?
+3. **Draw diagrams** - Visual understanding is key
+4. **Code it yourself** - Type out the examples
+5. **Read company blogs** - See how concepts apply in production
+6. **Ask "why"** - Understand the trade-offs, not just the "how"
+
+**Ready to start?** Pick a learning path above! 🚀
