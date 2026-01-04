@@ -37,9 +37,9 @@ export default {
 
   // Redis Transactions (POCs #31-35)
   "redis-transactions-multi-exec": "3️⃣1️⃣ Redis MULTI/EXEC",
-  "redis-optimistic-locking": "3️⃣2️⃣ Optimistic Locking",
-  "redis-atomic-counters": "3️⃣3️⃣ Atomic Counters",
-  "redis-pipeline-batch": "3️⃣4️⃣ Pipeline & Batch",
+  "redis-watch-optimistic-locking": "3️⃣2️⃣ Optimistic Locking",
+  "redis-atomic-inventory": "3️⃣3️⃣ Atomic Inventory",
+  "redis-banking-transfers": "3️⃣4️⃣ Banking Transfers",
   "redis-transaction-rollback": "3️⃣5️⃣ Transaction Rollback",
 
   // Redis Lua Scripting (POCs #36-40)
