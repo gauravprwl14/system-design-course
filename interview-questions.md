@@ -1,4 +1,124 @@
-Round 1 Interview Notes with HDFC
+
+
+Comprehensive Technical Topics and Subtopics
+Programming Languages & Concepts
+Core Java (OOPs, threading, collections)
+Advanced Java (servlets, JSP, JDBC)
+Synchronous and asynchronous processing
+Frameworks and Tools
+Spring BootService annotations
+Dependency injection
+Config server integration
+Hibernate (ORM basics, lazy/eager loading)
+Angular and React (UI frameworks)
+Microservices Architecture
+Transition from monolithic to microservices
+Service discovery (Eureka)
+Communication mechanisms
+REST Templates vs. Feign Client
+Synchronous and asynchronous messaging
+Circuit breaker pattern 
+Centralized configuration 
+Load balancing
+API Gateway 
+Distributed transactions 
+Logging and tracing microservice failures
+Databases
+Relational databases (MySQL, PostgreSQL)
+NoSQL databases (MongoDB)
+Caching (Redis):
+Use cases, TTL, and cache eviction
+Performance benefits and trade-offs
+Security and Authentication
+OAuth 2.0
+JWT (JSON Web Tokens)
+RSA vs AES encryption:
+Asymmetric vs. symmetric encryption
+Use cases and performance implications
+Testing and Deployment
+Mock testing for microservices
+Automated testing strategies
+AWS services:
+Lambda for serverless architecture
+Elastic Load Balancer
+Auto-scaling groups
+CloudWatch for monitoring
+Performance and Metrics
+API metrics:
+Response times (P95, P99)
+Error rates
+Data throughput
+Concurrent user load
+Scaling strategies:
+Service-specific scaling
+Handling high-concurrency scenarios
+Caching and Data Optimization
+Redis caching:
+Cache-first data retrieval
+TTL and data eviction policies
+Cache warmup techniques
+Database optimizations:
+Indexing
+Query optimization
+System Design
+Scalability and fault tolerance
+Handling dependencies across services
+Multi-tier architecture design
+High availability through redundancy
+Soft Skills
+Team leadership and mentoring
+Client interaction and requirement gathering
+Agile methodologies (daily stand-ups, sprints)
+Task tracking with JIRA
+
+Refined List of Interview Questions
+Programming & Frameworks
+What are the key differences between Core and Advanced Java?
+How do annotations in Spring Boot simplify microservices development?
+Can you explain the role of Hibernate in microservices?
+Microservices
+What challenges did you face while migrating from monolithic to microservices architecture?
+How does Eureka facilitate service discovery in microservices?
+What are the advantages of Feign Client over REST Templates in inter-service communication?
+How do you ensure fault tolerance in microservices using Hystrix?
+Can you explain the Saga pattern for distributed transactions?
+What strategies do you use to debug and trace issues across microservices?
+Database Management
+Why do we use Redis as a cache alongside traditional databases?
+How do you decide the TTL for cache entries in Redis?
+What are the key differences between relational and NoSQL databases?
+How would you optimize a complex SQL query for performance?
+Security
+What is the difference between RSA and AES encryption?
+When would you choose JWT over OAuth 2.0 for authentication?
+How do you secure communication between microservices?
+Performance
+What are the top metrics you track for API performance?
+How do you identify and resolve bottlenecks in a high-traffic system?
+What’s the significance of monitoring P95 and P99 response times?
+AWS and Deployment
+How does AWS Lambda fit into a microservices architecture?
+What tools do you use to monitor AWS-hosted microservices?
+How do you configure auto-scaling in AWS to handle traffic spikes?
+Caching
+What are the trade-offs of storing all data in Redis instead of a database?
+How does Redis improve API performance?
+What is your approach to cache invalidation?
+System Design
+How would you design a system to handle 100,000 concurrent users?
+What strategies would you use to scale database reads and writes?
+How do you ensure high availability in a multi-region deployment?
+Soft Skills
+How do you mentor junior developers on your team?
+What’s your approach to handling difficult client requirements?
+How do you ensure seamless collaboration in an Agile setup?
+
+Common topic across all interview 
+Redis Caching Nuances:
+Encryption Knowledge:
+System Scaling:
+Performance Metrics:
+
 
 Tell me about yourself.
 What is the Highest TPS you have worked on?
