@@ -33,5 +33,33 @@ export default {
   "database-foreign-keys": "2️⃣7️⃣ Foreign Keys",
   "database-check-constraints": "2️⃣8️⃣ Check Constraints",
   "database-sequences": "2️⃣9️⃣ Sequences",
-  "database-vacuum": "3️⃣0️⃣ VACUUM"
+  "database-vacuum": "3️⃣0️⃣ VACUUM",
+
+  // Redis Transactions (POCs #31-35)
+  "redis-transactions-multi-exec": "3️⃣1️⃣ Redis MULTI/EXEC",
+  "redis-optimistic-locking": "3️⃣2️⃣ Optimistic Locking",
+  "redis-atomic-counters": "3️⃣3️⃣ Atomic Counters",
+  "redis-pipeline-batch": "3️⃣4️⃣ Pipeline & Batch",
+  "redis-transaction-rollback": "3️⃣5️⃣ Transaction Rollback",
+
+  // Redis Lua Scripting (POCs #36-40)
+  "redis-lua-scripting-basics": "3️⃣6️⃣ Lua Scripting Basics",
+  "redis-lua-rate-limiting": "3️⃣7️⃣ Lua Rate Limiting",
+  "redis-lua-leaderboards": "3️⃣8️⃣ Lua Leaderboards",
+  "redis-lua-workflows": "3️⃣9️⃣ Lua Workflows",
+  "redis-lua-performance-benchmarks": "4️⃣0️⃣ Lua Benchmarks",
+
+  // Redis Advanced Operations (POCs #41-45)
+  "redis-pubsub-patterns": "4️⃣1️⃣ Pub/Sub Patterns",
+  "redis-streams-event-sourcing": "4️⃣2️⃣ Streams Event Sourcing",
+  "redis-cluster-sharding": "4️⃣3️⃣ Cluster & Sharding",
+  "redis-persistence-strategies": "4️⃣4️⃣ Persistence Strategies",
+  "redis-monitoring-performance": "4️⃣5️⃣ Monitoring & Performance",
+
+  // Kafka Message Queues (POCs #46-50)
+  "kafka-basics-producer-consumer": "4️⃣6️⃣ Kafka Basics",
+  "kafka-consumer-groups-load-balancing": "4️⃣7️⃣ Consumer Groups",
+  "kafka-streams-real-time-processing": "4️⃣8️⃣ Kafka Streams",
+  "kafka-exactly-once-semantics": "4️⃣9️⃣ Exactly-Once Semantics",
+  "kafka-performance-tuning-monitoring": "5️⃣0️⃣ Kafka Performance"
 }
