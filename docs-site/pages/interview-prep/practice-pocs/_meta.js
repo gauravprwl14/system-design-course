@@ -61,5 +61,10 @@ export default {
   "kafka-consumer-groups-load-balancing": "4️⃣7️⃣ Consumer Groups",
   "kafka-streams-real-time-processing": "4️⃣8️⃣ Kafka Streams",
   "kafka-exactly-once-semantics": "4️⃣9️⃣ Exactly-Once Semantics",
-  "kafka-performance-tuning-monitoring": "5️⃣0️⃣ Kafka Performance"
+  "kafka-performance-tuning-monitoring": "5️⃣0️⃣ Kafka Performance",
+
+  // PostgreSQL Optimization (POCs #51-53)
+  "postgresql-btree-hash-indexes": "5️⃣1️⃣ B-Tree vs Hash Indexes",
+  "postgresql-composite-covering-indexes": "5️⃣2️⃣ Composite & Covering Indexes",
+  "postgresql-explain-analyze-optimization": "5️⃣3️⃣ EXPLAIN ANALYZE"
 }

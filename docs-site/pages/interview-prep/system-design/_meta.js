@@ -18,5 +18,8 @@ export default {
   "cdn-edge-computing-media": "🌐 CDN & Edge Computing (Netflix)",
 
   // Message Queues & Event-Driven
-  "message-queues-kafka-rabbitmq": "📨 Message Queues (Kafka vs RabbitMQ)"
+  "message-queues-kafka-rabbitmq": "📨 Message Queues (Kafka vs RabbitMQ)",
+
+  // Database & Performance
+  "database-indexing-deep-dive": "🗄️ Database Indexing Deep Dive"
 }
