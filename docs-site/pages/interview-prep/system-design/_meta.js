@@ -21,5 +21,8 @@ export default {
   "message-queues-kafka-rabbitmq": "📨 Message Queues (Kafka vs RabbitMQ)",
 
   // Database & Performance
-  "database-indexing-deep-dive": "🗄️ Database Indexing Deep Dive"
+  "database-indexing-deep-dive": "🗄️ Database Indexing Deep Dive",
+
+  // API Design & Architecture
+  "api-design-rest-graphql-grpc": "🔌 API Design (REST vs GraphQL vs gRPC)"
 }

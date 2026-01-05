@@ -63,8 +63,13 @@ export default {
   "kafka-exactly-once-semantics": "4️⃣9️⃣ Exactly-Once Semantics",
   "kafka-performance-tuning-monitoring": "5️⃣0️⃣ Kafka Performance",
 
-  // PostgreSQL Optimization (POCs #51-53)
+  // PostgreSQL Optimization (POCs #51-56)
   "postgresql-btree-hash-indexes": "5️⃣1️⃣ B-Tree vs Hash Indexes",
   "postgresql-composite-covering-indexes": "5️⃣2️⃣ Composite & Covering Indexes",
-  "postgresql-explain-analyze-optimization": "5️⃣3️⃣ EXPLAIN ANALYZE"
+  "postgresql-explain-analyze-optimization": "5️⃣3️⃣ EXPLAIN ANALYZE",
+  "postgresql-partitioning-strategies": "5️⃣4️⃣ Partitioning Strategies",
+  "postgresql-connection-pooling-replication": "5️⃣5️⃣ Connection Pooling & Replication",
+
+  // API Design (POC #56)
+  "rest-api-best-practices": "5️⃣6️⃣ RESTful API Best Practices"
 }
