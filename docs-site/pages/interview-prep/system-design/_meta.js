@@ -24,5 +24,8 @@ export default {
   "database-indexing-deep-dive": "🗄️ Database Indexing Deep Dive",
 
   // API Design & Architecture
-  "api-design-rest-graphql-grpc": "🔌 API Design (REST vs GraphQL vs gRPC)"
+  "api-design-rest-graphql-grpc": "🔌 API Design (REST vs GraphQL vs gRPC)",
+
+  // Caching & Performance
+  "caching-strategies": "⚡ Caching Strategies (Redis, CDN, Multi-Layer)"
 }
