@@ -70,9 +70,10 @@ export default {
   "postgresql-partitioning-strategies": "5️⃣4️⃣ Partitioning Strategies",
   "postgresql-connection-pooling-replication": "5️⃣5️⃣ Connection Pooling & Replication",
 
-  // API Design (POCs #56-59)
+  // API Design (POCs #56-60)
   "rest-api-best-practices": "5️⃣6️⃣ RESTful API Best Practices",
   "graphql-server-implementation": "5️⃣7️⃣ GraphQL Server",
   "grpc-protocol-buffers": "5️⃣8️⃣ gRPC & Protocol Buffers",
-  "api-versioning-strategies": "5️⃣9️⃣ API Versioning Strategies"
+  "api-versioning-strategies": "5️⃣9️⃣ API Versioning Strategies",
+  "api-gateway-rate-limiting": "6️⃣0️⃣ API Gateway & Rate Limiting"
 }
