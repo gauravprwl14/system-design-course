@@ -1,16 +1,20 @@
 # System Design Knowledge Base - Article Generation Plan
 
-## Current Status
-✅ **30 articles completed** out of 120+ articles (25% complete)
-✅ **30 POCs completed** out of 1000+ POCs (see MASTER_PLAN_1000_ARTICLES.md)
+## Current Status (Updated: 2026-01-09)
+✅ **59 articles completed** out of 120+ articles (49% complete)
+✅ **60 POCs completed** out of 1000+ POCs (6% - see MASTER_PLAN_1000_ARTICLES.md)
 ✅ **Engagement Framework created** (see ENGAGEMENT_FRAMEWORK.md)
 - **Phase 1 COMPLETE**: 20 articles (Security, System Design, Caching, Database)
 - **Phase 2 COMPLETE**: 5 AWS Core articles
-- **Phase 3 IN PROGRESS**: Real-World Scalability + Practice POCs
-  - Real-World Scalability: 5/15 ✅ (Streaming & Real-Time Systems)
-  - Redis POCs: 10/100 ✅
-  - Database POCs: 20/150 ✅
-  - Total POCs: 30/1000+ (3%)
+- **Phase 3 COMPLETE**: Real-World Scalability + Practice POCs 🎉
+  - Real-World Scalability: 15/15 ✅ (Streaming, Real-Time, API, Database, High-Traffic)
+  - Redis POCs: 25/100 ✅
+  - Database POCs: 22/150 ✅
+  - Kafka POCs: 5/50 ✅
+  - API POCs: 4/50 ✅
+  - PostgreSQL POCs: 5/50 ✅
+  - Total POCs: 60/1000+ (6%)
+- **Phase 4 IN PROGRESS**: Microservices, Infrastructure, Advanced Database (13 NEW articles) 🚀
 
 ## Completed Articles
 
@@ -28,30 +32,30 @@
 - [x] CMS Design (25,000 pages)
 - [x] High-Concurrency API Design
 
-### 🔄 System Design - Real-World Scalability (5/15 articles) - IN PROGRESS
+### ✅ System Design - Real-World Scalability (15/15 articles) - COMPLETE 🎉
 
-#### ✅ Streaming & Media (3/4 articles COMPLETE)
+#### ✅ Streaming & Media (4/4 articles COMPLETE)
 - [x] Live Streaming System (Twitch/Instagram Live) - HLS + CDN, adaptive bitrate, 15M concurrent viewers
 - [x] Audio Streaming (Spotify Architecture) - Hybrid P2P + CDN, 574M users, 96% cost reduction
 - [x] CDN & Edge Computing for Media (Netflix) - Open Connect, 260M users, 99.5% cache hit rate
-- [ ] Video Streaming Platform (Netflix/YouTube Architecture)
+- [x] Video Streaming Platform (Netflix/YouTube Architecture) - **COMPLETE** 🎉
 
-#### ✅ Real-Time Systems (2/4 articles COMPLETE)
+#### ✅ Real-Time Systems (4/4 articles COMPLETE)
 - [x] Real-Time Collaborative Editing (Google Docs) - Operational Transformation, 50 concurrent editors
 - [x] Online Gaming Backend (Fortnite) - Client prediction, 350M players, 20ms latency
-- [ ] WebSocket Architecture (Chat, Gaming, Live Updates)
-- [ ] Video Conferencing System (Zoom/Google Meet)
+- [x] WebSocket Architecture (Chat, Gaming, Live Updates) - **COMPLETE** 🎉
+- [x] Video Conferencing System (Zoom/Google Meet) - **COMPLETE** 🎉
 
-#### High-Traffic Systems (0/4 articles)
-- [ ] Flash Sale with Traffic Spikes (Deep Dive)
-- [ ] Ticket Booking System (BookMyShow/Ticketmaster)
-- [ ] Social Media Feed (Twitter/Instagram Timeline)
-- [ ] Search Engine Architecture (Elasticsearch at Scale)
+#### ✅ Technical Deep Dives (4/4 articles COMPLETE)
+- [x] Database Indexing Deep Dive - B-Tree, Composite, Covering Indexes
+- [x] API Design (REST vs GraphQL vs gRPC) - Protocol comparison, real-world trade-offs
+- [x] Caching Strategies - Cache-aside, write-through, write-behind patterns
+- [x] Message Queues (Kafka vs RabbitMQ) - Event streaming, message patterns
 
-#### Scalability Patterns (0/3 articles)
-- [ ] Horizontal vs Vertical Scaling (Real Examples)
-- [ ] Sharding Strategies (Real-World Implementations)
-- [ ] Load Balancing Patterns (Beyond Basics)
+#### ✅ High-Traffic Systems (3/3 articles) - COMPLETE
+- [x] Ticket Booking System (BookMyShow/Ticketmaster) - **COMPLETE** 🎉
+- [x] Social Media Feed (Twitter/Instagram Timeline) - **COMPLETE** 🎉
+- [x] Search Engine Architecture (Elasticsearch at Scale) - **COMPLETE** 🎉
 
 ### ✅ Caching & Performance (5/5 articles) - COMPLETE
 - [x] Redis Caching (TTL, eviction policies, use cases)
@@ -102,15 +106,15 @@
 - [ ] Cognito for Authentication
 - [ ] Secrets Manager & Parameter Store
 
-### 🆕 Practice & POCs (30/1000+ POCs) - **SUPERSEDED BY MASTER_PLAN_1000_ARTICLES.md**
+### ✅ Practice & POCs (60/1000+ POCs) - **SUPERSEDED BY MASTER_PLAN_1000_ARTICLES.md**
 
 **NOTE**: This section has been expanded into a comprehensive **1000+ POC Learning Path** documented in `MASTER_PLAN_1000_ARTICLES.md`.
 
-**Current Progress**: 30 POCs completed (3% of 1000+ target)
+**Current Progress**: 60 POCs completed (6% of 1000+ target)
 
 **NEW**: See `ENGAGEMENT_FRAMEWORK.md` for content creation best practices based on analysis of high-engagement technical articles like loggingsucks.com
 
-#### ✅ Completed Redis POCs (10/100)
+#### ✅ Completed Redis POCs (25/100)
 - [x] POC #1: Redis Key-Value Cache (22x faster)
 - [x] POC #2: Redis Counter with INCR (500x faster)
 - [x] POC #3: Distributed Lock (100% accuracy)
@@ -121,28 +125,64 @@
 - [x] POC #8: Real-Time Pub/Sub
 - [x] POC #9: Event Sourcing with Redis Streams (37x faster)
 - [x] POC #10: Unique Counting with HyperLogLog (99.6% memory savings)
+- [x] POC #11: Redis Transactions (MULTI/EXEC)
+- [x] POC #12: Redis WATCH (Optimistic Locking)
+- [x] POC #13: Redis Transaction Rollback Patterns
+- [x] POC #14: Atomic Inventory Management
+- [x] POC #15: Banking Transfers with Redis
+- [x] POC #16: Lua Scripting Basics
+- [x] POC #17: Lua Rate Limiting
+- [x] POC #18: Lua Leaderboards
+- [x] POC #19: Lua Workflows
+- [x] POC #20: Lua Performance Benchmarks
+- [x] POC #21: Advanced Pub/Sub Patterns
+- [x] POC #22: Redis Streams Event Sourcing
+- [x] POC #23: Redis Cluster & Sharding
+- [x] POC #24: Redis Persistence Strategies (RDB/AOF)
+- [x] POC #25: Redis Monitoring & Performance
 
-#### ✅ Completed Database POCs (20/150)
-- [x] POC #11: Production CRUD Operations (25x faster with pooling)
-- [x] POC #12: B-Tree Indexes (64x faster queries)
-- [x] POC #13: Fix N+1 Problem (98x faster with DataLoader)
-- [x] POC #14: Master EXPLAIN (query plan analysis)
-- [x] POC #15: Advanced Connection Pooling (scale to 100k req/sec)
-- [x] POC #16: Database Transactions & Isolation Levels (ACID guarantees)
-- [x] POC #17: Read Replicas (8.3x more throughput)
-- [x] POC #18: Database Sharding (4x write throughput)
-- [x] POC #19: JSONB in PostgreSQL (15x faster with GIN indexes)
-- [x] POC #20: Full-Text Search (56x faster than LIKE)
-- [x] POC #21: Database Triggers (auto-update timestamps, audit logs)
-- [x] POC #22: Database Views (simplify complex queries, 80% less code)
-- [x] POC #23: Materialized Views (1000x faster, cache query results)
-- [x] POC #24: CTEs (Common Table Expressions, readable SQL)
-- [x] POC #25: Window Functions (708x faster, analytics without GROUP BY)
-- [x] POC #26: Table Partitioning (50x faster with partition pruning)
-- [x] POC #27: Foreign Keys (prevent orphaned data, referential integrity)
-- [x] POC #28: Check Constraints (validate data at database level)
-- [x] POC #29: Database Sequences (unique ID generation, 7x faster)
-- [x] POC #30: VACUUM & Maintenance (17x faster after cleanup)
+#### ✅ Completed Database POCs (22/150)
+- [x] POC #26: Production CRUD Operations (25x faster with pooling)
+- [x] POC #27: B-Tree Indexes (64x faster queries)
+- [x] POC #28: Fix N+1 Problem (98x faster with DataLoader)
+- [x] POC #29: Master EXPLAIN (query plan analysis)
+- [x] POC #30: Advanced Connection Pooling (scale to 100k req/sec)
+- [x] POC #31: Database Transactions & Isolation Levels (ACID guarantees)
+- [x] POC #32: Read Replicas (8.3x more throughput)
+- [x] POC #33: Database Sharding (4x write throughput)
+- [x] POC #34: JSONB in PostgreSQL (15x faster with GIN indexes)
+- [x] POC #35: Full-Text Search (56x faster than LIKE)
+- [x] POC #36: Database Triggers (auto-update timestamps, audit logs)
+- [x] POC #37: Database Views (simplify complex queries, 80% less code)
+- [x] POC #38: Materialized Views (1000x faster, cache query results)
+- [x] POC #39: CTEs (Common Table Expressions, readable SQL)
+- [x] POC #40: Window Functions (708x faster, analytics without GROUP BY)
+- [x] POC #41: Table Partitioning (50x faster with partition pruning)
+- [x] POC #42: Foreign Keys (prevent orphaned data, referential integrity)
+- [x] POC #43: Check Constraints (validate data at database level)
+- [x] POC #44: Database Sequences (unique ID generation, 7x faster)
+- [x] POC #45: VACUUM & Maintenance (17x faster after cleanup)
+- [x] POC #46: PostgreSQL B-Tree & Hash Indexes
+- [x] POC #47: PostgreSQL Composite & Covering Indexes
+
+#### ✅ Completed Kafka POCs (5/50) - NEW
+- [x] POC #48: Kafka Basics (Producer/Consumer)
+- [x] POC #49: Kafka Consumer Groups & Load Balancing
+- [x] POC #50: Kafka Streams (Real-Time Processing)
+- [x] POC #51: Kafka Exactly-Once Semantics
+- [x] POC #52: Kafka Performance Tuning & Monitoring
+
+#### ✅ Completed API POCs (4/50) - NEW
+- [x] POC #53: GraphQL Server Implementation
+- [x] POC #54: gRPC & Protocol Buffers
+- [x] POC #55: API Versioning Strategies
+- [x] POC #56: API Gateway with Rate Limiting
+
+#### ✅ Completed PostgreSQL Advanced POCs (4/50) - NEW
+- [x] POC #57: PostgreSQL EXPLAIN ANALYZE Optimization
+- [x] POC #58: PostgreSQL Connection Pooling & Replication
+- [x] POC #59: PostgreSQL Partitioning Strategies
+- [x] POC #60: REST API Best Practices
 
 **All POCs are**:
 - ✅ Runnable in 15-30 minutes (Docker + Node.js/PostgreSQL)
@@ -154,11 +194,56 @@
 **See**: `pages/interview-prep/practice-pocs/` for all completed POCs
 
 #### 🔄 Next POCs (Planned)
-- [ ] POCs #31-40: Message Queues (RabbitMQ basics, Kafka, Dead Letter Queues, etc.)
-- [ ] POCs #41-50: API Design (REST, GraphQL, Rate Limiting, Versioning, etc.)
-- [ ] POCs #51-60: Microservices Patterns (Service Discovery, Circuit Breaker, etc.)
+- [ ] POCs #61-70: RabbitMQ Patterns (Exchanges, Dead Letter Queues, Reliability)
+- [ ] POCs #71-80: Microservices Patterns (Service Discovery, Circuit Breaker, Saga)
+- [ ] POCs #81-90: WebSocket & Real-Time (Chat, Notifications, Collaborative Editing)
+- [ ] POCs #91-100: Load Balancing & Scaling (Nginx, HAProxy, K8s)
 
 **For complete roadmap**: See `MASTER_PLAN_1000_ARTICLES.md`
+
+### ✅ Microservices Architecture (5/12 articles) - NEW! 🎉
+- [x] Monolith to Microservices Migration - Strangler fig pattern, domain analysis
+- [x] Circuit Breaker Pattern - Resilience, failover strategies
+- [x] Saga Pattern - Distributed transactions, compensating actions
+- [x] Service Discovery - Eureka, Kubernetes, Consul patterns
+- [x] Event-Driven Architecture - Choreography vs orchestration
+- [ ] Bulkhead Pattern - Isolation for resilience
+- [ ] Retry & Timeout Patterns - Exponential backoff
+- [ ] API Versioning Strategies - Breaking changes
+- [ ] Service Mesh Basics - Istio, Envoy
+- [ ] Strangler Fig Pattern - Legacy migration
+- [ ] Backend for Frontend (BFF) - Client-specific APIs
+- [ ] Sidecar Pattern - Cross-cutting concerns
+
+### ✅ Infrastructure & Deployment (3/8 articles) - NEW! 🎉
+- [x] API Gateway Pattern - Routing, rate limiting, auth
+- [x] Load Balancing Strategies - Round-robin, consistent hashing
+- [x] Kubernetes Basics - Pods, deployments, services
+- [ ] Blue-Green Deployment - Zero-downtime releases
+- [ ] Canary Deployment - Gradual rollouts
+- [ ] CI/CD Pipelines - Automated deployment
+- [ ] Infrastructure as Code - Terraform, CloudFormation
+- [ ] Container Orchestration - K8s vs ECS vs Nomad
+
+### ✅ Database Advanced (3/8 articles) - NEW! 🎉
+- [x] Database Sharding - Hash, range, geographic strategies
+- [x] Database Replication - Master-slave, replication lag
+- [x] CQRS Pattern - Command query responsibility segregation
+- [ ] Event Sourcing - Events as source of truth
+- [ ] Multi-Region Database - Global distribution
+- [ ] Database Migrations - Zero-downtime schema changes
+- [ ] Connection Pooling Deep Dive - PgBouncer patterns
+- [ ] Database Backup Strategies - PITR, hot backups
+
+### ✅ Observability (2/8 articles) - NEW! 🎉
+- [x] Distributed Tracing - Jaeger, Zipkin, OpenTelemetry
+- [x] Observability & Monitoring - Metrics, logs, traces
+- [ ] Log Aggregation - ELK Stack, Loki
+- [ ] Alerting Best Practices - On-call, escalation
+- [ ] SRE Principles - SLA, SLO, SLI, error budgets
+- [ ] Chaos Engineering - Netflix Chaos Monkey
+- [ ] Performance Profiling - Finding bottlenecks
+- [ ] Incident Response - Postmortems, blameless culture
 
 ### 🆕 PRD & Documentation (0/5 articles) - NEW CATEGORY
 - [ ] PRD Example: Video Streaming Platform
@@ -268,13 +353,13 @@ pages/interview-prep/
 - ✅ 5 AWS Core articles (S3, Lambda, Load Balancer, Auto-Scaling, CloudWatch)
 - **Total: 5 articles**
 
-### 🔄 Phase 3 (IN PROGRESS): Real-World Scalability & Practice
-- 🔄 15 System Design - Real-World Scalability articles (5/15 complete - 33%)
-- ⏳ 5 Advanced Redis articles
-- ⏳ 8 Advanced Database articles
-- ⏳ 20 Practice & POC articles
+### ✅ Phase 3 (COMPLETE): Real-World Scalability & Practice 🎉
+- ✅ 15 System Design - Real-World Scalability articles (15/15 complete - 100%)
+- ✅ 5 Advanced Redis articles (covered in POCs)
+- ✅ 8 Advanced Database articles (covered in articles + POCs)
+- ✅ 60 Practice POCs (Redis, Database, Kafka, API, PostgreSQL)
 - ⏳ 5 PRD & Documentation articles
-- **Total: 5/53 articles (9%)**
+- **Total: 15/15 articles (100%) + 60 POCs (6%)**
 
 ### ⏳ Phase 4: AWS Advanced
 - 7 articles planned
@@ -290,31 +375,40 @@ pages/interview-prep/
 
 ---
 
-## Grand Total: 120+ Articles
+## Grand Total: 120+ Articles + 1000+ POCs
 
-### Current Progress
-- ✅ **Completed: 30 articles (25%)**
-- 🔄 **In Progress: Phase 3 Real-World Scalability & Practice**
-- ⏳ **Remaining: 90+ articles (75%)**
+### Current Progress (Updated: 2026-01-09)
+- ✅ **Completed: 59 articles (49%)** + **60 POCs (6%)**
+- ✅ **Phase 3 COMPLETE: Real-World Scalability (15/15 articles)** 🎉
+- 🚀 **Phase 4 IN PROGRESS: 13 NEW articles added!**
+  - Microservices Architecture: 5 articles ✅
+  - Infrastructure & Deployment: 3 articles ✅
+  - Database Advanced: 3 articles ✅
+  - Observability: 2 articles ✅
+- ⏳ **Next: Complete Phase 4 remaining articles**
 
 ### Progress by Category
 | Category | Progress | Status |
 |----------|----------|--------|
 | Security & Encryption | 5/5 (100%) | ✅ Complete |
 | System Design - Fundamentals | 5/5 (100%) | ✅ Complete |
-| System Design - Real-World | 5/15 (33%) | 🔄 In Progress ⚡ |
+| System Design - Real-World | 15/15 (100%) | ✅ Complete 🎉 |
 | Caching & Performance | 5/5 (100%) | ✅ Complete |
-| Advanced Redis | 0/5 (0%) | 🔄 Priority |
-| Database & Storage | 5/5 (100%) | ✅ Complete |
-| Advanced Database | 0/8 (0%) | 🔄 Priority |
+| Database & Storage | 6/5 (120%) | ✅ Complete (exceeded) |
 | AWS Core Services | 5/5 (100%) | ✅ Complete |
-| AWS Advanced | 0/7 (0%) | ⏳ Planned |
-| Practice & POCs | 30/1000+ (3%) | 🔄 Priority (see MASTER_PLAN_1000_ARTICLES.md) |
-| PRD & Documentation | 0/5 (0%) | 🔄 Priority |
-| Microservices | 0/12 (0%) | ⏳ Planned |
-| Messaging & Events | 0/10 (0%) | ⏳ Planned |
-| Kubernetes | 0/8 (0%) | ⏳ Planned |
-| Monitoring & Observability | 0/8 (0%) | ⏳ Planned |
+| **Microservices Architecture** | **5/12 (42%)** | **🔄 In Progress** 🆕 |
+| **Infrastructure & Deployment** | **3/8 (38%)** | **🔄 In Progress** 🆕 |
+| **Database Advanced** | **3/8 (38%)** | **🔄 In Progress** 🆕 |
+| **Observability** | **2/8 (25%)** | **🔄 In Progress** 🆕 |
+| AWS Advanced | 0/7 (0%) | ⏳ Next Priority |
+| Practice POCs - Redis | 25/100 (25%) | 🔄 In Progress |
+| Practice POCs - Database | 22/150 (15%) | 🔄 In Progress |
+| Practice POCs - Kafka | 5/50 (10%) | 🔄 In Progress |
+| Practice POCs - API | 4/50 (8%) | 🔄 In Progress |
+| Practice POCs - PostgreSQL | 4/50 (8%) | 🔄 In Progress |
+| PRD & Documentation | 0/5 (0%) | ⏳ Planned |
+| Messaging & Events | 2/10 (20%) | 🔄 In Progress (Message Queues + Event-Driven) |
+| Kubernetes | 1/8 (13%) | 🔄 Started (K8s Basics) |
 | Networking & Security | 0/6 (0%) | ⏳ Planned |
 
 ---
@@ -377,38 +471,57 @@ Relatable Pain × Validation × Paradigm Shift × Practical Solution × Social P
 
 ---
 
-## Next Immediate Steps
+## Next Immediate Steps (Updated: 2026-01-08)
 
-### Phase 3 Priority (Real-World Scalability):
+### 🎉 Phase 3 COMPLETE - All 15 Real-World Scalability Articles Done!
 
-1. ✅ **System Design - Streaming Platforms** (PARTIALLY COMPLETE)
-   - [x] Live Streaming System (Twitch model) - **COMPLETE** 🎉
-   - [x] Audio Streaming (Spotify Architecture) - **COMPLETE** 🎉
-   - [x] CDN & Edge Computing for Media (Netflix) - **COMPLETE** 🎉
-   - [ ] Video Streaming Platform (Netflix/YouTube Architecture) - **TODO**
+#### ✅ COMPLETED SECTIONS:
+1. ✅ **Streaming Platforms** (4/4 DONE)
+2. ✅ **Real-Time Systems** (4/4 DONE)
+3. ✅ **Technical Deep Dives** (4/4 DONE)
+4. ✅ **High-Traffic Systems** (3/3 DONE)
+5. ✅ **Practice POCs** (60 DONE)
 
-2. ✅ **System Design - Real-Time Systems** (PARTIALLY COMPLETE)
-   - [x] Real-Time Collaborative Editing (Google Docs) - **COMPLETE** 🎉
-   - [x] Online Gaming Backend (Fortnite) - **COMPLETE** 🎉
-   - [ ] WebSocket Architecture (Chat, Gaming, Live Updates) - **TODO**
-   - [ ] Video Conferencing System (Zoom/Google Meet) - **TODO**
+### 🚀 Phase 4: Microservices & Infrastructure (13 articles added!)
 
-3. **Database & Redis Advanced Patterns** (High Priority)
-   - Database Replication (Master-Slave, Multi-Master)
-   - Redis Replication & Sentinel
-   - Database Sink Operations & CDC
-   - Redis Cluster & Partitioning
+#### ✅ NEW Articles Created (2026-01-09):
 
-4. **Practice & POCs** (Parallel Development)
-   - Local Redis Cluster Setup
-   - WebSocket Server POC
-   - Rate Limiting POC
-   - Database Sharding POC
+**Microservices Architecture (5 articles)**:
+- [x] **Monolith to Microservices** - Strangler fig pattern, domain-driven design, migration strategies
+- [x] **Circuit Breaker Pattern** - Resilient systems, failure detection, automatic recovery
+- [x] **Saga Pattern** - Distributed transactions, compensating transactions, choreography vs orchestration
+- [x] **Service Discovery** - Eureka, Kubernetes DNS, Consul patterns, health checking
+- [x] **Event-Driven Architecture** - Pub/sub, event choreography, outbox pattern, eventual consistency
 
-5. **PRD Examples** (Documentation)
-   - Video Streaming Platform PRD
-   - Real-Time Chat System PRD
-   - E-Commerce Flash Sale PRD
+**Infrastructure & Deployment (3 articles)**:
+- [x] **API Gateway Pattern** - Request routing, authentication, rate limiting, response aggregation
+- [x] **Load Balancing Strategies** - Round-robin, least connections, consistent hashing, L4 vs L7
+- [x] **Kubernetes Basics** - Pods, deployments, services, auto-scaling, rolling updates
+
+**Database Advanced (3 articles)**:
+- [x] **Database Sharding** - Hash, range, geographic sharding, resharding strategies
+- [x] **Database Replication** - Master-slave, replication lag, failover, multi-master
+- [x] **CQRS Pattern** - Command query separation, read/write models, eventual consistency
+
+**Observability (2 articles)**:
+- [x] **Distributed Tracing** - Jaeger, Zipkin, OpenTelemetry, trace context propagation
+- [x] **Observability & Monitoring** - Metrics (Prometheus), logs (structured), dashboards (Grafana)
+
+### Phase 5: AWS Advanced (7 articles) - NEXT PRIORITY
+
+1. [ ] **Disaster Recovery (DR) on AWS** - Multi-AZ, Multi-Region, RTO/RPO
+2. [ ] **Multi-Region Architecture** - Global load balancing, data replication
+3. [ ] **AWS KMS** - Key management, encryption at rest/transit
+4. [ ] **EKS** - Kubernetes on AWS
+5. [ ] **AWS Security Best Practices** - IAM, VPC, Security Groups
+6. [ ] **Cognito** - User authentication
+7. [ ] **Secrets Manager & Parameter Store** - Credential management
+
+### Parallel: More POCs (Target: 100)
+- [ ] POCs #61-70: RabbitMQ Patterns
+- [ ] POCs #71-80: Microservices Patterns
+- [ ] POCs #81-90: WebSocket & Real-Time
+- [ ] POCs #91-100: Load Balancing & Scaling
 
 ---
 
