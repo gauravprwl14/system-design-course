@@ -374,6 +374,40 @@ async function purchaseItemWithLock(userId, productId, quantity) {
 
 ### Approach 2: Optimistic Locking (Recommended for Low-Medium Contention)
 
+**The Core Idea**:
+
+Instead of locking the inventory row BEFORE checking, we:
+1. Read the current state (including a version number)
+2. Perform our check
+3. Update ONLY if the version hasn't changed
+
+This is "optimistic" because we assume conflicts are rare, so we don't lock upfront. If someone else modified the data between our read and write, the version number will have changed, and our update will fail.
+
+**How It Prevents Race Conditions**:
+
+```
+Traditional approach (FAILS):
+  User A: Read inventory = 1 ✓
+  User B: Read inventory = 1 ✓
+  User A: Update inventory = 0 ✓
+  User B: Update inventory = 0 ✓  ← OVERWRITES User A! RACE CONDITION
+
+Optimistic locking (WORKS):
+  User A: Read inventory = 1, version = 5 ✓
+  User B: Read inventory = 1, version = 5 ✓
+  User A: UPDATE WHERE version = 5 ✓ (succeeds, version → 6)
+  User B: UPDATE WHERE version = 5 ✗ (fails! version is now 6)
+  User B: Gets "retry" error
+```
+
+The version number acts as a "fingerprint" of the data. If the fingerprint changes between your read and write, you know someone else modified it.
+
+**Why This Works**:
+
+The database guarantees that `UPDATE WHERE version = X` is atomic. Only ONE transaction can succeed when multiple try to update the same row with the same version. The losers detect the conflict and can retry or fail gracefully.
+
+**Key Insight**: We turn a race condition into a detectable conflict. Instead of silently corrupting data, we explicitly fail and let the application decide what to do (retry, show error, etc.).
+
 **Architecture**:
 
 ```mermaid
@@ -481,6 +515,55 @@ async function purchaseItemOptimistic(userId, productId, quantity, maxRetries = 
 ---
 
 ### Approach 3: Atomic Counter (Simplest)
+
+**The Core Idea**:
+
+Move inventory count to Redis and use its built-in atomic operations (`DECR`, `INCR`). Redis guarantees these operations are atomic at the server level - impossible to have two `DECR` operations interleave.
+
+**How It Prevents Race Conditions**:
+
+```
+Database approach (FAILS):
+  User A: Read count = 1
+  User B: Read count = 1
+  User A: Write count = 0  ← Both users saw count=1
+  User B: Write count = 0  ← RACE CONDITION
+
+Redis atomic approach (WORKS):
+  User A: DECR count        → count becomes 0 ✓
+  User B: DECR count        → count becomes -1 ✓
+  User B: Check if < 0      → YES, rollback with INCR ✓
+  Result: Only User A got the item, User B properly rejected
+```
+
+**Why This Works**:
+
+Redis processes commands in a **single-threaded event loop**. When you issue `DECR inventory:product:123`, Redis:
+1. Receives the command
+2. Decrements the value
+3. Returns the NEW value
+4. All in one atomic operation - no other command can execute in between
+
+**Key Insight**: We leverage Redis's single-threaded nature. There's NO WAY for two DECR commands to see the same "before" value because Redis processes them sequentially, even if they arrive at the exact same microsecond.
+
+**The Trade-off**: We've moved the source of truth from the database (durable, transactional) to Redis (fast, but requires cache synchronization). This is okay for high-scale systems where speed > durability for the "hot path" (buying), and we persist to database asynchronously.
+
+**Visual Explanation**:
+
+```
+Without atomic operations:
+  Thread 1: Read (1) ─┐
+  Thread 2: Read (1) ─┤ ← Both read "1"
+  Thread 1: Write (0) ─┤
+  Thread 2: Write (0) ─┘ ← CONFLICT!
+
+With Redis DECR (atomic):
+  Thread 1: DECR ────> Redis processes → Returns 0
+  Thread 2: DECR ────> Redis processes → Returns -1
+                       ↑
+                   Single-threaded
+                   No interleaving possible!
+```
 
 **Architecture**:
 

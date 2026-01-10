@@ -29,15 +29,15 @@ Each problem includes:
 
 | Category | Problems | Top Issues |
 |----------|----------|------------|
-| [🔄 Concurrency & Race Conditions](/problems-at-scale/concurrency) | 5/200+ | Inventory overselling, double-booking, duplicate payments |
-| [🚨 Availability & Reliability](/problems-at-scale/availability) | 5/180+ | Cascading failures, thundering herd, split-brain |
-| [📈 Scalability Bottlenecks](/problems-at-scale/scalability) | 5/150+ | Hot partitions, connection exhaustion, CDN limits |
-| [⚖️ Consistency & Integrity](/problems-at-scale/consistency) | 5/120+ | Distributed transactions, eventual consistency lag |
-| [⚡ Performance Degradation](/problems-at-scale/performance) | 5/150+ | Slow queries, N+1 problems, memory leaks |
-| [🗄️ Data Integrity](/problems-at-scale/data-integrity) | 5/100+ | Orphaned records, duplicate entries, data corruption |
-| [💰 Cost & Resource Waste](/problems-at-scale/cost-optimization) | 5/100+ | Storage bloat, unused indexes, over-provisioning |
+| [🔄 Concurrency & Race Conditions](/problems-at-scale/concurrency) | 6/200+ | Inventory overselling, double-booking, duplicate payments, counter races |
+| [🚨 Availability & Reliability](/problems-at-scale/availability) | 1/180+ | Thundering herd, cascading failures, split-brain |
+| [📈 Scalability Bottlenecks](/problems-at-scale/scalability) | 0/150+ | Hot partitions, connection exhaustion, CDN limits |
+| [⚖️ Consistency & Integrity](/problems-at-scale/consistency) | 0/120+ | Distributed transactions, eventual consistency lag |
+| [⚡ Performance Degradation](/problems-at-scale/performance) | 0/150+ | Slow queries, N+1 problems, memory leaks |
+| [🗄️ Data Integrity](/problems-at-scale/data-integrity) | 0/100+ | Orphaned records, duplicate entries, data corruption |
+| [💰 Cost & Resource Waste](/problems-at-scale/cost-optimization) | 0/100+ | Storage bloat, unused indexes, over-provisioning |
 
-**Progress**: 35/1000+ problems documented (3.5%)
+**Progress**: 7/1000+ problems documented (0.7%)
 
 ---
 
@@ -83,17 +83,17 @@ Each problem includes:
 
 ## 📈 Progress Tracker
 
-**Total Problems Documented**: 35/1000+ (3.5%)
+**Total Problems Documented**: 7/1000+ (0.7%)
 
 | Category | Documented | Target | Progress |
 |----------|------------|--------|----------|
-| **Concurrency** | 5 | 200 | ▓░░░░░░░░░ 2.5% |
-| **Availability** | 5 | 180 | ▓░░░░░░░░░ 2.8% |
-| **Scalability** | 5 | 150 | ▓░░░░░░░░░ 3.3% |
-| **Consistency** | 5 | 120 | ▓░░░░░░░░░ 4.2% |
-| **Performance** | 5 | 150 | ▓░░░░░░░░░ 3.3% |
-| **Data Integrity** | 5 | 100 | ▓░░░░░░░░░ 5.0% |
-| **Cost Optimization** | 5 | 100 | ▓░░░░░░░░░ 5.0% |
+| **Concurrency** | 6 | 200 | ▓░░░░░░░░░ 3.0% |
+| **Availability** | 1 | 180 | ▓░░░░░░░░░ 0.6% |
+| **Scalability** | 0 | 150 | ░░░░░░░░░░ 0% |
+| **Consistency** | 0 | 120 | ░░░░░░░░░░ 0% |
+| **Performance** | 0 | 150 | ░░░░░░░░░░ 0% |
+| **Data Integrity** | 0 | 100 | ░░░░░░░░░░ 0% |
+| **Cost Optimization** | 0 | 100 | ░░░░░░░░░░ 0% |
 
 ---
 
