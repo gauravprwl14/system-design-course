@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "playwright@claude-plugins-official": false,
+    "compound-engineering@every-marketplace": false
+  },
+  "disableMcp": true
+}
