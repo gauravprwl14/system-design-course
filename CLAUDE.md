@@ -6,11 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **System Design Knowledge Base** - a comprehensive, implementation-focused learning resource for developers. It contains 100+ articles covering system design fundamentals, real-world case studies, and practical proof-of-concepts (POCs).
 
-**Two Main Components:**
-1. **Root directory**: Markdown articles organized by topic (databases, caching, queues, etc.)
-2. **docs-site/**: Nextra-powered documentation website that renders all content
+**Main Component:**
+- **docs-site/**: Nextra-powered documentation website containing all content (articles, POCs, interview prep)
 
 **Philosophy**: 80/20 principle - cover 80% of essential system design topics with 20% of effort. Focus on practical implementation, real-world examples, and production-grade patterns.
+
+**Note**: Historical root-level folders (01-databases through 12-consistency) have been archived to consolidate all content in docs-site/. Run `./archive-root-folders.sh` if cleanup hasn't been performed yet.
 
 ## Development Commands
 
@@ -48,24 +49,30 @@ npm run dev
 
 ### Content Organization
 
-The repository follows a **dual structure** pattern:
+All content is centralized in **docs-site/pages/**:
 
-1. **Source Content** (root directory): Original markdown files organized by topic
-   - `01-databases/` - Database scaling, replication, sharding
-   - `02-caching/` - Caching strategies and patterns
-   - `03-queues/` - Message queues and async processing
-   - `04-load-balancing/` through `12-consistency/` - Other core topics
-   - `interview-prep/` - Interview questions organized by category
+1. **System Design Topics** (`docs-site/pages/system-design/`):
+   - `databases/` - Database scaling, replication, sharding (4 articles)
+   - `caching/` - Caching strategies and patterns (1 article)
+   - `queues/` - Message queues and async processing (1 article)
+   - `patterns/` - Design patterns (1 article)
+   - `case-studies/` - Real-world system designs (1 article)
+   - `load-balancing/`, `scalability/`, `performance/`, `api-design/`, `monitoring/`, `security/`, `consistency/` - Index pages with planned articles
 
-2. **Documentation Site** (docs-site/): Nextra site that renders the content
-   - `docs-site/pages/system-design/` - Symlinked to root topic directories
-   - `docs-site/pages/interview-prep/` - Interview prep content
-   - `docs-site/theme.config.jsx` - Nextra theme configuration
-   - `docs-site/pages/_meta.js` - Navigation structure
+2. **Interview Preparation** (`docs-site/pages/interview-prep/`):
+   - `system-design/` - 34+ system design interview questions
+   - `security-encryption/` - Security interview topics
+   - `aws-cloud/`, `database-storage/`, `caching-cdn/` - Cloud and infrastructure topics
+   - `practice-pocs/` - 60+ hands-on proof-of-concepts
+
+3. **Problems at Scale** (`docs-site/pages/problems-at-scale/`):
+   - `concurrency/` - Race conditions, double booking, payment issues
+   - `availability/` - Thundering herd, cascading failures
+   - `scalability/`, `consistency/`, `performance/`, `data-integrity/`, `cost-optimization/` - Other problem categories
 
 ### Key Design Patterns
 
-**Content Symlinks**: The docs-site uses symbolic links to reference markdown files from the root directory. This allows single-source content management.
+**Single Source of Truth**: All content lives in docs-site/pages/ for simplified maintenance and single-source management.
 
 **Meta Files**: Each directory in `docs-site/pages/` has a `_meta.json` or `_meta.js` file that controls:
 - Navigation order
@@ -84,7 +91,7 @@ The repository follows a **dual structure** pattern:
 
 ### Practice POCs
 
-The `interview-prep/practice-pocs/` directory contains hands-on proof-of-concepts:
+The `docs-site/pages/interview-prep/practice-pocs/` directory contains hands-on proof-of-concepts:
 - **Redis POCs**: 10+ examples (cache, distributed lock, job queue, rate limiting, etc.)
 - **Database POCs**: 20+ examples (CRUD, indexes, transactions, sharding, partitioning, etc.)
 - **Kafka POCs**: Event streaming examples
@@ -146,9 +153,10 @@ POCs should be:
 - Social metadata
 
 **Adding New Pages**:
-1. Create `.md` or `.mdx` file in appropriate `pages/` subdirectory
-2. Add entry to `_meta.json` in that directory
+1. Create `.md` or `.mdx` file in appropriate `docs-site/pages/` subdirectory
+2. Add entry to `_meta.js` (or `_meta.json`) in that directory
 3. Page automatically appears in navigation
+4. All content should be created directly in docs-site/pages/ (no root-level folders)
 
 **Search Issues**: If search isn't working, rebuild search index:
 ```bash
@@ -169,12 +177,13 @@ npm run dev
 
 ## Important Notes
 
-- **Don't create duplicate content**: Articles exist in root, referenced by docs-site via symlinks
+- **Single source of truth**: All content is in docs-site/pages/ - don't create content in root directory
 - **Mermaid diagrams work automatically**: Nextra supports them out of the box
 - **Use `.mdx` for React components**: Use `.md` for simple markdown
 - **100+ article structure exists**: Refer to PROJECT-SUMMARY.md and GETTING-STARTED.md for content roadmap
-- **Interview prep is a key feature**: 149+ real questions with detailed answers
+- **Interview prep is a key feature**: 120+ real questions with detailed answers
 - **Production-grade focus**: Examples should reflect patterns used at scale (FAANG companies)
+- **Archived folders**: Root-level numbered folders (01-12) have been archived - content lives in docs-site/
 
 ## Related Documentation
 
@@ -224,5 +233,8 @@ Create a session summary when:
 
 | Date | Session | Description |
 |------|---------|-------------|
+| 2026-01-10 | data-cleanup | Consolidated repository structure - migrated to single-source docs-site/ |
+| 2026-01-10 | problems-at-scale-section | Added Problems at Scale section with concurrency and availability issues |
+| 2026-01-09 | system-design-articles-phase4 | Added 16 system design articles (Microservices, Infrastructure, Database, Observability) |
 | 2026-01-08 | observability-stack | Added OTel, Jaeger, Prometheus, Grafana to architecture docs |
 | 2026-01-08 | kms-architecture-docs | Created comprehensive KMS architecture documentation (35 files) |

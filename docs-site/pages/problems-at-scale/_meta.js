@@ -6,27 +6,27 @@ export default {
     collapsed: true
   },
   availability: {
-    title: "🚨 Availability (1/180+)",
+    title: "🚨 Availability (5/180+)",
     collapsed: true
   },
   scalability: {
-    title: "📈 Scalability (0/150+)",
+    title: "📈 Scalability (1/150+)",
     collapsed: true
   },
   consistency: {
-    title: "⚖️ Consistency (0/120+)",
+    title: "⚖️ Consistency (1/120+)",
     collapsed: true
   },
   performance: {
-    title: "⚡ Performance (0/150+)",
+    title: "⚡ Performance (1/150+)",
     collapsed: true
   },
   "data-integrity": {
-    title: "🗄️ Data Integrity (0/100+)",
+    title: "🗄️ Data Integrity (1/100+)",
     collapsed: true
   },
   "cost-optimization": {
-    title: "💰 Cost Optimization (0/100+)",
+    title: "💰 Cost Optimization (1/100+)",
     collapsed: true
   }
 }

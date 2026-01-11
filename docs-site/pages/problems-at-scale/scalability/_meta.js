@@ -1,3 +1,9 @@
 export default {
-  index: "Overview"
+  index: "Overview",
+
+  "--- Databases ---": {
+    type: "separator",
+    title: "Databases"
+  },
+  "database-hotspots": "🟡 Database Hotspots / Hot Partition"
 }
