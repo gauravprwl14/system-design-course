@@ -1,3 +1,4 @@
 export default {
-  index: "Overview"
+  index: "Overview",
+  "distributed-consensus": "🔴 Distributed Consensus (RAFT)"
 }
