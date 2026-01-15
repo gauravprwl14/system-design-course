@@ -12,77 +12,193 @@ This knowledge base is designed for junior to mid-level developers who want to u
 - **Implementation-First**: Focus on HOW things work, not just theory
 - **Real Examples**: Every concept includes practical code and architecture
 - **Production-Grade**: Patterns and practices used in real large-scale systems
+- **Single Source**: All content centralized in `docs-site/pages/` for easy maintenance
+
+## 🏗️ Repository Architecture
+
+### Single-Source Structure
+
+All content is centralized in **`docs-site/pages/`** - a Nextra-powered documentation site containing 169 articles:
+
+```
+docs-site/
+├── pages/                    # All content lives here
+│   ├── system-design/       # 21 articles across 12 topics
+│   ├── interview-prep/      # 121 files (34 Q&A + 61 POCs)
+│   └── problems-at-scale/   # 24 articles on production problems
+├── public/                  # Static assets
+└── theme.config.jsx         # Nextra configuration
+```
+
+### Historical Note
+
+Old root-level folders (01-databases through 12-consistency) have been archived to `_archive/`. All content has been migrated to the single-source `docs-site/pages/` structure for easier maintenance and navigation.
+
+### Why Single-Source?
+
+- **One Place to Edit**: All articles in one directory tree
+- **Better Navigation**: Automatic sidebar generation via Nextra
+- **Consistent Formatting**: Single theme and styling system
+- **Easy Search**: Built-in full-text search across all content
+- **Simple Deployment**: One docs site, one build process
 
 ## 🗂️ Content Structure
 
-### 1. [Database & Data Layer](./01-databases/README.md)
-Master-slave replication, read replicas, sharding, partitioning, indexing strategies, and more.
+All paths are relative to `docs-site/pages/`
 
-### 2. [Caching Strategies](./02-caching/README.md)
-Cache-aside, write-through, write-back, CDN, distributed caching, and invalidation patterns.
+### 1. System Design Fundamentals (21 articles)
 
-### 3. [Queues & Messaging](./03-queues/README.md)
-Message queues, event-driven architecture, pub/sub, stream processing, and async patterns.
+#### 📊 [Databases](docs-site/pages/system-design/databases/) (5 articles)
+Master-slave replication, read replicas, sharding strategies, indexing, and partitioning.
+- [Replication Basics](docs-site/pages/system-design/databases/replication-basics.md) 🟢
+- [Read Replicas](docs-site/pages/system-design/databases/read-replicas.md) 🟢
+- [Sharding Strategies](docs-site/pages/system-design/databases/sharding-strategies.md) 🟡
+- [Indexing Strategies](docs-site/pages/system-design/databases/indexing-strategies.md) 🟡
 
-### 4. [Load Balancing](./04-load-balancing/README.md)
-Algorithms, health checks, sticky sessions, global load balancing, and failover strategies.
+#### ⚡ [Caching](docs-site/pages/system-design/caching/) (2 articles)
+Cache-aside, write-through, distributed caching, and CDN strategies.
+- [Caching Fundamentals](docs-site/pages/system-design/caching/caching-fundamentals.md) 🟢
 
-### 5. [Scalability Patterns](./05-scalability/README.md)
-Horizontal/vertical scaling, stateless design, microservices, and distributed systems.
+#### 📬 [Message Queues](docs-site/pages/system-design/queues/) (2 articles)
+Async processing, pub/sub, event-driven architecture.
+- [Message Queue Basics](docs-site/pages/system-design/queues/message-queue-basics.md) 🟢
 
-### 6. [Performance Optimization](./06-performance/README.md)
-Database optimization, query tuning, connection pooling, async processing, and profiling.
+#### 🎯 [Design Patterns](docs-site/pages/system-design/patterns/) (2 articles)
+Circuit breaker, retry with backoff, saga, bulkhead, and CQRS.
+- [Circuit Breaker Pattern](docs-site/pages/system-design/patterns/circuit-breaker.md) 🟡
 
-### 7. [Design Patterns](./07-patterns/README.md)
-Circuit breaker, rate limiting, retry with backoff, bulkhead, saga, and CQRS patterns.
+#### 🏢 [Case Studies](docs-site/pages/system-design/case-studies/) (2 articles)
+Real-world system designs from Twitter, Netflix, Uber, Instagram.
+- [URL Shortener](docs-site/pages/system-design/case-studies/url-shortener.md) 🟡
 
-### 8. [Real-World Case Studies](./08-case-studies/README.md)
-How Twitter, Netflix, Uber, Instagram, and others solve specific problems at scale.
+#### Other Topics (1 article each)
+- [Load Balancing](docs-site/pages/system-design/load-balancing/) - Algorithms, health checks, sticky sessions, failover
+- [Scalability Patterns](docs-site/pages/system-design/scalability/) - Horizontal/vertical scaling, stateless design, microservices
+- [Performance Optimization](docs-site/pages/system-design/performance/) - Query tuning, connection pooling, profiling
+- [API Design](docs-site/pages/system-design/api-design/) - REST, GraphQL, gRPC, versioning, pagination
+- [Monitoring & Observability](docs-site/pages/system-design/monitoring/) - Metrics, logging, tracing, SLOs/SLIs
+- [Security & Authentication](docs-site/pages/system-design/security/) - OAuth, JWT, session management, DDoS protection
+- [Data Consistency](docs-site/pages/system-design/consistency/) - ACID, BASE, CAP theorem, eventual consistency
 
-### 9. [API Design](./09-api-design/README.md)
-REST, GraphQL, gRPC, versioning, pagination, rate limiting, and API gateway patterns.
+---
 
-### 10. [Monitoring & Observability](./10-monitoring/README.md)
-Metrics, logging, tracing, alerting, SLOs/SLIs, and debugging distributed systems.
+### 2. Interview Preparation (121 files) ⭐
 
-### 11. [Security & Authentication](./11-security/README.md)
-OAuth, JWT, session management, rate limiting, DDoS protection, and encryption.
+All paths are relative to `docs-site/pages/interview-prep/`
 
-### 12. [Data Consistency](./12-consistency/README.md)
-ACID, BASE, CAP theorem, eventual consistency, distributed transactions, and consensus.
+#### 🏗️ [System Design Questions](docs-site/pages/interview-prep/system-design/) (34 Q&A)
+Real interview questions with quick + detailed answers:
+- [PDF Converter System](docs-site/pages/interview-prep/system-design/pdf-converter.md)
+- [Rate Limiting Service](docs-site/pages/interview-prep/system-design/rate-limiting.md)
+- [Flash Sales Platform](docs-site/pages/interview-prep/system-design/flash-sales.md)
+- [URL Shortener](docs-site/pages/interview-prep/system-design/url-shortener.md)
+- [Video Streaming Platform](docs-site/pages/interview-prep/system-design/video-streaming.md)
+- And 29 more system design questions
 
-### 💼 [Interview Preparation](./interview-prep/README.md) ⭐ NEW!
-**149 real interview questions** analyzed with detailed answers. Includes HDFC, AWS, system design, security, and more. Quick + detailed answer format for interview prep.
+#### 💻 [Practice POCs](docs-site/pages/interview-prep/practice-pocs/) (61 hands-on examples)
+
+**Redis POCs (25 implementations)**:
+- Key-value cache, distributed locks, job queues, rate limiting
+- Leaderboards, session management, pub/sub patterns
+- Lua scripting, HyperLogLog, streams, clustering
+- Transactions, pipelining, geospatial operations
+
+**Database POCs (20 implementations)**:
+- CRUD operations, indexes, transactions, sharding, partitioning
+- CTEs, window functions, materialized views, triggers
+- Connection pooling, replication, EXPLAIN analysis
+
+**Kafka POCs (5 implementations)**:
+- Producer/consumer basics, consumer groups, exactly-once semantics
+- Kafka Streams, performance tuning
+
+**API POCs (6 implementations)**:
+- REST best practices, GraphQL servers, gRPC Protocol Buffers
+- API versioning, rate limiting, gateway patterns
+
+**PostgreSQL Deep Dives (5 implementations)**:
+- B-tree vs hash indexes, composite/covering indexes
+- EXPLAIN ANALYZE optimization, partitioning strategies
+
+#### 🔐 [Security & Encryption](docs-site/pages/interview-prep/security-encryption/) (6 articles)
+- [RSA vs AES](docs-site/pages/interview-prep/security-encryption/rsa-vs-aes.md)
+- [Hashing vs Encryption](docs-site/pages/interview-prep/security-encryption/hashing-vs-encryption.md)
+- And 4 more security topics
+
+#### ☁️ [AWS Cloud](docs-site/pages/interview-prep/aws-cloud/) (6 articles)
+Cloud architecture patterns and AWS services
+
+#### 🗄️ [Database & Storage](docs-site/pages/interview-prep/database-storage/) (7 articles)
+Advanced database concepts and storage solutions
+
+#### ⚡ [Caching & CDN](docs-site/pages/interview-prep/caching-cdn/) (6 articles)
+Caching strategies and content delivery networks
+
+---
+
+### 3. Problems at Scale (24 articles) 🔥
+
+All paths are relative to `docs-site/pages/problems-at-scale/`
+
+Real production problems and solutions at scale:
+
+#### 🔄 [Concurrency Problems](docs-site/pages/problems-at-scale/concurrency/) (7 articles)
+- Race conditions in booking systems
+- Double booking prevention
+- Payment processing conflicts
+- Inventory management at scale
+- Lost updates and write conflicts
+- Phantom reads in transactions
+
+#### 🚨 [Availability Problems](docs-site/pages/problems-at-scale/availability/) (6 articles)
+- Thundering herd problem
+- Cascading failures
+- Split brain syndrome
+- Circuit breaker failures
+- Retry storms
+- Connection pool exhaustion
+
+#### Other Problem Categories (2-3 articles each)
+- 📈 [Scalability](docs-site/pages/problems-at-scale/scalability/) - Scaling bottlenecks and solutions
+- ⚖️ [Consistency](docs-site/pages/problems-at-scale/consistency/) - Distributed consistency challenges
+- ⚡ [Performance](docs-site/pages/problems-at-scale/performance/) - Performance degradation patterns
+- 🗄️ [Data Integrity](docs-site/pages/problems-at-scale/data-integrity/) - Data corruption and recovery
+- 💰 [Cost Optimization](docs-site/pages/problems-at-scale/cost-optimization/) - Resource efficiency
 
 ## 🚀 Quick Start Guide
 
 ### For Absolute Beginners
 Start here in order:
-1. [Database Replication Basics](./01-databases/01-replication-basics.md)
-2. [Why Caching Matters](./02-caching/01-caching-fundamentals.md)
-3. [Load Balancer 101](./04-load-balancing/01-load-balancer-basics.md)
-4. [Horizontal vs Vertical Scaling](./05-scalability/01-scaling-basics.md)
+1. [Database Replication Basics](docs-site/pages/system-design/databases/replication-basics.md)
+2. [Caching Fundamentals](docs-site/pages/system-design/caching/caching-fundamentals.md)
+3. [Message Queue Basics](docs-site/pages/system-design/queues/message-queue-basics.md)
+4. [Circuit Breaker Pattern](docs-site/pages/system-design/patterns/circuit-breaker.md)
 
 ### For Intermediate Developers
 Focus on these areas:
-1. [Database Sharding Strategies](./01-databases/03-sharding-strategies.md)
-2. [Message Queue Patterns](./03-queues/02-queue-patterns.md)
-3. [Circuit Breaker Pattern](./07-patterns/01-circuit-breaker.md)
-4. [Designing for High Availability](./05-scalability/05-high-availability.md)
+1. [Database Sharding Strategies](docs-site/pages/system-design/databases/sharding-strategies.md)
+2. [URL Shortener Case Study](docs-site/pages/system-design/case-studies/url-shortener.md)
+3. [Problems at Scale: Concurrency](docs-site/pages/problems-at-scale/concurrency/)
+4. [Practice POCs: Redis](docs-site/pages/interview-prep/practice-pocs/)
 
-### For Interview Preparation ⭐ NEW!
-Go to [Interview Prep Section](./interview-prep/README.md) for:
-1. **149 Real Interview Questions** - Analyzed and categorized
-2. **Quick + Detailed Answers** - Perfect for interview prep
-3. **System Design Questions** - [PDF Converter](./interview-prep/03-system-design/01-pdf-converter.md), Rate Limiting, Flash Sales
-4. **Security Questions** - [RSA vs AES](./interview-prep/01-security-encryption/01-rsa-vs-aes.md), [Hashing vs Encryption](./interview-prep/01-security-encryption/02-hashing-vs-encryption.md)
-5. **Study Plans** - 1-week, 2-week, 30-day prep paths
+### For Interview Preparation ⭐
+Go to [Interview Prep Section](docs-site/pages/interview-prep/) for:
+1. **34 System Design Questions** - Quick + detailed answers
+2. **61 Practice POCs** - Hands-on implementations (Redis, Kafka, PostgreSQL)
+3. **Real Questions** - From HDFC, AWS, FAANG companies
+4. **Study Plans** - 1-week, 2-week, 30-day prep paths
 
-Or study these case studies:
-1. [Design a URL Shortener](./08-case-studies/01-url-shortener.md)
-2. [Design Instagram Feed](./08-case-studies/02-instagram-feed.md)
-3. [Design a Rate Limiter](./08-case-studies/03-rate-limiter.md)
-4. [Design Uber Backend](./08-case-studies/04-uber-backend.md)
+Study these popular questions:
+- [PDF Converter System](docs-site/pages/interview-prep/system-design/pdf-converter.md)
+- [RSA vs AES](docs-site/pages/interview-prep/security-encryption/rsa-vs-aes.md)
+- [URL Shortener](docs-site/pages/system-design/case-studies/url-shortener.md)
+
+### For Solving Production Problems
+Jump to [Problems at Scale](docs-site/pages/problems-at-scale/) when you face:
+- **Race conditions?** → [Concurrency Problems](docs-site/pages/problems-at-scale/concurrency/)
+- **System failures?** → [Availability Problems](docs-site/pages/problems-at-scale/availability/)
+- **Slow queries?** → [Performance Problems](docs-site/pages/problems-at-scale/performance/)
+- **High costs?** → [Cost Optimization](docs-site/pages/problems-at-scale/cost-optimization/)
 
 ## 📖 How to Use This Resource
 
@@ -91,6 +207,76 @@ Or study these case studies:
 3. **Try the pseudocode** - Understand the implementation approach
 4. **Compare alternatives** - Learn trade-offs between different approaches
 5. **Study real examples** - See how companies solve actual problems
+
+## 💻 Development Setup
+
+### Prerequisites
+- Node.js 18+ installed
+- npm, yarn, or pnpm package manager
+
+### Running the Documentation Site
+
+```bash
+# Navigate to docs-site
+cd docs-site
+
+# Install dependencies (first time only)
+npm install
+
+# Start development server (http://localhost:3000)
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+### Clear Next.js Cache (if issues)
+
+```bash
+cd docs-site
+rm -rf .next
+npm run dev
+```
+
+### Project Structure for Developers
+
+```
+docs-site/pages/
+├── system-design/          # 12 topic areas, 21 articles
+│   ├── databases/
+│   │   ├── _meta.js       # Controls navigation order
+│   │   ├── index.md       # Section overview
+│   │   └── *.md           # Individual articles
+│   ├── caching/
+│   └── ...
+├── interview-prep/         # 121 files total
+│   ├── system-design/     # 34 Q&A articles
+│   ├── practice-pocs/     # 61 hands-on POCs
+│   └── ...
+└── problems-at-scale/      # 24 articles
+    ├── concurrency/
+    ├── availability/
+    └── ...
+```
+
+### Meta Files
+
+Each directory has a `_meta.js` or `_meta.json` that controls:
+- Navigation order in sidebar
+- Section titles and icons
+- Collapsed/expanded state
+
+Example `_meta.js`:
+```javascript
+export default {
+  index: "Overview",
+  databases: "📊 Databases",
+  caching: "⚡ Caching"
+}
+```
 
 ## 🎓 Learning Path
 
@@ -121,18 +307,37 @@ graph TD
 
 - **Databases**: PostgreSQL, MySQL, MongoDB, Cassandra, DynamoDB
 - **Cache**: Redis, Memcached, CDN (CloudFront, Cloudflare)
-- **Queues**: RabbitMQ, Kafka, AWS SQS, Redis Pub/Sub
-- **Load Balancers**: Nginx, HAProxy, AWS ELB/ALB, CloudFlare
-- **Languages**: Pseudocode (language-agnostic), Node.js, Python, Go examples
+- **Queues**: RabbitMQ, Kafka, AWS SQS, Redis Pub/Sub, BullMQ
+- **Load Balancers**: Nginx, HAProxy, AWS ELB/ALB
+- **APIs**: REST, GraphQL, gRPC, WebSocket
+- **Languages**: JavaScript/Node.js, SQL, pseudocode
 - **Platforms**: AWS, GCP, Azure architecture patterns
 
 ## 📊 Content Statistics
 
-- **100+ Articles**: Each covering a specific concept or pattern
-- **Interactive Diagrams**: Mermaid diagrams in every article
-- **Real Code**: Pseudocode and actual implementation examples
-- **Case Studies**: 15+ real-world system design problems solved
-- **Patterns**: 20+ battle-tested design patterns explained
+**Last Updated**: 2026-01-12
+
+### By Category
+- **System Design**: 21 articles across 12 topics
+  - Databases (5), Caching (2), Queues (2), Patterns (2), Case Studies (2)
+  - Other topics (1 each): Load Balancing, Scalability, Performance, API Design, Monitoring, Security, Consistency
+
+- **Interview Prep**: 121 files
+  - System Design Q&A: 34 questions with quick + detailed answers
+  - Practice POCs: 61 hands-on implementations
+    - Redis (25), Database (20), Kafka (5), API (6), PostgreSQL (5)
+  - Topic Articles: 26 (Security 6, AWS 6, Database 7, Caching 6)
+
+- **Problems at Scale**: 24 articles across 7 categories
+  - Concurrency (7), Availability (6)
+  - Others (2-3 each): Scalability, Consistency, Performance, Data Integrity, Cost Optimization
+
+### Total Content
+- **169 articles** - Production-grade, implementation-focused content
+- **70,000+ words** - Comprehensive technical depth
+- **100+ code examples** - Real-world, runnable code
+- **50+ architecture diagrams** - Visual understanding with Mermaid
+- **Focus**: Practical implementation at scale (FAANG patterns)
 
 ## 🎯 Target Audience
 
@@ -145,7 +350,83 @@ This resource is perfect for:
 
 ## 🤝 Contributing
 
-This is a living knowledge base. Topics are prioritized based on:
+### Adding New Articles
+
+#### 1. Choose the Right Location
+
+Add content to the appropriate section in `docs-site/pages/`:
+- **System Design fundamentals** → `docs-site/pages/system-design/{topic}/`
+- **Interview questions** → `docs-site/pages/interview-prep/system-design/`
+- **Practice POCs** → `docs-site/pages/interview-prep/practice-pocs/`
+- **Production problems** → `docs-site/pages/problems-at-scale/{category}/`
+
+#### 2. Create the Article File
+
+```bash
+# Example: Adding a new database article
+cd docs-site/pages/system-design/databases/
+touch connection-pooling.md
+```
+
+#### 3. Follow the Article Template
+
+See the "📝 Article Template" section below for the complete structure.
+
+#### 4. Update Navigation
+
+Add entry to the directory's `_meta.js`:
+
+```javascript
+export default {
+  index: "Overview",
+  "replication-basics": "🟢 Replication Basics",
+  "connection-pooling": "🟡 Connection Pooling", // New entry
+}
+```
+
+#### 5. Use Difficulty Badges
+- 🟢 Beginner - Fundamental concepts
+- 🟡 Intermediate - Requires basic knowledge
+- 🔴 Advanced - Complex distributed systems
+
+### Adding Practice POCs
+
+POCs should be:
+- **Runnable**: Include actual code that can be executed
+- **Focused**: Single concept per POC
+- **Practical**: Solve real-world problems
+- **Well-commented**: Explain what each section does
+- **Self-contained**: Include setup instructions
+
+### Naming Conventions
+
+**Articles**: Use kebab-case
+- ✅ `database-sharding-strategies.md`
+- ❌ `DatabaseShardingStrategies.md`
+
+**POCs**: Prefix with technology
+- ✅ `redis-distributed-lock.md`
+- ✅ `kafka-consumer-groups.md`
+- ✅ `postgresql-partitioning.md`
+
+### Session Summaries
+
+Create session summaries in `session-summaries/` after significant work:
+
+```
+session-summaries/YYYY-MM-DD_HH-MM-SS_<description>.md
+```
+
+Include:
+- Objective of the session
+- Changes made
+- Files modified
+- Key technical decisions
+- Next steps
+
+### Content Priorities
+
+Topics are prioritized based on:
 1. **Practical relevance** - Used in real production systems
 2. **Impact** - Solves critical scalability/performance problems
 3. **Clarity** - Can be explained with clear examples
@@ -172,6 +453,8 @@ Articles are tagged by difficulty:
 
 ---
 
-**Last Updated**: 2025-12-31
-**Total Articles**: 100+
+**Last Updated**: 2026-01-12
+**Total Articles**: 169 (21 System Design + 121 Interview Prep + 24 Problems at Scale + 3 Root Pages)
+**Architecture**: Single-source in `docs-site/pages/`
 **Focus**: Production-grade, practical implementation
+**Status**: Active development - see [CONTINUATION_PLAN.md](CONTINUATION_PLAN.md)

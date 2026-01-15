@@ -15,6 +15,10 @@ export default {
     title: "💼 Interview Prep",
     type: "page"
   },
+  "problems-at-scale": {
+    title: "⚠️ Problems at Scale",
+    type: "page"
+  },
   navigation: {
     title: "🗺️ Navigation Guide",
     type: "page"
