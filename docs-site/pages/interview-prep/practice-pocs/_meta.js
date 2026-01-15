@@ -75,5 +75,30 @@ export default {
   "graphql-server-implementation": "5️⃣7️⃣ GraphQL Server",
   "grpc-protocol-buffers": "5️⃣8️⃣ gRPC & Protocol Buffers",
   "api-versioning-strategies": "5️⃣9️⃣ API Versioning Strategies",
-  "api-gateway-rate-limiting": "6️⃣0️⃣ API Gateway & Rate Limiting"
+  "api-gateway-rate-limiting": "6️⃣0️⃣ API Gateway & Rate Limiting",
+
+  // Caching Strategies (POCs #61-65)
+  "cache-aside-pattern": "6️⃣1️⃣ Cache-Aside Pattern",
+  "write-through-caching": "6️⃣2️⃣ Write-Through Caching",
+  "cache-invalidation-strategies": "6️⃣3️⃣ Cache Invalidation",
+  "redis-cluster-caching": "6️⃣4️⃣ Redis Cluster Caching",
+  "http-caching-headers": "6️⃣5️⃣ HTTP Caching Headers",
+
+  // Load Balancing (POCs #66-70)
+  "load-balancer-round-robin": "6️⃣6️⃣ Round-Robin LB",
+  "load-balancer-least-connections": "6️⃣7️⃣ Least Connections LB",
+  "load-balancer-consistent-hashing": "6️⃣8️⃣ Consistent Hashing",
+  "circuit-breaker": "6️⃣9️⃣ Health Checks & Circuit Breaker",
+  "nginx-load-balancer": "7️⃣0️⃣ NGINX Load Balancer",
+
+  // Connection Pool Management (POCs #71-72)
+  "connection-pool-sizing": "7️⃣1️⃣ Connection Pool Sizing",
+  "connection-leak-detection": "7️⃣2️⃣ Connection Leak Detection",
+
+  // Idempotency & Deduplication (POCs #73-74)
+  "idempotency-keys": "7️⃣3️⃣ Idempotency Keys",
+  "redis-deduplication": "7️⃣4️⃣ Redis Deduplication",
+
+  // Resilience Patterns (POCs #75-76)
+  "retry-backoff": "7️⃣5️⃣ Retry with Backoff"
 }

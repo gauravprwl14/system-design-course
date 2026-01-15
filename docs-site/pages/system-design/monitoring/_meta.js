@@ -1,3 +1,4 @@
 export default {
-  index: "Overview"
+  index: "Overview",
+  "observability-slos": "🔴 Observability & SLOs"
 }

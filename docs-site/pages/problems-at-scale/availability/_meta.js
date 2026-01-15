@@ -6,6 +6,7 @@ export default {
     title: "Microservices"
   },
   "cascading-failures": "🔴 Cascading Failures",
+  "timeout-domino-effect": "🔴 Timeout Domino Effect",
   "circuit-breaker-failure": "🟡 Circuit Breaker Stuck Open/Closed",
   "retry-storm": "🟡 Retry Storm",
 

@@ -1,3 +1,4 @@
 export default {
-  index: "Overview"
+  index: "Overview",
+  "load-balancing-strategies": "🟡 Load Balancing Strategies"
 }
