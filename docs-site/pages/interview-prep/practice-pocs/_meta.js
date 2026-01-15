@@ -126,5 +126,12 @@ export default {
   "chaos-engineering": "9️⃣2️⃣ Chaos Engineering",
   "contract-testing": "9️⃣3️⃣ Contract Testing",
   "database-testing": "9️⃣4️⃣ Database Testing",
-  "integration-testing": "9️⃣5️⃣ Integration Testing"
+  "integration-testing": "9️⃣5️⃣ Integration Testing",
+
+  // Infrastructure Patterns (POCs #96-100)
+  "feature-flags": "9️⃣6️⃣ Feature Flags",
+  "blue-green-deployment": "9️⃣7️⃣ Blue-Green Deployment",
+  "canary-releases": "9️⃣8️⃣ Canary Releases",
+  "health-check-patterns": "9️⃣9️⃣ Health Check Patterns",
+  "service-discovery": "🔟0️⃣ Service Discovery"
 }
