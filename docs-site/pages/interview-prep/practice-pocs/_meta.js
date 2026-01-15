@@ -105,5 +105,12 @@ export default {
   "backpressure-queues": "7️⃣7️⃣ Backpressure with Queues",
   "graceful-degradation": "7️⃣8️⃣ Graceful Degradation",
   "distributed-tracing": "7️⃣9️⃣ Distributed Tracing",
-  "slo-dashboard": "8️⃣0️⃣ SLO Dashboard"
+  "slo-dashboard": "8️⃣0️⃣ SLO Dashboard",
+
+  // Event Sourcing & CQRS (POCs #81-85)
+  "event-sourcing-basics": "8️⃣1️⃣ Event Sourcing Basics",
+  "cqrs-pattern": "8️⃣2️⃣ CQRS Pattern",
+  "event-store-implementation": "8️⃣3️⃣ Event Store Implementation",
+  "saga-pattern": "8️⃣4️⃣ Saga Pattern",
+  "outbox-pattern": "8️⃣5️⃣ Outbox Pattern"
 }
