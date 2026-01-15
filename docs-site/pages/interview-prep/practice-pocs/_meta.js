@@ -99,6 +99,11 @@ export default {
   "idempotency-keys": "7️⃣3️⃣ Idempotency Keys",
   "redis-deduplication": "7️⃣4️⃣ Redis Deduplication",
 
-  // Resilience Patterns (POCs #75-76)
-  "retry-backoff": "7️⃣5️⃣ Retry with Backoff"
+  // Resilience Patterns (POCs #75-80)
+  "retry-backoff": "7️⃣5️⃣ Retry with Backoff",
+  "timeout-configuration": "7️⃣6️⃣ Timeout Configuration",
+  "backpressure-queues": "7️⃣7️⃣ Backpressure with Queues",
+  "graceful-degradation": "7️⃣8️⃣ Graceful Degradation",
+  "distributed-tracing": "7️⃣9️⃣ Distributed Tracing",
+  "slo-dashboard": "8️⃣0️⃣ SLO Dashboard"
 }
