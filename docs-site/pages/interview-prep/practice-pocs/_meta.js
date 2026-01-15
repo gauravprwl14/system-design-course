@@ -119,5 +119,12 @@ export default {
   "oauth-flows": "8️⃣7️⃣ OAuth 2.0 Flows",
   "api-key-management": "8️⃣8️⃣ API Key Management",
   "rate-limiting-algorithms": "8️⃣9️⃣ Rate Limiting Algorithms",
-  "rbac-implementation": "9️⃣0️⃣ RBAC Implementation"
+  "rbac-implementation": "9️⃣0️⃣ RBAC Implementation",
+
+  // Testing & Quality (POCs #91-95)
+  "load-testing-k6": "9️⃣1️⃣ Load Testing with k6",
+  "chaos-engineering": "9️⃣2️⃣ Chaos Engineering",
+  "contract-testing": "9️⃣3️⃣ Contract Testing",
+  "database-testing": "9️⃣4️⃣ Database Testing",
+  "integration-testing": "9️⃣5️⃣ Integration Testing"
 }
