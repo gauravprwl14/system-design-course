@@ -112,5 +112,12 @@ export default {
   "cqrs-pattern": "8️⃣2️⃣ CQRS Pattern",
   "event-store-implementation": "8️⃣3️⃣ Event Store Implementation",
   "saga-pattern": "8️⃣4️⃣ Saga Pattern",
-  "outbox-pattern": "8️⃣5️⃣ Outbox Pattern"
+  "outbox-pattern": "8️⃣5️⃣ Outbox Pattern",
+
+  // Security Patterns (POCs #86-90)
+  "jwt-authentication": "8️⃣6️⃣ JWT Authentication",
+  "oauth-flows": "8️⃣7️⃣ OAuth 2.0 Flows",
+  "api-key-management": "8️⃣8️⃣ API Key Management",
+  "rate-limiting-algorithms": "8️⃣9️⃣ Rate Limiting Algorithms",
+  "rbac-implementation": "9️⃣0️⃣ RBAC Implementation"
 }
