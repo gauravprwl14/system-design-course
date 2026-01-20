@@ -13,8 +13,8 @@ export default {
   "video-conferencing": "🔥 Video Conferencing (Zoom/Meet)",
 
   // Streaming & Media
+  "instagram-assets-series": "📸 Instagram Asset Management (Series)",
   "live-streaming-twitch": "🔴 Live Streaming (Twitch)",
-  "audio-streaming-spotify": "🎵 Audio Streaming (Spotify)",
   "cdn-edge-computing-media": "🌐 CDN & Edge Computing (Netflix)",
 
   // Message Queues & Event-Driven

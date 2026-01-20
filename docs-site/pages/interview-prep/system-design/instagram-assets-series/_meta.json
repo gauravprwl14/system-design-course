@@ -1,0 +1,14 @@
+{
+  "index": "📸 Series Overview",
+  "prereq-cdn-fundamentals": "├─ Prereq: CDN Fundamentals",
+  "prereq-image-optimization": "├─ Prereq: Image Optimization",
+  "prereq-video-transcoding": "├─ Prereq: Video Transcoding",
+  "prereq-object-storage": "├─ Prereq: Object Storage",
+  "01-image-upload-pipeline": "1️⃣ Image Upload Pipeline",
+  "02-image-serving-at-scale": "2️⃣ Image Serving at Scale",
+  "03-video-processing-pipeline": "3️⃣ Video Processing Pipeline",
+  "04-video-streaming-delivery": "4️⃣ Video Streaming Delivery",
+  "05-feed-loading-optimization": "5️⃣ Feed Loading & Infinite Scroll",
+  "06-stories-reels-architecture": "6️⃣ Stories & Reels Architecture",
+  "07-storage-cost-optimization": "7️⃣ Storage Cost Optimization"
+}
