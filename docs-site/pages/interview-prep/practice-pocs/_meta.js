@@ -133,5 +133,8 @@ export default {
   "blue-green-deployment": "9️⃣7️⃣ Blue-Green Deployment",
   "canary-releases": "9️⃣8️⃣ Canary Releases",
   "health-check-patterns": "9️⃣9️⃣ Health Check Patterns",
-  "service-discovery": "🔟0️⃣ Service Discovery"
+  "service-discovery": "🔟0️⃣ Service Discovery",
+
+  // Data Lifecycle (POCs #101+)
+  "database-archival-strategies": "🔟1️⃣ Database Archival Strategies"
 }

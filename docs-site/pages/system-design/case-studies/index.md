@@ -8,35 +8,34 @@ These case studies break down real-world systems, showing you exactly how compan
 
 ## 📚 Case Studies
 
-### Classic System Design Problems (🟢 Beginner)
-1. [Design a URL Shortener](./01-url-shortener.md) - Like bit.ly, TinyURL
-2. [Design a Pastebin](./02-pastebin.md) - Like pastebin.com
-3. [Design a Key-Value Store](./03-key-value-store.md) - Like Redis
-4. [Design a Rate Limiter](./04-rate-limiter.md) - API rate limiting
-5. [Design a Unique ID Generator](./05-unique-id-generator.md) - Distributed ID generation
+### Classic System Design Problems (Beginner)
+1. [Design a URL Shortener](./url-shortener.md) - Like bit.ly, TinyURL
+2. [Design a Pastebin](./pastebin.md) - Like pastebin.com
+3. Design a Key-Value Store - Like Redis *(Coming soon)*
+4. [Design a Rate Limiter](./rate-limiter.md) - Algorithms, distributed rate limiting, multi-tier
+5. [Design a Unique ID Generator](./unique-id-generator.md) - Distributed ID generation
 
-### Social Media Systems (🟡 Intermediate)
-6. [Design Instagram Feed](./06-instagram-feed.md) - Photo sharing and feed
-7. [Design Twitter Timeline](./07-twitter-timeline.md) - Tweet feed generation
-8. [Design Facebook Messenger](./08-messenger.md) - Real-time chat
-9. [Design Notification System](./09-notification-system.md) - Push notifications
-10. [Design News Feed Ranking](./10-news-feed-ranking.md) - Algorithm and caching
+### Social Media Systems (Intermediate)
+6. [Design a News Feed](./news-feed.md) - Instagram/Twitter feed, fan-out strategies, ranking
+8. [Design a Chat System](./chat-system.md) - WhatsApp/Slack real-time messaging
+9. [Design a Notification System](./notification-system.md) - Multi-channel push, email, SMS
+10. Design News Feed Ranking - Algorithm and caching *(Coming soon)*
 
-### On-Demand Services (🟡 Intermediate)
-11. [Design Uber Backend](./11-uber-backend.md) - Ride matching and tracking
-12. [Design Food Delivery](./12-food-delivery.md) - Like DoorDash, UberEats
-13. [Design Hotel Booking](./13-hotel-booking.md) - Like Booking.com
-14. [Design Ticketmaster](./14-ticketmaster.md) - Event ticketing with high concurrency
+### On-Demand Services (Intermediate)
+11. [Design Uber Backend](./uber-backend.md) - Ride matching, geospatial indexing, real-time tracking
+12. Design Food Delivery - Like DoorDash, UberEats *(Coming soon)*
+13. Design Hotel Booking - Like Booking.com *(Coming soon)*
+14. [Design Ticket Booking](./ticket-booking.md) - Concurrency control, virtual waiting room, seat locking
 
-### Content Platforms (🔴 Advanced)
-15. [Design YouTube](./15-youtube.md) - Video streaming at scale
-16. [Design Netflix](./16-netflix.md) - Video streaming and CDN
-17. [Design Spotify](./17-spotify.md) - Music streaming
-18. [Design Google Drive](./18-google-drive.md) - File storage and sync
+### Content Platforms (Advanced)
+15. Design YouTube - Video streaming at scale *(Coming soon)*
+16. Design Netflix - Video streaming and CDN *(Coming soon)*
+17. Design Spotify - Music streaming *(Coming soon)*
+18. Design Google Drive - File storage and sync *(Coming soon)*
 
-### E-Commerce & Payments (🔴 Advanced)
-19. [Design Amazon Product Catalog](./19-amazon-catalog.md) - Search and inventory
-20. [Design Payment System](./20-payment-system.md) - Like Stripe, PayPal
+### E-Commerce & Payments (Advanced)
+19. Design Amazon Product Catalog - Search and inventory *(Coming soon)*
+20. Design Payment System - Like Stripe, PayPal *(Coming soon)*
 
 ## 🎯 How to Use These Case Studies
 
@@ -65,4 +64,4 @@ Each case study follows this structure:
 **For 45-minute interviews**: Study 🟡 Intermediate cases
 **For senior roles**: Study 🔴 Advanced cases
 
-Start with [Design a URL Shortener](./01-url-shortener.md) - the most common interview question!
+Start with [Design a URL Shortener](./url-shortener.md) - the most common interview question!

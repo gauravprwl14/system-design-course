@@ -4,5 +4,6 @@ export default {
   "read-replicas": "🟢 Read Replicas",
   "sharding-strategies": "🟡 Sharding Strategies",
   "indexing-strategies": "🟢 Indexing Strategies",
-  "indexing-deep-dive": "🔴 Indexing Deep Dive"
+  "indexing-deep-dive": "🔴 Indexing Deep Dive",
+  "data-archival-strategies": "🟡 Data Archival Strategies"
 }

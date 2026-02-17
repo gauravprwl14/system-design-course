@@ -1,0 +1,15 @@
+{
+  "name": "database-archival-poc",
+  "version": "1.0.0",
+  "description": "Data Archival POC - Query routing, archival, and restoration",
+  "main": "scripts/archival_system.js",
+  "scripts": {
+    "stats": "node scripts/archival_system.js stats",
+    "archive": "node scripts/archival_system.js archive",
+    "query": "node scripts/archival_system.js query",
+    "demo": "node scripts/archival_system.js query --days=180"
+  },
+  "dependencies": {
+    "pg": "^8.11.0"
+  }
+}
