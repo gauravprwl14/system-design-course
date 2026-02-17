@@ -1,0 +1,2 @@
+# Python dependencies for Data Archival POC
+asyncpg>=0.29.0
