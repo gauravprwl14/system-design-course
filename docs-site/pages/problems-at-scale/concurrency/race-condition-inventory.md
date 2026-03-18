@@ -1,3 +1,45 @@
+---
+title: Race Condition in Inventory Management — E-commerce Overselling
+layer: problem
+section: problems-at-scale/concurrency
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with:
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-atomic-inventory
+  - interview-prep/practice-pocs/database-transactions
+related_problems:
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/concurrency/double-booking
+case_studies:
+  - system-design/case-studies/ticket-booking
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/redis-atomic-inventory
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-lua-scripting-basics
+  - interview-prep/practice-pocs/redis-lua-workflows
+  - interview-prep/practice-pocs/redis-transactions-multi-exec
+  - interview-prep/practice-pocs/redis-watch-optimistic-locking
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/ticket-booking-system
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/concurrency/stock-order-matching-race
+  - system-design/case-studies/ticket-booking
+  - system-design/case-studies/uber-backend
+tags:
+  - concurrency
+  - inventory
+  - race-condition
+  - redis
+  - atomic-operations
+  - e-commerce
+---
+
 # Race Condition in Inventory Management - E-commerce Overselling
 
 **Category**: Concurrency & Race Conditions

@@ -1,3 +1,27 @@
+---
+title: "Design a Content Management System (CMS)"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/cdn-edge-computing
+  - system-design/databases/data-archival-strategies
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies:
+  - system-design/case-studies/pastebin
+see_poc:
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+  - interview-prep/practice-pocs/write-through-caching
+linked_from: []
+tags: [cms, content-management, caching, cdn, versioning, publishing]
+---
+
 # Content Management System (CMS) - System Design
 
 **Interview Question**: *"How would you design a Content Management System? Consider cost optimization for 25,000 pages with high read, low write operations."*

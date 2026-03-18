@@ -1,3 +1,27 @@
+---
+title: Redis Lua Scripting for Atomic Operations
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/race-condition-inventory
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/concurrency/stock-order-matching-race
+tags:
+  - redis
+  - lua
+  - scripting
+  - atomicity
+  - eval
+  - evalsha
+---
+
 # POC #36: Redis Lua Scripting - 10x Faster Atomic Operations
 
 > **Time to Complete:** 25-30 minutes

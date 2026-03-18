@@ -1,3 +1,24 @@
+---
+title: Integration Testing Patterns
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/scalability/microservices-architecture
+tags:
+  - integration-testing
+  - docker
+  - testcontainers
+  - api-testing
+  - end-to-end
+---
+
 # POC #95: Integration Testing Patterns
 
 > **Difficulty:** 🟡 Intermediate

@@ -1,3 +1,41 @@
+---
+title: Caching Strategies
+layer: concept
+section: system-design/caching
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies:
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/youtube
+  - system-design/case-studies/url-shortener
+see_poc:
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/write-through-caching
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+  - interview-prep/practice-pocs/redis-cluster-caching
+  - interview-prep/practice-pocs/http-caching-headers
+linked_from:
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+  - interview-prep/practice-pocs/redis-cluster-caching
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/write-through-caching
+  - interview-prep/system-design/caching-strategies
+  - problems-at-scale/consistency/cache-invalidation-race
+tags:
+  - caching
+  - redis
+  - cdn
+  - performance
+  - cache-invalidation
+---
+
 # Caching Strategies - From 500ms to 5ms Response Times
 
 > **Reading Time:** 20 minutes

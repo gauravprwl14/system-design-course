@@ -1,3 +1,28 @@
+---
+title: Redis Session Management
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/redis-fundamentals
+  - interview-prep/security-encryption/jwt-vs-session
+  - system-design/scalability/stateless-architecture
+  - system-design/security/authentication-at-scale
+tags:
+  - redis
+  - sessions
+  - stateless
+  - hash
+  - authentication
+---
+
 # POC: Session Management with Redis Hash
 
 ## What You'll Build

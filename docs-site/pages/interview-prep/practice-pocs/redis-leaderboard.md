@@ -1,3 +1,27 @@
+---
+title: Redis Leaderboard with Sorted Sets
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/social-media-feed
+  - system-design/case-studies/news-feed
+tags:
+  - redis
+  - leaderboard
+  - sorted-sets
+  - gaming
+  - rankings
+---
+
 # POC: Leaderboard System with Redis Sorted Sets
 
 ## What You'll Build

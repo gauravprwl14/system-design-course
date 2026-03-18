@@ -1,3 +1,52 @@
+---
+title: YouTube System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/read-replicas
+  - system-design/scalability/cdn-edge-computing
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/redis-counter
+  - interview-prep/practice-pocs/http-caching-headers
+linked_from:
+  - interview-prep/caching-cdn/cdn-usage
+  - interview-prep/system-design/cdn-edge-computing-media
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/video-streaming-platform
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/scalability/hot-partition
+  - system-design/caching/caching-strategies
+  - system-design/databases/data-archival-strategies
+  - system-design/databases/read-replicas
+  - system-design/performance/connection-pool-management
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+  - system-design/scalability/backpressure
+  - system-design/scalability/cdn-edge-computing
+  - system-design/scalability/multi-region
+tags:
+  - youtube
+  - video-streaming
+  - cdn
+  - transcoding
+  - adaptive-bitrate
+  - distributed-storage
+---
+
 # Design YouTube (Video Streaming Platform)
 
 **Difficulty**: Advanced

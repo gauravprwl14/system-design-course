@@ -1,3 +1,28 @@
+---
+title: JWT Authentication Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/security/authentication-at-scale
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/security-encryption/jwt-vs-session
+  - interview-prep/system-design/api-gateway-pattern
+  - system-design/scalability/stateless-architecture
+  - system-design/security/authentication-at-scale
+tags:
+  - jwt
+  - authentication
+  - security
+  - tokens
+  - stateless
+---
+
 # POC #86: JWT Authentication
 
 > **Difficulty:** 🟡 Intermediate

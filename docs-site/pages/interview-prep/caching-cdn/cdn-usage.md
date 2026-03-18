@@ -1,3 +1,19 @@
+---
+title: "CDN (Content Delivery Network) - Use Cases & Optimization"
+layer: concept
+section: interview-prep/caching-cdn
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/cdn-edge-computing
+solves_with: []
+related_problems: []
+case_studies:
+  - system-design/case-studies/youtube
+  - system-design/case-studies/netflix
+linked_from: []
+tags: [cdn, content-delivery, edge-computing, caching, cloudfront, performance, latency]
+---
+
 # CDN (Content Delivery Network) - Use Cases & Optimization
 
 ## Question

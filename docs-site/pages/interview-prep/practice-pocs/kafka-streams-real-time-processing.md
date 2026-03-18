@@ -1,3 +1,28 @@
+---
+title: Kafka Streams Real-Time Processing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/scalability/event-driven-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/event-driven-architecture
+  - system-design/queues/kafka-vs-rabbitmq
+tags:
+  - kafka
+  - streams
+  - real-time
+  - stream-processing
+  - aggregation
+---
+
 # POC #48: Kafka Streams - Real-Time Stream Processing
 
 > **Time to Complete:** 35-40 minutes

@@ -1,3 +1,27 @@
+---
+title: Load Testing with k6
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/monitoring/observability-slos
+  - system-design/scalability/auto-scaling
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/scaling-basics
+tags:
+  - load-testing
+  - k6
+  - performance
+  - scalability
+  - benchmarking
+---
+
 # POC #91: Load Testing with k6
 
 > **Difficulty:** 🟡 Intermediate

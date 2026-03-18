@@ -1,3 +1,29 @@
+---
+title: "Live Streaming System - How Twitch Handles 15M Concurrent Viewers"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/cdn-edge-computing
+  - system-design/queues/message-queue-basics
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/multi-region
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies:
+  - system-design/case-studies/youtube
+  - system-design/case-studies/netflix
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from: []
+tags: [live-streaming, twitch, cdn, hls, websocket, adaptive-bitrate, real-time]
+---
+
 # Live Streaming System - How Twitch Handles 15M Concurrent Viewers
 
 **Scale**: Twitch streams to 15M+ concurrent viewers with <2 second latency. YouTube Live handles 100M+ streams per month. Here's how they built systems that don't buffer.

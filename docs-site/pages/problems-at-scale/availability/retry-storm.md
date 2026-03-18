@@ -1,3 +1,44 @@
+---
+title: Retry Storm — Overwhelming Recovering Services
+layer: problem
+section: problems-at-scale/availability
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/circuit-breaker
+  - system-design/patterns/timeouts-backpressure
+solves_with:
+  - interview-prep/practice-pocs/retry-backoff
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/backpressure-queues
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/availability/circuit-breaker-failure
+case_studies:
+  - system-design/case-studies/payment-system
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/api-gateway-rate-limiting
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+  - interview-prep/practice-pocs/redis-lua-rate-limiting
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/retry-backoff
+  - interview-prep/system-design/circuit-breaker-pattern
+  - interview-prep/system-design/rate-limiting
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+  - problems-at-scale/availability/thundering-herd
+tags:
+  - availability
+  - retry
+  - backoff
+  - jitter
+  - circuit-breaker
+  - rate-limiting
+  - backpressure
+---
+
 # Retry Storm - Overwhelming Recovering Services
 
 **Category**: 🚨 Availability & Reliability

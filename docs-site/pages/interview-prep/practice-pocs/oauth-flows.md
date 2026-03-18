@@ -1,3 +1,25 @@
+---
+title: OAuth 2.0 Flows Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/security/authentication-at-scale
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/security-encryption/jwt-vs-session
+  - system-design/security/authentication-at-scale
+tags:
+  - oauth
+  - authentication
+  - authorization
+  - security
+  - flows
+---
+
 # POC #87: OAuth 2.0 Flows
 
 > **Difficulty:** 🟡 Intermediate

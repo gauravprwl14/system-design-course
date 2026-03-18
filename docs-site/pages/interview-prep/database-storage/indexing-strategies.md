@@ -1,3 +1,27 @@
+---
+title: Database Indexing Strategies
+layer: concept
+section: interview-prep/database-storage
+difficulty: intermediate
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-indexes
+linked_from:
+  - interview-prep/database-storage/query-optimization
+tags:
+  - database
+  - indexing
+  - b-tree
+  - hash
+  - gin
+  - gist
+  - query-optimization
+---
+
 # Database Indexing Strategies
 
 ## Question

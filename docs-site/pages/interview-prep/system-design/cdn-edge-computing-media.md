@@ -1,3 +1,29 @@
+---
+title: "CDN & Edge Computing for Media: How Netflix Streams to 260M Users"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/cdn-edge-computing
+  - system-design/caching/caching-fundamentals
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/multi-region
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/youtube
+see_poc:
+  - interview-prep/practice-pocs/http-caching-headers
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from: []
+tags: [cdn, edge-computing, netflix, video-streaming, media-delivery, latency]
+---
+
 # CDN & Edge Computing for Media: How Netflix Streams to 260M Users
 
 > **Time to Read:** 15-20 minutes

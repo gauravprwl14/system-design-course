@@ -1,3 +1,31 @@
+---
+title: Cache Invalidation Strategies
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/cache-strategies
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/cms-design
+  - problems-at-scale/consistency/cache-invalidation-race
+  - system-design/caching/caching-strategies
+tags:
+  - caching
+  - invalidation
+  - ttl
+  - event-driven
+  - consistency
+---
+
 # POC #63: Cache Invalidation Strategies
 
 > **Difficulty:** 🟡 Intermediate

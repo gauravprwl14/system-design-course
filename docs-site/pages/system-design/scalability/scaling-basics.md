@@ -1,3 +1,47 @@
+---
+title: Scaling Basics
+layer: concept
+section: system-design/scalability
+difficulty: beginner
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies:
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/news-feed
+see_poc:
+  - interview-prep/practice-pocs/load-balancer-round-robin
+  - interview-prep/practice-pocs/nginx-load-balancer
+  - interview-prep/practice-pocs/load-testing-k6
+linked_from:
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/redis-cluster-caching
+  - interview-prep/system-design/audio-streaming-spotify
+  - interview-prep/system-design/cms-design
+  - interview-prep/system-design/database-replication
+  - interview-prep/system-design/database-sharding
+  - interview-prep/system-design/load-balancing-strategies
+  - interview-prep/system-design/search-engine-architecture
+  - system-design/api-design/rate-limiting
+  - system-design/case-studies/rate-limiter
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/performance/connection-pool-management
+  - system-design/scalability/async-processing
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/cdn-edge-computing
+  - system-design/scalability/high-availability
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/stateless-architecture
+tags:
+  - scalability
+  - horizontal-scaling
+  - vertical-scaling
+  - load-balancing
+---
+
 # Scaling Basics - From 100 to 100 Million Users
 
 > **Reading Time:** 20 minutes

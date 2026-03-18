@@ -1,3 +1,42 @@
+---
+title: Distributed Consensus
+layer: concept
+section: system-design/consistency
+difficulty: advanced
+prerequisites:
+  - system-design/databases/replication-basics
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/split-brain
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/consistency/message-out-of-order
+case_studies:
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/ticket-booking
+see_poc:
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-watch-optimistic-locking
+  - interview-prep/practice-pocs/database-transactions
+linked_from:
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/rate-limiting
+  - interview-prep/system-design/saga-pattern
+  - problems-at-scale/availability/split-brain
+  - system-design/case-studies/google-drive
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/ticket-booking
+  - system-design/case-studies/unique-id-generator
+  - system-design/scalability/multi-region
+tags:
+  - consensus
+  - raft
+  - paxos
+  - distributed-systems
+  - consistency
+  - split-brain
+---
+
 # Distributed Consensus - How Nodes Agree Without a Leader
 
 > **TL;DR:** Consensus is how distributed systems agree on values despite failures. Get it wrong and you get split-brain, data loss, or system halt. RAFT made it understandable; Paxos made careers.

@@ -1,3 +1,30 @@
+---
+title: Database Indexes for Query Performance
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/indexing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/indexing-strategies
+  - interview-prep/system-design/database-indexing-deep-dive
+  - interview-prep/system-design/search-engine-architecture
+  - system-design/case-studies/url-shortener
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/indexing-strategies
+tags:
+  - postgresql
+  - indexes
+  - performance
+  - query-optimization
+  - btree
+---
+
 # POC #12: Database Indexes - Make Queries 1000x Faster
 
 ## What You'll Build

@@ -1,3 +1,28 @@
+---
+title: Event Store Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/event-driven-architecture
+  - system-design/scalability/cqrs
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/event-driven-architecture
+  - system-design/scalability/event-driven-architecture
+tags:
+  - event-store
+  - event-sourcing
+  - postgresql
+  - projections
+  - append-only
+---
+
 # POC #83: Event Store Implementation
 
 > **Difficulty:** 🔴 Advanced

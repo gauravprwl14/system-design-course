@@ -1,4 +1,5 @@
 export default {
+  "CONTEXT": { "display": "hidden" },
   index: "Overview",
   databases: "📊 Databases",
   caching: "⚡ Caching",

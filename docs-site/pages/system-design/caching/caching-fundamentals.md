@@ -1,3 +1,99 @@
+---
+title: Caching Fundamentals
+layer: concept
+section: system-design/caching
+difficulty: beginner
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies:
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/news-feed
+see_poc:
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/write-through-caching
+linked_from:
+  - interview-prep/caching-cdn/cache-strategies
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+  - interview-prep/practice-pocs/database-materialized-views
+  - interview-prep/practice-pocs/http-caching-headers
+  - interview-prep/practice-pocs/idempotency-keys
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+  - interview-prep/practice-pocs/redis-atomic-inventory
+  - interview-prep/practice-pocs/redis-banking-transfers
+  - interview-prep/practice-pocs/redis-cluster-caching
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/practice-pocs/redis-counter
+  - interview-prep/practice-pocs/redis-deduplication
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-hyperloglog
+  - interview-prep/practice-pocs/redis-job-queue
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/redis-leaderboard
+  - interview-prep/practice-pocs/redis-lua-leaderboards
+  - interview-prep/practice-pocs/redis-lua-performance-benchmarks
+  - interview-prep/practice-pocs/redis-lua-rate-limiting
+  - interview-prep/practice-pocs/redis-lua-scripting-basics
+  - interview-prep/practice-pocs/redis-lua-workflows
+  - interview-prep/practice-pocs/redis-monitoring-performance
+  - interview-prep/practice-pocs/redis-persistence-strategies
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/redis-pubsub-patterns
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/redis-session-management
+  - interview-prep/practice-pocs/redis-streams
+  - interview-prep/practice-pocs/redis-streams-event-sourcing
+  - interview-prep/practice-pocs/redis-transaction-rollback
+  - interview-prep/practice-pocs/redis-transactions-multi-exec
+  - interview-prep/practice-pocs/redis-watch-optimistic-locking
+  - interview-prep/practice-pocs/write-through-caching
+  - interview-prep/system-design/audio-streaming-spotify
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/cdn-edge-computing-media
+  - interview-prep/system-design/cms-design
+  - interview-prep/system-design/database-indexing-deep-dive
+  - interview-prep/system-design/database-sharding
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/rate-limiting
+  - interview-prep/system-design/search-engine-architecture
+  - interview-prep/system-design/social-media-feed
+  - interview-prep/system-design/ticket-booking-system
+  - interview-prep/system-design/video-streaming-platform
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/consistency/stale-read-after-write
+  - system-design/api-design/rate-limiting
+  - system-design/caching/caching-strategies
+  - system-design/case-studies/chat-system
+  - system-design/case-studies/google-drive
+  - system-design/case-studies/netflix
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/pastebin
+  - system-design/case-studies/rate-limiter
+  - system-design/case-studies/spotify
+  - system-design/case-studies/ticket-booking
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/youtube
+  - system-design/scalability/cdn-edge-computing
+  - system-design/scalability/stateless-architecture
+  - system-design/security/authentication-at-scale
+tags:
+  - caching
+  - redis
+  - performance
+  - availability
+---
+
 # Caching Fundamentals
 
 **Difficulty**: 🟢 Beginner

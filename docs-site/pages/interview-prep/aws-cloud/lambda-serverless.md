@@ -1,3 +1,18 @@
+---
+title: "AWS Lambda for Serverless Architecture"
+layer: concept
+section: interview-prep/aws-cloud
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/async-processing
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [aws, lambda, serverless, cold-start, event-driven, faas, cloud]
+---
+
 # AWS Lambda for Serverless Architecture
 
 ## Question

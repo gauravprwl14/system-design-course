@@ -1,3 +1,27 @@
+---
+title: "Message Queues: Kafka vs RabbitMQ - Choose the Right Tool"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/scalability/async-processing
+  - system-design/scalability/event-driven-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
+  - interview-prep/practice-pocs/kafka-exactly-once-semantics
+  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
+linked_from: []
+tags: [kafka, rabbitmq, message-queue, pub-sub, event-streaming, uber, distributed-systems]
+---
+
 # Message Queues: Kafka vs RabbitMQ - Choose the Right Tool
 
 > **Time to Read:** 20-25 minutes

@@ -1,3 +1,26 @@
+---
+title: "Design a PDF Converter System"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-job-queue
+  - interview-prep/practice-pocs/backpressure-queues
+linked_from: []
+tags: [file-conversion, async-processing, job-queue, s3, worker-pool, scalability]
+---
+
 # Design PDF Converter System (like iLovePDF)
 
 **Interview Question**: *"Design a system where users can upload documents (Word, Excel, images), convert them to PDF, and download the result. Support multiple file uploads and merge functionality."*

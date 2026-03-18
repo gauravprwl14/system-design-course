@@ -1,3 +1,37 @@
+---
+title: Auto-scaling Patterns
+layer: concept
+section: system-design/scalability
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/scaling-basics
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/uber-backend
+see_poc:
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/load-testing-k6
+  - interview-prep/practice-pocs/canary-releases
+linked_from:
+  - interview-prep/aws-cloud/auto-scaling
+  - interview-prep/practice-pocs/load-testing-k6
+  - interview-prep/system-design/kubernetes-basics
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/pdf-converter
+  - interview-prep/system-design/websocket-architecture
+tags:
+  - auto-scaling
+  - cloud
+  - kubernetes
+  - capacity-planning
+  - devops
+---
+
 # Auto-scaling Patterns - Scale on Demand, Pay for What You Use
 
 > **Reading Time:** 20 minutes

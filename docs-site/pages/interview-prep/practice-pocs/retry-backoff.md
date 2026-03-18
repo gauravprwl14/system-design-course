@@ -1,3 +1,29 @@
+---
+title: Retry with Exponential Backoff
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/patterns/timeouts-backpressure
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/circuit-breaker-pattern
+  - problems-at-scale/availability/retry-storm
+  - system-design/patterns/circuit-breaker
+  - system-design/patterns/timeouts-backpressure
+tags:
+  - resilience
+  - retry
+  - exponential-backoff
+  - jitter
+  - network-errors
+---
+
 # POC #76: Retry with Exponential Backoff
 
 > **Difficulty:** 🟢 Beginner

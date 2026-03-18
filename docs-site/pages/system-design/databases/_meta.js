@@ -1,4 +1,5 @@
 export default {
+  "CONTEXT": { "display": "hidden" },
   index: "Overview",
   "replication-basics": "🟢 Replication Basics",
   "read-replicas": "🟢 Read Replicas",

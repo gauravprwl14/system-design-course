@@ -1,3 +1,32 @@
+---
+title: Redis Rate Limiting with Sliding Window
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/api-design/rate-limiting
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/retry-storm
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/redis-fundamentals
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/rate-limiting
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/availability/thundering-herd
+  - system-design/api-design/rate-limiting
+  - system-design/case-studies/rate-limiter
+  - system-design/scalability/backpressure
+tags:
+  - redis
+  - rate-limiting
+  - sliding-window
+  - sorted-sets
+---
+
 # POC: Rate Limiting with Sliding Window (Redis Sorted Sets)
 
 ## What You'll Build

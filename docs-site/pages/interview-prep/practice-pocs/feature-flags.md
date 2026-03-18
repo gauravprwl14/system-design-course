@@ -1,3 +1,24 @@
+---
+title: Feature Flags for Controlled Rollouts
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/monolith-to-microservices
+tags:
+  - feature-flags
+  - configuration
+  - a-b-testing
+  - rollouts
+  - toggles
+---
+
 # POC #96: Feature Flags
 
 > **Difficulty:** 🟡 Intermediate

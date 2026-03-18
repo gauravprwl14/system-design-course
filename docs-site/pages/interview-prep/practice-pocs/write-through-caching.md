@@ -1,3 +1,32 @@
+---
+title: Write-Through vs Write-Behind Caching
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/consistency/cache-invalidation-race
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/cache-strategies
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/cms-design
+  - problems-at-scale/consistency/cache-invalidation-race
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+tags:
+  - caching
+  - write-through
+  - write-behind
+  - consistency
+  - database
+---
+
 # POC #62: Write-Through vs Write-Behind Caching
 
 > **Difficulty:** 🟡 Intermediate

@@ -1,3 +1,39 @@
+---
+title: Ticket Booking System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/caching/caching-fundamentals
+  - system-design/api-design/idempotency
+  - system-design/consistency/distributed-consensus
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/availability/thundering-herd
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-atomic-inventory
+  - interview-prep/practice-pocs/database-transactions
+  - interview-prep/practice-pocs/idempotency-keys
+linked_from:
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/ticket-booking-system
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/race-condition-inventory
+  - system-design/api-design/idempotency
+  - system-design/consistency/distributed-consensus
+tags:
+  - ticket-booking
+  - concurrency
+  - distributed-locks
+  - seat-reservation
+  - ticketmaster
+---
+
 # Design a Ticket Booking System (Ticketmaster / BookMyShow)
 
 **Difficulty**: Intermediate

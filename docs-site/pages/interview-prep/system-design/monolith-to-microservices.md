@@ -1,3 +1,27 @@
+---
+title: "Monolith to Microservices - Migration Strategies at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/patterns/microservices-communication
+  - system-design/databases/data-archival-strategies
+  - system-design/scalability/event-driven-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/data-integrity/orphaned-records
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/service-discovery
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/feature-flags
+linked_from: []
+tags: [microservices, monolith-migration, strangler-fig, ddd, netflix, uber, amazon]
+---
+
 # Monolith to Microservices - Migration Strategies at Scale
 
 ## What You'll Learn

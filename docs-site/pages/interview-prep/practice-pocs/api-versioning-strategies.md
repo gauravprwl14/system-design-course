@@ -1,3 +1,24 @@
+---
+title: API Versioning Strategies
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/api-design/rest-graphql-grpc
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - system-design/api-design/rest-graphql-grpc
+tags:
+  - api-versioning
+  - backwards-compatibility
+  - url-versioning
+  - header-versioning
+---
+
 # 5️⃣9️⃣ API Versioning Strategies
 
 ## 🎯 What You'll Learn

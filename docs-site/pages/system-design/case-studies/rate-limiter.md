@@ -1,3 +1,33 @@
+---
+title: Rate Limiter System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/api-design/rate-limiting
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/api-gateway-rate-limiting
+  - interview-prep/practice-pocs/redis-lua-rate-limiting
+linked_from:
+  - interview-prep/system-design/rate-limiting
+  - system-design/api-design/rate-limiting
+tags:
+  - rate-limiting
+  - token-bucket
+  - sliding-window
+  - leaky-bucket
+  - api
+---
+
 # Design a Rate Limiter
 
 **Difficulty**: Intermediate

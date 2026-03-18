@@ -1,3 +1,51 @@
+---
+title: High Availability
+layer: concept
+section: system-design/scalability
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/scaling-basics
+  - system-design/databases/replication-basics
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/split-brain
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/thundering-herd
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/notification-system
+see_poc:
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/graceful-degradation
+  - interview-prep/practice-pocs/blue-green-deployment
+  - interview-prep/practice-pocs/redis-cluster-caching
+linked_from:
+  - interview-prep/practice-pocs/blue-green-deployment
+  - interview-prep/practice-pocs/chaos-engineering
+  - interview-prep/practice-pocs/graceful-degradation
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/practice-pocs/redis-persistence-strategies
+  - interview-prep/system-design/circuit-breaker-pattern
+  - interview-prep/system-design/database-replication
+  - interview-prep/system-design/load-balancing-strategies
+  - interview-prep/system-design/observability-monitoring
+  - interview-prep/system-design/ticket-booking-system
+  - interview-prep/system-design/video-conferencing
+  - system-design/case-studies/payment-system
+  - system-design/monitoring/observability-slos
+  - system-design/scalability/chaos-engineering
+  - system-design/scalability/multi-region
+tags:
+  - high-availability
+  - uptime
+  - sla
+  - fault-tolerance
+  - redundancy
+---
+
 # High Availability - Design for 99.99% Uptime
 
 > **Reading Time:** 22 minutes

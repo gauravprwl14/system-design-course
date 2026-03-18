@@ -1,3 +1,37 @@
+---
+title: REST vs GraphQL vs gRPC
+layer: concept
+section: system-design/api-design
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/uber-backend
+see_poc:
+  - interview-prep/practice-pocs/rest-api-best-practices
+  - interview-prep/practice-pocs/graphql-server-implementation
+  - interview-prep/practice-pocs/grpc-protocol-buffers
+  - interview-prep/practice-pocs/api-versioning-strategies
+linked_from:
+  - interview-prep/practice-pocs/api-versioning-strategies
+  - interview-prep/practice-pocs/graphql-server-implementation
+  - interview-prep/practice-pocs/grpc-protocol-buffers
+  - interview-prep/practice-pocs/rest-api-best-practices
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+tags:
+  - rest
+  - graphql
+  - grpc
+  - api-design
+  - protocol
+  - microservices
+---
+
 # REST vs GraphQL vs gRPC - Choose the Right API for Your Scale
 
 > **Reading Time:** 18 minutes

@@ -1,3 +1,32 @@
+---
+title: Distributed Unique ID Generator System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/scalability/microservices-architecture
+  - system-design/consistency/distributed-consensus
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-sequences
+  - interview-prep/practice-pocs/redis-counter
+  - interview-prep/practice-pocs/redis-atomic-inventory
+linked_from:
+  - system-design/databases/sharding-strategies
+tags:
+  - distributed-systems
+  - unique-id
+  - snowflake
+  - twitter
+  - uuid
+  - sharding
+---
+
 # Design a Distributed Unique ID Generator
 
 **Difficulty**: Beginner/Intermediate

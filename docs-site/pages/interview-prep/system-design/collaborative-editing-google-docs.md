@@ -1,3 +1,27 @@
+---
+title: "Real-Time Collaborative Editing: How Google Docs Lets 50 People Edit Simultaneously"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/consistency/distributed-consensus
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/redis-pubsub-patterns
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+linked_from: []
+tags: [collaborative-editing, crdt, operational-transformation, websocket, real-time, google-docs]
+---
+
 # Real-Time Collaborative Editing: How Google Docs Lets 50 People Edit Simultaneously
 
 > **Time to Read:** 18-22 minutes

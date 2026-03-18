@@ -1,3 +1,29 @@
+---
+title: Database Table Partitioning
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/databases/indexing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/scaling-strategies
+  - problems-at-scale/cost-optimization/storage-bloat
+  - system-design/databases/data-archival-strategies
+tags:
+  - postgresql
+  - partitioning
+  - performance
+  - range-partition
+  - list-partition
+---
+
 # Table Partitioning - Make 100M Row Queries 50x Faster
 
 **The Problem**: Your queries are scanning 100M rows when they only need 2M - killing performance.

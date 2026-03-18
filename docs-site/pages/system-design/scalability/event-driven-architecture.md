@@ -1,3 +1,59 @@
+---
+title: Event-Driven Architecture
+layer: concept
+section: system-design/scalability
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/queues/message-queue-basics
+  - system-design/queues/kafka-vs-rabbitmq
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/availability/cascading-failures
+case_studies:
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/uber-backend
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/event-sourcing-basics
+  - interview-prep/practice-pocs/event-store-implementation
+  - interview-prep/practice-pocs/outbox-pattern
+  - interview-prep/practice-pocs/redis-streams-event-sourcing
+linked_from:
+  - interview-prep/practice-pocs/cqrs-pattern
+  - interview-prep/practice-pocs/event-sourcing-basics
+  - interview-prep/practice-pocs/event-store-implementation
+  - interview-prep/practice-pocs/kafka-streams-real-time-processing
+  - interview-prep/practice-pocs/outbox-pattern
+  - interview-prep/practice-pocs/redis-lua-workflows
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/redis-pubsub-patterns
+  - interview-prep/practice-pocs/redis-streams
+  - interview-prep/practice-pocs/redis-streams-event-sourcing
+  - interview-prep/practice-pocs/saga-pattern
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/cqrs-pattern
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/event-driven-architecture
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - interview-prep/system-design/monolith-to-microservices
+  - interview-prep/system-design/saga-pattern
+  - interview-prep/system-design/social-media-feed
+  - problems-at-scale/concurrency/stock-order-matching-race
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/scalability/cqrs
+tags:
+  - event-driven
+  - kafka
+  - event-sourcing
+  - microservices
+  - loose-coupling
+---
+
 # Event-Driven Architecture - Loose Coupling at Scale
 
 > **Reading Time:** 22 minutes

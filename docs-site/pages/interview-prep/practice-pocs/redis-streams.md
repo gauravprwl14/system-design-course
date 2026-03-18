@@ -1,3 +1,27 @@
+---
+title: Event Sourcing with Redis Streams
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/websocket-architecture
+  - system-design/case-studies/chat-system
+tags:
+  - redis
+  - streams
+  - event-sourcing
+  - messaging
+---
+
 # POC #9: Event Sourcing with Redis Streams
 
 ## What You'll Build

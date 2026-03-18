@@ -1,3 +1,78 @@
+---
+title: Cascading Failures in Microservices
+layer: problem
+section: problems-at-scale/availability
+difficulty: advanced
+prerequisites:
+  - system-design/patterns/circuit-breaker
+  - system-design/scalability/microservices-architecture
+solves_with:
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/graceful-degradation
+  - interview-prep/practice-pocs/timeout-configuration
+  - interview-prep/practice-pocs/health-check-patterns
+related_problems:
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/uber-backend
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/backpressure-queues
+  - interview-prep/practice-pocs/blue-green-deployment
+  - interview-prep/practice-pocs/canary-releases
+  - interview-prep/practice-pocs/chaos-engineering
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/distributed-tracing
+  - interview-prep/practice-pocs/graceful-degradation
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/nginx-load-balancer
+  - interview-prep/practice-pocs/retry-backoff
+  - interview-prep/practice-pocs/service-discovery
+  - interview-prep/practice-pocs/slo-dashboard
+  - interview-prep/practice-pocs/timeout-configuration
+  - interview-prep/system-design/api-gateway-pattern
+  - interview-prep/system-design/circuit-breaker-pattern
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/kubernetes-basics
+  - interview-prep/system-design/monolith-to-microservices
+  - interview-prep/system-design/observability-monitoring
+  - interview-prep/system-design/service-discovery
+  - interview-prep/system-design/video-conferencing
+  - problems-at-scale/availability/circuit-breaker-failure
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/availability/split-brain
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/scalability/memory-leak-long-running
+  - system-design/case-studies/netflix
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/uber-backend
+  - system-design/monitoring/observability-slos
+  - system-design/patterns/circuit-breaker
+  - system-design/patterns/microservices-communication
+  - system-design/patterns/timeouts-backpressure
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+  - system-design/scalability/backpressure
+  - system-design/scalability/chaos-engineering
+  - system-design/scalability/event-driven-architecture
+  - system-design/scalability/high-availability
+  - system-design/scalability/microservices-architecture
+tags:
+  - availability
+  - cascading-failure
+  - circuit-breaker
+  - fault-isolation
+  - microservices
+  - backpressure
+---
+
 # Cascading Failures - Microservices
 
 **Category**: 🚨 Availability & Reliability

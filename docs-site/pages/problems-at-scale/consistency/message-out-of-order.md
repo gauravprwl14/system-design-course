@@ -1,3 +1,47 @@
+---
+title: Message Out-of-Order Processing
+layer: problem
+section: problems-at-scale/consistency
+difficulty: intermediate
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/event-driven-architecture
+solves_with:
+  - interview-prep/practice-pocs/kafka-exactly-once-semantics
+  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
+  - interview-prep/practice-pocs/outbox-pattern
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies:
+  - system-design/case-studies/payment-system
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/kafka-streams-real-time-processing
+  - interview-prep/practice-pocs/outbox-pattern
+  - interview-prep/practice-pocs/redis-pubsub-patterns
+  - interview-prep/practice-pocs/redis-streams
+  - interview-prep/practice-pocs/redis-streams-event-sourcing
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/event-driven-architecture
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - interview-prep/system-design/websocket-architecture
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/case-studies/chat-system
+  - system-design/consistency/distributed-consensus
+  - system-design/databases/sharding-strategies
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/scalability/event-driven-architecture
+  - system-design/scalability/microservices-architecture
+tags:
+  - consistency
+  - kafka
+  - message-ordering
+  - event-driven
+  - sequence
+---
+
 # Message Out-of-Order Processing - When Sequence Breaks Everything
 
 > **Category:** Consistency

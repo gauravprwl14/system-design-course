@@ -1,3 +1,32 @@
+---
+title: PostgreSQL Connection Pooling and Replication
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/databases/replication-basics
+  - system-design/databases/read-replicas
+  - system-design/performance/connection-pool-management
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/database-replication
+  - problems-at-scale/performance/connection-pool-starvation
+  - system-design/databases/read-replicas
+  - system-design/databases/replication-basics
+  - system-design/performance/connection-pool-management
+tags:
+  - postgresql
+  - connection-pooling
+  - replication
+  - pgbouncer
+  - read-replicas
+---
+
 # POC #55: PostgreSQL Connection Pooling & Replication
 
 ## What You'll Build

@@ -1,3 +1,38 @@
+---
+title: Timeouts and Backpressure
+layer: solution
+section: system-design/patterns
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/backpressure
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/timeout-configuration
+  - interview-prep/practice-pocs/backpressure-queues
+  - interview-prep/practice-pocs/retry-backoff
+  - interview-prep/practice-pocs/graceful-degradation
+linked_from:
+  - interview-prep/practice-pocs/retry-backoff
+  - interview-prep/practice-pocs/timeout-configuration
+  - interview-prep/system-design/circuit-breaker-pattern
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/thread-pool-exhaustion
+tags:
+  - timeouts
+  - backpressure
+  - resilience
+  - flow-control
+  - microservices
+---
+
 # Timeouts & Backpressure - Fail Fast, Protect Your System
 
 > **Reading Time:** 18 minutes

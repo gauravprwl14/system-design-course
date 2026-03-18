@@ -1,3 +1,20 @@
+---
+title: "Redis Monitoring and Performance Tuning"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/monitoring/observability-slos
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [redis, monitoring, performance-tuning, observability, metrics]
+---
+
 # POC #45: Redis Monitoring & Performance Tuning - Production Observability
 
 > **Time to Complete:** 30-35 minutes

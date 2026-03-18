@@ -1,3 +1,41 @@
+---
+title: Chat System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/caching/caching-fundamentals
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/redis-pubsub-patterns
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-streams
+linked_from:
+  - interview-prep/system-design/websocket-architecture
+  - problems-at-scale/consistency/stale-read-after-write
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/sharding-strategies
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/cqrs
+  - system-design/security/authentication-at-scale
+tags:
+  - chat
+  - websockets
+  - real-time
+  - messaging
+  - whatsapp
+  - slack
+---
+
 # Design a Chat System (WhatsApp / Slack)
 
 **Difficulty**: Intermediate

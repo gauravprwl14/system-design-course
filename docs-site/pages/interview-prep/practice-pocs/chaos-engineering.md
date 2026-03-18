@@ -1,3 +1,28 @@
+---
+title: Chaos Engineering for Resilience Testing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/chaos-engineering
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/case-studies/netflix
+  - system-design/scalability/chaos-engineering
+tags:
+  - chaos-engineering
+  - resilience
+  - fault-injection
+  - availability
+  - testing
+---
+
 # POC #92: Chaos Engineering
 
 > **Difficulty:** 🔴 Advanced

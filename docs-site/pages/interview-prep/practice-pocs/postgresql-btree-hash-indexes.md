@@ -1,3 +1,28 @@
+---
+title: PostgreSQL B-Tree vs Hash Indexes
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+  - system-design/databases/indexing-deep-dive
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/database-indexing-deep-dive
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/indexing-strategies
+tags:
+  - postgresql
+  - btree
+  - hash-index
+  - index-types
+  - query-performance
+---
+
 # POC #51: PostgreSQL B-Tree vs Hash Indexes - Performance Showdown
 
 > **Time to Complete:** 30-35 minutes

@@ -1,3 +1,20 @@
+---
+title: "Database Archival Strategies"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/data-archival-strategies
+  - system-design/databases/sharding-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [postgresql, archival, data-lifecycle, storage, partitioning]
+---
+
 # POC #101: Database Archival Strategies
 
 **Difficulty**: 🟡 Intermediate

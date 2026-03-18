@@ -1,3 +1,34 @@
+---
+title: Chaos Engineering
+layer: concept
+section: system-design/scalability
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/high-availability
+  - system-design/patterns/circuit-breaker
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+  - problems-at-scale/availability/split-brain
+case_studies:
+  - system-design/case-studies/netflix
+see_poc:
+  - interview-prep/practice-pocs/chaos-engineering
+  - interview-prep/practice-pocs/graceful-degradation
+  - interview-prep/practice-pocs/health-check-patterns
+linked_from:
+  - interview-prep/practice-pocs/chaos-engineering
+  - system-design/case-studies/netflix
+tags:
+  - chaos-engineering
+  - resilience
+  - fault-tolerance
+  - netflix
+  - testing
+---
+
 # Chaos Engineering - Test Resilience by Breaking Things
 
 > **Reading Time:** 18 minutes

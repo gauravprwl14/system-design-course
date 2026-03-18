@@ -1,3 +1,49 @@
+---
+title: N+1 Query Problem
+layer: problem
+section: problems-at-scale/performance
+difficulty: beginner
+prerequisites:
+  - system-design/databases/indexing-strategies
+solves_with:
+  - interview-prep/practice-pocs/database-n-plus-one
+  - interview-prep/practice-pocs/database-explain
+  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/scalability/database-hotspots
+case_studies:
+  - system-design/case-studies/news-feed
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/performance-bottlenecks
+  - interview-prep/database-storage/indexing-strategies
+  - interview-prep/database-storage/query-optimization
+  - interview-prep/practice-pocs/database-explain
+  - interview-prep/practice-pocs/database-indexes
+  - interview-prep/practice-pocs/database-materialized-views
+  - interview-prep/practice-pocs/database-n-plus-one
+  - interview-prep/practice-pocs/database-partitioning
+  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
+  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
+  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - interview-prep/system-design/database-indexing-deep-dive
+  - interview-prep/system-design/search-engine-architecture
+  - system-design/api-design/rest-graphql-grpc
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/indexing-strategies
+  - system-design/databases/read-replicas
+tags:
+  - performance
+  - n-plus-one
+  - orm
+  - database
+  - query-optimization
+  - eager-loading
+---
+
 # N+1 Query Problem - ORM Performance Trap
 
 **Category**: ⚡ Performance Degradation

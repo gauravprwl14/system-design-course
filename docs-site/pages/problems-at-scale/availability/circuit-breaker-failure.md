@@ -1,3 +1,37 @@
+---
+title: Circuit Breaker Stuck Open or Closed
+layer: problem
+section: problems-at-scale/availability
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/circuit-breaker
+solves_with:
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/slo-dashboard
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/retry-storm
+case_studies:
+  - system-design/case-studies/netflix
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/chaos-engineering
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/graceful-degradation
+  - interview-prep/system-design/circuit-breaker-pattern
+  - interview-prep/system-design/service-discovery
+  - problems-at-scale/availability/retry-storm
+  - system-design/patterns/circuit-breaker
+  - system-design/scalability/chaos-engineering
+tags:
+  - availability
+  - circuit-breaker
+  - resilience
+  - half-open
+  - microservices
+---
+
 # Circuit Breaker Stuck Open/Closed - Microservices
 
 **Category**: 🚨 Availability & Reliability

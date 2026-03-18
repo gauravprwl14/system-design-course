@@ -1,3 +1,27 @@
+---
+title: Canary Releases for Gradual Rollouts
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/monitoring/observability-slos
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/kubernetes-basics
+  - system-design/scalability/auto-scaling
+tags:
+  - deployment
+  - canary
+  - gradual-rollout
+  - risk-reduction
+  - monitoring
+---
+
 # POC #98: Canary Releases
 
 > **Difficulty:** 🟡 Intermediate

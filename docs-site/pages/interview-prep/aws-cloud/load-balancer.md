@@ -1,3 +1,22 @@
+---
+title: "AWS Load Balancers: ELB, ALB, NLB"
+layer: concept
+section: interview-prep/aws-cloud
+difficulty: intermediate
+prerequisites:
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/load-balancer-round-robin
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+  - interview-prep/practice-pocs/load-balancer-least-connections
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from: []
+tags: [aws, load-balancing, alb, nlb, elb, availability, scalability]
+---
+
 # AWS Load Balancers: ELB, ALB, NLB
 
 ## Question

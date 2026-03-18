@@ -1,3 +1,18 @@
+---
+title: "RSA vs AES: Encryption Algorithm Comparison"
+layer: concept
+section: interview-prep/security-encryption
+difficulty: intermediate
+prerequisites:
+  - system-design/security/authentication-at-scale
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [security, encryption, rsa, aes, cryptography, tls]
+---
+
 # RSA vs AES - Encryption Comparison
 
 **Interview Question**: *"What is the difference between RSA and AES encryption? When would you use each?"*

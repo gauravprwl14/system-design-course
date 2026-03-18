@@ -1,3 +1,46 @@
+---
+title: Read Replicas Explained
+layer: concept
+section: system-design/databases
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/performance/n-plus-one-query
+case_studies:
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/youtube
+see_poc:
+  - interview-prep/practice-pocs/database-read-replicas
+  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
+linked_from:
+  - interview-prep/practice-pocs/database-read-replicas
+  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/cqrs-pattern
+  - interview-prep/system-design/database-indexing-deep-dive
+  - interview-prep/system-design/database-replication
+  - interview-prep/system-design/social-media-feed
+  - interview-prep/system-design/video-streaming-platform
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/consistency/stale-read-after-write
+  - system-design/case-studies/netflix
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/spotify
+  - system-design/case-studies/youtube
+  - system-design/databases/sharding-strategies
+  - system-design/scalability/cqrs
+tags:
+  - databases
+  - replication
+  - read-replicas
+  - scalability
+  - postgresql
+---
+
 # Read Replicas Explained
 
 **Difficulty**: 🟢 Beginner

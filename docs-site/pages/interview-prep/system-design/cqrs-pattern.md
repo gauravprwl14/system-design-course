@@ -1,3 +1,26 @@
+---
+title: "CQRS Pattern - Command Query Responsibility Segregation"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/cqrs
+  - system-design/databases/read-replicas
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/cqrs-pattern
+  - interview-prep/practice-pocs/event-sourcing-basics
+  - interview-prep/practice-pocs/database-read-replicas
+linked_from: []
+tags: [cqrs, event-sourcing, read-write-separation, distributed-systems, scalability]
+---
+
 # CQRS Pattern - Command Query Responsibility Segregation
 
 ## What You'll Learn

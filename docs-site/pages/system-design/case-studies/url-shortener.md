@@ -1,3 +1,40 @@
+---
+title: URL Shortener System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: beginner
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/replication-basics
+  - system-design/scalability/stateless-architecture
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/database-crud
+  - interview-prep/practice-pocs/database-indexes
+linked_from:
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+  - system-design/databases/indexing-strategies
+  - system-design/databases/read-replicas
+  - system-design/databases/replication-basics
+  - system-design/databases/sharding-strategies
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/scaling-basics
+  - system-design/scalability/stateless-architecture
+tags:
+  - url-shortener
+  - hashing
+  - caching
+  - read-heavy
+  - high-traffic
+---
+
 # Design a URL Shortener (like bit.ly)
 
 **Difficulty**: 🟢 Beginner

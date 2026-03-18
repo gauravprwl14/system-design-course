@@ -1,3 +1,18 @@
+---
+title: "JSONB in PostgreSQL for Flexible Schemas"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [postgresql, jsonb, flexible-schema, nosql, indexing]
+---
+
 # POC #19: JSONB in PostgreSQL - Flexible Schema at Scale
 
 ## What You'll Build

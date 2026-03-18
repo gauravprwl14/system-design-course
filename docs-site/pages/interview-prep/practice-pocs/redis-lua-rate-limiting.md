@@ -1,3 +1,28 @@
+---
+title: Rate Limiting with Redis Lua
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/api-design/rate-limiting
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/retry-storm
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/rate-limiting
+  - system-design/api-design/rate-limiting
+  - system-design/case-studies/rate-limiter
+tags:
+  - redis
+  - lua
+  - rate-limiting
+  - api-protection
+  - eval
+---
+
 # POC #37: Rate Limiting with Redis Lua - Bulletproof API Protection
 
 > **Time to Complete:** 25-30 minutes

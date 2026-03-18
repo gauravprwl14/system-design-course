@@ -1,3 +1,28 @@
+---
+title: Saga Pattern for Distributed Transactions
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/saga-pattern
+tags:
+  - saga
+  - distributed-transactions
+  - microservices
+  - compensation
+  - choreography
+---
+
 # POC #84: Saga Pattern
 
 > **Difficulty:** 🔴 Advanced

@@ -1,3 +1,31 @@
+---
+title: Atomic Inventory Management with Redis Transactions
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/concurrency/duplicate-orders
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/ticket-booking-system
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/race-condition-inventory
+  - system-design/case-studies/ticket-booking
+  - system-design/case-studies/unique-id-generator
+tags:
+  - redis
+  - transactions
+  - multi-exec
+  - inventory
+  - concurrency
+---
+
 # POC #34: Atomic Inventory Management with Redis Transactions
 
 > **Time to Complete:** 20-25 minutes

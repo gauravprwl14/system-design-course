@@ -1,3 +1,36 @@
+---
+title: Orphaned Records After Failed Cascade Delete
+layer: problem
+section: problems-at-scale/data-integrity
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with:
+  - interview-prep/practice-pocs/database-foreign-keys
+  - interview-prep/practice-pocs/database-transactions
+  - interview-prep/practice-pocs/database-triggers
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/database-check-constraints
+  - interview-prep/practice-pocs/database-foreign-keys
+  - interview-prep/practice-pocs/database-triggers
+  - interview-prep/system-design/monolith-to-microservices
+  - interview-prep/system-design/saga-pattern
+  - problems-at-scale/cost-optimization/storage-bloat
+  - system-design/case-studies/payment-system
+tags:
+  - data-integrity
+  - orphaned-records
+  - cascade-delete
+  - foreign-keys
+  - gdpr
+  - referential-integrity
+---
+
 # Orphaned Records After Failed Cascade Delete
 
 **Category**: 🗄️ Data Integrity

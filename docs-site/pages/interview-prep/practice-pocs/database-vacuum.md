@@ -1,3 +1,26 @@
+---
+title: PostgreSQL VACUUM and Database Maintenance
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/cost-optimization/storage-bloat
+  - system-design/databases/data-archival-strategies
+tags:
+  - postgresql
+  - vacuum
+  - maintenance
+  - bloat
+  - autovacuum
+---
+
 # VACUUM & Database Maintenance - Stop Query Slowdown & Bloat
 
 **The Problem**: Your database is 3x larger than it should be, queries are getting slower every week, and you don't know why.

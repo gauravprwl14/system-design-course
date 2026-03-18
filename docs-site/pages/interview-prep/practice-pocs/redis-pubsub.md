@@ -1,3 +1,31 @@
+---
+title: Redis Pub/Sub for Real-Time Notifications
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/event-driven-architecture
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/video-conferencing
+  - interview-prep/system-design/websocket-architecture
+  - system-design/case-studies/chat-system
+  - system-design/case-studies/notification-system
+tags:
+  - redis
+  - pubsub
+  - real-time
+  - notifications
+  - messaging
+---
+
 # POC: Real-Time Notifications with Redis Pub/Sub
 
 ## What You'll Build

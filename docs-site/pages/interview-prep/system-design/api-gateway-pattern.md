@@ -1,3 +1,27 @@
+---
+title: "API Gateway Pattern - Single Entry Point for Microservices"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/api-design/rate-limiting
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/security/authentication-at-scale
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/api-gateway-rate-limiting
+  - interview-prep/practice-pocs/jwt-authentication
+  - interview-prep/practice-pocs/nginx-load-balancer
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+linked_from: []
+tags: [api-gateway, microservices, rate-limiting, authentication, routing, netflix-zuul]
+---
+
 # API Gateway Pattern - Single Entry Point for Microservices
 
 ## What You'll Learn

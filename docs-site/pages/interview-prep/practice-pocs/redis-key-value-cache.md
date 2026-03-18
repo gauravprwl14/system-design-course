@@ -1,3 +1,39 @@
+---
+title: Simple Redis Key-Value Cache
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/redis-fundamentals
+  - interview-prep/system-design/audio-streaming-spotify
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/social-media-feed
+  - interview-prep/system-design/video-streaming-platform
+  - problems-at-scale/consistency/stale-read-after-write
+  - system-design/caching/caching-fundamentals
+  - system-design/case-studies/netflix
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/pastebin
+  - system-design/case-studies/spotify
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/youtube
+tags:
+  - redis
+  - caching
+  - key-value
+  - performance
+---
+
 # POC: Simple Redis Key-Value Cache
 
 ## What You'll Build

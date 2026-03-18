@@ -1,3 +1,19 @@
+---
+title: "Redis Transaction Rollback and Error Recovery"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-charge-payment
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [redis, transactions, rollback, error-handling, recovery]
+---
+
 # POC #33: Redis Transaction Rollback - Error Handling & Recovery
 
 ## What You'll Build

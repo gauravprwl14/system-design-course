@@ -1,3 +1,27 @@
+---
+title: Production-Ready CRUD Operations with PostgreSQL
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/sql-vs-nosql
+  - system-design/case-studies/pastebin
+  - system-design/case-studies/url-shortener
+  - system-design/databases/replication-basics
+tags:
+  - postgresql
+  - crud
+  - database
+  - sql
+  - api
+---
+
 # POC #11: Production-Ready CRUD Operations with PostgreSQL
 
 ## What You'll Build

@@ -1,3 +1,26 @@
+---
+title: "Search Engine Architecture - Build Google-Scale Search with Elasticsearch"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/databases/indexing-deep-dive
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-full-text-search
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/practice-pocs/database-indexes
+linked_from: []
+tags: [search-engine, elasticsearch, inverted-index, tf-idf, bm25, sharding, full-text-search]
+---
+
 # Search Engine Architecture - Build Google-Scale Search with Elasticsearch
 
 ## What You'll Learn

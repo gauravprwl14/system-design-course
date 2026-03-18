@@ -1,3 +1,40 @@
+---
+title: Duplicate Order Creation Race Condition
+layer: problem
+section: problems-at-scale/concurrency
+difficulty: intermediate
+prerequisites:
+  - system-design/api-design/idempotency
+solves_with:
+  - interview-prep/practice-pocs/idempotency-keys
+  - interview-prep/practice-pocs/redis-deduplication
+  - interview-prep/practice-pocs/database-transactions
+related_problems:
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies:
+  - system-design/case-studies/payment-system
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/database-sequences
+  - interview-prep/practice-pocs/idempotency-keys
+  - interview-prep/practice-pocs/redis-atomic-inventory
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/api-design/idempotency
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/unique-id-generator
+tags:
+  - concurrency
+  - deduplication
+  - idempotency
+  - orders
+  - e-commerce
+---
+
 # Duplicate Order Creation Race Condition
 
 **Category**: Concurrency & Race Conditions

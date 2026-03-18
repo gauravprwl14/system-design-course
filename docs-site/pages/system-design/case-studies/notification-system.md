@@ -1,3 +1,42 @@
+---
+title: Notification System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: intermediate
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+  - system-design/api-design/rate-limiting
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/redis-job-queue
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+linked_from:
+  - system-design/api-design/rate-limiting
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+  - system-design/scalability/backpressure
+  - system-design/scalability/event-driven-architecture
+  - system-design/scalability/high-availability
+  - system-design/scalability/stateless-architecture
+tags:
+  - notifications
+  - push
+  - email
+  - sms
+  - async
+  - messaging
+---
+
 # Design a Notification System
 
 **Difficulty**: Intermediate

@@ -1,3 +1,29 @@
+---
+title: Redis Job Queue with Background Processing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/async-processing
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/pdf-converter
+  - system-design/case-studies/notification-system
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+tags:
+  - redis
+  - job-queue
+  - background-processing
+  - lists
+  - async
+---
+
 # POC: Job Queue with Redis Lists (Background Processing)
 
 ## What You'll Build

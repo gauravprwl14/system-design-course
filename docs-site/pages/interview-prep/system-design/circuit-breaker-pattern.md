@@ -1,3 +1,28 @@
+---
+title: "Circuit Breaker Pattern - Building Resilient Distributed Systems"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/circuit-breaker
+  - system-design/patterns/timeouts-backpressure
+  - system-design/scalability/high-availability
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+  - problems-at-scale/availability/retry-storm
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/retry-backoff
+  - interview-prep/practice-pocs/graceful-degradation
+  - interview-prep/practice-pocs/timeout-configuration
+linked_from: []
+tags: [circuit-breaker, resilience, distributed-systems, netflix, hystrix, fault-tolerance]
+---
+
 # Circuit Breaker Pattern - Building Resilient Distributed Systems
 
 ## What You'll Learn

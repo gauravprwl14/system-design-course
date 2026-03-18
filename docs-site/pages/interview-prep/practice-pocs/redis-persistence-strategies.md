@@ -1,3 +1,20 @@
+---
+title: "Redis Persistence Strategies: RDB vs AOF"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/split-brain
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [redis, persistence, rdb, aof, durability, recovery]
+---
+
 # POC #44: Redis Persistence - RDB vs AOF vs Hybrid
 
 > **Time to Complete:** 25-30 minutes

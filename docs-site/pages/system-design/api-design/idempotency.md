@@ -1,3 +1,38 @@
+---
+title: Idempotency in Distributed Systems
+layer: concept
+section: system-design/api-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies:
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/ticket-booking
+see_poc:
+  - interview-prep/practice-pocs/idempotency-keys
+  - interview-prep/practice-pocs/redis-deduplication
+  - interview-prep/practice-pocs/outbox-pattern
+linked_from:
+  - interview-prep/practice-pocs/idempotency-keys
+  - interview-prep/practice-pocs/kafka-exactly-once-semantics
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/concurrency/duplicate-orders
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/ticket-booking
+tags:
+  - idempotency
+  - payments
+  - retry
+  - distributed-systems
+  - consistency
+---
+
 # Idempotency in Distributed Systems - Make Your APIs Safe to Retry
 
 > **Reading Time:** 18 minutes

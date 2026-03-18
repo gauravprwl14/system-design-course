@@ -1,3 +1,30 @@
+---
+title: "Flash Sales Architecture - High Traffic Design"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/cdn-edge-computing
+  - system-design/databases/sharding-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/ticket-booking
+see_poc:
+  - interview-prep/practice-pocs/redis-atomic-inventory
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/backpressure-queues
+linked_from: []
+tags: [flash-sales, high-traffic, concurrency, inventory, redis, e-commerce]
+---
+
 # Flash Sales Architecture - High Traffic Design
 
 **Interview Question**: *"How do you prepare for flash sales to handle high traffic efficiently? Design a system to handle millions of concurrent users."*

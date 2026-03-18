@@ -1,4 +1,5 @@
 export default {
+  "CONTEXT": { "display": "hidden" },
   index: "Overview",
   "s3-tps-limits": "🟡 S3 TPS Limits",
   "lambda-serverless": "🟢 Lambda Serverless",

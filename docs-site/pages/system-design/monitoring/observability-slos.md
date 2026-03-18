@@ -1,3 +1,43 @@
+---
+title: 'Production Observability - SLOs, SLIs, and Error Budgets'
+layer: concept
+section: system-design/monitoring
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/payment-system
+see_poc:
+  - interview-prep/practice-pocs/slo-dashboard
+  - interview-prep/practice-pocs/distributed-tracing
+  - interview-prep/practice-pocs/health-check-patterns
+linked_from:
+  - interview-prep/aws-cloud/cloudwatch-monitoring
+  - interview-prep/caching-cdn/api-metrics
+  - interview-prep/practice-pocs/canary-releases
+  - interview-prep/practice-pocs/distributed-tracing
+  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
+  - interview-prep/practice-pocs/load-testing-k6
+  - interview-prep/practice-pocs/redis-lua-performance-benchmarks
+  - interview-prep/practice-pocs/redis-monitoring-performance
+  - interview-prep/practice-pocs/slo-dashboard
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/observability-monitoring
+tags:
+  - observability
+  - slo
+  - sli
+  - monitoring
+  - prometheus
+  - alerting
+---
+
 # Production Observability - SLOs, SLIs, and Error Budgets
 
 > **TL;DR:** Without SLOs, you're flying blind. With bad SLOs, you're flying into a mountain. Get them right or pay with downtime.

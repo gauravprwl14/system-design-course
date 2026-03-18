@@ -1,3 +1,23 @@
+---
+title: "Cache Strategies: Cache-Aside, Write-Through, Write-Behind"
+layer: concept
+section: interview-prep/caching-cdn
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/write-through-caching
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+linked_from: []
+tags: [caching, cache-aside, write-through, write-behind, read-through, redis, strategies]
+---
+
 # Cache Strategies: Cache-Aside, Write-Through, Write-Behind
 
 ## Question

@@ -1,3 +1,36 @@
+---
+title: CQRS - Command Query Responsibility Segregation
+layer: concept
+section: system-design/scalability
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/event-driven-architecture
+  - system-design/databases/read-replicas
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/scalability/database-hotspots
+case_studies:
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/chat-system
+see_poc:
+  - interview-prep/practice-pocs/cqrs-pattern
+  - interview-prep/practice-pocs/event-sourcing-basics
+  - interview-prep/practice-pocs/database-materialized-views
+linked_from:
+  - interview-prep/practice-pocs/cqrs-pattern
+  - interview-prep/practice-pocs/event-sourcing-basics
+  - interview-prep/practice-pocs/event-store-implementation
+  - interview-prep/system-design/cqrs-pattern
+tags:
+  - cqrs
+  - event-sourcing
+  - scalability
+  - read-write-separation
+  - databases
+---
+
 # CQRS - Separate Reads and Writes for Scale
 
 > **Reading Time:** 20 minutes

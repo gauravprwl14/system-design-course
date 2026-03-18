@@ -1,3 +1,19 @@
+---
+title: "API Metrics: P50, P95, P99 Response Times & SLAs"
+layer: concept
+section: interview-prep/caching-cdn
+difficulty: intermediate
+prerequisites:
+  - system-design/monitoring/observability-slos
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [api, metrics, p95, p99, sla, slo, latency, performance, observability]
+---
+
 # API Metrics: P50, P95, P99 Response Times & SLAs
 
 ## Question

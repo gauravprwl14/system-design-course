@@ -1,3 +1,28 @@
+---
+title: "Online Gaming Backend: How Fortnite Handles 350M Players"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/stateless-architecture
+  - system-design/scalability/auto-scaling
+  - system-design/caching/caching-fundamentals
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/redis-leaderboard
+  - interview-prep/practice-pocs/redis-lua-leaderboards
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+linked_from: []
+tags: [gaming, real-time, state-synchronization, websocket, lag-compensation, fortnite]
+---
+
 # Online Gaming Backend: How Fortnite Handles 350M Players
 
 > **Time to Read:** 20-25 minutes

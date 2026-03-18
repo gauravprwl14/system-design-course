@@ -1,3 +1,21 @@
+---
+title: "JWT vs Session vs OAuth 2.0: Authentication Comparison"
+layer: concept
+section: interview-prep/security-encryption
+difficulty: intermediate
+prerequisites:
+  - system-design/security/authentication-at-scale
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/jwt-authentication
+  - interview-prep/practice-pocs/oauth-flows
+  - interview-prep/practice-pocs/redis-session-management
+linked_from: []
+tags: [security, authentication, jwt, sessions, oauth, stateless]
+---
+
 # JWT vs Session vs OAuth 2.0 - Authentication Comparison
 
 **Interview Question**: *"What is the difference between JWT and Session authentication? When would you use JWT over OAuth 2.0?"*

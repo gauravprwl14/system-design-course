@@ -1,3 +1,47 @@
+---
+title: Stateless Architecture
+layer: concept
+section: system-design/scalability
+difficulty: beginner
+prerequisites:
+  - system-design/scalability/scaling-basics
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/memory-leak-long-running
+case_studies:
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/notification-system
+see_poc:
+  - interview-prep/practice-pocs/redis-session-management
+  - interview-prep/practice-pocs/jwt-authentication
+  - interview-prep/practice-pocs/load-balancer-round-robin
+linked_from:
+  - interview-prep/practice-pocs/jwt-authentication
+  - interview-prep/practice-pocs/redis-session-management
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/kubernetes-basics
+  - interview-prep/system-design/load-balancing-strategies
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/pdf-converter
+  - interview-prep/system-design/rate-limiting
+  - interview-prep/system-design/service-discovery
+  - interview-prep/system-design/video-conferencing
+  - interview-prep/system-design/websocket-architecture
+  - system-design/case-studies/chat-system
+  - system-design/case-studies/pastebin
+  - system-design/case-studies/url-shortener
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/auto-scaling
+  - system-design/security/authentication-at-scale
+tags:
+  - stateless
+  - sessions
+  - jwt
+  - horizontal-scaling
+  - cloud
+---
+
 # Stateless Architecture - The Secret to Infinite Scalability
 
 > **Reading Time:** 18 minutes

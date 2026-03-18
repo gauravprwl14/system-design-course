@@ -1,3 +1,44 @@
+---
+title: CDN and Edge Computing
+layer: concept
+section: system-design/scalability
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/youtube
+  - system-design/case-studies/netflix
+  - system-design/case-studies/spotify
+see_poc:
+  - interview-prep/practice-pocs/http-caching-headers
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from:
+  - interview-prep/caching-cdn/cdn-usage
+  - interview-prep/system-design/audio-streaming-spotify
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/cdn-edge-computing-media
+  - interview-prep/system-design/cms-design
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/social-media-feed
+  - interview-prep/system-design/video-streaming-platform
+  - system-design/case-studies/netflix
+  - system-design/case-studies/spotify
+  - system-design/case-studies/youtube
+  - system-design/scalability/multi-region
+tags:
+  - cdn
+  - edge-computing
+  - caching
+  - latency
+  - global-distribution
+---
+
 # CDN & Edge Computing - Serve Content from the Closest Location
 
 > **Reading Time:** 22 minutes

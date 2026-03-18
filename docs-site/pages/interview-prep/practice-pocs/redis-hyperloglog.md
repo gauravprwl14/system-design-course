@@ -1,3 +1,19 @@
+---
+title: "Unique Counting with Redis HyperLogLog"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [redis, hyperloglog, unique-counting, cardinality, analytics]
+---
+
 # POC #10: Unique Counting with HyperLogLog
 
 ## What You'll Build

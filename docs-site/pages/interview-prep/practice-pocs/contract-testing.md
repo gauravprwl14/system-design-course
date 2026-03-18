@@ -1,3 +1,25 @@
+---
+title: Contract Testing for Microservices
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/patterns/microservices-communication
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/scalability/microservices-architecture
+tags:
+  - contract-testing
+  - microservices
+  - pact
+  - consumer-driven
+  - api-compatibility
+---
+
 # POC #93: Contract Testing
 
 > **Difficulty:** 🟡 Intermediate

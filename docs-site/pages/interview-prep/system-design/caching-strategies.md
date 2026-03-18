@@ -1,3 +1,29 @@
+---
+title: "Caching Strategies: Redis, Memcached, CDN, Application-Level"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+  - system-design/scalability/cdn-edge-computing
+  - system-design/databases/read-replicas
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+  - interview-prep/practice-pocs/write-through-caching
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/http-caching-headers
+linked_from: []
+tags: [caching, redis, memcached, cdn, cache-invalidation, performance]
+---
+
 # Caching Strategies: Redis, Memcached, CDN, Application-Level
 
 ## 🎯 The $12M Question

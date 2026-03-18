@@ -1,3 +1,28 @@
+---
+title: "WebSocket Architecture: Real-Time Systems at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/stateless-architecture
+  - system-design/scalability/auto-scaling
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/consistency/message-out-of-order
+case_studies:
+  - system-design/case-studies/chat-system
+see_poc:
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/redis-pubsub-patterns
+  - interview-prep/practice-pocs/redis-streams
+linked_from: []
+tags: [websocket, real-time, slack, discord, chat, connection-management, pub-sub]
+---
+
 # WebSocket Architecture: Real-Time Systems at Scale
 
 ## Overview

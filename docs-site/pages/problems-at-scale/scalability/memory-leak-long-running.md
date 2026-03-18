@@ -1,3 +1,33 @@
+---
+title: Memory Leak in Long-Running Services
+layer: problem
+section: problems-at-scale/scalability
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+solves_with:
+  - interview-prep/practice-pocs/connection-leak-detection
+  - interview-prep/practice-pocs/slo-dashboard
+  - interview-prep/practice-pocs/health-check-patterns
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/connection-leak-detection
+  - interview-prep/system-design/kubernetes-basics
+  - system-design/scalability/stateless-architecture
+tags:
+  - scalability
+  - memory-leak
+  - oom
+  - performance
+  - garbage-collection
+  - long-running-services
+---
+
 # Memory Leak in Long-Running Services - The Slow Death of Your Application
 
 > **Category:** Scalability

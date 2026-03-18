@@ -1,3 +1,28 @@
+---
+title: "Designing High-Concurrency APIs"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/performance/connection-pool-management
+  - system-design/caching/caching-fundamentals
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/async-processing
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-connection-pooling
+  - interview-prep/practice-pocs/connection-pool-sizing
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/backpressure-queues
+linked_from: []
+tags: [high-concurrency, api-design, connection-pooling, load-balancing, async, performance]
+---
+
 # Designing High-Concurrency APIs
 
 ## Question

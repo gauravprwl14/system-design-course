@@ -1,3 +1,25 @@
+---
+title: Atomic Leaderboard Updates with Redis Lua
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/counter-race
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/online-gaming-backend
+tags:
+  - redis
+  - lua
+  - leaderboard
+  - sorted-sets
+  - atomicity
+---
+
 # POC #38: Atomic Leaderboard Updates with Redis Lua
 
 > **Time to Complete:** 25-30 minutes

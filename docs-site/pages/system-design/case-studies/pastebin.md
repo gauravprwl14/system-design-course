@@ -1,3 +1,31 @@
+---
+title: Pastebin System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: beginner
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/replication-basics
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/cost-optimization/storage-bloat
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/database-crud
+  - interview-prep/practice-pocs/database-full-text-search
+linked_from:
+  - interview-prep/system-design/cms-design
+tags:
+  - pastebin
+  - object-storage
+  - cdn
+  - text-sharing
+  - hashing
+---
+
 # Design a Pastebin (like pastebin.com)
 
 **Difficulty**: Beginner

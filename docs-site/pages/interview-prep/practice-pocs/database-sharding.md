@@ -1,3 +1,31 @@
+---
+title: Database Sharding for Write Scalability
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/scaling-strategies
+  - interview-prep/system-design/database-sharding
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/scalability/hot-partition
+  - system-design/databases/sharding-strategies
+tags:
+  - postgresql
+  - sharding
+  - horizontal-scaling
+  - partitioning
+  - distributed
+---
+
 # POC #18: Database Sharding - Scale Writes to Billions
 
 ## What You'll Build

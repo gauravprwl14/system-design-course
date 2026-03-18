@@ -1,3 +1,24 @@
+---
+title: 'Hashing vs Encryption: The Critical Difference'
+layer: concept
+section: interview-prep/security-encryption
+difficulty: beginner
+prerequisites: []
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/security-encryption/sha-comparison
+tags:
+  - security
+  - hashing
+  - encryption
+  - bcrypt
+  - sha256
+  - passwords
+---
+
 # Hashing vs Encryption - The Critical Difference
 
 **Interview Question**: *"What is the difference between hashing and encryption? When would you use each?"*

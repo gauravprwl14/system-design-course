@@ -1,3 +1,60 @@
+---
+title: Connection Pool Starvation
+layer: problem
+section: problems-at-scale/performance
+difficulty: intermediate
+prerequisites:
+  - system-design/performance/connection-pool-management
+  - system-design/databases/replication-basics
+solves_with:
+  - interview-prep/practice-pocs/database-connection-pooling
+  - interview-prep/practice-pocs/connection-pool-sizing
+  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
+related_problems:
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/timeout-domino-effect
+case_studies:
+  - system-design/case-studies/uber-backend
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/performance-bottlenecks
+  - interview-prep/database-storage/connection-pooling
+  - interview-prep/practice-pocs/connection-leak-detection
+  - interview-prep/practice-pocs/connection-pool-sizing
+  - interview-prep/practice-pocs/database-connection-pooling
+  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
+  - interview-prep/practice-pocs/redis-monitoring-performance
+  - interview-prep/system-design/api-gateway-pattern
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/observability-monitoring
+  - interview-prep/system-design/video-conferencing
+  - interview-prep/system-design/websocket-architecture
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/scalability/memory-leak-long-running
+  - system-design/api-design/rest-graphql-grpc
+  - system-design/case-studies/netflix
+  - system-design/case-studies/spotify
+  - system-design/case-studies/youtube
+  - system-design/monitoring/observability-slos
+  - system-design/patterns/timeouts-backpressure
+  - system-design/performance/connection-pool-management
+  - system-design/scalability/scaling-basics
+  - system-design/security/authentication-at-scale
+tags:
+  - performance
+  - connection-pool
+  - database
+  - thread-pool
+  - starvation
+  - microservices
+---
+
 # Connection Pool Starvation - The Silent System Killer
 
 > **Category:** Performance

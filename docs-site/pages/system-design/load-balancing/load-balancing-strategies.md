@@ -1,3 +1,57 @@
+---
+title: Load Balancing Strategies
+layer: concept
+section: system-design/load-balancing
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/scaling-basics
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/chat-system
+see_poc:
+  - interview-prep/practice-pocs/load-balancer-round-robin
+  - interview-prep/practice-pocs/load-balancer-least-connections
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from:
+  - interview-prep/aws-cloud/load-balancer
+  - interview-prep/practice-pocs/api-gateway-rate-limiting
+  - interview-prep/practice-pocs/blue-green-deployment
+  - interview-prep/practice-pocs/canary-releases
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+  - interview-prep/practice-pocs/load-balancer-least-connections
+  - interview-prep/practice-pocs/load-balancer-round-robin
+  - interview-prep/practice-pocs/nginx-load-balancer
+  - interview-prep/system-design/api-gateway-pattern
+  - interview-prep/system-design/audio-streaming-spotify
+  - interview-prep/system-design/cdn-edge-computing-media
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/kubernetes-basics
+  - interview-prep/system-design/load-balancing-strategies
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/service-discovery
+  - interview-prep/system-design/video-conferencing
+  - interview-prep/system-design/websocket-architecture
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/url-shortener
+  - system-design/scalability/high-availability
+tags:
+  - load-balancing
+  - nginx
+  - consistent-hashing
+  - round-robin
+  - traffic-distribution
+---
+
 # Load Balancing Strategies - Distribute Traffic Like Netflix
 
 > **Reading Time:** 18 minutes

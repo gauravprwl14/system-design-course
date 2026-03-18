@@ -1,3 +1,36 @@
+---
+title: Social Engagement Counter Race Condition
+layer: problem
+section: problems-at-scale/concurrency
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with:
+  - interview-prep/practice-pocs/redis-counter
+  - interview-prep/practice-pocs/redis-lua-scripting-basics
+  - interview-prep/practice-pocs/database-transactions
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/scalability/database-hotspots
+case_studies:
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/youtube
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/redis-counter
+  - interview-prep/practice-pocs/redis-lua-leaderboards
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/online-gaming-backend
+  - problems-at-scale/scalability/database-hotspots
+tags:
+  - concurrency
+  - counters
+  - atomic-operations
+  - redis
+  - social-media
+  - eventual-consistency
+---
+
 # Social Engagement Counter Race Condition
 
 **Category**: Concurrency & Race Conditions

@@ -1,3 +1,27 @@
+---
+title: Fixing the N+1 Query Problem
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/indexing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/query-optimization
+  - problems-at-scale/performance/n-plus-one-query
+  - system-design/databases/indexing-deep-dive
+tags:
+  - postgresql
+  - n-plus-one
+  - query-optimization
+  - orm
+  - joins
+---
+
 # POC #13: Fix the N+1 Query Problem - 100x Faster Queries
 
 ## What You'll Build

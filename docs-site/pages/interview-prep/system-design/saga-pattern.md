@@ -1,3 +1,29 @@
+---
+title: "Saga Pattern - Distributed Transactions at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+  - system-design/consistency/distributed-consensus
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/data-integrity/orphaned-records
+  - problems-at-scale/concurrency/double-charge-payment
+case_studies:
+  - system-design/case-studies/payment-system
+see_poc:
+  - interview-prep/practice-pocs/saga-pattern
+  - interview-prep/practice-pocs/outbox-pattern
+  - interview-prep/practice-pocs/database-transactions
+  - interview-prep/practice-pocs/idempotency-keys
+linked_from: []
+tags: [saga, distributed-transactions, compensating-transactions, microservices, choreography, orchestration]
+---
+
 # Saga Pattern - Distributed Transactions at Scale
 
 ## What You'll Learn

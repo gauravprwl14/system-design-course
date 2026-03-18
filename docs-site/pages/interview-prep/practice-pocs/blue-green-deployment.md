@@ -1,3 +1,27 @@
+---
+title: Blue-Green Deployment
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/kubernetes-basics
+  - system-design/scalability/high-availability
+tags:
+  - deployment
+  - blue-green
+  - zero-downtime
+  - load-balancing
+  - releases
+---
+
 # POC #97: Blue-Green Deployment
 
 > **Difficulty:** 🟡 Intermediate

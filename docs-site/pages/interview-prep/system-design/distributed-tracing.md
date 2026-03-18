@@ -1,3 +1,26 @@
+---
+title: "Distributed Tracing - Debugging Microservices at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/monitoring/observability-slos
+  - system-design/scalability/microservices-architecture
+  - system-design/patterns/microservices-communication
+  - system-design/scalability/event-driven-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/distributed-tracing
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/slo-dashboard
+linked_from: []
+tags: [distributed-tracing, observability, jaeger, opentelemetry, microservices, debugging]
+---
+
 # Distributed Tracing - Debugging Microservices at Scale
 
 ## What You'll Learn

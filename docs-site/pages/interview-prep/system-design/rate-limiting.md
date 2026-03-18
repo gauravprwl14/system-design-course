@@ -1,3 +1,28 @@
+---
+title: "Rate Limiting - Implementation & Strategies"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/api-design/rate-limiting
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/stateless-architecture
+  - system-design/consistency/distributed-consensus
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/availability/retry-storm
+case_studies:
+  - system-design/case-studies/rate-limiter
+see_poc:
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/redis-lua-rate-limiting
+  - interview-prep/practice-pocs/api-gateway-rate-limiting
+linked_from: []
+tags: [rate-limiting, token-bucket, sliding-window, redis, api-design, throttling]
+---
+
 # Rate Limiting - Implementation & Strategies
 
 **Interview Question**: *"How will you design and implement rate limiting in your application?"*

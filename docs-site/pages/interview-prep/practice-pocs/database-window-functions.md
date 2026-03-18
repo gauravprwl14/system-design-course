@@ -1,3 +1,18 @@
+---
+title: "Database Window Functions for Advanced Queries"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [postgresql, window-functions, analytics, ranking, sql]
+---
+
 # Window Functions - Stop Using GROUP BY for Everything
 
 **The Problem**: You're writing complex self-joins and subqueries just to calculate rankings, running totals, and comparisons.

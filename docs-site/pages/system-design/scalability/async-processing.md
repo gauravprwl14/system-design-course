@@ -1,3 +1,44 @@
+---
+title: Async Processing and Message Queues
+layer: concept
+section: system-design/scalability
+difficulty: intermediate
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies:
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/youtube
+  - system-design/case-studies/payment-system
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-job-queue
+  - interview-prep/practice-pocs/backpressure-queues
+  - interview-prep/practice-pocs/outbox-pattern
+linked_from:
+  - interview-prep/aws-cloud/lambda-serverless
+  - interview-prep/practice-pocs/redis-job-queue
+  - interview-prep/system-design/event-driven-architecture
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - interview-prep/system-design/pdf-converter
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/youtube
+  - system-design/scalability/backpressure
+tags:
+  - async
+  - message-queues
+  - kafka
+  - background-jobs
+  - scalability
+---
+
 # Async Processing & Message Queues
 
 > **Reading Time:** 22 minutes

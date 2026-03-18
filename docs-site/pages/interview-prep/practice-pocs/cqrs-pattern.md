@@ -1,3 +1,28 @@
+---
+title: CQRS Pattern Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/cqrs
+  - system-design/scalability/event-driven-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/cqrs-pattern
+  - system-design/scalability/cqrs
+tags:
+  - cqrs
+  - command-query
+  - read-write-separation
+  - scalability
+  - event-sourcing
+---
+
 # POC #82: CQRS Pattern
 
 > **Difficulty:** 🔴 Advanced

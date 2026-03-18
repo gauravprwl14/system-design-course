@@ -1,3 +1,18 @@
+---
+title: "AWS S3 TPS Limits & Optimization"
+layer: concept
+section: interview-prep/aws-cloud
+difficulty: intermediate
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [aws, s3, storage, tps, throughput, partitioning, scalability]
+---
+
 # AWS S3 TPS Limits & Optimization
 
 ## Question

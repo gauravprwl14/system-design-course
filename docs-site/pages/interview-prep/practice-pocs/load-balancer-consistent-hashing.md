@@ -1,3 +1,34 @@
+---
+title: Consistent Hashing for Load Balancing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/databases/sharding-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/aws-cloud/load-balancer
+  - interview-prep/system-design/database-sharding
+  - interview-prep/system-design/load-balancing-strategies
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/video-conferencing
+  - problems-at-scale/scalability/database-hotspots
+  - system-design/case-studies/uber-backend
+  - system-design/databases/sharding-strategies
+  - system-design/load-balancing/load-balancing-strategies
+tags:
+  - load-balancing
+  - consistent-hashing
+  - distribution
+  - sharding
+  - cache-affinity
+---
+
 # POC #68: Consistent Hashing for Load Balancing
 
 > **Difficulty:** 🟡 Intermediate

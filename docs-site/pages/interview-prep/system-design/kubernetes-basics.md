@@ -1,3 +1,27 @@
+---
+title: "Kubernetes Basics - Container Orchestration at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/stateless-architecture
+  - system-design/scalability/microservices-architecture
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/memory-leak-long-running
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/service-discovery
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/canary-releases
+  - interview-prep/practice-pocs/blue-green-deployment
+linked_from: []
+tags: [kubernetes, container-orchestration, docker, auto-scaling, devops, deployment]
+---
+
 # Kubernetes Basics - Container Orchestration at Scale
 
 ## What You'll Learn

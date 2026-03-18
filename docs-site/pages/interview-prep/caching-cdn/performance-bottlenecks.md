@@ -1,3 +1,20 @@
+---
+title: "Performance Bottleneck Identification & Resolution"
+layer: concept
+section: interview-prep/caching-cdn
+difficulty: intermediate
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [performance, bottlenecks, profiling, debugging, latency, throughput, optimization]
+---
+
 # Performance Bottleneck Identification & Resolution
 
 ## Question

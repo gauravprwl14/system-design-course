@@ -1,3 +1,26 @@
+---
+title: "Stock Order Matching Race Condition"
+layer: problem
+section: problems-at-scale/concurrency
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/event-driven-architecture
+  - system-design/databases/sharding-strategies
+solves_with:
+  - interview-prep/practice-pocs/redis-lua-scripting-basics
+  - interview-prep/practice-pocs/kafka-exactly-once-semantics
+  - interview-prep/practice-pocs/database-transactions
+related_problems:
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/payment-system
+see_poc: []
+linked_from: []
+tags: [concurrency, trading, hft, atomic-operations, lock-free, financial]
+---
+
 # Stock Order Matching Race Condition - Trading Platform
 
 **Category**: Concurrency & Race Conditions

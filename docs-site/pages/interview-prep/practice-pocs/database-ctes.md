@@ -1,3 +1,18 @@
+---
+title: "CTEs: Common Table Expressions in SQL"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [postgresql, ctes, sql, query-readability, recursive]
+---
+
 # CTEs (Common Table Expressions) - Write SQL Like You Write Code
 
 **The Problem**: Your SQL query is 200 lines of nested subqueries that nobody can understand.

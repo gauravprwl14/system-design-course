@@ -1,3 +1,29 @@
+---
+title: PostgreSQL EXPLAIN ANALYZE for Query Debugging
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+  - system-design/databases/indexing-deep-dive
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/database-indexing-deep-dive
+  - problems-at-scale/performance/n-plus-one-query
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/indexing-strategies
+tags:
+  - postgresql
+  - explain-analyze
+  - query-plans
+  - optimization
+  - debugging
+---
+
 # POC #53: PostgreSQL EXPLAIN ANALYZE - The $23M Query Debugger
 
 > **Time to Complete:** 30-35 minutes

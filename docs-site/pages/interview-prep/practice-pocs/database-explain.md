@@ -1,3 +1,29 @@
+---
+title: Understanding PostgreSQL EXPLAIN for Query Optimization
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+  - system-design/databases/indexing-deep-dive
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/query-optimization
+  - interview-prep/system-design/database-indexing-deep-dive
+  - problems-at-scale/performance/n-plus-one-query
+  - system-design/databases/indexing-strategies
+tags:
+  - postgresql
+  - explain
+  - query-plans
+  - optimization
+  - performance
+---
+
 # POC #14: Master EXPLAIN - Read Query Plans Like a Pro
 
 ## What You'll Build

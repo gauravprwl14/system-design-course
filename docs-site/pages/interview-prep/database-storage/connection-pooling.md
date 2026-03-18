@@ -1,3 +1,19 @@
+---
+title: "Database Connection Pooling"
+layer: concept
+section: interview-prep/database-storage
+difficulty: intermediate
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-connection-pooling
+linked_from: []
+tags: [database, connection-pooling, performance, pgbouncer, scalability]
+---
+
 # Database Connection Pooling
 
 ## Question

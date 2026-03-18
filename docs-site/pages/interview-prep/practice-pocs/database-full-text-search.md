@@ -1,3 +1,26 @@
+---
+title: Full-Text Search in PostgreSQL
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+  - system-design/databases/indexing-deep-dive
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/search-engine-architecture
+  - system-design/case-studies/pastebin
+tags:
+  - postgresql
+  - full-text-search
+  - tsvector
+  - tsquery
+  - search
+---
+
 # POC #20: Full-Text Search in PostgreSQL
 
 ## What You'll Build

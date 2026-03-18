@@ -22,5 +22,9 @@ export default {
   navigation: {
     title: "🗺️ Navigation Guide",
     type: "page"
+  },
+  "KNOWLEDGE-MAP": {
+    title: "🧠 Knowledge Map",
+    type: "page"
   }
 }

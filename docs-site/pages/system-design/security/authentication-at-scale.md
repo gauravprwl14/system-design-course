@@ -1,3 +1,41 @@
+---
+title: Authentication at Scale
+layer: concept
+section: system-design/security
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/stateless-architecture
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies:
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/chat-system
+see_poc:
+  - interview-prep/practice-pocs/jwt-authentication
+  - interview-prep/practice-pocs/oauth-flows
+  - interview-prep/practice-pocs/redis-session-management
+  - interview-prep/practice-pocs/rbac-implementation
+linked_from:
+  - interview-prep/practice-pocs/api-key-management
+  - interview-prep/practice-pocs/jwt-authentication
+  - interview-prep/practice-pocs/oauth-flows
+  - interview-prep/practice-pocs/rbac-implementation
+  - interview-prep/security-encryption/jwt-vs-session
+  - interview-prep/security-encryption/mitm-prevention
+  - interview-prep/security-encryption/rsa-vs-aes
+  - interview-prep/system-design/api-gateway-pattern
+tags:
+  - authentication
+  - jwt
+  - oauth
+  - sessions
+  - security
+  - authorization
+---
+
 # Authentication at Scale - JWT, OAuth, and Session Management
 
 > **TL;DR:** Sessions don't scale. JWTs scale but can't be revoked. The answer is almost always: short-lived JWTs + refresh tokens + token blacklist for emergencies.

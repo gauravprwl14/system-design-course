@@ -1,3 +1,25 @@
+---
+title: Database Sequences for Unique ID Generation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/duplicate-orders
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/case-studies/unique-id-generator
+tags:
+  - postgresql
+  - sequences
+  - unique-ids
+  - serial
+  - identity
+---
+
 # Database Sequences - Generate Unique IDs Without Conflicts
 
 **The Problem**: Your application generates duplicate IDs causing primary key violations and data corruption.

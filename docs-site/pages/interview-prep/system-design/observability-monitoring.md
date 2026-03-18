@@ -1,3 +1,26 @@
+---
+title: "Observability & Monitoring - See What's Happening in Production"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/monitoring/observability-slos
+  - system-design/scalability/microservices-architecture
+  - system-design/patterns/circuit-breaker
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/distributed-tracing
+  - interview-prep/practice-pocs/slo-dashboard
+  - interview-prep/practice-pocs/health-check-patterns
+linked_from: []
+tags: [observability, monitoring, metrics, logs, traces, prometheus, grafana, alerting]
+---
+
 # Observability & Monitoring - See What's Happening in Production
 
 ## What You'll Learn

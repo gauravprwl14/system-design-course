@@ -1,3 +1,18 @@
+---
+title: "AWS CloudWatch Monitoring & Alarms"
+layer: concept
+section: interview-prep/aws-cloud
+difficulty: intermediate
+prerequisites:
+  - system-design/monitoring/observability-slos
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [aws, cloudwatch, monitoring, observability, alarms, metrics, logging]
+---
+
 # AWS CloudWatch Monitoring & Alarms
 
 ## Question

@@ -1,3 +1,28 @@
+---
+title: "Design a Video Streaming Platform (Netflix/YouTube Scale)"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/read-replicas
+  - system-design/scalability/cdn-edge-computing
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/youtube
+  - system-design/case-studies/netflix
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/cache-aside-pattern
+linked_from: []
+tags: [video-streaming, cdn, distributed-systems, netflix, youtube, adaptive-bitrate]
+---
+
 # Video Streaming Platform Architecture (Netflix/YouTube Scale)
 
 ## Overview

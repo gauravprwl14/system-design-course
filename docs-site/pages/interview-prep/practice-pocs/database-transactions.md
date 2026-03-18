@@ -1,3 +1,37 @@
+---
+title: Database Transactions and Isolation Levels
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/double-charge-payment
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/saga-pattern
+  - interview-prep/system-design/ticket-booking-system
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/concurrency/stock-order-matching-race
+  - problems-at-scale/data-integrity/orphaned-records
+  - system-design/case-studies/google-drive
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/ticket-booking
+  - system-design/consistency/distributed-consensus
+tags:
+  - databases
+  - transactions
+  - acid
+  - postgresql
+  - isolation-levels
+---
+
 # POC #16: Database Transactions & Isolation Levels
 
 ## What You'll Build

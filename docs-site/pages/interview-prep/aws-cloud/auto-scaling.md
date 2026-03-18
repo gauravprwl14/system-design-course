@@ -1,3 +1,18 @@
+---
+title: "AWS Auto-Scaling Groups (ASG)"
+layer: concept
+section: interview-prep/aws-cloud
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/auto-scaling
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [aws, auto-scaling, asg, ec2, scaling, cloud, high-availability]
+---
+
 # AWS Auto-Scaling Groups (ASG)
 
 ## Question

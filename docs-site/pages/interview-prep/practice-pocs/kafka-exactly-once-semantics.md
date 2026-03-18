@@ -1,3 +1,31 @@
+---
+title: Kafka Exactly-Once Semantics and Idempotent Processing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/api-design/idempotency
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - problems-at-scale/concurrency/stock-order-matching-race
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/queues/kafka-vs-rabbitmq
+tags:
+  - kafka
+  - exactly-once
+  - idempotency
+  - transactions
+  - delivery-guarantees
+---
+
 # POC #49: Kafka Exactly-Once Semantics - Idempotency & Transactional Processing
 
 > **Time to Complete:** 30-35 minutes

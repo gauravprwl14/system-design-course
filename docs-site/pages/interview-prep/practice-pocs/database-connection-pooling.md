@@ -1,3 +1,29 @@
+---
+title: Advanced Database Connection Pooling
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/performance/connection-pool-management
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/connection-pooling
+  - interview-prep/system-design/high-concurrency-api
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/connection-pool-starvation
+  - system-design/performance/connection-pool-management
+tags:
+  - postgresql
+  - connection-pooling
+  - pgbouncer
+  - performance
+  - scaling
+---
+
 # POC #15: Advanced Connection Pooling - Scale to 100k Requests/Sec
 
 ## What You'll Build

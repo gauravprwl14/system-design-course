@@ -1,3 +1,28 @@
+---
+title: "Database Indexing Deep Dive"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/databases/indexing-strategies
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/read-replicas
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-indexes
+  - interview-prep/practice-pocs/database-explain
+  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
+  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
+  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
+linked_from: []
+tags: [database, indexing, postgresql, query-optimization, b-tree, performance]
+---
+
 # Database Indexing Deep Dive - The $47M Query Optimization
 
 > **Time to Read:** 25-30 minutes

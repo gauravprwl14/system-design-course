@@ -1,3 +1,60 @@
+---
+title: Thundering Herd Problem — Cache Stampede
+layer: problem
+section: problems-at-scale/availability
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/read-replicas
+solves_with:
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/redis-distributed-lock
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/consistency/cache-invalidation-race
+case_studies:
+  - system-design/case-studies/youtube
+  - system-design/case-studies/news-feed
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/load-testing-k6
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+  - interview-prep/system-design/audio-streaming-spotify
+  - interview-prep/system-design/cdn-edge-computing-media
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/load-balancing-strategies
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/pdf-converter
+  - interview-prep/system-design/rate-limiting
+  - interview-prep/system-design/ticket-booking-system
+  - interview-prep/system-design/video-streaming-platform
+  - interview-prep/system-design/websocket-architecture
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/consistency/cache-invalidation-race
+  - problems-at-scale/scalability/hot-partition
+  - system-design/api-design/rate-limiting
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/rate-limiter
+  - system-design/case-studies/spotify
+  - system-design/case-studies/ticket-booking
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/cdn-edge-computing
+  - system-design/scalability/high-availability
+tags:
+  - availability
+  - caching
+  - thundering-herd
+  - cache-stampede
+  - redis
+  - database
+---
+
 # Thundering Herd on Cache Miss - Cache Stampede
 
 **Category**: Availability & Reliability

@@ -1,3 +1,37 @@
+---
+title: Health Check Patterns
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/kubernetes-basics
+  - interview-prep/system-design/observability-monitoring
+  - interview-prep/system-design/service-discovery
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+  - problems-at-scale/scalability/memory-leak-long-running
+  - system-design/monitoring/observability-slos
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/chaos-engineering
+  - system-design/scalability/high-availability
+  - system-design/scalability/microservices-architecture
+tags:
+  - health-checks
+  - kubernetes
+  - liveness
+  - readiness
+  - load-balancing
+---
+
 # POC #99: Health Check Patterns
 
 > **Difficulty:** 🟢 Beginner

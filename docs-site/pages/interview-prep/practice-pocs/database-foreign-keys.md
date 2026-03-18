@@ -1,3 +1,25 @@
+---
+title: Database Foreign Keys for Referential Integrity
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/orphaned-records
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/data-integrity/orphaned-records
+tags:
+  - postgresql
+  - foreign-keys
+  - referential-integrity
+  - constraints
+  - data-integrity
+---
+
 # Foreign Keys - Stop Orphaned Data Before It Costs $1M
 
 **The Problem**: Your database has 50,000 orders referencing deleted customers, causing crashes and data corruption.

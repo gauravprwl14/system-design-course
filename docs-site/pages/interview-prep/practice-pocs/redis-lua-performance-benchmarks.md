@@ -1,3 +1,19 @@
+---
+title: "Redis Lua Performance Benchmarks"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/monitoring/observability-slos
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [redis, lua, performance, benchmarking, latency, throughput]
+---
+
 # POC #40: Redis Lua Performance Benchmarks - The Definitive Guide
 
 > **Time to Complete:** 20-25 minutes

@@ -1,3 +1,41 @@
+---
+title: Cache Invalidation Race Condition
+layer: problem
+section: problems-at-scale/consistency
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+solves_with:
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+  - interview-prep/practice-pocs/write-through-caching
+  - interview-prep/practice-pocs/redis-watch-optimistic-locking
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/availability/thundering-herd
+case_studies:
+  - system-design/case-studies/news-feed
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/cache-strategies
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/cache-invalidation-strategies
+  - interview-prep/practice-pocs/write-through-caching
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/cms-design
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/consistency/stale-read-after-write
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+tags:
+  - consistency
+  - caching
+  - cache-invalidation
+  - race-condition
+  - stale-data
+  - redis
+---
+
 # Cache Invalidation Race Condition
 
 **Category**: ⚖️ Consistency & Integrity

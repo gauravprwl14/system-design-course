@@ -1,3 +1,25 @@
+---
+title: GraphQL Server Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/api-design/rest-graphql-grpc
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - system-design/api-design/rest-graphql-grpc
+tags:
+  - graphql
+  - api
+  - resolvers
+  - schema
+  - n-plus-one
+---
+
 # 5️⃣7️⃣ GraphQL Server Implementation
 
 ## 🎯 What You'll Learn

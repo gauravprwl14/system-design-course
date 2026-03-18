@@ -1,3 +1,27 @@
+---
+title: Connection Leak Detection
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/performance/connection-pool-management
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/scalability/memory-leak-long-running
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/scalability/memory-leak-long-running
+  - system-design/performance/connection-pool-management
+tags:
+  - connection-pooling
+  - leak-detection
+  - debugging
+  - postgresql
+  - monitoring
+---
+
 # POC #72: Connection Leak Detection - Find Hidden Pool Drains
 
 > **Time to Complete:** 20-25 minutes

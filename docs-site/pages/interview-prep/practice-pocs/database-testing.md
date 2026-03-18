@@ -1,3 +1,18 @@
+---
+title: "Database Testing Patterns"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [postgresql, testing, fixtures, test-isolation, migrations]
+---
+
 # POC #94: Database Testing Patterns
 
 > **Difficulty:** 🟡 Intermediate

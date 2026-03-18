@@ -1,3 +1,18 @@
+---
+title: "SQL vs NoSQL: When to Use Each"
+layer: concept
+section: interview-prep/database-storage
+difficulty: beginner
+prerequisites: []
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-crud
+linked_from: []
+tags: [database, sql, nosql, postgresql, mongodb, redis, data-modeling]
+---
+
 # SQL vs NoSQL: When to Use Each
 
 ## Question

@@ -1,3 +1,42 @@
+---
+title: Rate Limiting Strategies
+layer: concept
+section: system-design/api-design
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/rate-limiter
+  - system-design/case-studies/notification-system
+see_poc:
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/api-gateway-rate-limiting
+  - interview-prep/practice-pocs/redis-lua-rate-limiting
+linked_from:
+  - interview-prep/practice-pocs/api-gateway-rate-limiting
+  - interview-prep/practice-pocs/api-key-management
+  - interview-prep/practice-pocs/rate-limiting-algorithms
+  - interview-prep/practice-pocs/redis-lua-rate-limiting
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - interview-prep/system-design/api-gateway-pattern
+  - interview-prep/system-design/rate-limiting
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/rate-limiter
+tags:
+  - rate-limiting
+  - api-protection
+  - ddos
+  - token-bucket
+  - sliding-window
+---
+
 # Rate Limiting Strategies - Protect Your API from Traffic Storms
 
 > **Reading Time:** 16 minutes

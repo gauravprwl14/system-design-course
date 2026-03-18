@@ -1,3 +1,35 @@
+---
+title: Backpressure with Queues
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/backpressure
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/pdf-converter
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - system-design/patterns/timeouts-backpressure
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+  - system-design/scalability/backpressure
+tags:
+  - backpressure
+  - queues
+  - flow-control
+  - rate-limiting
+  - async
+---
+
 # POC #77: Backpressure with Queues
 
 > **Difficulty:** 🟡 Intermediate

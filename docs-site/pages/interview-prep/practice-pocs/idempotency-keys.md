@@ -1,3 +1,34 @@
+---
+title: Idempotency Keys Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/api-design/idempotency
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/saga-pattern
+  - problems-at-scale/concurrency/double-charge-payment
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/api-design/idempotency
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/ticket-booking
+tags:
+  - idempotency
+  - payment
+  - api-design
+  - redis
+  - safety
+---
+
 # POC #73: Idempotency Keys Implementation
 
 > **Difficulty:** 🔴 Advanced

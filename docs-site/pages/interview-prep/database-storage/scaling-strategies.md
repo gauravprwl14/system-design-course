@@ -1,3 +1,21 @@
+---
+title: "Database Scaling Strategies"
+layer: concept
+section: interview-prep/database-storage
+difficulty: intermediate
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/database-read-replicas
+  - interview-prep/practice-pocs/database-partitioning
+linked_from: []
+tags: [database, scaling, sharding, read-replicas, horizontal-scaling, partitioning]
+---
+
 # Database Scaling Strategies
 
 ## Question

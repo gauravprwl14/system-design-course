@@ -1,3 +1,24 @@
+---
+title: Role-Based Access Control (RBAC) Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/security/authentication-at-scale
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/security/authentication-at-scale
+tags:
+  - rbac
+  - authorization
+  - security
+  - roles
+  - permissions
+---
+
 # POC #90: RBAC Implementation
 
 > **Difficulty:** 🟡 Intermediate

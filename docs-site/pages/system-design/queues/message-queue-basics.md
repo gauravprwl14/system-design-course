@@ -1,3 +1,71 @@
+---
+title: Message Queue Basics
+layer: concept
+section: system-design/queues
+difficulty: beginner
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/youtube
+  - system-design/case-studies/payment-system
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/redis-job-queue
+  - interview-prep/practice-pocs/backpressure-queues
+linked_from:
+  - interview-prep/practice-pocs/backpressure-queues
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
+  - interview-prep/practice-pocs/kafka-exactly-once-semantics
+  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
+  - interview-prep/practice-pocs/kafka-streams-real-time-processing
+  - interview-prep/practice-pocs/outbox-pattern
+  - interview-prep/practice-pocs/redis-deduplication
+  - interview-prep/practice-pocs/redis-pubsub-patterns
+  - interview-prep/practice-pocs/redis-streams
+  - interview-prep/practice-pocs/redis-streams-event-sourcing
+  - interview-prep/practice-pocs/saga-pattern
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/cqrs-pattern
+  - interview-prep/system-design/event-driven-architecture
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - interview-prep/system-design/pdf-converter
+  - interview-prep/system-design/saga-pattern
+  - interview-prep/system-design/ticket-booking-system
+  - interview-prep/system-design/video-streaming-platform
+  - interview-prep/system-design/websocket-architecture
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/api-design/idempotency
+  - system-design/case-studies/chat-system
+  - system-design/case-studies/google-drive
+  - system-design/case-studies/netflix
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/spotify
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/youtube
+  - system-design/patterns/microservices-communication
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/scalability/async-processing
+  - system-design/scalability/backpressure
+  - system-design/scalability/event-driven-architecture
+  - system-design/scalability/microservices-architecture
+tags:
+  - queues
+  - messaging
+  - async
+  - kafka
+  - rabbitmq
+---
+
 # Message Queue Basics
 
 **Difficulty**: 🟢 Beginner

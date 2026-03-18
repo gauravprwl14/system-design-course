@@ -1,3 +1,25 @@
+---
+title: Database Triggers for Automated Data Management
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/orphaned-records
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/data-integrity/orphaned-records
+tags:
+  - postgresql
+  - triggers
+  - automation
+  - audit-log
+  - data-integrity
+---
+
 # Database Triggers - Stop Manual Data Updates Forever
 
 **The Problem**: You're spending 2 hours every week manually updating timestamps, audit logs, and validation rules.

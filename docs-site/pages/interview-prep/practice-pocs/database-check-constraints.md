@@ -1,3 +1,19 @@
+---
+title: "Database Check Constraints for Data Validation"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/orphaned-records
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [postgresql, check-constraints, validation, data-integrity, sql]
+---
+
 # Check Constraints - Stop Invalid Data at the Database Level
 
 **The Problem**: Your application code validates data in 50 places, but invalid data still gets into the database through admin tools and scripts.

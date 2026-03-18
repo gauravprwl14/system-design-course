@@ -1,3 +1,40 @@
+---
+title: Database Indexing Deep Dive
+layer: concept
+section: system-design/databases
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/scalability/database-hotspots
+case_studies:
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/chat-system
+see_poc:
+  - interview-prep/practice-pocs/database-indexes
+  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
+  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
+  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
+  - interview-prep/practice-pocs/database-n-plus-one
+linked_from:
+  - interview-prep/practice-pocs/database-explain
+  - interview-prep/practice-pocs/database-full-text-search
+  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
+  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
+  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
+  - interview-prep/system-design/database-indexing-deep-dive
+  - interview-prep/system-design/search-engine-architecture
+tags:
+  - databases
+  - indexes
+  - btree
+  - performance
+  - query-optimization
+  - postgresql
+---
+
 # Database Indexing Deep Dive - Make Queries 1000x Faster
 
 > **Reading Time:** 20 minutes

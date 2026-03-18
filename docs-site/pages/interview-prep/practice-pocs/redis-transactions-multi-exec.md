@@ -1,3 +1,20 @@
+---
+title: "Redis Transactions with MULTI/EXEC"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/concurrency/double-booking
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [redis, transactions, multi-exec, atomicity, concurrency]
+---
+
 # POC #31: Redis Transactions - MULTI/EXEC for Atomic Operations
 
 ## What You'll Build

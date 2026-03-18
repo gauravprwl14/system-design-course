@@ -1,4 +1,5 @@
 export default {
+  "CONTEXT": { "display": "hidden" },
   index: "Overview",
   "rsa-vs-aes": "🟡 RSA vs AES",
   "hashing-vs-encryption": "🟢 Hashing vs Encryption",

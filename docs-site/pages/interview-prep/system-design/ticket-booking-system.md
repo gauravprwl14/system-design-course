@@ -1,3 +1,29 @@
+---
+title: "Design a Ticket Booking System - Handle 10M Concurrent Users"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/sharding-strategies
+  - system-design/scalability/high-availability
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/availability/thundering-herd
+case_studies:
+  - system-design/case-studies/ticket-booking
+see_poc:
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-atomic-inventory
+  - interview-prep/practice-pocs/database-transactions
+  - interview-prep/practice-pocs/redis-watch-optimistic-locking
+linked_from: []
+tags: [ticket-booking, concurrency, distributed-locks, inventory, high-traffic, seat-reservation]
+---
+
 # Ticket Booking System - Handle 10M Concurrent Users
 
 ## What You'll Learn

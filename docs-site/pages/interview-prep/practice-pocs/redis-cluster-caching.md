@@ -1,3 +1,30 @@
+---
+title: Distributed Caching with Redis Cluster
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/caching/caching-strategies
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/caching/caching-strategies
+  - system-design/case-studies/netflix
+  - system-design/case-studies/spotify
+  - system-design/scalability/high-availability
+  - system-design/scalability/multi-region
+tags:
+  - redis
+  - cluster
+  - distributed-caching
+  - high-availability
+---
+
 # POC #64: Distributed Caching with Redis Cluster
 
 > **Difficulty:** 🔴 Advanced

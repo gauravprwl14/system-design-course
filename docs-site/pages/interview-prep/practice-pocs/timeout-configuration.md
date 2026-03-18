@@ -1,3 +1,31 @@
+---
+title: Timeout Configuration Patterns
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/timeouts-backpressure
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/circuit-breaker-pattern
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - system-design/patterns/circuit-breaker
+  - system-design/patterns/timeouts-backpressure
+tags:
+  - resilience
+  - timeouts
+  - configuration
+  - http
+  - availability
+---
+
 # POC #76: Timeout Configuration Patterns
 
 > **Difficulty:** 🟡 Intermediate

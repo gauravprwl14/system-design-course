@@ -1,3 +1,27 @@
+---
+title: "Design a Video Conferencing System (Zoom/Google Meet Scale)"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/multi-region
+  - system-design/scalability/stateless-architecture
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-pubsub
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from: []
+tags: [video-conferencing, webrtc, zoom, google-meet, real-time, media-server, sfu]
+---
+
 # Video Conferencing System Architecture (Zoom/Google Meet Scale)
 
 ## Overview

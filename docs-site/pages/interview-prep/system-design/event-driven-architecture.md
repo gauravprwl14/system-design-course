@@ -1,3 +1,27 @@
+---
+title: "Event-Driven Architecture - Building Decoupled Systems at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/scalability/async-processing
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/event-sourcing-basics
+  - interview-prep/practice-pocs/event-store-implementation
+  - interview-prep/practice-pocs/kafka-streams-real-time-processing
+linked_from: []
+tags: [event-driven, kafka, pub-sub, microservices, async, distributed-systems]
+---
+
 # Event-Driven Architecture - Building Decoupled Systems at Scale
 
 ## What You'll Learn

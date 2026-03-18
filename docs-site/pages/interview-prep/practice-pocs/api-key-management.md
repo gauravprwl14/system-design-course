@@ -1,3 +1,19 @@
+---
+title: "API Key Management"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/security/authentication-at-scale
+  - system-design/api-design/rate-limiting
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [api-keys, security, authentication, hashing, rate-limiting]
+---
+
 # POC #88: API Key Management
 
 > **Difficulty:** 🟡 Intermediate

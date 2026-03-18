@@ -1,3 +1,42 @@
+---
+title: Kafka vs RabbitMQ
+layer: concept
+section: system-design/queues
+difficulty: intermediate
+prerequisites:
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/consistency/message-out-of-order
+case_studies:
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/youtube
+see_poc:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
+  - interview-prep/practice-pocs/kafka-exactly-once-semantics
+  - interview-prep/practice-pocs/kafka-streams-real-time-processing
+  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
+linked_from:
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
+  - interview-prep/practice-pocs/kafka-exactly-once-semantics
+  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
+  - interview-prep/practice-pocs/kafka-streams-real-time-processing
+  - interview-prep/system-design/event-driven-architecture
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - system-design/scalability/event-driven-architecture
+tags:
+  - kafka
+  - rabbitmq
+  - queues
+  - messaging
+  - event-streaming
+---
+
 # Kafka vs RabbitMQ - Choose the Right Queue for 1M+ Messages/sec
 
 > **Reading Time:** 15 minutes

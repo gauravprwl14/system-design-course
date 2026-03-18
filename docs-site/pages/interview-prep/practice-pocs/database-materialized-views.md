@@ -1,3 +1,26 @@
+---
+title: Materialized Views for Analytics Performance
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/scalability/cqrs
+tags:
+  - postgresql
+  - materialized-views
+  - caching
+  - analytics
+  - performance
+---
+
 # Materialized Views - Make Slow Queries 1000x Faster
 
 **The Problem**: Your analytics dashboard takes 45 seconds to load because it's running expensive aggregations on 10M rows.

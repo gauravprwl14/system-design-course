@@ -1,3 +1,34 @@
+---
+title: Outbox Pattern for Reliable Event Publishing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - problems-at-scale/consistency/message-out-of-order
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/saga-pattern
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/api-design/idempotency
+  - system-design/case-studies/payment-system
+  - system-design/scalability/async-processing
+  - system-design/scalability/event-driven-architecture
+tags:
+  - outbox-pattern
+  - event-publishing
+  - reliability
+  - postgresql
+  - microservices
+---
+
 # POC #85: Outbox Pattern
 
 > **Difficulty:** 🔴 Advanced

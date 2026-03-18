@@ -1,3 +1,28 @@
+---
+title: "Audio Streaming Architecture: How Spotify Streams to 574M Users"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/cdn-edge-computing
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/scaling-basics
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies:
+  - system-design/case-studies/spotify
+see_poc:
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/cache-aside-pattern
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from: []
+tags: [audio-streaming, cdn, spotify, p2p, adaptive-bitrate, media-delivery]
+---
+
 # Audio Streaming Architecture: How Spotify Streams to 574M Users
 
 > **Time to Read:** 15-20 minutes

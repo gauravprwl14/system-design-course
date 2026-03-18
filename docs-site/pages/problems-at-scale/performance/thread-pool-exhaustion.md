@@ -1,3 +1,50 @@
+---
+title: Thread Pool Exhaustion
+layer: problem
+section: problems-at-scale/performance
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/timeouts-backpressure
+solves_with:
+  - interview-prep/practice-pocs/timeout-configuration
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/backpressure-queues
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/timeout-domino-effect
+case_studies:
+  - system-design/case-studies/uber-backend
+see_poc: []
+linked_from:
+  - interview-prep/caching-cdn/api-metrics
+  - interview-prep/caching-cdn/performance-bottlenecks
+  - interview-prep/practice-pocs/backpressure-queues
+  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
+  - interview-prep/practice-pocs/redis-job-queue
+  - interview-prep/system-design/high-concurrency-api
+  - interview-prep/system-design/pdf-converter
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/scalability/memory-leak-long-running
+  - system-design/patterns/microservices-communication
+  - system-design/patterns/timeouts-backpressure
+  - system-design/performance/connection-pool-management
+  - system-design/scalability/async-processing
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/backpressure
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/scaling-basics
+tags:
+  - performance
+  - thread-pool
+  - exhaustion
+  - timeout
+  - microservices
+  - concurrency
+---
+
 # Thread Pool Exhaustion - When Your App Stops Processing Requests
 
 > **Category:** Performance

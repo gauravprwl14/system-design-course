@@ -1,3 +1,26 @@
+---
+title: "Service Discovery - How Microservices Find Each Other"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/patterns/microservices-communication
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/service-discovery
+  - interview-prep/practice-pocs/health-check-patterns
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from: []
+tags: [service-discovery, microservices, kubernetes, consul, eureka, dns-based-discovery]
+---
+
 # Service Discovery - How Microservices Find Each Other
 
 ## What You'll Learn

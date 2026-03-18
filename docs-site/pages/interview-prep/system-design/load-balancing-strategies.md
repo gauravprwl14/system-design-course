@@ -1,3 +1,27 @@
+---
+title: "Load Balancing Strategies - Distribute Traffic at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/scaling-basics
+  - system-design/scalability/high-availability
+  - system-design/scalability/stateless-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/load-balancer-round-robin
+  - interview-prep/practice-pocs/load-balancer-least-connections
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+  - interview-prep/practice-pocs/nginx-load-balancer
+linked_from: []
+tags: [load-balancing, round-robin, consistent-hashing, nginx, haproxy, high-availability]
+---
+
 # Load Balancing Strategies - Distribute Traffic at Scale
 
 ## What You'll Learn

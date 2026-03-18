@@ -1,3 +1,18 @@
+---
+title: "SHA-1 vs SHA-2: Hash Algorithm Comparison"
+layer: concept
+section: interview-prep/security-encryption
+difficulty: intermediate
+prerequisites:
+  - interview-prep/security-encryption/hashing-vs-encryption
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [security, hashing, sha256, sha1, cryptography, integrity]
+---
+
 # SHA-1 vs SHA-2 - Hash Algorithm Comparison
 
 **Interview Question**: *"What is the difference between SHA-1 and SHA-2? What does SHA stand for? When would you use each?"*

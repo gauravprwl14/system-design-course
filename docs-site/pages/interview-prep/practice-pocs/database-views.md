@@ -1,3 +1,18 @@
+---
+title: "Database Views for Reusable Query Logic"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [postgresql, views, sql, query-reuse, abstraction]
+---
+
 # Database Views - Eliminate 500 Lines of Duplicate SQL
 
 **The Problem**: You're writing the same complex JOIN query in 15 different places across your codebase.

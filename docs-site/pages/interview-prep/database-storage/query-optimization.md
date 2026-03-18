@@ -1,3 +1,21 @@
+---
+title: "Database Query Optimization"
+layer: concept
+section: interview-prep/database-storage
+difficulty: intermediate
+prerequisites:
+  - interview-prep/database-storage/indexing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-explain
+  - interview-prep/practice-pocs/database-n-plus-one
+linked_from: []
+tags: [database, query-optimization, explain-analyze, n-plus-one, performance, sql]
+---
+
 # Database Query Optimization
 
 ## Question

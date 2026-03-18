@@ -1,3 +1,69 @@
+---
+title: Hot Partition Problem — When One Shard Gets All the Traffic
+layer: problem
+section: problems-at-scale/scalability
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/sharding-strategies
+solves_with:
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/postgresql-partitioning-strategies
+  - interview-prep/practice-pocs/redis-cluster-sharding
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/availability/thundering-herd
+case_studies:
+  - system-design/case-studies/spotify
+  - system-design/case-studies/youtube
+see_poc: []
+linked_from:
+  - interview-prep/aws-cloud/s3-tps-limits
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/system-design/audio-streaming-spotify
+  - interview-prep/system-design/cdn-edge-computing-media
+  - interview-prep/system-design/database-sharding
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/load-balancing-strategies
+  - interview-prep/system-design/online-gaming-backend
+  - interview-prep/system-design/search-engine-architecture
+  - interview-prep/system-design/social-media-feed
+  - interview-prep/system-design/video-conferencing
+  - interview-prep/system-design/video-streaming-platform
+  - problems-at-scale/concurrency/stock-order-matching-race
+  - problems-at-scale/scalability/database-hotspots
+  - system-design/api-design/rate-limiting
+  - system-design/case-studies/chat-system
+  - system-design/case-studies/netflix
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/pastebin
+  - system-design/case-studies/rate-limiter
+  - system-design/case-studies/spotify
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/youtube
+  - system-design/databases/sharding-strategies
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/backpressure
+  - system-design/scalability/cdn-edge-computing
+  - system-design/scalability/scaling-basics
+  - system-design/security/authentication-at-scale
+tags:
+  - scalability
+  - partitioning
+  - hot-partition
+  - sharding
+  - dynamodb
+  - load-skew
+---
+
 # Hot Partition Problem - When One Shard Gets All the Traffic
 
 > **Category:** Scalability

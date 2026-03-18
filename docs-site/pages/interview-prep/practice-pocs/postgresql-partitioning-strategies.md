@@ -1,3 +1,30 @@
+---
+title: PostgreSQL Partitioning Strategies
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/databases/indexing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/cost-optimization/storage-bloat
+  - problems-at-scale/scalability/hot-partition
+  - system-design/databases/data-archival-strategies
+  - system-design/databases/sharding-strategies
+tags:
+  - postgresql
+  - partitioning
+  - range-partitioning
+  - hash-partitioning
+  - performance
+---
+
 # POC #54: PostgreSQL Partitioning Strategies
 
 ## What You'll Build

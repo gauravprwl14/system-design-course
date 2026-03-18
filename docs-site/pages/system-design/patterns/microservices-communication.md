@@ -1,3 +1,39 @@
+---
+title: Microservices Communication
+layer: solution
+section: system-design/patterns
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/grpc-protocol-buffers
+  - interview-prep/practice-pocs/rest-api-best-practices
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/service-discovery
+linked_from:
+  - interview-prep/practice-pocs/contract-testing
+  - interview-prep/practice-pocs/grpc-protocol-buffers
+  - interview-prep/practice-pocs/service-discovery
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/monolith-to-microservices
+  - interview-prep/system-design/service-discovery
+tags:
+  - microservices
+  - grpc
+  - rest
+  - async
+  - event-driven
+  - communication
+---
+
 # Microservices Communication - Choose Wrong, Pay Forever
 
 > **TL;DR:** Synchronous (REST/gRPC) for queries, asynchronous (events) for commands. Mix them wrong and watch your system crumble at 3 AM.

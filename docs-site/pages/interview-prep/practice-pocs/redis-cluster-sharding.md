@@ -1,3 +1,32 @@
+---
+title: Redis Cluster Sharding and High Availability
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/sharding-strategies
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/availability/split-brain
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/database-sharding
+  - interview-prep/system-design/search-engine-architecture
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/scalability/hot-partition
+  - system-design/scalability/multi-region
+tags:
+  - redis
+  - cluster
+  - sharding
+  - high-availability
+  - distributed
+---
+
 # POC #43: Redis Cluster - Sharding & High Availability at Scale
 
 > **Time to Complete:** 30-35 minutes

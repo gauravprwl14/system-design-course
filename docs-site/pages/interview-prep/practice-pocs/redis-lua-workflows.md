@@ -1,3 +1,20 @@
+---
+title: "Complex Business Workflows with Redis Lua"
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/event-driven-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/race-condition-inventory
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [redis, lua, workflows, business-logic, atomicity]
+---
+
 # POC #39: Complex Business Workflows with Redis Lua
 
 > **Time to Complete:** 30-35 minutes

@@ -1,3 +1,18 @@
+---
+title: "MITM Attack Prevention: Security Best Practices"
+layer: concept
+section: interview-prep/security-encryption
+difficulty: intermediate
+prerequisites:
+  - system-design/security/authentication-at-scale
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from: []
+tags: [security, mitm, tls, https, hsts, certificate-pinning, mtls]
+---
+
 # MITM Attack Prevention - Security Best Practices
 
 **Interview Question**: *"How will you handle/prevent a Man-in-the-Middle (MITM) attack in your application?"*

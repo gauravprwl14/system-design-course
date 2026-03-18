@@ -1,3 +1,26 @@
+---
+title: RESTful API Best Practices
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/api-design/rest-graphql-grpc
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - system-design/api-design/rest-graphql-grpc
+  - system-design/patterns/microservices-communication
+tags:
+  - rest
+  - api-design
+  - http
+  - best-practices
+  - pagination
+---
+
 # POC #56: RESTful API Best Practices
 
 ## What You'll Build

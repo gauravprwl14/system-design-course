@@ -1,3 +1,35 @@
+---
+title: Multi-Region Architecture
+layer: concept
+section: system-design/scalability
+difficulty: advanced
+prerequisites:
+  - system-design/scalability/high-availability
+  - system-design/databases/replication-basics
+  - system-design/scalability/cdn-edge-computing
+  - system-design/consistency/distributed-consensus
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/split-brain
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies:
+  - system-design/case-studies/netflix
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/youtube
+see_poc:
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/practice-pocs/redis-cluster-caching
+linked_from:
+  - interview-prep/system-design/cdn-edge-computing-media
+  - interview-prep/system-design/live-streaming-twitch
+  - interview-prep/system-design/video-conferencing
+tags:
+  - multi-region
+  - global-distribution
+  - disaster-recovery
+  - geo-redundancy
+---
+
 # Multi-Region Architecture - Global Scale Distribution
 
 > **Reading Time:** 24 minutes

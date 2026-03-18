@@ -1,3 +1,29 @@
+---
+title: API Gateway with Rate Limiting
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/api-design/rate-limiting
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/retry-storm
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/api-gateway-pattern
+  - interview-prep/system-design/rate-limiting
+  - system-design/api-design/rate-limiting
+  - system-design/case-studies/rate-limiter
+tags:
+  - api-gateway
+  - rate-limiting
+  - token-bucket
+  - security
+  - infrastructure
+---
+
 # 6️⃣0️⃣ API Gateway with Rate Limiting
 
 ## 🎯 What You'll Learn

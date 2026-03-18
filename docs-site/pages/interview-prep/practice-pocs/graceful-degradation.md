@@ -1,3 +1,32 @@
+---
+title: Graceful Degradation Patterns
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/circuit-breaker
+  - system-design/scalability/high-availability
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/circuit-breaker-pattern
+  - problems-at-scale/availability/cascading-failures
+  - system-design/patterns/timeouts-backpressure
+  - system-design/scalability/backpressure
+  - system-design/scalability/chaos-engineering
+  - system-design/scalability/high-availability
+tags:
+  - resilience
+  - graceful-degradation
+  - fallback
+  - availability
+  - user-experience
+---
+
 # POC #78: Graceful Degradation
 
 > **Difficulty:** 🟡 Intermediate

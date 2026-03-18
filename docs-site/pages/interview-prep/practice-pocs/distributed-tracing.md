@@ -1,3 +1,28 @@
+---
+title: Distributed Tracing Setup
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/monitoring/observability-slos
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/observability-monitoring
+  - system-design/monitoring/observability-slos
+tags:
+  - distributed-tracing
+  - opentelemetry
+  - jaeger
+  - observability
+  - microservices
+---
+
 # POC #79: Distributed Tracing Setup
 
 > **Difficulty:** 🟡 Intermediate

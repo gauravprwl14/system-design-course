@@ -1,3 +1,48 @@
+---
+title: Uber Backend System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: advanced
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/microservices-architecture
+  - system-design/queues/message-queue-basics
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+linked_from:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/split-brain
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/scalability/database-hotspots
+  - system-design/api-design/rest-graphql-grpc
+  - system-design/performance/connection-pool-management
+  - system-design/scalability/auto-scaling
+  - system-design/scalability/event-driven-architecture
+  - system-design/scalability/microservices-architecture
+  - system-design/scalability/multi-region
+  - system-design/security/authentication-at-scale
+tags:
+  - uber
+  - ride-hailing
+  - geospatial
+  - real-time
+  - location
+  - microservices
+---
+
 # Design Uber Backend (Ride-Hailing System)
 
 **Difficulty**: Intermediate

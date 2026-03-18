@@ -1,3 +1,29 @@
+---
+title: Kafka Performance Tuning and Monitoring
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/monitoring/observability-slos
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/thread-pool-exhaustion
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - system-design/queues/kafka-vs-rabbitmq
+tags:
+  - kafka
+  - performance
+  - monitoring
+  - tuning
+  - throughput
+  - latency
+---
+
 # POC #50: Kafka Performance Tuning & Monitoring - Production Optimization
 
 > **Time to Complete:** 35-40 minutes

@@ -1,3 +1,27 @@
+---
+title: Banking Transfer Simulation with Redis Transactions
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-charge-payment
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/concurrency/double-charge-payment
+  - system-design/case-studies/payment-system
+tags:
+  - redis
+  - transactions
+  - banking
+  - multi-exec
+  - watch
+  - atomicity
+---
+
 # POC #35: Banking Transfer Simulation with Redis Transactions
 
 > **Time to Complete:** 25-30 minutes

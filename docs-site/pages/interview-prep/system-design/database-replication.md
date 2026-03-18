@@ -1,3 +1,26 @@
+---
+title: "Database Replication - Scale Reads and High Availability"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+  - system-design/databases/read-replicas
+  - system-design/scalability/high-availability
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/availability/split-brain
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-read-replicas
+  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
+linked_from: []
+tags: [database, replication, read-replicas, high-availability, master-slave, postgresql]
+---
+
 # Database Replication - Scale Reads and High Availability
 
 ## What You'll Learn

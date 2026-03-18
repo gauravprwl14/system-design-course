@@ -1,3 +1,29 @@
+---
+title: Redis WATCH for Optimistic Locking
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/race-condition-inventory
+  - problems-at-scale/concurrency/double-booking
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/ticket-booking-system
+  - problems-at-scale/availability/split-brain
+  - problems-at-scale/consistency/cache-invalidation-race
+  - system-design/consistency/distributed-consensus
+tags:
+  - redis
+  - watch
+  - optimistic-locking
+  - transactions
+  - concurrency
+---
+
 # POC #32: Redis WATCH - Optimistic Locking for Conditional Transactions
 
 ## What You'll Build

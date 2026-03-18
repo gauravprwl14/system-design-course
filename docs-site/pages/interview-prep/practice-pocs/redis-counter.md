@@ -1,3 +1,27 @@
+---
+title: Redis Counter with INCR for Analytics
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/counter-race
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/concurrency/counter-race
+  - system-design/case-studies/unique-id-generator
+  - system-design/case-studies/youtube
+tags:
+  - redis
+  - counter
+  - incr
+  - analytics
+  - metrics
+---
+
 # POC: Redis Counter with INCR (Analytics & Metrics)
 
 ## What You'll Build

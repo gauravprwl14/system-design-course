@@ -1,3 +1,21 @@
+---
+title: "Redis Caching - Fundamentals & Best Practices"
+layer: concept
+section: interview-prep/caching-cdn
+difficulty: beginner
+prerequisites: []
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/redis-session-management
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-rate-limiting
+linked_from: []
+tags: [redis, caching, eviction, ttl, data-structures, in-memory, fundamentals]
+---
+
 # Redis Caching - Fundamentals & Best Practices
 
 ## Question

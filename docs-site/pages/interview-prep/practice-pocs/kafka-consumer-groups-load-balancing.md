@@ -1,3 +1,29 @@
+---
+title: Kafka Consumer Groups and Load Balancing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/queues/kafka-vs-rabbitmq
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/message-queues-kafka-rabbitmq
+  - problems-at-scale/consistency/message-out-of-order
+  - system-design/queues/kafka-vs-rabbitmq
+tags:
+  - kafka
+  - consumer-groups
+  - load-balancing
+  - partitions
+  - scaling
+---
+
 # POC #47: Kafka Consumer Groups - Load Balancing at Scale
 
 > **Time to Complete:** 30-35 minutes

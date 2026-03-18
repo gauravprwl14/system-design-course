@@ -1,3 +1,58 @@
+---
+title: Database Hotspots — Hot Partition Problem
+layer: problem
+section: problems-at-scale/scalability
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/sharding-strategies
+solves_with:
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies:
+  - system-design/case-studies/news-feed
+  - system-design/case-studies/uber-backend
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/scaling-strategies
+  - interview-prep/practice-pocs/cqrs-pattern
+  - interview-prep/practice-pocs/database-partitioning
+  - interview-prep/practice-pocs/database-read-replicas
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/load-balancer-least-connections
+  - interview-prep/practice-pocs/load-balancer-round-robin
+  - interview-prep/practice-pocs/postgresql-partitioning-strategies
+  - interview-prep/practice-pocs/redis-cluster-caching
+  - interview-prep/practice-pocs/redis-leaderboard
+  - interview-prep/system-design/caching-strategies
+  - interview-prep/system-design/cqrs-pattern
+  - interview-prep/system-design/database-indexing-deep-dive
+  - interview-prep/system-design/database-replication
+  - interview-prep/system-design/database-sharding
+  - interview-prep/system-design/social-media-feed
+  - problems-at-scale/concurrency/counter-race
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/scalability/hot-partition
+  - system-design/case-studies/url-shortener
+  - system-design/databases/data-archival-strategies
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/indexing-strategies
+  - system-design/databases/sharding-strategies
+  - system-design/performance/connection-pool-management
+  - system-design/scalability/cqrs
+tags:
+  - scalability
+  - sharding
+  - hot-partition
+  - database
+  - celebrity-problem
+  - load-balancing
+---
+
 # Database Hotspots - Hot Partition Problem
 
 **Category**: 📈 Scalability Bottlenecks

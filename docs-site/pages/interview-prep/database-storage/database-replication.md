@@ -1,3 +1,19 @@
+---
+title: "Database Replication: Master-Slave & Multi-Master"
+layer: concept
+section: interview-prep/database-storage
+difficulty: intermediate
+prerequisites: []
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-read-replicas
+linked_from: []
+tags: [database, replication, master-slave, multi-master, high-availability, consistency]
+---
+
 # Database Replication: Master-Slave & Multi-Master
 
 ## Overview

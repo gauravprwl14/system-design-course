@@ -1,3 +1,28 @@
+---
+title: Redis Deduplication
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc: []
+linked_from:
+  - problems-at-scale/concurrency/duplicate-orders
+  - problems-at-scale/data-integrity/duplicate-event-processing
+  - system-design/api-design/idempotency
+  - system-design/case-studies/google-drive
+tags:
+  - redis
+  - deduplication
+  - idempotency
+  - sets
+---
+
 # POC #74: Deduplication with Redis
 
 > **Difficulty:** 🟡 Intermediate

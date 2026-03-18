@@ -1,3 +1,34 @@
+---
+title: Backpressure Handling
+layer: concept
+section: system-design/scalability
+difficulty: advanced
+prerequisites:
+  - system-design/queues/message-queue-basics
+  - system-design/scalability/async-processing
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/scalability/hot-partition
+case_studies:
+  - system-design/case-studies/notification-system
+  - system-design/case-studies/youtube
+see_poc:
+  - interview-prep/practice-pocs/backpressure-queues
+  - interview-prep/practice-pocs/redis-rate-limiting
+  - interview-prep/practice-pocs/graceful-degradation
+linked_from:
+  - interview-prep/practice-pocs/backpressure-queues
+  - system-design/patterns/timeouts-backpressure
+tags:
+  - backpressure
+  - flow-control
+  - queues
+  - resilience
+  - load-shedding
+---
+
 # Backpressure Handling - Flow Control Under Load
 
 > **Reading Time:** 18 minutes

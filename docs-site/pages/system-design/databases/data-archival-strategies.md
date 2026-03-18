@@ -1,3 +1,35 @@
+---
+title: Data Archival Strategies
+layer: concept
+section: system-design/databases
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/databases/indexing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/cost-optimization/storage-bloat
+  - problems-at-scale/scalability/database-hotspots
+case_studies:
+  - system-design/case-studies/youtube
+  - system-design/case-studies/google-drive
+see_poc:
+  - interview-prep/practice-pocs/database-partitioning
+  - interview-prep/practice-pocs/postgresql-partitioning-strategies
+  - interview-prep/practice-pocs/database-vacuum
+linked_from:
+  - interview-prep/practice-pocs/database-archival-strategies
+  - interview-prep/system-design/cms-design
+  - interview-prep/system-design/monolith-to-microservices
+  - problems-at-scale/cost-optimization/storage-bloat
+tags:
+  - databases
+  - archival
+  - data-lifecycle
+  - partitioning
+  - cold-storage
+---
+
 # Data Archival Strategies
 
 **Difficulty**: 🟡 Intermediate

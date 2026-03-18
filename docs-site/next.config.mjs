@@ -13,5 +13,7 @@ const withNextra = nextra({
 
 export default withNextra({
   reactStrictMode: true,
-  output: 'standalone'
+  output: 'standalone',
+  basePath: '/system-design',
+  assetPrefix: '/system-design',
 })

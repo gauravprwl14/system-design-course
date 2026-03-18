@@ -1,3 +1,34 @@
+---
+title: Database Read Replicas for Read Scalability
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/read-replicas
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/database-storage/database-replication
+  - interview-prep/database-storage/scaling-strategies
+  - interview-prep/system-design/cqrs-pattern
+  - interview-prep/system-design/database-replication
+  - problems-at-scale/consistency/stale-read-after-write
+  - system-design/case-studies/news-feed
+  - system-design/databases/read-replicas
+  - system-design/databases/replication-basics
+tags:
+  - postgresql
+  - read-replicas
+  - replication
+  - scaling
+  - load-balancing
+---
+
 # POC #17: Read Replicas - Scale Reads to Millions
 
 ## What You'll Build

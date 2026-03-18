@@ -1,3 +1,36 @@
+---
+title: Google Drive System Design
+layer: case-study
+section: system-design/case-studies
+difficulty: advanced
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/microservices-architecture
+  - system-design/queues/message-queue-basics
+  - system-design/consistency/distributed-consensus
+solves_with: []
+related_problems:
+  - problems-at-scale/concurrency/double-booking
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/cost-optimization/storage-bloat
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+  - interview-prep/practice-pocs/database-transactions
+  - interview-prep/practice-pocs/redis-deduplication
+linked_from:
+  - system-design/databases/data-archival-strategies
+tags:
+  - google-drive
+  - file-storage
+  - sync
+  - object-storage
+  - conflict-resolution
+  - versioning
+---
+
 # Design Google Drive (File Storage & Sync)
 
 **Difficulty**: Advanced

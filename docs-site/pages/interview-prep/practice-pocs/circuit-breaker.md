@@ -1,3 +1,36 @@
+---
+title: Circuit Breaker Pattern Implementation
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/circuit-breaker
+  - system-design/scalability/microservices-architecture
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/circuit-breaker-pattern
+  - interview-prep/system-design/monolith-to-microservices
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/availability/circuit-breaker-failure
+  - problems-at-scale/availability/retry-storm
+  - problems-at-scale/availability/thundering-herd
+  - problems-at-scale/availability/timeout-domino-effect
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - system-design/case-studies/netflix
+  - system-design/patterns/circuit-breaker
+tags:
+  - resilience
+  - circuit-breaker
+  - availability
+  - microservices
+  - failure-handling
+---
+
 # POC #75: Circuit Breaker Implementation
 
 > **Difficulty:** 🟡 Intermediate

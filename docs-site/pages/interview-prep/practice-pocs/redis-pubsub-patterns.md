@@ -1,3 +1,29 @@
+---
+title: Redis Pub/Sub Real-Time Messaging Patterns
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/collaborative-editing-google-docs
+  - interview-prep/system-design/websocket-architecture
+  - system-design/case-studies/chat-system
+tags:
+  - redis
+  - pubsub
+  - real-time
+  - messaging
+  - patterns
+---
+
 # POC #41: Redis Pub/Sub - Real-Time Messaging at Scale
 
 > **Time to Complete:** 25-30 minutes

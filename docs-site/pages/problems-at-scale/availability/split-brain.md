@@ -1,3 +1,40 @@
+---
+title: Split-Brain — Dual Masters After Network Partition
+layer: problem
+section: problems-at-scale/availability
+difficulty: advanced
+prerequisites:
+  - system-design/consistency/distributed-consensus
+  - system-design/databases/replication-basics
+solves_with:
+  - interview-prep/practice-pocs/redis-distributed-lock
+  - interview-prep/practice-pocs/redis-watch-optimistic-locking
+related_problems:
+  - problems-at-scale/consistency/stale-read-after-write
+  - problems-at-scale/availability/cascading-failures
+case_studies:
+  - system-design/case-studies/uber-backend
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/practice-pocs/redis-persistence-strategies
+  - interview-prep/system-design/database-replication
+  - problems-at-scale/consistency/stale-read-after-write
+  - system-design/consistency/distributed-consensus
+  - system-design/databases/replication-basics
+  - system-design/scalability/chaos-engineering
+  - system-design/scalability/high-availability
+  - system-design/scalability/multi-region
+tags:
+  - availability
+  - split-brain
+  - consensus
+  - quorum
+  - raft
+  - network-partition
+  - distributed-systems
+---
+
 # Split-Brain - Dual Masters After Network Partition
 
 **Category**: 🚨 Availability & Reliability

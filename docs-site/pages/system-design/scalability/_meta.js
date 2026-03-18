@@ -1,4 +1,5 @@
 export default {
+  "CONTEXT": { "display": "hidden" },
   index: "Overview",
   "scaling-basics": "Scaling Basics",
   "stateless-architecture": "Stateless Architecture",
@@ -8,5 +9,8 @@ export default {
   "auto-scaling": "Auto-scaling Patterns",
   "cdn-edge-computing": "CDN & Edge Computing",
   "multi-region": "Multi-Region Architecture",
-  "event-driven-architecture": "Event-Driven Architecture"
+  "event-driven-architecture": "Event-Driven Architecture",
+  "cqrs": "CQRS Pattern",
+  "backpressure": "Backpressure & Flow Control",
+  "chaos-engineering": "Chaos Engineering"
 }

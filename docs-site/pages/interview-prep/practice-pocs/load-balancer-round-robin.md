@@ -1,3 +1,28 @@
+---
+title: Round-Robin Load Balancing
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: beginner
+prerequisites:
+  - system-design/load-balancing/load-balancing-strategies
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/aws-cloud/load-balancer
+  - interview-prep/system-design/load-balancing-strategies
+  - system-design/load-balancing/load-balancing-strategies
+  - system-design/scalability/scaling-basics
+  - system-design/scalability/stateless-architecture
+tags:
+  - load-balancing
+  - round-robin
+  - distribution
+  - availability
+---
+
 # POC #66: Round-Robin Load Balancing
 
 > **Difficulty:** 🟢 Beginner

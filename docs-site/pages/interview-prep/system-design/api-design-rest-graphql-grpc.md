@@ -1,3 +1,26 @@
+---
+title: "API Design: REST vs GraphQL vs gRPC"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: intermediate
+prerequisites:
+  - system-design/api-design/rest-graphql-grpc
+  - system-design/api-design/rate-limiting
+  - system-design/scalability/microservices-architecture
+  - system-design/patterns/microservices-communication
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/rest-api-best-practices
+  - interview-prep/practice-pocs/graphql-server-implementation
+  - interview-prep/practice-pocs/grpc-protocol-buffers
+  - interview-prep/practice-pocs/api-versioning-strategies
+linked_from: []
+tags: [api-design, rest, graphql, grpc, microservices, protocol-buffers]
+---
+
 # API Design: REST vs GraphQL vs gRPC
 
 ## 🎯 The $47M Question

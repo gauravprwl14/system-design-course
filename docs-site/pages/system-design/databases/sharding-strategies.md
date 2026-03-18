@@ -1,3 +1,52 @@
+---
+title: Database Sharding Strategies
+layer: concept
+section: system-design/databases
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+  - system-design/databases/read-replicas
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/consistency/message-out-of-order
+case_studies:
+  - system-design/case-studies/unique-id-generator
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/chat-system
+see_poc:
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/postgresql-partitioning-strategies
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+linked_from:
+  - interview-prep/practice-pocs/database-archival-strategies
+  - interview-prep/practice-pocs/database-partitioning
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+  - interview-prep/practice-pocs/postgresql-partitioning-strategies
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/system-design/database-sharding
+  - interview-prep/system-design/flash-sales
+  - interview-prep/system-design/search-engine-architecture
+  - interview-prep/system-design/ticket-booking-system
+  - problems-at-scale/concurrency/stock-order-matching-race
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/scalability/hot-partition
+  - system-design/case-studies/chat-system
+  - system-design/case-studies/google-drive
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/ticket-booking
+  - system-design/case-studies/uber-backend
+  - system-design/case-studies/unique-id-generator
+  - system-design/databases/data-archival-strategies
+tags:
+  - databases
+  - sharding
+  - horizontal-scaling
+  - distributed-systems
+---
+
 # Database Sharding Strategies
 
 **Difficulty**: 🟡 Intermediate

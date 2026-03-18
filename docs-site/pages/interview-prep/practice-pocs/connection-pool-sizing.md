@@ -1,3 +1,27 @@
+---
+title: Connection Pool Sizing Optimization
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/performance/connection-pool-management
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/high-concurrency-api
+  - problems-at-scale/performance/connection-pool-starvation
+  - system-design/performance/connection-pool-management
+tags:
+  - connection-pooling
+  - postgresql
+  - performance
+  - configuration
+  - sizing
+---
+
 # POC #71: Connection Pool Sizing - Find Your Optimal Configuration
 
 > **Time to Complete:** 25-30 minutes

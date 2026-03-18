@@ -1,4 +1,5 @@
 export default {
+  "CONTEXT": { "display": "hidden" },
   index: "Overview",
   "redis-fundamentals": "🟢 Redis Caching",
   "cdn-usage": "🟢 CDN Usage",

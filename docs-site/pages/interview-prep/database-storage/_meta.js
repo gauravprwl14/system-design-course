@@ -1,4 +1,5 @@
 export default {
+  "CONTEXT": { "display": "hidden" },
   index: "Overview",
   "sql-vs-nosql": "🟢 SQL vs NoSQL",
   "scaling-strategies": "🟡 Database Scaling",

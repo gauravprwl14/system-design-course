@@ -1,3 +1,27 @@
+---
+title: gRPC Service with Protocol Buffers
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/api-design/rest-graphql-grpc
+  - system-design/patterns/microservices-communication
+solves_with: []
+related_problems: []
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - system-design/api-design/rest-graphql-grpc
+  - system-design/patterns/microservices-communication
+tags:
+  - grpc
+  - protocol-buffers
+  - microservices
+  - streaming
+  - performance
+---
+
 # 5️⃣8️⃣ gRPC Service with Protocol Buffers
 
 ## 🎯 What You'll Learn

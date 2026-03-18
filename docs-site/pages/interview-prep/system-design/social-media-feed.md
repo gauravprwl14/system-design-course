@@ -1,3 +1,28 @@
+---
+title: "Design a Social Media Feed - Twitter/Instagram Timeline at Scale"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/databases/read-replicas
+  - system-design/scalability/event-driven-architecture
+  - system-design/scalability/cdn-edge-computing
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies:
+  - system-design/case-studies/news-feed
+see_poc:
+  - interview-prep/practice-pocs/redis-key-value-cache
+  - interview-prep/practice-pocs/redis-leaderboard
+  - interview-prep/practice-pocs/kafka-basics-producer-consumer
+linked_from: []
+tags: [social-media, news-feed, fan-out, twitter, instagram, timeline, scalability]
+---
+
 # Social Media Feed - Design Twitter/Instagram Timeline at Scale
 
 ## What You'll Learn

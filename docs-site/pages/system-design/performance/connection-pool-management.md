@@ -1,3 +1,39 @@
+---
+title: Connection Pool Management
+layer: concept
+section: system-design/performance
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/replication-basics
+  - system-design/scalability/scaling-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/scalability/database-hotspots
+case_studies:
+  - system-design/case-studies/youtube
+  - system-design/case-studies/uber-backend
+see_poc:
+  - interview-prep/practice-pocs/database-connection-pooling
+  - interview-prep/practice-pocs/connection-pool-sizing
+  - interview-prep/practice-pocs/connection-leak-detection
+  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
+linked_from:
+  - interview-prep/practice-pocs/connection-leak-detection
+  - interview-prep/practice-pocs/connection-pool-sizing
+  - interview-prep/practice-pocs/database-connection-pooling
+  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
+  - interview-prep/system-design/high-concurrency-api
+  - problems-at-scale/performance/connection-pool-starvation
+tags:
+  - connection-pooling
+  - databases
+  - performance
+  - postgresql
+  - pgbouncer
+---
+
 # Connection Pool Management - Prevent 90% of System Freezes
 
 > **Reading Time:** 18 minutes

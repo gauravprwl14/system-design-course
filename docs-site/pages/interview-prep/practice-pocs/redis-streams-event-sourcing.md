@@ -1,3 +1,28 @@
+---
+title: Redis Streams for Event Sourcing and Message Persistence
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: advanced
+prerequisites:
+  - system-design/caching/caching-fundamentals
+  - system-design/scalability/event-driven-architecture
+  - system-design/queues/message-queue-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/consistency/message-out-of-order
+  - problems-at-scale/data-integrity/duplicate-event-processing
+case_studies: []
+see_poc: []
+linked_from:
+  - system-design/scalability/event-driven-architecture
+tags:
+  - redis
+  - streams
+  - event-sourcing
+  - persistence
+  - consumer-groups
+---
+
 # POC #42: Redis Streams - Event Sourcing & Message Persistence
 
 > **Time to Complete:** 30-35 minutes

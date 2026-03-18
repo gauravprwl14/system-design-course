@@ -1,3 +1,27 @@
+---
+title: "Database Sharding - Horizontal Scaling for Massive Data"
+layer: interview-q
+section: interview-prep/system-design
+difficulty: advanced
+prerequisites:
+  - system-design/databases/sharding-strategies
+  - system-design/databases/replication-basics
+  - system-design/scalability/scaling-basics
+  - system-design/caching/caching-fundamentals
+solves_with: []
+related_problems:
+  - problems-at-scale/scalability/database-hotspots
+  - problems-at-scale/scalability/hot-partition
+  - problems-at-scale/consistency/stale-read-after-write
+case_studies: []
+see_poc:
+  - interview-prep/practice-pocs/database-sharding
+  - interview-prep/practice-pocs/redis-cluster-sharding
+  - interview-prep/practice-pocs/load-balancer-consistent-hashing
+linked_from: []
+tags: [database, sharding, horizontal-scaling, cassandra, mysql, distributed-systems]
+---
+
 # Database Sharding - Horizontal Scaling for Massive Data
 
 ## What You'll Learn

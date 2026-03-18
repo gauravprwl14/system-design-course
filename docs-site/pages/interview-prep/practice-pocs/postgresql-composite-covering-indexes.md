@@ -1,3 +1,28 @@
+---
+title: PostgreSQL Composite and Covering Indexes
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/databases/indexing-strategies
+  - system-design/databases/indexing-deep-dive
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/database-indexing-deep-dive
+  - system-design/databases/indexing-deep-dive
+  - system-design/databases/indexing-strategies
+tags:
+  - postgresql
+  - composite-indexes
+  - covering-indexes
+  - performance
+  - index-only-scan
+---
+
 # POC #52: PostgreSQL Composite & Covering Indexes - The 67x Performance Multiplier
 
 > **Time to Complete:** 35-40 minutes

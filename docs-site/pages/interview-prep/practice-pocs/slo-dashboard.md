@@ -1,3 +1,30 @@
+---
+title: SLO Dashboard and Error Budgets
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/monitoring/observability-slos
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/distributed-tracing
+  - interview-prep/system-design/observability-monitoring
+  - problems-at-scale/availability/circuit-breaker-failure
+  - problems-at-scale/scalability/memory-leak-long-running
+  - system-design/monitoring/observability-slos
+tags:
+  - slo
+  - sla
+  - error-budget
+  - observability
+  - metrics
+  - prometheus
+---
+
 # POC #80: SLO Dashboard & Error Budgets
 
 > **Difficulty:** 🟡 Intermediate

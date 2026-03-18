@@ -1,3 +1,30 @@
+---
+title: Service Discovery in Microservices
+layer: poc
+section: interview-prep/practice-pocs
+difficulty: intermediate
+prerequisites:
+  - system-design/scalability/microservices-architecture
+  - system-design/patterns/microservices-communication
+solves_with: []
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+case_studies: []
+see_poc: []
+linked_from:
+  - interview-prep/system-design/kubernetes-basics
+  - interview-prep/system-design/monolith-to-microservices
+  - interview-prep/system-design/service-discovery
+  - system-design/patterns/microservices-communication
+  - system-design/scalability/microservices-architecture
+tags:
+  - service-discovery
+  - microservices
+  - consul
+  - dns
+  - health-check
+---
+
 # POC #100: Service Discovery
 
 > **Difficulty:** 🟡 Intermediate

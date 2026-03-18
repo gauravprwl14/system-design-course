@@ -1,3 +1,40 @@
+---
+title: Timeout Domino Effect — When One Slow Service Kills Everything
+layer: problem
+section: problems-at-scale/availability
+difficulty: intermediate
+prerequisites:
+  - system-design/patterns/timeouts-backpressure
+  - system-design/scalability/microservices-architecture
+solves_with:
+  - interview-prep/practice-pocs/timeout-configuration
+  - interview-prep/practice-pocs/circuit-breaker
+  - interview-prep/practice-pocs/database-connection-pooling
+related_problems:
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - problems-at-scale/performance/connection-pool-starvation
+case_studies:
+  - system-design/case-studies/payment-system
+  - system-design/case-studies/uber-backend
+see_poc: []
+linked_from:
+  - interview-prep/practice-pocs/timeout-configuration
+  - problems-at-scale/availability/cascading-failures
+  - problems-at-scale/performance/connection-pool-starvation
+  - problems-at-scale/performance/thread-pool-exhaustion
+  - system-design/patterns/circuit-breaker
+  - system-design/patterns/microservices-communication
+  - system-design/patterns/timeouts-backpressure
+tags:
+  - availability
+  - timeout
+  - microservices
+  - thread-pool
+  - cascading
+  - performance
+---
+
 # Timeout Domino Effect - When One Slow Service Kills Everything
 
 > **Category:** Availability

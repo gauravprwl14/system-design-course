@@ -1,3 +1,47 @@
+---
+title: Indexing for Performance
+layer: concept
+section: system-design/databases
+difficulty: beginner
+prerequisites:
+  - system-design/databases/replication-basics
+solves_with: []
+related_problems:
+  - problems-at-scale/performance/n-plus-one-query
+  - problems-at-scale/scalability/database-hotspots
+case_studies:
+  - system-design/case-studies/url-shortener
+  - system-design/case-studies/news-feed
+see_poc:
+  - interview-prep/practice-pocs/database-indexes
+  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
+  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
+  - interview-prep/practice-pocs/database-explain
+  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
+linked_from:
+  - interview-prep/practice-pocs/database-explain
+  - interview-prep/practice-pocs/database-full-text-search
+  - interview-prep/practice-pocs/database-indexes
+  - interview-prep/practice-pocs/database-jsonb
+  - interview-prep/practice-pocs/database-materialized-views
+  - interview-prep/practice-pocs/database-n-plus-one
+  - interview-prep/practice-pocs/database-partitioning
+  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
+  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
+  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
+  - interview-prep/practice-pocs/postgresql-partitioning-strategies
+  - interview-prep/system-design/database-indexing-deep-dive
+  - problems-at-scale/performance/n-plus-one-query
+  - system-design/databases/data-archival-strategies
+  - system-design/databases/indexing-deep-dive
+tags:
+  - databases
+  - indexes
+  - performance
+  - postgresql
+  - query-optimization
+---
+
 # Indexing for Performance
 
 **Difficulty**: 🟢 Beginner
