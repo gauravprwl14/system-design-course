@@ -3,28 +3,17 @@ export default {
     title: "Home",
     type: "page"
   },
-  "get-started": {
-    title: "Get Started",
-    type: "page"
-  },
-  "system-design": {
-    title: "📚 System Design",
-    type: "page"
-  },
-  "interview-prep": {
-    title: "💼 Interview Prep",
-    type: "page"
-  },
-  "problems-at-scale": {
-    title: "⚠️ Problems at Scale",
-    type: "page"
-  },
-  navigation: {
-    title: "🗺️ Navigation Guide",
-    type: "page"
-  },
-  "KNOWLEDGE-MAP": {
-    title: "🧠 Knowledge Map",
-    type: "page"
-  }
+  "00-start-here": "🚀 Start Here",
+  "01-databases": "🗄️ Databases",
+  "02-caching": "⚡ Caching",
+  "03-redis": "🔴 Redis",
+  "04-messaging": "📬 Messaging & Events",
+  "05-distributed-systems": "⚖️ Distributed Systems",
+  "06-scalability": "📈 Scalability",
+  "07-api-design": "🌐 API Design",
+  "08-security": "🔒 Security",
+  "09-observability": "📡 Observability",
+  "10-architecture": "🏗️ Architecture & Patterns",
+  "11-real-world": "🏢 Real-World Systems",
+  "12-interview-prep": "🎯 Interview Prep"
 }
