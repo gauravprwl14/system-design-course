@@ -9,6 +9,7 @@ export default {
   "collaborative-editing-google-docs": "Collaborative Editing (Google Docs)",
   "cqrs-pattern": "CQRS Pattern",
   "database-replication": "Database Replication",
+  "database-indexing-deep-dive": "Database Indexing Deep Dive",
   "database-sharding": "Database Sharding",
   "design-typeahead-search": "Design Typeahead Search",
   "distributed-tracing": "Distributed Tracing",
