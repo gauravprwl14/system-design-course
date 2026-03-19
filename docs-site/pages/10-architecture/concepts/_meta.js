@@ -1,0 +1,19 @@
+export default {
+  "circuit-breaker": "Circuit Breaker",
+  "microservices-communication": "Microservices Communication",
+  "timeouts-backpressure": "Timeouts & Backpressure",
+  "saga-pattern-deep-dive": "Saga Pattern Deep Dive",
+  "strangler-fig-migration": "Strangler Fig Migration",
+  "bulkhead-pattern": "Bulkhead Pattern",
+  "service-mesh-architecture": "Service Mesh Architecture",
+  "deployment-strategies-deep-dive": "Deployment Strategies Deep Dive",
+  "feature-flag-architecture": "Feature Flag Architecture",
+  "load-balancing-strategies": "Load Balancing Strategies",
+  "microservices-architecture": "Microservices Architecture",
+  "event-driven-architecture": "Event-Driven Architecture",
+  cqrs: "CQRS",
+  "async-processing": "Async Processing",
+  backpressure: "Backpressure",
+  "chaos-engineering": "Chaos Engineering",
+  "cdn-edge-computing": "CDN & Edge Computing"
+}
