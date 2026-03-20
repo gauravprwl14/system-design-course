@@ -23,6 +23,21 @@ tags:
 
 # POC #20: Full-Text Search in PostgreSQL
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Raw Text\n(title + content)"] --> B["tsvector\n(normalized tokens)"]
+    B --> C["GIN Index\n(fast lookup)"]
+    D["Search Query"] --> E["tsquery\n(parsed terms)"]
+    E --> F["@@ Operator\n(match)"]
+    C --> F
+    F --> G["Ranked Results\nts_rank()"]
+    G --> H["Highlighted Snippets\nts_headline()"]
+```
+
+*Text is tokenized into a `tsvector`, indexed with GIN, then matched against a `tsquery` — all inside PostgreSQL, no Elasticsearch needed.*
+
 ## What You'll Build
 
 **Production-grade search** without Elasticsearch:

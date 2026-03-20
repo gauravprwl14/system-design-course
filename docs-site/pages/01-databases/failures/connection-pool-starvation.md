@@ -62,6 +62,25 @@ tags:
 > **Detection Difficulty:** Hard (metrics look normal)
 > **Impact:** Complete system freeze
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Requests Arrive"] --> B{"Pool Has\nIdle Connection?"}
+    B -- "Yes (normal)" --> C["Acquire Connection\n~0ms wait"]
+    C --> D["Execute Query\n10ms"]
+    D --> E["Release Connection"]
+    E --> B
+    B -- "No (starved)" --> F["Request Waits\nin Queue"]
+    F --> G{"Timeout\nReached?"}
+    G -- "Yes → 30s+" --> H["❌ Timeout Error\n100% error rate"]
+    G -- "No" --> F
+    style H fill:#f66,color:#fff
+    style C fill:#6c6,color:#fff
+```
+
+*Normal path recycles connections in milliseconds; starved path queues requests until timeout causes a full outage.*
+
 ## The Incident: When Everything Looks Fine But Nothing Works
 
 **3:47 AM Alert:** "Application not responding"

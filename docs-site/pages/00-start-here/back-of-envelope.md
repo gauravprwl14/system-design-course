@@ -2,6 +2,19 @@
 
 System design interviews expect you to estimate scale. Memorize these numbers — they are the building blocks of every estimation.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Clarify Scale\n(users, R/W ratio)"] --> B["Estimate RPS\n(requests ÷ 86,400)"]
+    B --> C["Estimate Storage\n(records × size × retention)"]
+    C --> D["Estimate Bandwidth\n(RPS × response size)"]
+    D --> E["Estimate Cache\n(20% of hot data)"]
+    E --> F["Estimate Servers\n(RPS ÷ RPS-per-server)"]
+```
+
+*Six-step framework: always start with scale clarification and work down to server count.*
+
 ---
 
 ## Core Numbers

@@ -36,6 +36,30 @@ tags:
 > **Time:** 20 minutes
 > **Prerequisites:** Redis basics, Node.js
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant App
+    participant Cache as Redis Cache
+    participant DB as Database
+
+    App->>Cache: GET product:123
+    alt Cache HIT
+        Cache-->>App: return cached data (1ms)
+    else Cache MISS
+        Cache-->>App: null
+        App->>DB: SELECT * WHERE id=123
+        DB-->>App: product data (15ms)
+        App->>Cache: SET product:123 (TTL 300s)
+        App-->>App: return data
+    end
+
+    Note over App,DB: On update: DELETE cache key, DB is source of truth
+```
+
+*On a miss, the app fetches from the database and populates the cache — subsequent reads are served entirely from Redis.*
+
 ## What You'll Learn
 
 The **Cache-Aside** (or Lazy Loading) pattern is the most common caching strategy. The application manages the cache explicitly:

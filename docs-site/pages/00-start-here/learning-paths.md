@@ -2,6 +2,20 @@
 
 Choose the path that matches your goal.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Your Goal"] --> B1["New to system design\n→ Path 1: Beginner\n(4–6 weeks)"]
+    A --> B2["Interview in 2–3 weeks\n→ Path 2: Interview Prep\n(fast track)"]
+    A --> B3["Want deep expertise\n→ Path 3: Deep Diver\n(ongoing)"]
+    B1 --> C1["Data → Async → Scaling\n→ Case Studies → Practice"]
+    B2 --> C2["Core Concepts → Case Studies\n→ Practice Questions"]
+    B3 --> C3["Pick a Track: DB / Redis /\nDistributed / Architecture"]
+```
+
+*Three structured paths — choose based on how much time you have and what outcome you need.*
+
 ---
 
 ## Path 1: Beginner (4-6 weeks)
