@@ -1,5 +1,6 @@
 export default {
   index: "Overview",
+  "from-zero-to-production-agent": "🟢 From Zero to Production Agent",
   "what-is-an-agent": "🟢 What is an AI Agent?",
   "llm-fundamentals-for-agents": "🟢 LLM Fundamentals for Agent Builders",
   "react-pattern": "🟢 ReAct Pattern",
