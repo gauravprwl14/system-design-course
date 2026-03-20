@@ -77,5 +77,10 @@ export default {
     title: "🏢 Real-World Systems",
     type: "page",
     display: "hidden"
+  },
+  "15-vector-databases": {
+    title: "🧠 Vector Databases",
+    type: "page",
+    display: "hidden"
   }
 }
