@@ -1,6 +1,7 @@
 export default {
   index: "Overview",
   // Fundamentals
+  "ad-auction-system": "🔴 Ad Auction System",
   "pdf-converter": "🟡 PDF Converter System",
   "rate-limiting": "🟢 Rate Limiting",
   "flash-sales": "🟡 Flash Sales Architecture",
@@ -22,6 +23,7 @@ export default {
 
   // Database & Performance
   "database-indexing-deep-dive": "🗄️ Database Indexing Deep Dive",
+  "distributed-file-system": "🔴 Distributed File System (GFS/HDFS)",
 
   // API Design & Architecture
   "api-design-rest-graphql-grpc": "🔌 API Design (REST vs GraphQL vs gRPC)",
@@ -50,6 +52,9 @@ export default {
   "database-sharding": "🔀 Database Sharding (Horizontal Scaling)",
   "database-replication": "📋 Database Replication (Master-Slave)",
   "cqrs-pattern": "📊 CQRS Pattern (Command Query Separation)",
+
+  // ML & Personalization
+  "recommendation-system": "🔴 Recommendation System",
 
   // Observability & Monitoring
   "distributed-tracing": "🔬 Distributed Tracing (Jaeger, Zipkin)",
