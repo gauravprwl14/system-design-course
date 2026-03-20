@@ -1,7 +1,6 @@
 export default {
   index: "Overview",
   // Fundamentals
-  "ad-auction-system": "🔴 Ad Auction System",
   "pdf-converter": "🟡 PDF Converter System",
   "rate-limiting": "🟢 Rate Limiting",
   "flash-sales": "🟡 Flash Sales Architecture",
@@ -17,19 +16,22 @@ export default {
   "live-streaming-twitch": "🔴 Live Streaming (Twitch)",
   "audio-streaming-spotify": "🎵 Audio Streaming (Spotify)",
   "cdn-edge-computing-media": "🌐 CDN & Edge Computing (Netflix)",
+  "cdn-from-scratch": "🌐 Design a CDN from Scratch",
 
   // Message Queues & Event-Driven
   "message-queues-kafka-rabbitmq": "📨 Message Queues (Kafka vs RabbitMQ)",
 
   // Database & Performance
   "database-indexing-deep-dive": "🗄️ Database Indexing Deep Dive",
-  "distributed-file-system": "🔴 Distributed File System (GFS/HDFS)",
 
   // API Design & Architecture
   "api-design-rest-graphql-grpc": "🔌 API Design (REST vs GraphQL vs gRPC)",
 
   // Caching & Performance
   "caching-strategies": "⚡ Caching Strategies (Redis, CDN, Multi-Layer)",
+
+  // Security & Trust
+  "fraud-detection-system": "🔒 Fraud Detection System",
 
   // High-Traffic Systems
   "ticket-booking-system": "🎫 Ticket Booking System (BookMyShow)",
@@ -53,8 +55,8 @@ export default {
   "database-replication": "📋 Database Replication (Master-Slave)",
   "cqrs-pattern": "📊 CQRS Pattern (Command Query Separation)",
 
-  // ML & Personalization
-  "recommendation-system": "🔴 Recommendation System",
+  // Multi-Tenancy & SaaS
+  "multi-tenant-saas": "🏢 Multi-Tenant SaaS Platform",
 
   // Observability & Monitoring
   "distributed-tracing": "🔬 Distributed Tracing (Jaeger, Zipkin)",
