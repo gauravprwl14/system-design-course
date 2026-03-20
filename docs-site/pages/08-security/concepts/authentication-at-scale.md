@@ -40,6 +40,27 @@ tags:
 
 > **TL;DR:** Sessions don't scale. JWTs scale but can't be revoked. The answer is almost always: short-lived JWTs + refresh tokens + token blacklist for emergencies.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["User Login"] --> B["Auth Service"]
+    B --> C["Access Token\nJWT · 15 min"]
+    B --> D["Refresh Token\nJWT · 7 days\nStored in Redis"]
+
+    C --> E["API Gateway\nVerify locally\nno DB call"]
+    E --> F["Microservices\nTrust gateway"]
+
+    C -->|"Expired"| G["Client requests refresh"]
+    G --> D
+    D -->|"Valid in Redis"| C
+
+    H["Revoke user?"] --> I["Blacklist in Redis\nor increment token version"]
+    I --> E
+```
+
+*Short-lived access tokens validate locally (no DB round-trip); long-lived refresh tokens live in Redis enabling revocation without breaking stateless validation.*
+
 ## The Authentication Scaling Problem
 
 **Uber's 2017 Challenge:**

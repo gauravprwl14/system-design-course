@@ -41,6 +41,30 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** Transform 30-second queries into 30-millisecond queries
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Q["Query: WHERE email = 'alice@example.com'"]
+    Q --> NoIdx["No Index"]
+    Q --> Idx["B-Tree Index"]
+
+    NoIdx --> FullScan["Full Table Scan\n10M rows checked"]
+    FullScan --> Slow["Result: 12,000ms"]
+
+    Idx --> BTree["B-Tree Lookup\n~24 comparisons"]
+    BTree --> Fast["Result: 0.04ms"]
+
+    Idx --> Types["Index Types"]
+    Types --> BT["B-Tree\n=, <, >, BETWEEN"]
+    Types --> Hash["Hash\n= only"]
+    Types --> GIN["GIN\nFull-text, JSONB"]
+
+    Fast --> Composite["Composite Index\n(user_id, created_at)\nLeft-to-right rule"]
+```
+
+*An index trades write overhead for dramatically faster reads — the right index type and column order determine whether queries use it at all.*
+
 ## The Twitter Timeline Problem: 500M Queries/Second
 
 **How Twitter serves your timeline in 50ms:**

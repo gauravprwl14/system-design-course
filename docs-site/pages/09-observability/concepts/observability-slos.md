@@ -42,6 +42,24 @@ tags:
 
 > **TL;DR:** Without SLOs, you're flying blind. With bad SLOs, you're flying into a mountain. Get them right or pay with downtime.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["SLA\nCustomer contract\n99.9% uptime"] --> B["SLO\nInternal target\n99.95% uptime"]
+    B --> C["SLI\nActual measurement\ncurrent: 99.93%"]
+    C --> D["Error Budget\n100% - SLO = 0.05%\n= 21 min per month"]
+
+    D -->|"Budget healthy"| E["Ship features freely"]
+    D -->|"Budget low"| F["Slow down releases"]
+    D -->|"Budget exhausted"| G["Freeze deployments\nfix reliability"]
+
+    C --> H["Metrics / Logs / Traces"]
+    H --> C
+```
+
+*SLIs measure actual reliability; SLOs set the internal target; the error budget — the gap between 100% and the SLO — governs how fast you can ship without jeopardizing the user experience.*
+
 ## The Wake-Up Call: When 99.9% Isn't Good Enough
 
 **Slack's 2021 Incident:**

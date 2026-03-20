@@ -42,6 +42,27 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** 10-100x performance improvement, 80%+ database load reduction
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Request["Client Request"]
+
+    Request --> CA["Cache-Aside\n(Lazy Loading)"]
+    Request --> WT["Write-Through"]
+    Request --> WB["Write-Behind\n(Write-Back)"]
+
+    CA --> CA1["Read: check cache first\nWrite: invalidate key"]
+    WT --> WT1["Read: always fast\nWrite: update cache + DB\ntogether"]
+    WB --> WB1["Read: always fast\nWrite: cache first,\nDB async later"]
+
+    CA1 --> Use1["Best for: read-heavy\nstale-tolerant data"]
+    WT1 --> Use2["Best for: consistency-\ncritical data"]
+    WB1 --> Use3["Best for: write-heavy\nhigh-throughput data"]
+```
+
+*The three core strategies trade off consistency, write latency, and complexity — choose based on how stale your data can be.*
+
 ## The Instagram Problem: 2 Billion Daily Active Users
 
 **How Instagram serves 2B users with sub-50ms response times:**

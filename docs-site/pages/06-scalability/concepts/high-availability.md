@@ -52,6 +52,26 @@ tags:
 > **Difficulty:** Intermediate
 > **Impact:** The difference between "site is down" and "users never notice"
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    U[Users] --> DNS[DNS with Health Checks]
+    DNS --> LB1[Load Balancer AZ-A]
+    DNS --> LB2[Load Balancer AZ-B]
+    LB1 --> App1[App Servers AZ-A]
+    LB2 --> App2[App Servers AZ-B]
+    App1 --> DB1[DB Primary AZ-A]
+    App2 --> DB1
+    DB1 -->|sync replica| DB2[DB Standby AZ-B]
+    DB1 -->|async replica| DB3[DB Read Replica AZ-C]
+
+    DB1 -->|fails| DB2
+    DB2 -->|auto-promoted| DB2P[New Primary]
+```
+
+*Every layer — DNS, load balancer, app, database — has a redundant counterpart across Availability Zones; when one fails the other takes over automatically.*
+
 ## The Math That Will Haunt You
 
 **99% uptime sounds good. Here's what it actually means:**

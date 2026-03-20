@@ -35,6 +35,25 @@ tags:
 > **Difficulty:** Advanced
 > **Impact:** The difference between graceful degradation and a total system meltdown
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Producer\n10,000 req/s"] --> B["Queue / Buffer"]
+    B --> C["Consumer\n2,000 req/s"]
+    B -- "Queue filling up" --> D{Backpressure Strategy}
+    D -- "Drop oldest" --> E["Load Shedding"]
+    D -- "Slow producer" --> F["Rate Limiting"]
+    D -- "Signal upstream" --> G["Push-back / Reject"]
+    D -- "Add workers" --> H["Scale Out"]
+    E --> I["Graceful Degradation"]
+    F --> I
+    G --> I
+    H --> I
+```
+
+*Backpressure is flow control for overload — when consumers can't keep up with producers, the system must choose between dropping work, slowing intake, or scaling capacity.*
+
 ## What Is Backpressure?
 
 ```

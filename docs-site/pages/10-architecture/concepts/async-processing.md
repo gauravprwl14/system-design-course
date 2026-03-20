@@ -45,6 +45,24 @@ tags:
 > **Difficulty:** Intermediate
 > **Impact:** Turn a 30-second API response into 200ms — and never lose a message
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Client Request"] --> B["API Server"]
+    B --> C{"Slow work?"}
+    C -- "No (fast)" --> D["Respond immediately"]
+    C -- "Yes (slow)" --> E["Enqueue Job"]
+    E --> F["Message Queue\n(Kafka / Redis)"]
+    F --> G["Worker 1"]
+    F --> H["Worker 2"]
+    F --> I["Worker 3"]
+    G --> J["Job Complete\n(DB / Notify)"]
+    B -. "200ms response" .-> A
+```
+
+*Async processing decouples slow work from the HTTP response cycle — the API enqueues a job and returns immediately, while background workers process at their own pace.*
+
 ## Why Synchronous Breaks at Scale
 
 **Your checkout flow today:**

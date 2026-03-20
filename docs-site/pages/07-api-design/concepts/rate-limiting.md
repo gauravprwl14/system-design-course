@@ -43,6 +43,24 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** Prevents system overload, ensures fair resource distribution, stops abuse
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Incoming Request"] --> B{"Rate Limiter\n(Redis counter)"}
+    B -->|"Under limit"| C["Process Request ✅"]
+    B -->|"Over limit"| D["429 Too Many Requests ❌"]
+
+    E["Token Bucket\n(burst-friendly)"] --> B
+    F["Sliding Window\n(accurate)"] --> B
+    G["Fixed Window\n(simplest)"] --> B
+
+    C --> H["Set Headers\nX-RateLimit-Remaining"]
+    D --> I["Set Headers\nRetry-After"]
+```
+
+*A rate limiter sits in front of every API endpoint, counting requests per client per time window and rejecting traffic that exceeds the configured threshold.*
+
 ## The GitHub Problem: 5,000 Requests per Hour
 
 **How GitHub protects 100M developers without blocking legitimate users:**

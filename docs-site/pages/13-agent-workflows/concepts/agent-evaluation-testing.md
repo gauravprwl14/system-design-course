@@ -22,6 +22,25 @@ tags: [evaluation, testing, llm-as-judge, non-deterministic, golden-dataset, qua
 
 > You can't unit test an agent the way you test a function. The output is non-deterministic, correctness is fuzzy, and a passing test suite today can fail tomorrow when the model is updated.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    T["Test Input\n(golden dataset)"] --> AG["Agent Run"]
+    AG --> TR["Trace\n(tool calls + messages)"]
+    TR --> L1["Layer 1\nDeterministic Checks\n(schema, tool called)"]
+    TR --> L2["Layer 2\nLLM-as-Judge\n(correctness, faithfulness)"]
+    TR --> L3["Layer 3\nHuman Review\n(edge cases, sampling)"]
+    L1 --> S["Score / Pass-Fail"]
+    L2 --> S
+    L3 --> S
+    S --> D{"Regression?"}
+    D -- "Yes" --> F["Fix Prompt / Code"]
+    D -- "No" --> CI["Merge to Main"]
+```
+
+*Agent evaluation layers deterministic structural checks (did the right tool get called?) over probabilistic LLM-judge scoring (was the answer correct?) and periodic human review — together they catch regressions that unit tests alone cannot.*
+
 ## The Problem
 
 Testing traditional software is hard. Testing agents is harder:

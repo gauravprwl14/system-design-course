@@ -38,6 +38,27 @@ tags:
 > **Difficulty:** Intermediate
 > **Impact:** Handle 10x traffic spikes without over-provisioning (and wasting money)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    M[Metrics Monitor] --> R{Threshold Crossed?}
+    R -->|CPU or Queue spike| SU[Scale Up: Add Instances]
+    R -->|Low usage sustained| SD[Scale Down: Remove Instances]
+    SU --> LB[Load Balancer distributes traffic]
+    SD --> LB
+
+    S1[Scheduled Scaling\nKnown events] --> LB
+    S2[Predictive Scaling\nML patterns] --> LB
+    S3[Reactive Scaling\nLive metrics] --> LB
+
+    LB --> I1[Instance 1]
+    LB --> I2[Instance 2]
+    LB --> I3[Instance N...]
+```
+
+*Three complementary strategies — scheduled, predictive, and reactive — layer together so capacity always matches demand without manual intervention.*
+
 ## The Problem: Static Capacity
 
 ```

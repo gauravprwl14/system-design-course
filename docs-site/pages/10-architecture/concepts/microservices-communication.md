@@ -38,6 +38,23 @@ tags:
 
 > **TL;DR:** Synchronous (REST/gRPC) for queries, asynchronous (events) for commands. Mix them wrong and watch your system crumble at 3 AM.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    subgraph "Synchronous (query)"
+        A["Service A"] -- "REST / gRPC\nwaits for reply" --> B["Service B"]
+        B -- "response" --> A
+    end
+    subgraph "Asynchronous (command)"
+        C["Service C"] -- "publish event" --> Q["Message Bus\nKafka / RabbitMQ"]
+        Q -- "consume" --> D["Service D"]
+        Q -- "consume" --> E["Service E"]
+    end
+```
+
+*Microservices communicate synchronously (REST/gRPC) when the caller needs an immediate answer, and asynchronously (events) when the caller only needs to trigger work — choosing wrong couples services and turns one slowdown into a site-wide outage.*
+
 ## The $50M Architecture Mistake
 
 **2019, Major E-commerce Platform:**

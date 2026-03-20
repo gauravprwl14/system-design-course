@@ -48,6 +48,26 @@ tags:
 > **Difficulty:** Beginner
 > **Impact:** Foundation for every scalability decision
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    subgraph "Vertical Scaling (Scale Up)"
+        VS["One big server\n96 CPU / 768 GB RAM\n$45k/month\nHard ceiling"]
+    end
+
+    subgraph "Horizontal Scaling (Scale Out)"
+        LB[Load Balancer] --> S1[Server 1]
+        LB --> S2[Server 2]
+        LB --> SN[Server N...]
+        S1 & S2 & SN --> Shared["Shared State\nRedis / S3 / DB Replicas"]
+    end
+
+    VS -->|hits limit| LB
+```
+
+*Vertical scaling upgrades one machine until it hits a hardware ceiling; horizontal scaling adds identical stateless servers behind a load balancer for effectively unlimited capacity.*
+
 ## The Moment Every System Hits the Wall
 
 **Your startup is growing. Then suddenly, it isn't.**

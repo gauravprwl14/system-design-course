@@ -40,6 +40,25 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** Eliminates the #1 cause of "system not responding"
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["100 Concurrent Requests"] --> B["Connection Pool\nmax: 20 connections"]
+
+    B -->|"Connection available"| C["Execute Query\n2ms"]
+    B -->|"Pool full"| D{"Wait for\nfree connection"}
+    D -->|"Within timeout"| C
+    D -->|"Timeout exceeded"| E["Error: Pool Exhausted\nSystem Freeze"]
+
+    C --> F["Return connection\nto pool"]
+    F --> B
+
+    G["Pool Size Formula\n(req/s × avg_query_ms) / 1000"] --> B
+```
+
+*A connection pool reuses a fixed set of database connections; requests wait when all connections are busy, and freeze the system entirely if the wait exceeds the timeout.*
+
 ## The Silent Killer: Why Your App Freezes Under Load
 
 **3 AM. Production is down. Again.**

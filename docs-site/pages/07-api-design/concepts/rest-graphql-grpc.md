@@ -38,6 +38,35 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** Determines your system's flexibility, performance, and maintenance cost
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    subgraph Consumers
+        A["Browser / Partner"]
+        B["Mobile App"]
+        C["Internal Service"]
+    end
+
+    subgraph Protocols
+        D["REST\nJSON over HTTP\nCacheable"]
+        E["GraphQL\nFlexible queries\nSingle endpoint"]
+        F["gRPC\nBinary protobuf\nLow latency"]
+    end
+
+    subgraph Best For
+        G["Public APIs\nSimple CRUD"]
+        H["BFF / Multi-client\nReduce round trips"]
+        I["Microservices\nStreaming"]
+    end
+
+    A --> D --> G
+    B --> E --> H
+    C --> F --> I
+```
+
+*Choose REST for public/partner APIs, GraphQL for mobile clients needing flexible data shapes, and gRPC for high-throughput internal service-to-service calls.*
+
 ## The Netflix Problem: 1000+ Microservices, One API Gateway
 
 **How Netflix serves 230M subscribers with 3 different API styles:**

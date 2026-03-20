@@ -43,6 +43,29 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** Prevents architectural rewrites that cost $500K+
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    MQ["Which message system?"]
+
+    MQ --> RMQ["RabbitMQ\nSmart broker"]
+    MQ --> KFK["Kafka\nDistributed log"]
+
+    RMQ --> RMQ1["Message deleted\nafter delivery"]
+    RMQ --> RMQ2["Task queues\nRetries, priorities\nDelayed messages"]
+    RMQ --> RMQ3["Max ~50K msg/sec"]
+
+    KFK --> KFK1["Messages retained\nfor replay"]
+    KFK --> KFK2["Event streaming\nMultiple consumers\nEvent sourcing"]
+    KFK --> KFK3["1M+ msg/sec"]
+
+    RMQ2 --> REx["Use for:\nEmails, background jobs\nWebhook delivery"]
+    KFK2 --> KEx["Use for:\nAnalytics, audit logs\nReal-time pipelines"]
+```
+
+*RabbitMQ is a smart task router that deletes messages on delivery; Kafka is a durable log that lets any consumer replay events independently.*
+
 ## The $2M Architecture Mistake
 
 **Real Story (2023):** A fintech startup chose RabbitMQ for their payment processing system. 18 months later, they hit 50K transactions/minute.

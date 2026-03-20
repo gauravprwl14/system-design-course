@@ -41,6 +41,30 @@ tags:
 
 > **TL;DR:** Consensus is how distributed systems agree on values despite failures. Get it wrong and you get split-brain, data loss, or system halt. RAFT made it understandable; Paxos made careers.
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant L as Leader
+    participant F1 as Follower 1
+    participant F2 as Follower 2
+
+    Note over L,F2: Normal operation (RAFT)
+    C->>L: Write: SET x=5
+    L->>F1: AppendEntries (uncommitted)
+    L->>F2: AppendEntries (uncommitted)
+    F1-->>L: ACK
+    F2-->>L: ACK
+    Note over L: Majority (2 of 2) ACKed — commit
+    L-->>C: Success
+    L->>F1: Commit notification
+    L->>F2: Commit notification
+    Note over L,F2: If Leader fails, followers elect new leader via timeout
+```
+
+*RAFT ensures only one leader at a time — every write is committed only after a majority of nodes acknowledge it, preventing split-brain.*
+
 ## The Split-Brain Nightmare
 
 **GitHub's 2018 Incident:**

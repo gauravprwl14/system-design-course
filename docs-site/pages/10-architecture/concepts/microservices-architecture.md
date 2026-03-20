@@ -69,6 +69,25 @@ tags:
 > **Difficulty:** Intermediate
 > **Impact:** The architecture pattern behind Netflix, Uber, and Amazon at scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client --> GW["API Gateway"]
+    GW --> US["User Service"]
+    GW --> OS["Order Service"]
+    GW --> PS["Payment Service"]
+    GW --> NS["Notification Service"]
+    US --> UDB["Users DB"]
+    OS --> ODB["Orders DB"]
+    PS --> PDB["Payments DB"]
+    OS -- "OrderPlaced event" --> MQ["Message Bus"]
+    MQ --> NS
+    MQ --> PS
+```
+
+*Microservices decompose a monolith into small, independently deployable services — each owns its own database, communicates over APIs or events, and can be scaled and deployed on its own schedule.*
+
 ## The Monolith Problem
 
 **Your startup built a monolith. It worked great. Until it didn't.**

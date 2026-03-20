@@ -35,6 +35,26 @@ tags:
 > **Difficulty:** Advanced
 > **Impact:** Find failures in production before your users do
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Hypothesis\n'System survives X'"] --> B["Design Experiment"]
+    B --> C["Inject Failure\nin Production/Staging"]
+    C --> D["Kill a Pod"]
+    C --> E["Block Network"]
+    C --> F["Add Latency"]
+    D --> G["Observe System\nMetrics and Alerts"]
+    E --> G
+    F --> G
+    G --> H{Did system\nrecover?}
+    H -- "Yes" --> I["Confidence Gained\nDocument Result"]
+    H -- "No" --> J["Fix Weakness\nUpdate Runbooks"]
+    J --> A
+```
+
+*Chaos engineering proactively injects known failure types into a running system to verify that resilience mechanisms actually work — closing the gap between "tests pass" and "production survives".*
+
 ## Why Break Things on Purpose?
 
 ```

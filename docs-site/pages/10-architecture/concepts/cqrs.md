@@ -37,6 +37,22 @@ tags:
 > **Difficulty:** Advanced
 > **Impact:** Scale reads and writes independently — 100x read throughput with optimized query models
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Client --> CMD["Command Side\nWrite Model"]
+    Client --> QRY["Query Side\nRead Model"]
+    CMD --> WDB["Write DB\nNormalized SQL\n(ACID)"]
+    WDB -- "Event / CDC" --> SYNC["Sync / Projector"]
+    SYNC --> RDB1["Read DB 1\nDenormalized\n(fast list queries)"]
+    SYNC --> RDB2["Read DB 2\nSearch Index\n(Elasticsearch)"]
+    QRY --> RDB1
+    QRY --> RDB2
+```
+
+*CQRS splits the data model in two — commands (writes) go to a normalized write store optimised for integrity, and queries (reads) hit purpose-built read models that trade consistency for query speed.*
+
 ## The Problem: One Model Can't Serve Everyone
 
 ```

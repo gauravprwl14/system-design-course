@@ -60,6 +60,21 @@ tags:
 > **Difficulty:** Advanced
 > **Impact:** Build systems where services evolve independently and failures don't cascade
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Order Service"] -- "OrderPlaced event" --> B["Event Bus\n(Kafka / SNS)"]
+    B --> C["Inventory Service\nupdates stock"]
+    B --> D["Email Service\nsends confirmation"]
+    B --> E["Analytics Service\nrecords sale"]
+    B --> F["Fraud Service\nchecks patterns"]
+    A -. "No direct calls\nto other services" .-> A
+    C -. "Can fail without\naffecting others" .-> C
+```
+
+*Event-driven architecture replaces direct service-to-service calls with a shared event bus — producers publish events without knowing who consumes them, enabling loose coupling and independent scaling.*
+
 ## The Coupling Problem
 
 **Your services are too friendly with each other.**

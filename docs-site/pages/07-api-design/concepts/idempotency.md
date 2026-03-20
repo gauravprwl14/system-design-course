@@ -39,6 +39,30 @@ tags:
 > **Difficulty:** 🔴 Advanced
 > **Impact:** Prevents duplicate charges, double bookings, and data corruption
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant R as Redis/DB
+
+    C->>S: POST /charge (Key: "order_123")
+    S->>R: Key exists?
+    R-->>S: NO
+    S->>R: Lock + Process + Store result
+    S-->>C: 200 OK (charged $500)
+
+    Note over C,S: Network times out, client retries
+
+    C->>S: POST /charge (Key: "order_123")
+    S->>R: Key exists?
+    R-->>S: YES — cached result
+    S-->>C: 200 OK (same result, no double charge)
+```
+
+*Same idempotency key on retry returns the cached result — the operation runs exactly once no matter how many times the request is sent.*
+
 ## The Stripe Problem: $2.4M in Double Charges
 
 **Real Incident Pattern (Composite from Industry):**

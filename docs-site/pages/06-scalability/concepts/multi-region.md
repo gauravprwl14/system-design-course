@@ -36,6 +36,23 @@ tags:
 > **Difficulty:** Advanced
 > **Impact:** Serve users worldwide with < 50ms latency and survive entire region outages
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    GDns["Global DNS\nLatency-based routing"] --> R1["US-East\nApp + DB Primary"]
+    GDns --> R2["EU-West\nApp + DB Replica"]
+    GDns --> R3["AP-South\nApp + DB Replica"]
+
+    R1 -->|async replication| R2
+    R1 -->|async replication| R3
+
+    R1 -->|region down| Fail["DNS Health Check\nfails over in 30-60s"]
+    Fail --> R2
+```
+
+*DNS routes users to the nearest region for low latency; if a full region goes down, health checks redirect traffic to another live region within seconds.*
+
 ## Why Go Multi-Region?
 
 **Two reasons: Latency and resilience.**

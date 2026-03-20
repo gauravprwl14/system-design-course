@@ -39,6 +39,22 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** Prevent cascading failures, maintain system stability under load
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    R["Incoming Request"] --> A["Service A\ntimeout: 500ms"]
+    A -- "calls" --> B["Service B\ntimeout: 300ms"]
+    B -- "calls" --> C["Service C\n(slow / overloaded)"]
+    C -. "exceeds timeout" .-> B
+    B -- "timeout fires\nreturn fallback" --> A
+    A -- "partial response" --> R
+    B -- "queue full signal" --> BP["Backpressure:\nreject / shed load"]
+    BP -- "429 / drop" --> A
+```
+
+*Timeouts ensure a slow downstream service never holds threads indefinitely; backpressure signals prevent upstream callers from overwhelming an already-struggling service — together they stop one slow component from cascading into a full outage.*
+
 ## The Amazon Problem: Every 100ms Costs 1% Sales
 
 **How slow dependencies destroy your entire system:**

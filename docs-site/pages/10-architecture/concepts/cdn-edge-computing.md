@@ -45,6 +45,22 @@ tags:
 > **Difficulty:** Intermediate
 > **Impact:** Cut your P50 latency by 60-80% and survive traffic spikes you never planned for
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["User in Mumbai"] --> B{CDN Edge\nNearest PoP}
+    B -- "Cache HIT" --> C["Serve from Edge\n~10ms"]
+    B -- "Cache MISS" --> D["Fetch from\nOrigin Server\nUS-East"]
+    D --> E["Cache at Edge"]
+    E --> C
+    F["User in Tokyo"] --> G{CDN Edge\nTokyo PoP}
+    G -- "Cache HIT" --> H["Serve from Edge\n~8ms"]
+    D -. "200ms+ round-trip\n(avoided for cached assets)" .-> A
+```
+
+*A CDN places cached copies of content at edge locations worldwide — users hit the nearest Point of Presence instead of a distant origin server, reducing latency from ~200ms to ~10ms.*
+
 ## Why CDNs Exist
 
 **The speed of light is your enemy.**

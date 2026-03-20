@@ -48,6 +48,21 @@ tags:
 > **Difficulty:** Beginner
 > **Impact:** Enables horizontal scaling and zero-downtime deployments
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    LB[Load Balancer] --> A1[App Server 1\nno local state]
+    LB --> A2[App Server 2\nno local state]
+    LB --> A3[App Server N\nno local state]
+
+    A1 & A2 & A3 --> Redis["Redis\nSessions + Cache + Locks"]
+    A1 & A2 & A3 --> S3["S3\nFile Storage"]
+    A1 & A2 & A3 --> DB["Database\nSource of Truth"]
+```
+
+*All app servers are identical and store nothing locally — sessions, files, and cache live in shared external services so any server can handle any request.*
+
 ## Why Your App Dies at 3x Traffic
 
 **Thursday night. Product Hunt launch. Traffic 5x normal.**

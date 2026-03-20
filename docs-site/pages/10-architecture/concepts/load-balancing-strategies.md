@@ -58,6 +58,24 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Impact:** Handle 10x traffic without adding 10x servers
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Clients["Clients\n(millions of requests)"] --> LB["Load Balancer"]
+    LB -- "Round Robin" --> S1["Server 1"]
+    LB -- "Round Robin" --> S2["Server 2"]
+    LB -- "Round Robin" --> S3["Server 3"]
+    LB -- "Least Connections" --> S4["Server 4\n(fewest active)"]
+    S1 -- "Health Check" --> LB
+    S2 -- "Health Check" --> LB
+    S3 -- "Health Check" --> LB
+    S4 -- "Health Check" --> LB
+    S3 -. "Unhealthy -\nremoved from pool" .-> LB
+```
+
+*A load balancer sits in front of a server pool and routes each incoming request to a backend using a chosen algorithm (round-robin, least-connections, consistent hashing) while continuously monitoring server health.*
+
 ## The Netflix Problem: 15% of Global Internet Traffic
 
 **How Netflix distributes 400M hours of streaming daily:**
