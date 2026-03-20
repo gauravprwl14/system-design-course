@@ -13,5 +13,6 @@ export default {
   pastebin: "Pastebin",
   "rate-limiter": "Rate Limiter",
   "ticket-booking": "Ticket Booking",
-  "unique-id-generator": "Unique ID Generator"
+  "unique-id-generator": "Unique ID Generator",
+  "recommendation-system": "Recommendation System"
 }
