@@ -1,4 +1,8 @@
 export default {
+  "prometheus-grafana-stack": "Prometheus & Grafana Stack",
+  "opentelemetry-instrumentation": "OpenTelemetry Instrumentation",
+  "slo-burn-rate-alerts": "SLO Burn Rate Alerts",
+  "metric-cardinality-management": "Metric Cardinality Management",
   "observability-slos": "Observability & SLOs",
   "distributed-tracing-design": "Distributed Tracing Design",
   "log-aggregation-design": "Log Aggregation Design",
@@ -11,5 +15,9 @@ export default {
   "gc-pressure-tuning": "GC Pressure Tuning",
   "thread-pool-sizing": "Thread Pool Sizing",
   "database-query-performance": "Database Query Performance",
-  "network-optimization": "Network Optimization"
+  "network-optimization": "Network Optimization",
+  "apm-platforms-comparison": "APM Platforms: Datadog vs New Relic",
+  "log-aggregation-elk-loki": "Log Aggregation: ELK vs Loki",
+  "real-user-monitoring": "Real User Monitoring (RUM)",
+  "synthetic-monitoring": "Synthetic Monitoring"
 }

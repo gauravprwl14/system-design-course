@@ -16,6 +16,10 @@ export default {
     title: "⚡ Cheat Sheets",
     type: "page"
   },
+  "problems-at-scale": {
+    title: "🔥 Problems at Scale",
+    type: "page"
+  },
 
   // ── Hidden from navbar — each keeps its own full sidebar when navigated ───
   // Reached via the "Core Topics" / "Build & Operate" dropdowns in the navbar
