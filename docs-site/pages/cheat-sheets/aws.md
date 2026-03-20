@@ -33,6 +33,23 @@ description: "Key numbers, decision rules, and interview traps for all major AWS
 - VPC CIDR: **/16** (65k IPs) to **/28** (11 usable IPs)
 - AWS reserves **5 IPs per subnet** (first 4 + last 1)
 
+```mermaid
+graph TD
+    IGW[Internet Gateway] --> PubSub[Public Subnet]
+    PubSub --> NAT[NAT Gateway]
+    NAT --> PrivSub[Private Subnet]
+    PrivSub --> DBSub[DB Subnet - isolated]
+    PubSub --> SG1[Security Group - stateful]
+    PrivSub --> SG2[Security Group - stateful]
+    PubSub --> NACL1[NACL - stateless]
+    PrivSub --> NACL2[NACL - stateless]
+    VPC_A[VPC A] -- "Peering 1:1 non-transitive" --> VPC_B[VPC B]
+    VPC_B -- "Peering 1:1 non-transitive" --> VPC_C[VPC C]
+    TGW[Transit Gateway - hub-and-spoke] --> VPC_A
+    TGW --> VPC_B
+    TGW --> VPC_C
+```
+
 ---
 
 ## 2. IAM
@@ -67,6 +84,21 @@ description: "Key numbers, decision rules, and interview traps for all major AWS
 
 **Key trap:** Principal needs BOTH identity-based AND resource-based policy for **cross-account** access.
 
+```mermaid
+flowchart TD
+    Request[Incoming Request] --> ExplicitDeny{Explicit DENY?}
+    ExplicitDeny -- Yes --> Deny[DENY]
+    ExplicitDeny -- No --> SCP{SCP allows?}
+    SCP -- No --> Deny
+    SCP -- Yes --> PB{Permission Boundary?}
+    PB -- Blocks --> Deny
+    PB -- Allows --> IDP{Identity-based Policy?}
+    IDP -- No --> RBP{Resource-based Policy?}
+    RBP -- Yes --> Allow[ALLOW]
+    RBP -- No --> Deny
+    IDP -- Yes --> Allow
+```
+
 ---
 
 ## 3. Route 53
@@ -90,6 +122,18 @@ description: "Key numbers, decision rules, and interview traps for all major AWS
 | **CNAME** | Hostname → hostname; **cannot use at zone apex** (e.g., example.com) |
 
 **Health checks:** HTTP/HTTPS/TCP — trigger failover; can monitor CloudWatch alarms. Route 53 is **global** (not regional).
+
+```mermaid
+flowchart LR
+    User[User DNS Query] --> R53[Route 53]
+    R53 -- Simple --> Single[Single Resource]
+    R53 -- Weighted --> WA[Region A - 80%]
+    R53 -- Weighted --> WB[Region B - 20%]
+    R53 -- Latency --> Low[Lowest-latency Region]
+    R53 -- Failover --> Primary[Primary - healthy]
+    R53 -- Failover --> Standby[Standby - on failure]
+    R53 -- Geolocation --> Country[Country/Continent Resource]
+```
 
 ---
 
@@ -131,6 +175,18 @@ description: "Key numbers, decision rules, and interview traps for all major AWS
 
 **Auto Scaling policies:** Simple (fixed step) → Step (scaled steps) → Target Tracking (maintain metric, e.g., 60% CPU) → Scheduled.
 
+```mermaid
+graph LR
+    ALB[ALB] --> ASG[Auto Scaling Group]
+    ASG --> OnDemand[On-Demand Instances - baseline]
+    ASG --> Spot[Spot Instances - burst, 90% off]
+    CW[CloudWatch Alarm - CPU > 60%] -- "Target Tracking" --> ASG
+    ASG -- "2-min warning" --> SpotWarn[Spot Termination Notice]
+    PG_C[Cluster Placement] --> SameRack[Same Rack - low latency]
+    PG_S[Spread Placement] --> DiffHW[Different HW - max 7/AZ]
+    PG_P[Partition Placement] --> Racks[Isolated Racks - Kafka/HDFS]
+```
+
 ---
 
 ## 5. Containers: ECS vs EKS vs Fargate
@@ -152,6 +208,19 @@ description: "Key numbers, decision rules, and interview traps for all major AWS
 - **Execution Role** — what ECS agent can do (pull image from ECR, write logs)
 
 **Fargate Spot:** ~70% cheaper; can be interrupted — use for batch/background jobs.
+
+```mermaid
+graph TD
+    App[Your Application] --> ECS[ECS - AWS proprietary]
+    App --> EKS[EKS - Kubernetes API]
+    ECS -- "launch type" --> EC2_ECS[EC2 data plane]
+    ECS -- "launch type" --> Fargate[Fargate - serverless]
+    EKS -- "launch type" --> EC2_EKS[EC2 data plane]
+    EKS -- "launch type" --> Fargate
+    Fargate --> FSpot[Fargate Spot - 70% cheaper]
+    ECS --> TaskRole[Task Role - what container can DO]
+    ECS --> ExecRole[Execution Role - ECS agent pulls image/logs]
+```
 
 ---
 
@@ -186,6 +255,20 @@ description: "Key numbers, decision rules, and interview traps for all major AWS
 | **WebSocket API** | $1.00/million + connection fee | Real-time bidirectional (chat, gaming) |
 
 **Lambda authorizer:** Cached — **stale permissions possible** for up to TTL (default 300s).
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant APIGW as API Gateway
+    participant Auth as Lambda Authorizer
+    participant L as Lambda Function
+    C->>APIGW: HTTP Request + token
+    APIGW->>Auth: Validate token (cached 300s)
+    Auth-->>APIGW: Allow / Deny policy
+    APIGW->>L: Invoke (cold start if no provisioned concurrency)
+    L-->>APIGW: Response
+    APIGW-->>C: HTTP Response
+```
 
 ---
 
@@ -222,6 +305,17 @@ description: "Key numbers, decision rules, and interview traps for all major AWS
 
 **Presigned URLs:** Temporary access using creator's credentials; max **7 days**.
 
+```mermaid
+flowchart LR
+    Upload[New Object] --> Standard[S3 Standard]
+    Standard -- "30+ days infrequent" --> SIA[Standard-IA]
+    Standard -- "unknown pattern" --> IT[Intelligent-Tiering]
+    SIA -- "non-critical" --> OneZone[One Zone-IA - 1 AZ only]
+    SIA -- "archive" --> GI[Glacier Instant - 90d min]
+    GI -- "flexible retrieval" --> GF[Glacier Flexible - mins-12h]
+    GF -- "compliance" --> GDA[Glacier Deep Archive - 12-48h]
+```
+
 ---
 
 ## 8. CloudFront
@@ -255,6 +349,22 @@ User → Edge Location → Regional Edge Cache → Origin (S3 / ALB / Custom)
 
 **Cache invalidation:** `/*` invalidates all — first 1,000 paths/month free, then $0.005/path.
 
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant Edge as Edge Location
+    participant REC as Regional Edge Cache
+    participant Origin as Origin (S3 / ALB)
+    U->>Edge: Request /image.png
+    Edge-->>U: Cache HIT (fastest)
+    U->>Edge: Request /page (miss)
+    Edge->>REC: Forward (miss)
+    REC->>Origin: Forward (miss)
+    Origin-->>REC: Response + OAC auth
+    REC-->>Edge: Cache fill
+    Edge-->>U: Response
+```
+
 ---
 
 ## 9. RDS & Aurora
@@ -286,6 +396,18 @@ User → Edge Location → Regional Edge Cache → Origin (S3 / ALB / Custom)
 
 **Aurora Serverless v2:** Auto-scales in fine-grained increments; **not zero-to-one** (v1 does cold start).
 
+```mermaid
+graph TD
+    App[Application] --> RDSProxy[RDS Proxy - connection pool]
+    RDSProxy --> Primary[RDS / Aurora Primary - writes]
+    Primary -- "Sync replication" --> StandbyAZ[Multi-AZ Standby - HA only]
+    Primary -- "Async replication" --> RR1[Read Replica 1]
+    Primary -- "Async replication" --> RR2[Read Replica 2]
+    Primary -- "6-way sync - Aurora" --> AuroraStorage[Aurora Storage - 3 AZs]
+    StandbyAZ -. "Auto failover ~1-2min" .-> Primary
+    RR1 -. "Manual promote" .-> Primary
+```
+
 ---
 
 ## 10. DynamoDB
@@ -315,6 +437,18 @@ User → Edge Location → Regional Edge Cache → Origin (S3 / ALB / Custom)
 **Capacity modes:**
 - **On-demand** — unpredictable traffic, pay-per-request
 - **Provisioned + auto-scaling** — predictable traffic, cheaper at scale
+
+```mermaid
+graph TD
+    Table[DynamoDB Table] --> PK[Partition Key - high cardinality]
+    PK --> Part1[Partition 1]
+    PK --> Part2[Partition 2]
+    PK --> Part3[Partition 3 - hot if low cardinality]
+    Table --> GSI[GSI - different PK, add anytime]
+    Table --> LSI[LSI - same PK, created at table creation ONLY]
+    Table --> Streams[DynamoDB Streams → Lambda CDC]
+    PK -- "write sharding fix" --> Shard[PK + random suffix 0-N]
+```
 
 ---
 
@@ -348,6 +482,19 @@ User → Edge Location → Regional Edge Cache → Origin (S3 / ALB / Custom)
 2. **Probabilistic early expiration** — start refreshing before TTL expires
 3. **Cache warming** — pre-populate before traffic hits
 
+```mermaid
+flowchart LR
+    Read[Read Request] --> Cache{Cache hit?}
+    Cache -- Hit --> Return[Return cached value]
+    Cache -- Miss - Cache-aside --> DB[(Database)]
+    DB --> Populate[Populate cache]
+    Populate --> Return
+
+    Write[Write Request] --> WT{Pattern?}
+    WT -- Write-through --> DBW[(DB)] & CacheW[Cache - sync]
+    WT -- Write-behind --> CacheWB[Cache] --> AsyncDB[(DB - async)]
+```
+
 ---
 
 ## 12. SQS / SNS / EventBridge
@@ -378,6 +525,22 @@ User → Edge Location → Regional Edge Cache → Origin (S3 / ALB / Custom)
 **Dead Letter Queue (DLQ):** Failed messages after maxReceiveCount; separate queue for inspection.
 
 **SQS + Lambda:** Lambda polls SQS; batch size 1-10,000; partial batch failure handling via `reportBatchItemFailures`.
+
+```mermaid
+graph TD
+    subgraph SQS
+        Prod[Producer] -->|enqueue| Q[(SQS Queue\n256KB max\n14d retention)]
+        Q -->|poll + visibility timeout| Lambda[Lambda / ECS Consumer]
+        Lambda -->|failure > maxReceiveCount| DLQ[(DLQ\ninspect failures)]
+    end
+    subgraph SNS_EB["SNS / EventBridge Fan-out"]
+        Event[Event] --> SNS[SNS Topic] --> S1[SQS A]
+        SNS --> S2[Lambda B]
+        SNS --> S3[HTTP Endpoint C]
+        EB[EventBridge] -->|content filter rules| T1[Target 1]
+        EB --> T2[Target 2]
+    end
+```
 
 ---
 
@@ -415,6 +578,17 @@ Formula: `Shards needed = max(write_MB/1, read_MB/2)`
 
 **Enhanced Fan-Out:** Each consumer gets dedicated 2 MB/s per shard (vs shared 2 MB/s normally).
 
+```mermaid
+graph LR
+    Prod[Producers] -->|partition key| S0[Shard 0\n1MB/s in\n2MB/s out]
+    Prod --> S1[Shard 1]
+    Prod --> S2[Shard 2]
+    S0 -->|standard - shared 2MB/s| AppA[App Consumer A]
+    S0 -->|enhanced fan-out - 2MB/s each| AppB[Analytics Consumer B]
+    S1 --> FH[Firehose → S3 / Redshift]
+    S2 --> KDA[Kinesis Data Analytics\nFlink SQL]
+```
+
 ---
 
 ## 14. CloudWatch
@@ -448,6 +622,17 @@ fields @timestamp, @message
 
 **Container Insights:** ECS/EKS cluster, service, task, pod metrics — enables `ContainerInsights` in cluster settings.
 
+```mermaid
+graph LR
+    App[App / AWS Service] -->|metrics| CW[CloudWatch Metrics\n1-min standard\n1-sec high-res custom]
+    App -->|logs| CWL[CloudWatch Logs\ndefault: never expire]
+    CW --> Alarm[Alarm\nOK → ALARM → INSUFFICIENT]
+    Alarm -->|action| SNS[SNS notify]
+    Alarm -->|action| ASG[Auto Scaling]
+    CWL --> LI[Logs Insights\nSQL-like query]
+    CW --> Dash[Dashboard]
+```
+
 ---
 
 ## 15. Disaster Recovery
@@ -470,6 +655,14 @@ fields @timestamp, @message
 
 **RPO** = how much data you can lose. **RTO** = how long system can be down. Lower = more expensive.
 
+```mermaid
+graph LR
+    Cost["Cost ↑ / RPO+RTO ↓"]
+    BR["Backup & Restore\n$$\nRPO hours\nRTO ~24h"] --> PL["Pilot Light\n$$\nRPO mins\nRTO ~1h"]
+    PL --> WS["Warm Standby\n$$$\nRPO secs\nRTO mins"]
+    WS --> AA["Active-Active\n$$$$\nRPO ~0\nRTO ~0"]
+```
+
 ---
 
 ## 16. Top 10 Interview Traps
@@ -486,6 +679,16 @@ fields @timestamp, @message
 | **8** | RDS Proxy essential for Lambda | Lambda → RDS without proxy = connection storm |
 | **9** | Spot instances get **2-minute termination warning** | Must handle graceful shutdown |
 | **10** | Route 53 is **global** (not regional) | Health checks can monitor any endpoint |
+
+```mermaid
+graph TD
+    T1["Multi-AZ ≠ Read Replica\nMulti-AZ = HA failover sync\nRead Replica = async perf"]
+    T2["ACM cert for CloudFront\nmust be in us-east-1"]
+    T3["SQS FIFO = 300 TPS hard limit\nNot for high throughput"]
+    T4["DynamoDB LSI = create at table birth\nGSI = add anytime"]
+    T5["Lambda + RDS needs RDS Proxy\nor connection storm"]
+    T6["VPC Peering non-transitive\n3+ VPCs → Transit Gateway"]
+```
 
 ---
 

@@ -35,6 +35,15 @@ Run this checklist for every question — interviewers want to see structure fir
 - `Bandwidth = QPS × avg_payload_size`
 - Rule of thumb: **1M DAU → ~12 QPS average** (1M / 86,400)
 
+```mermaid
+flowchart LR
+  A[1. CLARIFY\nscale + constraints] --> B[2. ESTIMATE\nQPS + storage]
+  B --> C[3. DATA MODEL\nentities + schema]
+  C --> D[4. API DESIGN\nendpoints / events]
+  D --> E[5. ARCHITECTURE\ndraw the boxes]
+  E --> F[6. DEEP DIVE\nbottleneck #1]
+```
+
 ---
 
 ## 2. Scalability Patterns
@@ -59,6 +68,22 @@ Run this checklist for every question — interviewers want to see structure fir
 | 1K–10K QPS | Add read replicas + Redis cache |
 | 10K–100K QPS | Sharding or switch to NoSQL; CDN for static |
 | 100K+ QPS | Full distributed system; event-driven; Kafka |
+
+```mermaid
+graph LR
+  subgraph "Scale-out layers"
+    C[Client] --> CDN[CDN\nstatic assets]
+    C --> LB[Load Balancer]
+    LB --> A1[App Server 1]
+    LB --> A2[App Server 2]
+    A1 & A2 --> RC[Redis Cache]
+    A1 & A2 --> DB[(Primary DB)]
+    DB --> R1[(Read Replica)]
+    DB --> R2[(Read Replica)]
+    A1 & A2 --> Q[Message Queue]
+    Q --> W[Worker]
+  end
+```
 
 ---
 
@@ -87,6 +112,17 @@ Run this checklist for every question — interviewers want to see structure fir
 | **Random** | Simple, stateless, large cluster | No |
 
 **Health checks:** TCP (port open) < HTTP (200 OK) < HTTPS (with cert check). Always use HTTP/HTTPS for web apps.
+
+```mermaid
+flowchart LR
+  C[Client] --> LB[Load Balancer]
+  LB -->|Round Robin / Least Conn| S1[Server 1]
+  LB -->|Round Robin / Least Conn| S2[Server 2]
+  LB -->|Round Robin / Least Conn| S3[Server 3]
+  LB -->|Health Check| HC{Healthy?}
+  HC -->|No| X[Remove from pool]
+  HC -->|Yes| OK[Keep in rotation]
+```
 
 ---
 
@@ -133,6 +169,23 @@ User → [Browser/CDN] → [API Gateway response cache] → [App in-memory (LRU)
 
 **Key trap:** Thundering herd — many requests hit empty cache simultaneously → DB overwhelmed. Fix: Redis mutex (`SETNX`), jitter on TTL, cache warming.
 
+```mermaid
+sequenceDiagram
+  participant App
+  participant Cache as Redis Cache
+  participant DB as Database
+
+  App->>Cache: GET key
+  alt Cache hit
+    Cache-->>App: return value
+  else Cache miss
+    Cache-->>App: null
+    App->>DB: SELECT ...
+    DB-->>App: result
+    App->>Cache: SET key value EX ttl
+  end
+```
+
 ---
 
 ## 5. Database Selection
@@ -169,6 +222,17 @@ User → [Browser/CDN] → [API Gateway response cache] → [App in-memory (LRU)
 | **Wide-column** | Cassandra, HBase | Time-series, activity feeds, IoT |
 | **Graph** | Neo4j, Neptune | Social networks, recommendations, fraud |
 
+```mermaid
+flowchart TD
+  Q{Which DB?}
+  Q -->|ACID + joins + <100M rows| SQL[SQL\nPostgres / MySQL]
+  Q -->|High write throughput\nflexible schema| NoSQL{NoSQL type?}
+  NoSQL -->|KV lookups| KV[Key-Value\nRedis / DynamoDB]
+  NoSQL -->|Documents / catalogs| Doc[Document\nMongoDB]
+  NoSQL -->|Time-series / activity feeds| WC[Wide-Column\nCassandra]
+  NoSQL -->|Relationships / graph traversal| GR[Graph\nNeo4j]
+```
+
 ---
 
 ## 6. Message Queue Patterns
@@ -202,6 +266,18 @@ User → [Browser/CDN] → [API Gateway response cache] → [App in-memory (LRU)
 | **Failure handling** | Cascades upstream | Isolated, retryable |
 | **Use for** | Auth, payment confirm, critical reads | Email, notifications, analytics, heavy processing |
 
+```mermaid
+graph TD
+  P[Producer] --> Q[(Queue / Topic)]
+  Q -->|Work queue: one consumer picks up| C1[Consumer 1]
+  Q -->|Work queue| C2[Consumer 2]
+
+  P2[Publisher] --> T[(Topic / Fan-out)]
+  T --> S1[Subscriber A]
+  T --> S2[Subscriber B]
+  T --> S3[Subscriber C]
+```
+
 ---
 
 ## 7. Common Bottlenecks + Solutions
@@ -218,6 +294,17 @@ User → [Browser/CDN] → [API Gateway response cache] → [App in-memory (LRU)
 | **Connection exhaustion** | DB `too many connections` error | Connection pool (RDS Proxy), reduce Lambda concurrency |
 | **Thundering herd** | DB spike after cache expiry | Mutex lock, jitter on TTL, probabilistic early refresh |
 | **Distributed transaction** | Inconsistent state across services | Saga pattern, 2PC, outbox pattern |
+
+```mermaid
+flowchart LR
+  BN{Bottleneck?}
+  BN -->|DB reads slow| RR[Add Read Replicas\n+ Redis Cache]
+  BN -->|DB writes slow| SH[Shard DB\nor async queue]
+  BN -->|Hot partition| CH[Consistent Hashing\n+ random suffix]
+  BN -->|N+1 queries| EL[Eager load\nJOIN / DataLoader]
+  BN -->|Long tail p99| CB[Circuit Breaker\n+ hedged requests]
+  BN -->|Thundering herd| MX[Redis mutex\n+ TTL jitter]
+```
 
 ---
 
@@ -240,6 +327,15 @@ graph TD
 **PACELC extension:** In absence of partition (normal operation): trade Latency vs Consistency.
 - Cassandra = PA/EL (available during partition, low latency normally)
 - HBase = PC/EC (consistent during partition, consistent normally)
+
+```mermaid
+graph TD
+  DS[Distributed System] --> PT[Partition Tolerance\nrequired in practice]
+  PT --> CP[CP — Consistency\nHBase, etcd, Zookeeper]
+  PT --> AP[AP — Availability\nCassandra, DynamoDB, DNS]
+  CP --> UC[Use: locks, banking,\ninventory counts]
+  AP --> UA[Use: feeds, metrics,\nshopping carts]
+```
 
 ---
 
@@ -267,6 +363,17 @@ graph TD
 | **File storage (Dropbox)** | Chunking + dedup + delta sync; metadata separate from chunks | S3 (chunks) + PostgreSQL (metadata) |
 | **Live streaming** | Ingest RTMP → transcode → HLS segments → CDN; low-latency = WebRTC | Kinesis Video + CloudFront |
 | **Ad auction** | Sub-10ms bidding; targeting index; budget pacing | Redis + Aerospike + Kafka |
+
+```mermaid
+graph LR
+    Q{System Type}
+    Q -->|Short URL| SU[Base62 counter\nRedis + NoSQL]
+    Q -->|Chat| CH[WebSocket\nRedis Pub/Sub + Cassandra]
+    Q -->|Feed / Timeline| FD[Fan-out on write\nRedis sorted sets + Kafka]
+    Q -->|Video stream| VS[CDN + HLS\nS3 + CloudFront]
+    Q -->|Rate limiter| RL[Redis INCR + EXPIRE\nToken bucket]
+    Q -->|Search| SR[Inverted index\nElasticsearch]
+```
 
 ---
 
@@ -320,6 +427,16 @@ graph TD
 - 1 Gbps = **125 MB/s**
 - 1 Gbps = ~**100 million 10-byte messages/s**
 
+```mermaid
+graph LR
+    subgraph Latency["Latency (order of magnitude)"]
+        L1[L1 cache\n1 ns] --> RAM[RAM\n100 ns] --> SSD[SSD\n0.1 ms] --> HDD[HDD\n10 ms] --> NET[Cross-region\n150 ms]
+    end
+    subgraph Scale["DAU → QPS (÷86400 × peak 10x)"]
+        D1[1M DAU → 12 QPS] --> D2[10M DAU → 120 QPS] --> D3[100M DAU → 1200 QPS]
+    end
+```
+
 ---
 
 ## 11. Trade-off Cheat Sheet
@@ -337,6 +454,17 @@ graph TD
 | **Horizontal vs Vertical** | Stateless; need resilience | Stateful; quick fix; simpler ops |
 | **Eager vs Lazy loading** | Access pattern predictable; N+1 problem | Large objects; access optional; save bandwidth |
 
+```mermaid
+flowchart LR
+    D{Decision}
+    D -->|Need ACID\n< 100M rows| SQL[SQL\nPostgreSQL / MySQL]
+    D -->|Horizontal scale\nflexible schema| NoSQL[NoSQL\nDynamoDB / Cassandra]
+    D -->|Read heavy| RR[Read Replicas\n+ Redis cache]
+    D -->|Write heavy| SH[Sharding\nor async queue]
+    D -->|Immediate feedback| Sync[Sync REST / gRPC]
+    D -->|Decouple / scale| Async[Async Queue\nKafka / SQS]
+```
+
 ---
 
 ## 12. Interview Anti-Patterns (What Not to Do)
@@ -351,6 +479,19 @@ graph TD
 | No numbers | Vague design, can't validate | Always estimate QPS and storage, even roughly |
 | Design without bottleneck analysis | Can't identify real problems | After architecture: "The bottleneck is X because Y" |
 | Strong consistency everywhere | Doesn't understand trade-offs | Explicitly call out where eventual consistency is OK |
+
+```mermaid
+flowchart TD
+    Start[Interview starts] --> Clarify{Clarify requirements\n3-5 questions first}
+    Clarify -->|Skip this| Fail1[❌ Can't gather requirements]
+    Clarify --> Estimate[Rough estimation\nQPS + storage]
+    Estimate -->|Skip numbers| Fail2[❌ Vague, unvalidated design]
+    Estimate --> Arch[Simple architecture first\nmonolith → extract if needed]
+    Arch -->|Jump to microservices| Fail3[❌ Resume-driven development]
+    Arch --> Bottleneck[Identify bottleneck\n"The bottleneck is X because Y"]
+    Bottleneck -->|No analysis| Fail4[❌ Can't identify real problems]
+    Bottleneck --> Tradeoff[Name trade-offs explicitly\nwhere eventual consistency OK]
+```
 
 ---
 

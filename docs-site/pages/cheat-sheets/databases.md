@@ -24,6 +24,16 @@ description: "SQL vs NoSQL, indexing, replication, sharding, and query optimizat
 
 **Use NoSQL when:** **100M+ records**, horizontal write scale needed, flexible/evolving schema, document/graph/KV access patterns dominate.
 
+```mermaid
+flowchart LR
+    Q{Need ACID\ntransactions?} -->|Yes| SQL[SQL\nPostgres / MySQL]
+    Q -->|No| Q2{Access\npattern?}
+    Q2 -->|Key lookups\n+ caching| KV[KV Store\nRedis / DynamoDB]
+    Q2 -->|Flexible docs| DOC[Document\nMongoDB]
+    Q2 -->|Write-heavy\ntime-series| WC[Wide-Column\nCassandra]
+    Q2 -->|Relationships\n+ traversals| GR[Graph\nNeo4j]
+```
+
 ---
 
 ## 2. ACID Properties
@@ -47,6 +57,20 @@ description: "SQL vs NoSQL, indexing, replication, sharding, and query optimizat
 - **Dirty read**: read uncommitted data from another transaction
 - **Non-repeatable read**: same row returns different value within one transaction
 - **Phantom read**: re-query returns different set of rows (another tx inserted/deleted)
+
+```mermaid
+sequenceDiagram
+    participant T1 as Tx A
+    participant DB as Database
+    participant T2 as Tx B
+    T1->>DB: BEGIN
+    T1->>DB: UPDATE balance = 0
+    T2->>DB: BEGIN
+    T2->>DB: READ balance (dirty read → 0)
+    T1->>DB: ROLLBACK
+    Note over T2: Read stale/invalid data!
+    T2->>DB: COMMIT
+```
 
 ---
 
@@ -73,6 +97,18 @@ description: "SQL vs NoSQL, indexing, replication, sharding, and query optimizat
 - `WHERE YEAR(created_at) = 2024` → **index not used** (function on column breaks index)
 - Use: `WHERE created_at BETWEEN '2024-01-01' AND '2024-12-31'`
 - `WHERE email = 123` (int vs varchar mismatch) → implicit cast → **index skipped**
+
+```mermaid
+graph TD
+    Q[Query with WHERE clause] --> F{Function\non column?}
+    F -->|Yes e.g. YEAR()| SKIP[Index SKIPPED\nFull table scan]
+    F -->|No| C{Composite\nindex?}
+    C -->|Leading col\nmissing| SKIP
+    C -->|Leading col\npresent| HIT[Index HIT]
+    HIT --> CV{All SELECT cols\nin index?}
+    CV -->|Yes| IO[Index-only scan\nZero table access]
+    CV -->|No| TP[Index + table\nlookup]
+```
 
 ---
 
@@ -111,6 +147,19 @@ SELECT * FROM posts WHERE id > :last_id ORDER BY id LIMIT 20;
 | Implicit type cast in WHERE | Match column type exactly |
 | Too many indexes | Benchmark — writes get slower with each index |
 
+```mermaid
+sequenceDiagram
+    participant App
+    participant DB
+    Note over App,DB: N+1 Anti-pattern
+    App->>DB: SELECT * FROM posts (1 query)
+    loop For each post
+        App->>DB: SELECT * FROM users WHERE id=? (N queries)
+    end
+    Note over App,DB: Fix: Single JOIN query
+    App->>DB: SELECT posts.*, users.* FROM posts JOIN users ON user_id (1 query)
+```
+
 ---
 
 ## 5. Replication
@@ -124,6 +173,19 @@ SELECT * FROM posts WHERE id > :last_id ORDER BY id LIMIT 20;
 **Replication lag trap:** Read replica can be 100ms–seconds behind. Critical reads (post-write) → **always route to primary**.
 
 **Aurora advantage:** Up to **15** read replicas, sub-10ms replication lag, storage shared across all nodes.
+
+```mermaid
+graph TD
+    App[Application] -->|All writes| P[Primary\nnode]
+    P -->|Async replication| R1[Read Replica 1]
+    P -->|Async replication| R2[Read Replica 2]
+    P -->|Sync replication| S[Standby\nMulti-AZ]
+    App -->|Read queries| R1
+    App -->|Read queries| R2
+    S -. "Auto-failover\n~1-2 min" .-> P2[New Primary]
+    style S fill:#f90,color:#000
+    style P fill:#0a0,color:#fff
+```
 
 ---
 
@@ -139,6 +201,17 @@ SELECT * FROM posts WHERE id > :last_id ORDER BY id LIMIT 20;
 **Consistent hashing used in:** Cassandra, Redis Cluster, DynamoDB, Memcached.
 
 **Cross-shard operations are painful:** Avoid JOINs across shards. Denormalize data or use scatter-gather + application-level merge.
+
+```mermaid
+graph LR
+    Client --> Router[Shard Router]
+    Router -->|hash(user_id) % 3 = 0| S0[Shard 0\nuser_id 0,3,6...]
+    Router -->|hash(user_id) % 3 = 1| S1[Shard 1\nuser_id 1,4,7...]
+    Router -->|hash(user_id) % 3 = 2| S2[Shard 2\nuser_id 2,5,8...]
+    style S0 fill:#4a90d9,color:#fff
+    style S1 fill:#4a90d9,color:#fff
+    style S2 fill:#4a90d9,color:#fff
+```
 
 ---
 
@@ -158,6 +231,16 @@ SELECT * FROM posts WHERE id > :last_id ORDER BY id LIMIT 20;
 
 **Lambda trap:** Each cold start = new DB connection. **100 concurrent Lambdas = 100 new connections**. Always use RDS Proxy with Lambda.
 
+```mermaid
+graph LR
+    A1[App inst 1] --> Pool[Connection Pool\nPgBouncer / RDS Proxy]
+    A2[App inst 2] --> Pool
+    A3[App inst N] --> Pool
+    Pool -->|max 5-10\nreal connections| DB[(Database\nmax 500 conns)]
+    style Pool fill:#f90,color:#000
+    style DB fill:#0a0,color:#fff
+```
+
 ---
 
 ## 8. CAP Theorem Applied
@@ -171,6 +254,15 @@ SELECT * FROM posts WHERE id > :last_id ORDER BY id LIMIT 20;
 | CA (no partition) | SQLite, single-node MySQL | Not distributed — partition impossible by design |
 
 **Cassandra tuning:** `QUORUM` reads + `QUORUM` writes → strong consistency at write cost. `ONE` reads → max availability, may read stale.
+
+```mermaid
+graph TD
+    P[Network Partition\noccurs] --> Choose{Choose one}
+    Choose -->|CP| CP[Refuse writes\nReturn error\nStay consistent\ne.g. PostgreSQL ZooKeeper]
+    Choose -->|AP| AP[Accept writes\nResolve conflicts later\nMay return stale reads\ne.g. Cassandra DynamoDB]
+    style CP fill:#d9534f,color:#fff
+    style AP fill:#5cb85c,color:#fff
+```
 
 ---
 
@@ -208,6 +300,18 @@ Access patterns drive table design — model for queries, not for normalization.
 
 **DAX (DynamoDB Accelerator):** Microsecond reads, write-through cache. **Not for strongly consistent reads** — DAX always returns eventually consistent cached data.
 
+> **Deep Dives** link to full articles covering each topic in depth.
+
+```mermaid
+graph TD
+    App --> DAX{DAX Cache}
+    DAX -->|Cache hit\nmicroseconds| App
+    DAX -->|Cache miss\nor strong read| DDB[(DynamoDB)]
+    DDB --> PK[Partition Key\nhigh cardinality required]
+    PK --> GSI[GSI\neventual consistent\nadd anytime]
+    PK --> LSI[LSI\nstrong consistent\ndefine at CREATE]
+```
+
 ---
 
 ## 10. PostgreSQL vs MySQL vs DynamoDB vs Cassandra
@@ -221,6 +325,13 @@ Access patterns drive table design — model for queries, not for normalization.
 | JOINs | Full | Full | **None** | **None** |
 | Best for | Analytics, complex queries, PostGIS | Web apps, high-read workloads | Serverless, variable scale | Write-heavy, time-series, IoT |
 | AWS managed | **RDS / Aurora PostgreSQL** | **RDS / Aurora MySQL** | **DynamoDB** | **Keyspaces** |
+
+```mermaid
+graph LR
+    PG[PostgreSQL\nFull ACID\nComplex JOINs\nAnalytics] --- MY[MySQL\nWeb apps\nHigh reads\nInnoDB ACID]
+    MY --- DDB[DynamoDB\nServerless\nNative horiz scale\nNo JOINs]
+    DDB --- CAS[Cassandra\nWrite-heavy\nIoT / time-series\nTunable consistency]
+```
 
 ---
 
@@ -241,6 +352,24 @@ Start here — move down only when you've exhausted the current step:
 ```
 
 **Rule of thumb:** Most apps never need sharding. Get to step 4–5 before considering step 7.
+
+```mermaid
+graph TD
+    S1[1. Add indexes\n10x read speedup free] --> S2[2. Read replicas\nread scale-out]
+    S2 --> S3[3. Caching Redis\nreduce DB load 80-95%]
+    S3 --> S4[4. Vertical scale\nmore RAM / CPU]
+    S4 --> S5[5. Connection pooling\n10x more app instances]
+    S5 --> S6[6. Read/write split\ndedicate replicas to reporting]
+    S6 --> S7[7. Sharding\nhorizontal write scale]
+    S7 --> S8[8. Archive / TTL\nreduce table size]
+    S8 --> S9[9. Async writes via queue\nabsorb write spikes]
+    style S1 fill:#5cb85c,color:#fff
+    style S2 fill:#5cb85c,color:#fff
+    style S3 fill:#5cb85c,color:#fff
+    style S4 fill:#f0ad4e,color:#000
+    style S5 fill:#f0ad4e,color:#000
+    style S7 fill:#d9534f,color:#fff
+```
 
 ---
 

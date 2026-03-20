@@ -22,6 +22,22 @@ description: "Message queues, pub/sub, event streaming, and async patterns quick
 | **High-throughput Topic** | Kafka / MSK | Millions/sec, long retention, replay, consumer groups |
 | **Job Scheduling** | EventBridge Scheduler | Cron or one-time future invocations |
 
+```mermaid
+graph LR
+    P[Producer] --> WQ[Work Queue\nSQS Standard]
+    P --> FIFO[FIFO Queue\nSQS FIFO]
+    P --> PS[Pub/Sub\nSNS]
+    P --> EB[Event Bus\nEventBridge]
+    P --> ST[Stream\nKinesis/Kafka]
+
+    WQ --> C1[Consumer Pool]
+    FIFO --> C2[Ordered Consumer]
+    PS --> C3[Lambda]
+    PS --> C4[SQS Fan-out]
+    EB --> C5[Cross-account\nTargets]
+    ST --> C6[Consumer Groups]
+```
+
 ---
 
 ## 2. SQS Quick Reference
@@ -52,6 +68,24 @@ description: "Message queues, pub/sub, event streaming, and async patterns quick
 
 **Trap:** If visibility timeout expires before processing finishes, message becomes visible again → duplicate processing. Solution: extend timeout during processing or set it generously.
 
+```mermaid
+sequenceDiagram
+    participant P as Producer
+    participant SQS as SQS Queue
+    participant C as Consumer
+    participant DLQ as Dead-Letter Queue
+
+    P->>SQS: SendMessage
+    C->>SQS: ReceiveMessage (long poll 20s)
+    SQS-->>C: Message (hidden for visibility timeout)
+    C->>C: Process message
+    alt Success
+        C->>SQS: DeleteMessage
+    else Failure (maxReceiveCount exceeded)
+        SQS->>DLQ: Route to DLQ
+    end
+```
+
 ---
 
 ## 3. SNS Quick Reference
@@ -67,6 +101,19 @@ description: "Message queues, pub/sub, event streaming, and async patterns quick
 | **Message delivery retries** | HTTP: 3 attempts with exponential backoff |
 
 **Fan-out use case:** Order placed → SNS → SQS(inventory), SQS(shipping), SQS(email) — each processes independently.
+
+```mermaid
+graph TD
+    O[Order Placed] --> SNS[SNS Topic]
+    SNS -->|filter: type=order| SQS1[SQS: Inventory]
+    SNS -->|filter: type=order| SQS2[SQS: Shipping]
+    SNS -->|filter: type=order| SQS3[SQS: Email]
+    SNS --> L[Lambda]
+    SNS --> HTTP[HTTP Endpoint]
+    SQS1 --> W1[Inventory Worker]
+    SQS2 --> W2[Shipping Worker]
+    SQS3 --> W3[Email Worker]
+```
 
 ---
 
@@ -85,6 +132,17 @@ description: "Message queues, pub/sub, event streaming, and async patterns quick
 
 **Use EventBridge when:** cross-account routing, complex filtering logic, AWS service events (CodePipeline, GuardDuty, etc.), schema validation, event replay needed.
 **Use SNS when:** simple fan-out, cost-sensitive, low latency push required.
+
+```mermaid
+flowchart LR
+    Q{Need cross-account\nor schema validation?}
+    Q -->|Yes| EB[EventBridge]
+    Q -->|No| Q2{Complex content\nbased routing?}
+    Q2 -->|Yes| EB
+    Q2 -->|No| Q3{Cost sensitive\nor low latency?}
+    Q3 -->|Yes| SNS[SNS]
+    Q3 -->|No| SNS
+```
 
 ---
 
@@ -133,6 +191,21 @@ ProducerRecord(topic, key="user_123", value="event")
 | **Throughput** | Millions/sec | SQS Standard: unlimited, FIFO: 3K TPS |
 | **Cost** | Higher (infra) | Pay per message |
 
+```mermaid
+graph TD
+    T[Kafka Topic] --> P0[Partition 0]
+    T --> P1[Partition 1]
+    T --> P2[Partition 2]
+
+    P0 -->|assigned to| C0[Consumer 0\nGroup A]
+    P1 -->|assigned to| C1[Consumer 1\nGroup A]
+    P2 -->|assigned to| C2[Consumer 2\nGroup A]
+
+    P0 -->|independent offset| CA[Consumer\nGroup B]
+    P1 --> CA
+    P2 --> CA
+```
+
 ---
 
 ## 6. Kinesis Quick Reference
@@ -168,6 +241,18 @@ ProducerRecord(topic, key="user_123", value="event")
 | **Retention** | Max **365 days** | Unlimited |
 | **Replay** | Yes (within retention) | Yes |
 | **Cost** | Per shard-hour | Per broker |
+
+```mermaid
+graph TD
+    Prod[Producer] -->|partition key| S0[Shard 0\n1MB/s write]
+    Prod --> S1[Shard 1\n1MB/s write]
+    Prod --> S2[Shard 2\n1MB/s write]
+
+    S0 -->|standard: 2MB/s shared| App1[App Consumer]
+    S0 -->|enhanced fan-out: 2MB/s each| App2[Analytics Consumer]
+    S1 --> FH[Firehose → S3]
+    S2 --> DA[Data Analytics\nFlink SQL]
+```
 
 ---
 
@@ -211,6 +296,22 @@ Query:      Read DB (no joins needed — denormalized)
 - Append-only log — full audit trail
 - Tradeoff: complex queries, eventual consistency, large storage over time
 
+```mermaid
+graph TD
+    subgraph Outbox Pattern
+        W[Write TX] -->|atomic| DB[(orders table)]
+        W -->|atomic| OB[(outbox table)]
+        BG[Background Worker] -->|poll pending| OB
+        BG -->|publish| MQ[Kafka / SQS]
+    end
+
+    subgraph Saga - Choreography
+        S1[Order Service] -->|OrderPlaced| S2[Inventory Service]
+        S2 -->|StockReserved| S3[Payment Service]
+        S3 -->|PaymentFailed| S4[Compensate:\nRelease Stock]
+    end
+```
+
 ---
 
 ## 8. Idempotency
@@ -236,6 +337,22 @@ if result is None:
 
 **TTL on idempotency keys:** Set based on retry window (e.g., 24h for payments).
 
+```mermaid
+sequenceDiagram
+    participant C as Consumer
+    participant R as Redis
+    participant DB as Database
+
+    C->>R: SET idem:{key} 1 NX EX 86400
+    alt Key did not exist (first time)
+        R-->>C: OK
+        C->>DB: Process & write result
+    else Key already existed (duplicate)
+        R-->>C: nil
+        C-->>C: Return cached/skip response
+    end
+```
+
 ---
 
 ## 9. Message Ordering Guarantees Summary
@@ -249,6 +366,23 @@ if result is None:
 | Kinesis | **Within shard** |
 | Kafka | **Within partition** |
 | DynamoDB Streams | Per partition key (shard) |
+
+```mermaid
+graph LR
+    subgraph No Ordering
+        SNS[SNS]
+        EB[EventBridge]
+    end
+    subgraph Best-effort
+        SQSS[SQS Standard]
+    end
+    subgraph Partial Ordering
+        SQSF[SQS FIFO\nper message group]
+        KIN[Kinesis\nper shard]
+        KAF[Kafka\nper partition]
+        DDB[DynamoDB Streams\nper partition key]
+    end
+```
 
 ---
 
@@ -270,6 +404,19 @@ if result is None:
 | **Kinesis default retention** | **24 hours** |
 | **Kafka default retention** | **7 days** |
 | **EventBridge default rate** | **10,000 events/s** per account |
+
+```mermaid
+graph LR
+    subgraph AWS
+        SQS[SQS Standard\nunlimited TPS\n256KB max\n14d retention]
+        SQSF[SQS FIFO\n300 TPS\nstrict order]
+        SNS[SNS\n256KB max\nno retention]
+        KIN[Kinesis Shard\n1MB/s write\n2MB/s read\n24h default]
+    end
+    subgraph OSS
+        KAF[Kafka Partition\nhigh throughput\n7d default retention\nreplay]
+    end
+```
 
 ---
 

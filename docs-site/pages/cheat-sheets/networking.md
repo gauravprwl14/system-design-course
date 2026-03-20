@@ -21,6 +21,16 @@ description: "Load balancing, DNS, CDN, protocols, and networking patterns quick
 - **L4 (NLB):** ~**100μs** latency, no content inspection, TCP/UDP passthrough, static IPs, PrivateLink — use for ultra-low latency, non-HTTP protocols, static IP requirement
 - **L7 (ALB):** content-based routing, host/path rules, SSL termination, WAF integration, gRPC/WebSocket support — use for HTTP/HTTPS workloads
 
+```mermaid
+graph LR
+    Client --> LB{L4 or L7?}
+    LB -->|TCP/UDP, low latency| NLB[NLB — Layer 4<br/>~100μs]
+    LB -->|HTTP/HTTPS, routing rules| ALB[ALB — Layer 7<br/>SSL term, WAF]
+    NLB --> Backend1[Backend Servers]
+    ALB -->|/api/*| Backend2[API Servers]
+    ALB -->|/static/*| Backend3[Static Servers]
+```
+
 ---
 
 ## 2. Load Balancing
@@ -44,6 +54,15 @@ description: "Load balancing, DNS, CDN, protocols, and networking patterns quick
 - **Sticky cookies:** ALB sets `AWSALB` cookie — routes same client to same target
 - **Stateless (preferred):** store sessions in **Redis/ElastiCache** — any server can handle any request
 - Trap: sticky sessions break when instances scale in or restart
+
+```mermaid
+flowchart LR
+    A[Incoming Request] --> B{Session Affinity?}
+    B -->|Sticky Cookie| C[Always → Server A<br/>AWSALB cookie]
+    B -->|Stateless preferred| D[Any Server<br/>Session in Redis]
+    C -->|Server A removed| E[Session Lost!]
+    D -->|Server removed| F[No impact ✓]
+```
 
 ---
 
@@ -72,6 +91,25 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 
 **Alias vs CNAME:** Alias = free, apex domain support (`example.com`), auto-follows ALB/CloudFront/S3 IP changes. CNAME = paid queries, cannot use at root domain. **Always use Alias for ALB/CloudFront/S3 website endpoints.**
 
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant R as Recursive Resolver
+    participant Root as Root NS
+    participant TLD as TLD NS (.com)
+    participant Auth as Authoritative NS (Route 53)
+
+    B->>B: Check browser cache
+    B->>R: Who is api.example.com?
+    R->>Root: Who owns .com?
+    Root-->>R: TLD NS address
+    R->>TLD: Who owns example.com?
+    TLD-->>R: Route 53 NS address
+    R->>Auth: Who is api.example.com?
+    Auth-->>R: 1.2.3.4 (TTL 300s)
+    R-->>B: 1.2.3.4
+```
+
 ### Route 53 Routing Policies
 
 | Policy | Use Case |
@@ -83,6 +121,16 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 | **Geolocation** | Compliance, localized content |
 | **Geoproximity** | Shift traffic by geography + bias |
 | **Multi-value** | Return multiple IPs (basic LB, not a replacement for ALB) |
+
+```mermaid
+flowchart LR
+    DNS[Route 53 Query] --> P{Routing Policy}
+    P -->|One record| Simple[Simple]
+    P -->|Split traffic %| Weighted[Weighted<br/>A/B testing]
+    P -->|Fastest region| Latency[Latency-based]
+    P -->|Health check down| Failover[Failover<br/>Primary → Secondary]
+    P -->|User country| Geo[Geolocation<br/>Compliance]
+```
 
 ---
 
@@ -118,6 +166,13 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 
 **401 vs 403:** 401 = "I don't know who you are." 403 = "I know who you are, but no."
 
+```mermaid
+graph LR
+    H1[HTTP/1.1<br/>1 req/conn] -->|HOL blocking| H2[HTTP/2<br/>Multiplexed streams]
+    H2 -->|TCP HOL blocking| H3[HTTP/3<br/>QUIC over UDP]
+    H3 -->|binary + typed| gRPC[gRPC<br/>HTTP/2 + protobuf]
+```
+
 ---
 
 ## 5. TCP vs UDP
@@ -133,6 +188,18 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 | **Flow control** | Yes (prevents overwhelming receiver) | No |
 
 **TCP 3-way handshake:** SYN → SYN-ACK → ACK (~1 RTT before first byte)
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+
+    Note over C,S: TCP 3-Way Handshake (~1 RTT)
+    C->>S: SYN
+    S-->>C: SYN-ACK
+    C->>S: ACK
+    C->>S: Data (first byte)
+```
 
 ---
 
@@ -153,6 +220,17 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 
 **Forward secrecy:** Use ephemeral keys (ECDHE). Even if private key is stolen later, past sessions cannot be decrypted.
 
+```mermaid
+graph LR
+    Client -->|HTTPS request| ALB[ALB — SSL Termination]
+    ALB -->|Plain HTTP| Backend[Backend Servers]
+
+    Client2 -->|HTTPS request| NLB[NLB — SSL Passthrough]
+    NLB -->|Encrypted TCP| Backend2[Backend Servers<br/>terminate TLS]
+
+    Client3 <-->|mTLS both certs| Service[Microservice<br/>zero-trust]
+```
+
 ---
 
 ## 7. WebSockets & Real-Time
@@ -167,6 +245,23 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 | **Scaling** | Sticky sessions OR centralize state in **Redis Pub/Sub** — any server handles disconnect/reconnect |
 
 **SSE vs WebSocket:** SSE = server-push only (simpler), WebSocket = bidirectional (heavier).
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant LB as ALB
+    participant S as Server
+    participant R as Redis Pub/Sub
+
+    C->>LB: HTTP GET /chat (Upgrade: websocket)
+    LB->>S: Forward upgrade
+    S-->>C: 101 Switching Protocols
+    Note over C,S: Full-duplex TCP connection open
+    C->>S: Send message
+    S->>R: Publish to channel
+    R-->>S: Broadcast to all subscribers
+    S-->>C: Receive message
+```
 
 ---
 
@@ -196,6 +291,16 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 - **Lambda@Edge:** A/B testing, auth at edge, request/response transformation, redirects
 - **Origin Shield:** extra caching layer between CloudFront and origin — reduces origin load
 
+```mermaid
+graph TD
+    User -->|Request| Edge[CloudFront Edge<br/>450+ locations]
+    Edge -->|Cache HIT| User
+    Edge -->|Cache MISS| Shield[Origin Shield<br/>optional layer]
+    Shield -->|Cache HIT| Edge
+    Shield -->|Cache MISS| Origin[Origin: ALB / S3]
+    Origin --> Shield
+```
+
 ---
 
 ## 9. Rate Limiting — Where to Place It
@@ -212,6 +317,14 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 - **Leaky bucket:** smooths traffic, no bursts — use for strict rate enforcement
 - **Fixed window:** simple but edge-of-window burst problem
 - **Sliding window:** accurate, more memory — use Redis sorted sets
+
+```mermaid
+graph TD
+    Request --> WAF[Edge / WAF<br/>DDoS, bot, geo blocks]
+    WAF --> APIGW[API Gateway<br/>per-route / per-key quotas]
+    APIGW --> App[Application<br/>Redis token bucket<br/>user/resource tiers]
+    App --> DB[(Database<br/>connection pool limit)]
+```
 
 ---
 
@@ -234,6 +347,17 @@ Browser cache → OS cache → Recursive Resolver → Root NS → TLD NS (.com) 
 | **TLS 1.2 handshake** | **2 RTT** | Before first byte |
 | **TLS 1.3 handshake** | **1 RTT** | 0-RTT for resumption |
 | **CloudFront edge locations** | **450+** | |
+
+```mermaid
+graph LR
+    subgraph Latency["Latency Reference"]
+        L1[L1 cache\n1ns] --> L2[L2 cache\n4ns] --> RAM[RAM\n100ns]
+        RAM --> SSD[SSD\n0.1ms] --> HDD[HDD\n10ms]
+    end
+    subgraph Network["Network Latency"]
+        SR[Same region\n0.5ms] --> CR[Cross-region US-EU\n80-100ms] --> IC[Intercontinental\n150-200ms]
+    end
+```
 
 ---
 

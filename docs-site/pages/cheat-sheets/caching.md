@@ -21,6 +21,21 @@ description: "Cache strategies, Redis patterns, CDN caching, and common pitfalls
 
 **Rule:** Cache as close to the user as possible. Each hop adds latency; each layer reduces load on the next.
 
+```mermaid
+graph LR
+  U[User] --> CDN[CDN Edge<br/>CloudFront/Cloudflare]
+  CDN --> GW[API Gateway Cache]
+  GW --> APP[App In-Memory<br/>Node.js LRU]
+  APP --> RC[Redis / Memcached]
+  RC --> DB[(Database)]
+
+  style CDN fill:#f9c74f
+  style GW fill:#f9c74f
+  style APP fill:#90be6d
+  style RC fill:#43aa8b
+  style DB fill:#577590
+```
+
 ---
 
 ## 2. Cache Patterns
@@ -35,6 +50,24 @@ description: "Cache strategies, Redis patterns, CDN caching, and common pitfalls
 **Cache-aside trap:** Between DB write and cache invalidation → **stale window**. Use short TTL or event-driven invalidation.
 
 **Write-behind trap:** Cache crash before flush → **data loss**. Only use with durable cache (Redis AOF/RDB) or non-critical data.
+
+```mermaid
+graph TD
+  subgraph Cache-Aside
+    A1[App] -->|1 read| C1[Cache]
+    C1 -->|miss| D1[(DB)]
+    D1 -->|data| A1
+    A1 -->|populate| C1
+  end
+  subgraph Write-Through
+    A2[App] -->|write| C2[Cache]
+    C2 -->|sync write| D2[(DB)]
+  end
+  subgraph Write-Behind
+    A3[App] -->|write| C3[Cache]
+    C3 -.->|async flush| D3[(DB)]
+  end
+```
 
 ---
 
@@ -60,6 +93,15 @@ noeviction        # Return error when full — for queues/streams, NOT caches
 
 **Set `maxmemory` explicitly** — otherwise Redis uses all available RAM until OOM.
 
+```mermaid
+flowchart LR
+  Q{Access pattern?} -->|Recent items matter| LRU[LRU\nallkeys-lru]
+  Q -->|Repeated hot keys| LFU[LFU\nallkeys-lfu]
+  Q -->|Time-sensitive data| TTL[TTL expiry\nvolatile-ttl]
+  Q -->|Queue / stream| NO[noeviction]
+  LRU --> REC[Recommended\ndefault]
+```
+
 ---
 
 ## 4. Cache Invalidation Strategies
@@ -79,6 +121,20 @@ Thread B: writes DB + deletes cache key
 Thread A: writes OLD value back to cache  ← stale data survives
 ```
 Fix: **cache-aside with short TTL** as safety net, or use versioned keys.
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A
+  participant B as Thread B
+  participant C as Cache
+  participant D as DB
+
+  B->>D: Write new value
+  B->>C: Delete cache key
+  A->>D: Read DB (gets OLD value)
+  A->>C: Write OLD value back to cache ⚠️
+  Note over C: Stale data survives!
+```
 
 ---
 
@@ -107,6 +163,30 @@ if (lock) {
 }
 ```
 
+```mermaid
+sequenceDiagram
+  participant R1 as Request 1
+  participant R2 as Request 2
+  participant C as Cache
+  participant DB as Database
+
+  Note over C: Key expires!
+  R1->>C: GET key — MISS
+  R2->>C: GET key — MISS
+  R1->>DB: Query DB
+  R2->>DB: Query DB (stampede!)
+  Note over DB: N parallel queries hit DB
+
+  rect rgb(144,190,109)
+    Note over R1,C: With mutex (SETNX)
+    R1->>C: SETNX lock — acquired
+    R2->>C: SETNX lock — wait/retry
+    R1->>DB: Single query
+    R1->>C: SET key + DEL lock
+    R2->>C: GET key — HIT
+  end
+```
+
 ---
 
 ## 6. Redis Data Structures & Use Cases
@@ -124,6 +204,19 @@ if (lock) {
 | **Bitmap** | Feature flags, daily active users (1 bit/user) | `SETBIT/GETBIT/BITCOUNT/BITOP` |
 
 **HyperLogLog vs Set for unique counts:** HLL uses **12 KB regardless of cardinality**. Set uses O(n). Use HLL when you don't need exact counts or the actual members.
+
+```mermaid
+graph LR
+  subgraph Redis Structures
+    STR[String\ncounter / lock / token]
+    HASH[Hash\nuser object / cart]
+    LIST[List\nqueue / feed]
+    SET[Set\ntags / friends]
+    ZS[Sorted Set\nleaderboard / rate limit]
+    HLL[HyperLogLog\nunique visitors]
+    STREAM[Stream\nevent log]
+  end
+```
 
 ---
 
@@ -145,6 +238,17 @@ if (lock) {
 - Encryption in transit: **TLS**
 - Backup: automated snapshots to S3
 - **Global Datastore**: cross-region replication (active-passive)
+
+```mermaid
+graph TD
+  Client -->|hash slot lookup| P[Primary Shard 0\nslots 0-5460]
+  Client -->|hash slot lookup| Q[Primary Shard 1\nslots 5461-10922]
+  Client -->|hash slot lookup| R[Primary Shard 2\nslots 10923-16383]
+  P --> P1[Replica]
+  Q --> Q1[Replica]
+  R --> R1[Replica]
+  Note1["{user123}:session → same shard\n{user123}:cart   → same shard"]
+```
 
 ---
 
@@ -177,6 +281,16 @@ await redis.zadd(key, now, `${now}-${Math.random()}`)
 await redis.expire(key, 60)
 ```
 
+```mermaid
+flowchart LR
+  Q{Burst tolerance?} -->|Need bursts| TB[Token Bucket]
+  Q -->|Smooth output| LB[Leaky Bucket]
+  Q -->|Simple implementation| FW[Fixed Window]
+  Q -->|Accurate, no bursts| SW[Sliding Window]
+  FW --> WARN[⚠️ 2x burst at\nwindow boundary]
+  SW --> MEM[Higher memory\nper user]
+```
+
 ---
 
 ## 9. Session Storage Pattern
@@ -201,6 +315,21 @@ Returns: {userId, roles, preferences, lastSeen}
 - TTL: **24h** typical, refresh on each request (`EXPIRE` reset)
 - On logout: `DEL session:{uuid}` immediately
 - Store only what's needed per-request — keep hash small
+
+```mermaid
+sequenceDiagram
+  participant B as Browser
+  participant App as App Server
+  participant R as Redis
+
+  B->>App: Request + Cookie (session_id=abc)
+  App->>R: HGET session:abc
+  R-->>App: {userId, roles, preferences}
+  App-->>B: Response (200 OK)
+
+  Note over App,R: On logout: DEL session:abc
+  Note over R: TTL reset on each request (EXPIRE 86400)
+```
 
 ---
 
@@ -233,6 +362,23 @@ Returns: {userId, roles, preferences, lastSeen}
 
 **CloudFront invalidation:** `/images/*` costs money ($0.005/1000 paths after first 1000). Prefer filename versioning over invalidations.
 
+```mermaid
+sequenceDiagram
+  participant B as Browser
+  participant CDN as CDN Edge
+  participant O as Origin
+
+  B->>CDN: GET /main.js
+  CDN-->>B: 200 (s-maxage fresh, no origin call)
+
+  B->>CDN: GET /main.js (expired)
+  CDN->>O: GET /main.js If-None-Match: "abc"
+  O-->>CDN: 304 Not Modified
+  CDN-->>B: 200 (cached body)
+
+  Note over B,CDN: Cache busting: /main.a1b2c3.js\nskips all revalidation
+```
+
 ---
 
 ## 11. Common Caching Mistakes
@@ -247,6 +393,20 @@ Returns: {userId, roles, preferences, lastSeen}
 | Invalidating too broadly (`FLUSHALL`) | Cache becomes useless, DB load spikes | Invalidate specific keys, not entire cache |
 | Storing large objects in cache | Evicts many small objects, high memory pressure | Keep cache values small; cache IDs not full objects |
 | Single Redis instance for everything | Sessions, rate limits, queues mixed → noisy neighbor | Separate Redis instances by workload |
+
+```mermaid
+flowchart TD
+  M[Common Mistake] --> A[No TTL set]
+  M --> B[No userId in key]
+  M --> C[Cache private data in CDN]
+  M --> D[No fallback on cache miss]
+  M --> E[FLUSHALL on invalidation]
+  A --> FA[Memory unbounded]
+  B --> FB[User A sees User B data]
+  C --> FC[Stale personalized content]
+  D --> FD[Cache outage = full outage]
+  E --> FE[DB load spike]
+```
 
 ---
 
@@ -263,6 +423,13 @@ Returns: {userId, roles, preferences, lastSeen}
 | **When to use** | Pure simple cache, multi-threaded CPU utilization | **Everything else** — sessions, queues, leaderboards |
 
 **Verdict:** Default to Redis. Only pick Memcached if you specifically need multi-threaded cache with no advanced features.
+
+```mermaid
+graph LR
+    Q{Need any of:}
+    Q -->|persistence / replication\npub-sub / Lua scripting\ndata structures| Redis[Redis\ndefault choice]
+    Q -->|pure KV cache only\nmulti-threaded CPU critical\nno advanced features| MC[Memcached\nrare niche]
+```
 
 ---
 

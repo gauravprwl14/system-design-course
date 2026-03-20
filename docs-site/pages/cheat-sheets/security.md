@@ -21,6 +21,15 @@ description: "Authentication, authorization, encryption, and security patterns q
 
 **Trap:** 401 is named "Unauthorized" but means "unauthenticated." 403 means truly unauthorized.
 
+```mermaid
+flowchart LR
+    A[Request] --> B{Authenticated?}
+    B -- No --> C[401 Unauthenticated\nWHO are you?]
+    B -- Yes --> D{Authorized?}
+    D -- No --> E[403 Forbidden\nWHAT can you do?]
+    D -- Yes --> F[200 OK\nAccess Granted]
+```
+
 ---
 
 ## 2. Session vs JWT
@@ -55,6 +64,28 @@ Refresh token: long-lived (7–30 days) — stored securely, used only to get ne
 - **No revocation** without a blocklist — compromised token valid until expiry
 - `localStorage` is XSS-vulnerable — prefer `HttpOnly` cookies for web
 
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant R as Redis (Session Store)
+
+    Note over C,R: Session Flow (Stateful)
+    C->>S: Login (credentials)
+    S->>R: Store session data
+    S-->>C: Set-Cookie: session_id=abc
+    C->>S: Request + Cookie
+    S->>R: Lookup session_id
+    R-->>S: User data
+    S-->>C: 200 OK
+
+    Note over C,S: JWT Flow (Stateless)
+    C->>S: Login (credentials)
+    S-->>C: JWT access_token + refresh_token
+    C->>S: Request + Bearer JWT
+    S-->>C: Verify sig locally → 200 OK
+```
+
 ---
 
 ## 3. OAuth 2.0 Flows
@@ -81,6 +112,24 @@ Refresh token: long-lived (7–30 days) — stored securely, used only to get ne
 | **Resource Server** | API that accepts access tokens |
 | **Scope** | Permissions requested (`read:profile`, `write:posts`) |
 | **PKCE** | Proof Key for Code Exchange — prevents auth code interception |
+
+```mermaid
+sequenceDiagram
+    participant U as User/Browser
+    participant A as App (Client)
+    participant AS as Auth Server
+    participant RS as Resource Server
+
+    U->>A: Click "Login with Google"
+    A->>AS: Redirect: /authorize?code_challenge=...
+    AS->>U: Show login + consent screen
+    U->>AS: Approve
+    AS->>A: Redirect with auth_code
+    A->>AS: POST /token (code + code_verifier)
+    AS-->>A: access_token + refresh_token
+    A->>RS: GET /api/data + Bearer access_token
+    RS-->>A: 200 Protected Data
+```
 
 ---
 
@@ -110,6 +159,17 @@ Refresh token: long-lived (7–30 days) — stored securely, used only to get ne
 ```
 **Why both:** Asymmetric is too slow for bulk data. Symmetric is fast but needs secure key exchange.
 
+```mermaid
+graph LR
+    subgraph TLS["TLS Handshake"]
+        A[Client Hello] --> B[Server Hello + Cert]
+        B --> C[Verify Cert via CA]
+        C --> D[Key Exchange\nECDHE / RSA]
+        D --> E[Shared Session Key]
+    end
+    E --> F[AES-256-GCM\nBulk Data Transfer]
+```
+
 ### Encryption at Rest vs In Transit
 
 | | In Transit | At Rest |
@@ -117,6 +177,18 @@ Refresh token: long-lived (7–30 days) — stored securely, used only to get ne
 | **What** | Network traffic | Stored data (S3, EBS, RDS) |
 | **How** | TLS/HTTPS | AES-256, KMS-managed keys |
 | **AWS** | ACM certs, forced HTTPS | Server-side encryption (SSE) |
+
+```mermaid
+graph TD
+    subgraph Transit["In Transit"]
+        T1[HTTPS / TLS] --> T2[ACM Certificates]
+        T1 --> T3[HSTS Headers]
+    end
+    subgraph Rest["At Rest"]
+        R1[AES-256 Encryption] --> R2[KMS-Managed Keys]
+        R1 --> R3[S3 SSE / EBS / RDS]
+    end
+```
 
 ---
 
@@ -136,6 +208,17 @@ Refresh token: long-lived (7–30 days) — stored securely, used only to get ne
 | **XXE** | XML parser processes external entities | Disable external entities in XML parser config |
 
 **SSRF AWS risk:** Attacker uses SSRF to hit `http://169.254.169.254/latest/meta-data/` and steal IAM credentials. Mitigation: IMDSv2 (require PUT token), block metadata IP at WAF.
+
+```mermaid
+flowchart LR
+    A[Attacker Input] --> B{Attack Type}
+    B --> C[SQL Injection\n→ Parameterized queries]
+    B --> D[XSS\n→ CSP + HttpOnly cookies]
+    B --> E[CSRF\n→ SameSite + CSRF token]
+    B --> F[SSRF\n→ URL allowlist + IMDSv2]
+    B --> G[MITM\n→ TLS + HSTS]
+    B --> H[DDoS\n→ WAF + Shield]
+```
 
 ---
 
@@ -170,6 +253,18 @@ Internet → WAF → CloudFront → ALB (public subnet)
 - Security Groups: **stateful**, return traffic auto-allowed, instance-level
 - NACLs: **stateless**, must allow both inbound AND outbound, subnet-level
 
+```mermaid
+graph TD
+    Internet --> WAF
+    WAF --> CF[CloudFront CDN]
+    CF --> ALB[ALB\nPublic Subnet]
+    ALB --> App[App Servers\nPrivate Subnet]
+    App --> DB[RDS / ElastiCache\nDB Subnet - No Internet]
+    App --> SM[Secrets Manager\nKMS]
+    CT[CloudTrail] -.->|Audit| IAM
+    GD[GuardDuty] -.->|Threats| SH[Security Hub]
+```
+
 ---
 
 ## 7. HTTPS & Certificates
@@ -184,6 +279,18 @@ Internet → WAF → CloudFront → ALB (public subnet)
 | **HSTS** | `Strict-Transport-Security: max-age=31536000; includeSubDomains` |
 | **HSTS Preload** | Submit to browser preload list — HTTPS enforced before first visit |
 | **Certificate Pinning** | Hard-code expected cert/key in client — prevents MITM but hard to rotate |
+
+```mermaid
+graph LR
+    Domain --> CA[Certificate Authority]
+    CA --> DV[DV Cert\nDomain only]
+    CA --> OV[OV Cert\n+ Org verified]
+    CA --> EV[EV Cert\nHighest trust]
+    DV --> LE[Let's Encrypt\nFree, 90-day]
+    DV --> ACM[AWS ACM\nFree, auto-renew]
+    Browser --> HSTS[HSTS\nForce HTTPS]
+    HSTS --> Preload[HSTS Preload List\nHTTPS before first visit]
+```
 
 ---
 
@@ -208,6 +315,23 @@ if count > 5:
     raise TooManyRequests()
 ```
 
+```mermaid
+flowchart TD
+    A[Login Attempt] --> B{IP Rate Limit OK?}
+    B -- No --> C[429 Too Many Requests]
+    B -- Yes --> D{Account Locked?}
+    D -- Yes --> E[403 Account Locked]
+    D -- No --> F{Credentials Valid?}
+    F -- No --> G[Increment Failure Counter]
+    G --> H{Count > 5?}
+    H -- Yes --> I[Lock Account\n+ Alert User]
+    H -- No --> J[Show Progressive Delay]
+    F -- Yes --> K{MFA Required?}
+    K -- Yes --> L[Prompt MFA]
+    L --> M[200 Authenticated]
+    K -- No --> M
+```
+
 ---
 
 ## 9. OWASP Top 10 (2021)
@@ -227,6 +351,16 @@ if count > 5:
 
 **Most common in interviews:** Broken Access Control (#1), SQL Injection (#3), SSRF (#10)
 
+```mermaid
+graph LR
+    TOP["OWASP Top 10 (2021)"]
+    TOP --> A1[1. Broken Access Control\n→ enforce authz server-side]
+    TOP --> A2[2. Cryptographic Failures\n→ use TLS + strong algos]
+    TOP --> A3[3. Injection\n→ parameterized queries]
+    TOP --> A5[5. Security Misconfiguration\n→ no defaults, no debug]
+    TOP --> A10[10. SSRF\n→ allowlist + IMDSv2]
+```
+
 ---
 
 ## 10. Security HTTP Headers
@@ -242,6 +376,16 @@ if count > 5:
 
 **Check at:** [securityheaders.com](https://securityheaders.com) — grades your headers instantly.
 
+```mermaid
+graph LR
+    Response[HTTP Response Headers]
+    Response --> CSP[Content-Security-Policy\nprevents XSS]
+    Response --> XFO[X-Frame-Options: DENY\nprevents clickjacking]
+    Response --> HSTS[Strict-Transport-Security\nforces HTTPS]
+    Response --> XCTO[X-Content-Type-Options: nosniff\nprevents MIME sniff]
+    Response --> PP[Permissions-Policy\nrestricts browser APIs]
+```
+
 ---
 
 ## 11. Zero Trust Architecture
@@ -256,6 +400,16 @@ if count > 5:
 | Long-lived credentials | Short-lived tokens, mTLS between services |
 
 **Implementation:** mTLS (mutual TLS) between services, service mesh (Istio, App Mesh), per-request JWT validation, network policies.
+
+```mermaid
+graph TD
+    Request[Every Request] --> IdP[Identity Provider\nverify identity]
+    IdP --> Device[Device Posture\ncheck]
+    Device --> Policy[Policy Engine\nleast-privilege decision]
+    Policy -->|Allowed| Resource[Resource Access]
+    Policy -->|Denied| Block[Block + Log]
+    Resource --> mTLS[mTLS between services\nno implicit internal trust]
+```
 
 ---
 
