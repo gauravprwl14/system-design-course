@@ -5,5 +5,6 @@ export default {
   "secret-management": "Secret Management",
   "ddos-protection": "DDoS Protection",
   "mtls-certificate-management": "mTLS & Certificate Management",
-  "encryption-at-rest": "Encryption at Rest"
+  "encryption-at-rest": "Encryption at Rest",
+  "compliance-architecture": "Compliance Architecture (GDPR, PCI-DSS, SOC2)"
 }
