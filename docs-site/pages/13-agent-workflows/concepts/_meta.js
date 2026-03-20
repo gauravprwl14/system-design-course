@@ -1,0 +1,21 @@
+export default {
+  index: "Overview",
+  "what-is-an-agent": "🟢 What is an AI Agent?",
+  "react-pattern": "🟢 ReAct Pattern",
+  "tool-use-function-calling": "🟢 Tool Use & Function Calling",
+  "agent-memory-types": "🟡 Agent Memory Types",
+  "single-agent-architecture": "🟡 Single-Agent Architecture",
+  "multi-agent-systems": "🟡 Multi-Agent Systems",
+  "orchestrator-worker-pattern": "🟡 Orchestrator-Worker Pattern",
+  "rag-deep-dive": "🟡 RAG Deep Dive",
+  "hierarchical-multi-agent": "🔴 Hierarchical Multi-Agent",
+  "agent-communication-protocols": "🔴 Agent Communication Protocols",
+  "long-running-agents": "🔴 Long-Running Agents",
+  "agent-evaluation-testing": "🔴 Agent Evaluation & Testing",
+  "cost-control-agents": "🔴 Cost Control for Agents",
+  "agent-observability": "🔴 Agent Observability",
+  "safety-guardrails": "🔴 Safety & Guardrails",
+  "model-context-protocol": "⚫ Model Context Protocol",
+  "langgraph-stateful-agents": "⚫ LangGraph Stateful Agents",
+  "agent-tool-registry": "⚫ Agent Tool Registry"
+}
