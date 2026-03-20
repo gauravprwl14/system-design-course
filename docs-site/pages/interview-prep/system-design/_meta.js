@@ -1,6 +1,8 @@
 export default {
   index: "Overview",
   // Fundamentals
+  "ecommerce-checkout": "E-Commerce Checkout Flow",
+  "geospatial-service": "Geospatial Service (Proximity Search)",
   "pdf-converter": "🟡 PDF Converter System",
   "rate-limiting": "🟢 Rate Limiting",
   "flash-sales": "🟡 Flash Sales Architecture",
