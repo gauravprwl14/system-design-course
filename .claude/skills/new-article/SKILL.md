@@ -31,3 +31,4 @@ cd /home/ubuntu/home/project/system-design-course/.claude/scripts && node scaffo
    - Fill in all relationship fields (prerequisites, see_poc, etc.)
    - Run `/sync-graph` after filling relationships
    - Write the article body
+   - Run `/generate-cheat-sheet <article-path>` after the article is written to add a dense entry to the correct domain cheat sheet in `docs-site/pages/cheat-sheets/`

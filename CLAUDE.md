@@ -120,7 +120,7 @@ The `docs-site/pages/interview-prep/practice-pocs/` directory contains hands-on 
 
 6. **Update navigation**: Add entry to appropriate `_meta.json` file
 
-7. **Update cheat sheet**: Add a dense entry (key numbers + decision rule + trap + link) to the corresponding `cheat-sheets/<domain>.md` file — see "Cheat Sheet Update Rule" section below
+7. **Update cheat sheet**: Run `/generate-cheat-sheet <article-path>` — this skill reads the article, extracts key numbers/decisions/traps, and adds a dense entry to the correct `cheat-sheets/<domain>.md` automatically
 
 ### When Adding New Articles — Cheat Sheet Update Rule
 
