@@ -38,6 +38,25 @@ tags:
 
 # Cache Invalidation Race Condition
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant Writer as Write Thread
+    participant DB as Database
+    participant Cache as Cache (Redis)
+    participant Reader as Read Thread
+
+    Reader->>Cache: GET product:123 (MISS)
+    Reader->>DB: SELECT price (old: $100)
+    Writer->>DB: UPDATE price = $50
+    Writer->>Cache: DELETE product:123
+    Reader->>Cache: SET product:123 = $100 (STALE!)
+    Note over Cache: Stale $100 overwrites after invalidation
+```
+
+*A read thread fetches stale data just before invalidation, then writes it back — creating a race window where cache diverges from DB for up to the full TTL.*
+
 **Category**: ⚖️ Consistency & Integrity
 **Domain**: Caching, Distributed Systems
 **Industry**: All (E-commerce, Social Media, SaaS)

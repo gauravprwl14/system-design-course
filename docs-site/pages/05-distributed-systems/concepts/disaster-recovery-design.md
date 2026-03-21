@@ -19,6 +19,24 @@ tags: [disaster-recovery, rto, rpo, multi-region, active-active, active-passive,
 
 **When AWS us-east-1 goes down at 3 AM, what happens to your system? Disaster recovery design is the difference between a 2-hour outage and a 5-minute failover.**
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Primary Region: us-east-1] -->|Continuous replication| B[DR Region: eu-west-1]
+    A --> C{Disaster event}
+    C -->|Region failure| D[Health checks fail — alert fires]
+    D --> E{DR Strategy}
+    E -->|Active-Passive| F[Manual or auto failover — DNS flip]
+    E -->|Active-Active| G[Traffic shifts instantly — zero RTO]
+    E -->|Backup-Restore| H[Restore from snapshot — hours RTO]
+    F --> I[Verify RPO: how much data lost?]
+    G --> I
+    I --> J[RTO met — traffic serving from DR region]
+```
+
+*Normal path: primary serves all traffic, DR region stays warm. Trigger: region-level failure. Cascade: detection → failover decision → DNS update → traffic recovery. RPO and RTO targets determine which strategy applies.*
+
 ## The Problem
 
 On February 28, 2017, an AWS engineer typed a command to remove a small set of servers from the us-east-1 S3 billing subsystem. He mistyped the argument and removed a much larger set of servers instead. Netflix, Slack, Expedia, Quora, and thousands of other services went partially or fully offline for over four hours.

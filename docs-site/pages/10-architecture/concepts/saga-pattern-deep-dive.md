@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/saga-pattern-deep-dive.png"
 
 # Saga Pattern: Choreography vs Orchestration for Distributed Transactions
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Order Placed<br/>5 services involved] --> B{Saga Type}
+    B --> C[Choreography<br/>event-driven]
+    B --> D[Orchestration<br/>central coordinator]
+    C --> E[Each service emits events<br/>next service reacts]
+    D --> F[Orchestrator calls<br/>each service in sequence]
+    E --> G[Payment fails →<br/>compensating events fire]
+    F --> G
+    G --> H[Inventory released<br/>order cancelled]
+    H --> I[Eventual consistency<br/>achieved]
+```
+*Normal path: each step succeeds and chain completes. Trigger: any step fails mid-saga. Recovery: compensating transactions roll back completed steps in reverse order.*
+
 **Distributed transactions are a solved problem — until you have microservices. ACID across service boundaries requires 2PC, which nobody wants in production. The Saga pattern is the industry answer, but it has two wildly different implementations with completely different failure profiles.**
 
 **Choose the wrong one and you'll spend six months debugging ghost compensations in a 15-service mesh you can't reason about.**

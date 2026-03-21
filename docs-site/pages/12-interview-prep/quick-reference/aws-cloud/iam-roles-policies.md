@@ -14,6 +14,24 @@ tags: [aws, iam, roles, policies, security, multi-account, organizations, scp, s
 
 # AWS IAM: Roles, Policies, and Multi-Account Security
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Identity type?} -->|Human user| B[IAM User — avoid long-term keys]
+    A -->|AWS service / app| C[IAM Role — temp credentials via STS]
+    C --> D[EC2 Instance Profile]
+    C --> E[Lambda Execution Role]
+    C --> F[Cross-account AssumeRole]
+    G[Policy Evaluation Order] --> H[Explicit Deny wins]
+    H --> I[SCP boundary]
+    I --> J[Permission Boundary]
+    J --> K[Identity Policy]
+    K --> L[Resource Policy]
+```
+
+*Always prefer IAM Roles over IAM Users for machines. Explicit Deny always wins in policy evaluation.*
+
 > **Common Interview Question**: "What's the difference between an IAM Role and an IAM User? How does an EC2 instance get permissions to access S3 without storing credentials? Explain IAM policy evaluation — what happens when there's an explicit Deny vs no Allow?"
 
 Common in: AWS Solutions Architect, Security Engineering, Senior Backend, Platform/DevOps interviews

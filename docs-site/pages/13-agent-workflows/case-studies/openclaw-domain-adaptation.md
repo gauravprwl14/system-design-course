@@ -18,6 +18,23 @@ tags: [domain-adaptation, legal-tech, healthcare, e-commerce, production-pattern
 
 > OpenClaw solves the hard parts of production agents: context overflow, auth rate limits, multi-channel routing, per-agent tool policies. You don't have to re-solve them. You have to map them to your domain.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    OC[OpenClaw Patterns\ncontext / auth / routing / policies]
+    OC --> D1[Legal Research\ncase law + audit trail + HITL]
+    OC --> D2[Healthcare Triage\nPHI isolation + escalation]
+    OC --> D3[E-Commerce Support\norder lookup + refund policy]
+
+    D1 --> MAP[Map each pattern\nto domain constraints]
+    D2 --> MAP
+    D3 --> MAP
+    MAP --> PROD[Domain-Specific\nProduction Agent]
+```
+
+*Three concrete domains show how to map every OpenClaw pattern — context compaction, auth rotation, tool policies — to your own use case.*
+
 ## The Problem
 
 Most agent tutorials end with a 50-line loop. Most production systems start where those tutorials stop. If you've read the [OpenClaw Architecture Deep Dive](./openclaw-architecture) and [Patterns Extracted](./openclaw-patterns), you've seen how one production system solved context overflow, API rate limiting, multi-agent routing, and tool permission policies.

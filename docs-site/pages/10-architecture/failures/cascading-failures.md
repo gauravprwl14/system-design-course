@@ -75,6 +75,20 @@ tags:
 
 # Cascading Failures - Microservices
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Recommendation Service<br/>slow DB query] --> B[Threads pile up<br/>waiting for response]
+    B --> C[Thread pool exhausted<br/>in caller service]
+    C --> D[Caller becomes<br/>unresponsive]
+    D --> E[Its callers time out<br/>threads pile up]
+    E --> F[Failure propagates<br/>up the chain]
+    F --> G[23 services down<br/>in 5 minutes]
+    G --> H[Circuit Breaker<br/>+ Bulkhead isolation]
+```
+*Normal path: service calls return quickly. Trigger: one service slows without timeouts. Failure cascade: thread pool exhaustion propagates upstream until the entire platform is unavailable.*
+
 **Category**: 🚨 Availability & Reliability
 **Domain**: Microservices Architecture
 **Industry**: All (E-commerce, Fintech, SaaS)

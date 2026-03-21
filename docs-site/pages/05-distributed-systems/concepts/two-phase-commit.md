@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/two-phase-commit.png"
 
 # Two-Phase Commit: Blocking Protocol, Failure Modes, and Modern Alternatives
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Coordinator: start distributed transaction] --> B[Phase 1: Send PREPARE to all participants]
+    B --> C{All participants vote YES?}
+    C -->|Yes| D[Phase 2: Send COMMIT to all]
+    C -->|No — any ABORT| E[Phase 2: Send ROLLBACK to all]
+    D --> F[All participants commit — transaction complete ✓]
+    E --> G[All participants rollback — transaction aborted ✓]
+    B --> H{Coordinator crashes after PREPARE}
+    H --> I[Participants hold locks indefinitely — BLOCKED]
+    I --> J[Cannot unilaterally abort or commit — uncertainty]
+    J --> K[Locks held until coordinator recovers — possible hours]
+```
+
+*Coordinator sends PREPARE, waits for votes, then COMMIT or ROLLBACK. If coordinator crashes after participants vote YES, they hold locks forever with no safe unilateral resolution.*
+
 **Two-phase commit is the only protocol that provides true atomicity across independent databases — and it has a fundamental flaw that makes it unsuitable for high-availability systems.** A coordinator failure after participants vote "prepared" leaves every participant holding locks indefinitely, with no safe way to unilaterally abort or commit. The window is bounded by your MTTR, but at 3 AM with an on-call who doesn't know the system, that window can be hours.
 
 Understanding 2PC is mandatory not because you should use it, but because every "distributed transaction" abstraction eventually reduces to either 2PC semantics, saga pattern, or a coordination service that implements a safer variant.

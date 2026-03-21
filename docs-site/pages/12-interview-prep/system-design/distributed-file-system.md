@@ -27,6 +27,24 @@ tags: [distributed-systems, file-system, gfs, hdfs, fault-tolerance, replication
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> MasterNode["Master Node (Metadata Server)"]
+    MasterNode --> NamespaceDB["Namespace / Inode Store"]
+    MasterNode --> ChunkMap["Chunk Location Map"]
+    Client --> ChunkServer1["Chunk Server 1"]
+    Client --> ChunkServer2["Chunk Server 2"]
+    Client --> ChunkServer3["Chunk Server 3"]
+    ChunkServer1 --> ChunkServer2
+    ChunkServer2 --> ChunkServer3
+```
+
+*The master node stores metadata and chunk locations; clients read/write large file chunks directly to chunk servers which replicate across each other for fault tolerance.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 A distributed file system splits large files into fixed-size chunks (64MB), stores each chunk on multiple servers for fault tolerance, and maintains a central metadata server that maps file paths to chunk locations. Clients talk to the metadata server to find chunk locations, then stream data directly to/from chunk servers to avoid a bottleneck.

@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/hot-spot-detection.png"
 
 # Hot Spot Detection: Adaptive Load Balancing and Request Skew at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    TRAFFIC[Incoming Traffic<br/>Zipf Distribution] --> HASH[Consistent Hash Ring]
+    HASH --> NODE1[Node-1<br/>Normal Load]
+    HASH --> NODE2[Node-2<br/>Normal Load]
+    HASH --> NODE3[Node-3 🔥<br/>Hot Spot: 140k req/s]
+    NODE3 --> DETECT[Hot Spot Detection<br/>Redis Keyspace / Metrics]
+    DETECT --> LOCAL[Local In-Process Cache<br/>Top-N Hot Keys]
+    DETECT --> SHARD[Key Sharding<br/>user:1001#0..#9]
+    LOCAL --> RELIEF[Load Relief]
+    SHARD --> RELIEF
+```
+
+*Hot spots form when Zipf-distributed traffic concentrates on one node; detection feeds local caching and key sharding to redistribute load.*
+
 **The math is brutal: in any large-scale system, the top 1% of keys receive ~50% of traffic. If you're not designed for it, that 1% will take down your entire cluster while the other 99% of your capacity sits idle.**
 
 This is the Zipf distribution problem, and it affects every distributed cache, database, and message queue at scale.

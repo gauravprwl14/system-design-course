@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/pagination-strategies.png"
 
 # API Pagination: Cursor, Keyset, and Offset Trade-offs at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    REQUEST[Client Page Request] --> STRATEGY{Pagination Strategy}
+    STRATEGY --> OFFSET[OFFSET / LIMIT<br/>Simple, slow at depth]
+    STRATEGY --> CURSOR[Cursor-Based<br/>Opaque token]
+    STRATEGY --> KEYSET[Keyset<br/>WHERE id > last_id]
+    OFFSET --> SCAN[Full Table Scan<br/>Page 500 = 4 seconds]
+    CURSOR --> ENCODE[Encode position<br/>Base64 cursor]
+    KEYSET --> INDEX[Index Seek<br/>O log n always]
+    INDEX --> FAST[Fast at any depth]
+    SCAN --> SLOW[Degrades with depth]
+```
+
+*Offset pagination scans and discards rows on every deep page; keyset pagination uses indexed seeks and stays fast regardless of page depth.*
+
 **Offset pagination looks simple. It works fine in staging. It silently kills your database at page 1000 in production.** The query that returns page 1 in 2ms returns page 500 in 4 seconds — not because you have more data, but because `OFFSET 10000` forces the database to scan and discard 10,000 rows every single time. This article shows you the correct pagination strategy for your data access pattern.
 
 ---

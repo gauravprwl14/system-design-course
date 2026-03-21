@@ -41,6 +41,20 @@ tags:
 
 # Retry Storm - Overwhelming Recovering Services
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Service B Hiccup<br/>30s outage] --> B[Upstream Services Retry<br/>3x each]
+    B --> C[Traffic Amplification<br/>4x → 8x → 16x]
+    C --> D[Service B Overwhelmed<br/>on recovery]
+    D --> E[Recovery Impossible<br/>stuck in loop]
+    E --> F[Circuit Breaker<br/>breaks the cycle]
+    F --> G[Exponential Backoff<br/>with jitter]
+    G --> H[Service Recovers<br/>gradually]
+```
+*Normal path: hiccup → recovery. Trigger: no backoff or jitter. Failure cascade: retry amplification overwhelms the recovering service, extending outage from 30s to 45+ minutes.*
+
 **Category**: 🚨 Availability & Reliability
 **Domain**: Microservices, API Integration
 **Industry**: All (E-commerce, SaaS, Fintech)

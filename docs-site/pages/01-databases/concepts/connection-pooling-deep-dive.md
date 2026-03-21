@@ -14,6 +14,20 @@ featured_image: "/assets/diagrams/connection-pooling-deep-dive.png"
 
 # Database Connection Pooling: PgBouncer, HikariCP, and Pool Sizing at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["App Pods\n(150 × 10 conns)"] --> B["PgBouncer\nTransaction Mode"]
+    B --> C["PostgreSQL\n20–50 conns"]
+    D["HikariCP\nper pod"] --> B
+    E["ProxySQL"] --> F["MySQL Primary\n+ Replicas"]
+    B -->|"pool_size =\ncores × 2"| C
+    D -->|"pool_size =\ncores × 2 + 1"| B
+```
+
+*A centralised pooler like PgBouncer multiplexes thousands of app connections onto a small, right-sized set of real DB connections — preventing the performance cliff at 300+ PostgreSQL connections.*
+
 **PostgreSQL can handle ~300-500 active connections before performance degrades significantly. Your 200-instance Kubernetes deployment wants 10 connections per pod. You just requested 2000 connections — and you're about to make every query slower.** Connection pooling is not optional at scale. But it introduces its own class of failures that are worse than the problem it solves when misconfigured.
 
 ---

@@ -14,6 +14,24 @@ tags: [aws, api-gateway, lambda, serverless, cognito, authorizer, throttling, we
 
 # AWS API Gateway: REST vs HTTP vs WebSocket, Auth & Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{API type?} -->|Standard HTTP requests| B{Need usage plans or transforms?}
+    A -->|Persistent bi-directional| C[WebSocket API — chat, gaming, dashboards]
+    B -->|No| D[HTTP API — cheapest, 70% less than REST]
+    B -->|Yes| E[REST API — full features]
+    D --> F{Auth method?}
+    E --> F
+    F -->|Simple token / Cognito| G[JWT Authorizer]
+    F -->|Custom logic + caching| H[Lambda Authorizer]
+    F -->|Machine-to-machine| I[IAM Auth]
+    D --> J[10K RPS default, burst 5K concurrent]
+```
+
+*Default to HTTP API; upgrade to REST API only for usage plans, transforms, or direct AWS service integrations.*
+
 ## Question
 **"What's the difference between REST API, HTTP API, and WebSocket API in API Gateway? How do you implement auth, rate limiting, and handle 100,000 requests/second?"**
 

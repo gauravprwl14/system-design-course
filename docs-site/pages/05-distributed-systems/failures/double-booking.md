@@ -36,6 +36,23 @@ tags:
 
 # Seat/Appointment Double-Booking Race Condition
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Seat A10: status = available] --> B[User 1: READ seat A10 = available]
+    A --> C[User 2: READ seat A10 = available]
+    B --> D[User 1: reserve seat A10 ✓]
+    C --> E[User 2: reserve seat A10 ✓]
+    D --> F[DB: seat A10 → User 1]
+    E --> G[DB: seat A10 → User 2 — overwrites!]
+    F --> H[Both users receive booking confirmation]
+    G --> H
+    H --> I[Conflict at venue — one booking invalid]
+```
+
+*Normal path: check-then-reserve completes before any concurrent read. Trigger: two users read available simultaneously. Cascade: both pass availability check, last write wins, one customer shows up to no seat.*
+
 **Category**: Concurrency & Race Conditions
 **Domain**: Ticketing, Healthcare, Hospitality
 **Industry**: Entertainment, Healthcare, Travel

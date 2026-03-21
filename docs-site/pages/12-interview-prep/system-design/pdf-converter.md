@@ -28,6 +28,24 @@ tags: [file-conversion, async-processing, job-queue, s3, worker-pool, scalabilit
 **Difficulty**: 🟡 Intermediate
 **Asked by**: HDFC, Multiple Companies
 **Time**: 45 minutes
+
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client (Browser / Mobile)"] --> Gateway["API Gateway"]
+    Gateway --> UploadService["Upload Service"]
+    UploadService --> ObjectStorage["Object Storage (S3)"]
+    UploadService --> JobQueue["Job Queue (Kafka / SQS)"]
+    JobQueue --> WorkerPool["Worker Pool (Conversion Workers)"]
+    WorkerPool --> LibreOffice["LibreOffice / Headless Chrome"]
+    WorkerPool --> ObjectStorage
+    WorkerPool --> StatusDB["Status DB (Redis / Postgres)"]
+    Client --> DownloadService["Download Service"]
+    DownloadService --> ObjectStorage
+```
+
+*Files are uploaded to object storage, queued for async processing, converted by a horizontally-scalable worker pool, and made available for download — decoupling upload latency from conversion time.*
 **Type**: Real-world system design
 
 ---

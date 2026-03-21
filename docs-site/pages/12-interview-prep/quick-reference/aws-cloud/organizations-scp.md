@@ -14,6 +14,25 @@ tags: [aws, organizations, scp, control-tower, multi-account, landing-zone, gove
 
 # AWS Organizations & SCPs: Multi-Account Strategy at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Management Account] --> B[Root OU]
+    B --> C[Security OU]
+    B --> D[Workloads OU]
+    B --> E[Sandbox OU]
+    D --> F[Prod Account]
+    D --> G[Staging Account]
+    C --> H[Log Archive Account]
+    C --> I[Security Tooling Account]
+    J[SCP on OU] -->|Cascades down| D
+    J --> K[Max permissions boundary — not a grant]
+    A --> L[Exempt from SCPs]
+```
+
+*SCPs restrict, they do not grant. The management account is always exempt — a critical security consideration.*
+
 > **Common Interview Question**: "A developer accidentally deleted a production database. How do you prevent this organization-wide? How do you ensure no one creates resources outside us-east-1? Design a multi-account AWS strategy for a 500-person company."
 
 Common in: AWS Solutions Architect, Platform Engineering, Security Engineering, Cloud Architecture interviews

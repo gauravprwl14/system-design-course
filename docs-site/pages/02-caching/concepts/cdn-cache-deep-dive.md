@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/cdn-cache-deep-dive.png"
 
 # CDN Caching Deep Dive: Cache-Control, Edge Logic, and Purge Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    User[User Request] --> PoP[CDN Edge PoP]
+    PoP -->|Cache Hit| User
+    PoP -->|Cache Miss| Origin[Origin Server]
+    Origin --> PoP
+    Deploy[Content Deploy] --> PurgeAPI[CDN Purge API]
+    PurgeAPI -->|Surrogate-Key purge| PoP
+    PoP -->|Stale-while-revalidate| BgFetch[Background Fetch]
+    BgFetch --> Origin
+```
+
+*Most traffic is served from the nearest CDN PoP; on content updates a surrogate-key purge invalidates edge caches atomically, while stale-while-revalidate prevents origin storms during revalidation.*
+
 **Your CDN absorbs 95% of traffic — until you push a content update and it becomes a 95% traffic amplifier pointing at your origin. CDN caching is not just setting max-age; it's designing the contract between origin, edge, and client so that purge, update, and fallback behave correctly under every failure mode.**
 
 ---

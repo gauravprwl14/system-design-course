@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/write-ahead-logging.png"
 
 # Write-Ahead Logging: Crash Recovery, Replication, and CDC at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Application\nINSERT/UPDATE/DELETE"] --> B["WAL Buffer\n(shared memory)"]
+    B -->|"COMMIT → fsync"| C["WAL Segment Files\npg_wal/"]
+    C --> D["Data Files\nupdated async"]
+    C --> E["Streaming Replica\nphysical copy"]
+    C --> F["WAL Archiver\npoint-in-time recovery"]
+    C --> G["Logical Decoder\nDebezium → Kafka → CDC"]
+    H["Crash Recovery"] -->|"Replay WAL\nfrom checkpoint"| D
+    I["Replication Slot"] -->|"WAL retained\nuntil consumer ACKs"| C
+```
+
+*The WAL is a sequential append log that enables crash recovery, streaming replication, and CDC from a single primitive — replication slots can grow unboundedly if a consumer falls behind.*
+
 **Every database write you've ever made went to a log before it touched the actual data file.** This is not a PostgreSQL quirk — it is the foundational invariant of every production-grade database system. Understanding WAL is understanding how durability, replication, and change data capture all emerge from the same primitive.
 
 Get WAL wrong operationally — replica falls 20 minutes behind, WAL segments pile up, disk fills at 3am — and you discover these mechanics the hard way.

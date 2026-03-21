@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/column-store-databases.png"
 
 # Column-Store Databases: Cassandra, BigTable, and ClickHouse for Analytics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Access Pattern?"] --> B{"Row lookups\nby key?"}
+    B -->|"Yes"| C["Row Store\nPostgres / MySQL"]
+    B -->|"No - aggregate\ncolumns"| D{"Write pattern?"}
+    D -->|"High concurrency\ndistributed"| E["Wide-Column\nCassandra / HBase\nLSM-tree writes"]
+    D -->|"Batch inserts\nappend-only"| F["Columnar OLAP\nClickHouse\n10-100x compression"]
+    E --> G["Partition key design\ncritical: < 100MB/partition"]
+    F --> H["ORDER BY sort key\ncritical for granule skipping"]
+```
+
+*Column stores win for aggregations across millions of rows; use Cassandra for high-write distributed event storage and ClickHouse for sub-second analytics at petabyte scale.*
+
 **Imagine an analytics query: `SELECT sum(revenue) FROM orders WHERE date > '2026-01-01'`.** In a row store, PostgreSQL reads entire rows (order_id, customer_id, product_id, status, address, notes, revenue) — all 120 bytes — even though only the 8-byte `revenue` column matters. For 500 million rows, that's 60 GB of I/O to answer a 4 GB question.
 
 A columnar database reads only the `revenue` column. With delta compression, those 500M float64 values become 800MB. The query completes in seconds instead of minutes. This is the column-store advantage — but it comes with specific write trade-offs that make it wrong for many workloads.

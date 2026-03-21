@@ -17,6 +17,24 @@ status: "published"
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client (Browser / App)"] --> CDN["CDN / Edge Cache"]
+    CDN --> SuggestionService["Suggestion Service"]
+    SuggestionService --> PrefixCache["Prefix Cache (Redis)"]
+    SuggestionService --> TrieStore["Trie / Inverted Index Store"]
+    Client --> LogCollector["Event Logger (keystrokes)"]
+    LogCollector --> AggPipeline["Aggregation Pipeline (Kafka + Spark)"]
+    AggPipeline --> TrieBuilder["Trie Builder (offline)"]
+    TrieBuilder --> TrieStore
+```
+
+*The hot path serves suggestions from an in-memory prefix cache with <10ms latency; a separate offline pipeline aggregates query logs to periodically rebuild the trie and refresh rankings.*
+
+---
+
 ## How to Approach This Question `[Mid]`
 
 Typeahead looks deceptively simple — "just complete the user's query." The real challenge is doing it in under 100ms for hundreds of millions of users while returning relevant, personalized results. Walk through this framework:

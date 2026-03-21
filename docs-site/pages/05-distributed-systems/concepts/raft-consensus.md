@@ -14,6 +14,25 @@ featured_image: "/assets/diagrams/raft-consensus.png"
 
 # Raft Consensus: Leader Election, Log Replication, and Cluster Sizing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[N-node Cluster starts] --> B[All nodes: Follower state]
+    B --> C[Election timeout fires — no heartbeat]
+    C --> D[Node becomes Candidate — requests votes]
+    D --> E{Majority votes received?}
+    E -->|Yes| F[Node becomes Leader]
+    E -->|No — split vote| C
+    F --> G[Leader accepts client writes]
+    G --> H[Replicate log entry to followers]
+    H --> I{Majority acknowledged?}
+    I -->|Yes| J[Commit entry — respond to client]
+    I -->|No| K[Leader crash — new election triggered]
+```
+
+*Leader election, log replication, and commit flow in a Raft cluster. A split vote loops back to candidate; a crashed leader restarts the election cycle.*
+
 **Raft is designed to be understandable. It is not designed to be operationally simple.** The algorithm is elegant, but production deployments of Raft-based systems (etcd, Consul, CockroachDB, TiKV) fail in ways that require deep understanding of the protocol to diagnose. A split vote storm in a 5-node etcd cluster can bring down your entire Kubernetes cluster. Knowing why — and how to prevent it — is a Staff+ operating requirement.
 
 ---

@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/acid-vs-base.png"
 
 # ACID vs BASE: Transaction Models and When Eventual Consistency Is Safe
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Business operation] --> B{Data integrity requirement}
+    B -->|Money / inventory / legal records| C[ACID model]
+    B -->|Likes / views / activity feeds| D[BASE model]
+    C --> E[Atomicity: all-or-nothing]
+    C --> F[Isolation: concurrent txns don't interfere]
+    C --> G[Durability: committed data survives crashes]
+    E --> H[PostgreSQL / MySQL — strong guarantees, lower throughput]
+    D --> I[Basically Available — always responds]
+    D --> J[Eventually Consistent — replicas converge over time]
+    J --> K[DynamoDB / Cassandra — high throughput, stale reads possible]
+```
+
+*ACID and BASE are not database features but business decisions. The model must match the failure cost: losing a payment is catastrophic; a stale like count is acceptable.*
+
 **Your payment service and your activity feed cannot share the same consistency model.** One requires ACID guarantees or users lose money. The other can tolerate eventual consistency or you'll never scale past 10,000 DAU. The mistake is applying the wrong model — and both directions hurt.
 
 Most teams default to ACID (Postgres, MySQL) without asking whether their workload requires it. Fewer teams consciously adopt BASE and design compensating controls. Staff+ engineers map business domains to transaction models before choosing technology.

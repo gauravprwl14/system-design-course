@@ -16,6 +16,27 @@ tags: [patterns, session-management, context-compaction, auth-rotation, tool-pol
 
 > A pattern is a solution that has been found in at least one real system and named so it can be found in the next one. These six patterns were found in OpenClaw. Each one solves a problem that every non-trivial agent system eventually hits.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    P1[Workspace-File Config\nmarkdown per agent]
+    P2[Three-Tier Context Compaction\nrecent + summary + archive]
+    P3[Auth Profile Rotation\ncooldown on 429s]
+    P4[Tool Policy Enforcement\nallow / deny per agent]
+    P5[Binding-Based Routing\nmessage → correct agent]
+    P6[Three-Channel Streaming\nthought / action / result]
+
+    PROBLEM[Production Agent Problem] --> P1
+    PROBLEM --> P2
+    PROBLEM --> P3
+    PROBLEM --> P4
+    PROBLEM --> P5
+    PROBLEM --> P6
+```
+
+*Six portable patterns extracted from OpenClaw that solve the hard problems every non-trivial agent system encounters.*
+
 ## Overview
 
 The [Architecture Deep Dive](./openclaw-architecture) explains how OpenClaw is built as a complete system. This article extracts the six most portable patterns from that system — patterns you can apply independently, in your own stack, without adopting OpenClaw itself.

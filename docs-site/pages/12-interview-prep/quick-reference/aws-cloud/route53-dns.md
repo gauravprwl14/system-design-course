@@ -14,6 +14,24 @@ tags: [aws, route53, dns, routing, failover, latency, geolocation, health-checks
 
 # AWS Route 53: DNS Routing, Failover, and Global Traffic Management
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Routing goal?} -->|Send to nearest region| B[Latency-based routing]
+    A -->|Route by user location| C[Geolocation routing]
+    A -->|Primary + auto-failover| D[Failover routing]
+    A -->|Split traffic A/B| E[Weighted routing]
+    A -->|Compliance — restrict by country| F[Geoproximity routing]
+    D --> G[Health Check on primary]
+    G -->|Unhealthy| H[Promote passive record]
+    B --> I[Active-active multi-region]
+    D --> I
+    I --> J[Low TTL = faster failover, more DNS cost]
+```
+
+*Health checks are what make automatic failover work. Always pair Failover routing with health checks.*
+
 > **Common Interview Question**: "Your application is deployed in us-east-1 and eu-west-1. How do you route users to the nearest region with automatic failover? Explain the different Route 53 routing policies and when you'd use each."
 
 Common in: AWS Solutions Architect, Senior Backend, Infrastructure, Distributed Systems interviews

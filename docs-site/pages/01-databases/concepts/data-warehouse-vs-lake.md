@@ -19,6 +19,20 @@ linked_from: []
 tags: [data-warehouse, data-lake, lakehouse, olap, etl, elt, snowflake, bigquery, delta-lake, iceberg, s3, parquet]
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["OLTP Sources\nPostgres / MySQL"] --> B["Data Warehouse\nSnowflake / BigQuery\nSchema-on-write\nSQL + BI tools"]
+    A --> C["Data Lake\nS3 + Parquet\nSchema-on-read\nCheap storage"]
+    A --> D["Lakehouse\nDelta / Iceberg / Hudi\nACID + cheap storage\nBatch + streaming"]
+    B -->|"High cost\nFast SQL"| E["BI Dashboards"]
+    C -->|"Low cost\nSlow without tuning"| F["ML Training\nRaw logs"]
+    D -->|"Medium cost\nGood SQL + GDPR"| G["Mixed workloads"]
+```
+
+*Never run analytical queries on your OLTP database — use a purpose-built warehouse, lake, or lakehouse to separate analytical load from application traffic.*
+
 **Running analytics on your production database is how you take down your production database — these three architectures exist to separate that concern cleanly.**
 
 ## The Problem Class

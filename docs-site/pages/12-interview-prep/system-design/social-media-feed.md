@@ -25,6 +25,24 @@ tags: [social-media, news-feed, fan-out, twitter, instagram, timeline, scalabili
 
 # Social Media Feed - Design Twitter/Instagram Timeline at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> Gateway["API Gateway"]
+    Gateway --> FeedService["Feed Service"]
+    FeedService --> FeedCache["Feed Cache (Redis)"]
+    FeedCache --> FeedDB["Feed DB (Cassandra)"]
+    FeedService --> FanoutWorker["Fan-out Worker"]
+    PostService["Post Service"] --> EventBus["Event Bus (Kafka)"]
+    EventBus --> FanoutWorker
+    FanoutWorker --> FeedCache
+    UserService["User Service (followers)"] --> FanoutWorker
+    CDN["CDN (media)"] --> Client
+```
+
+*New posts are published to Kafka; fan-out workers push post IDs into each follower's feed cache; celebrities use pull (fan-out on read) to avoid cache storms.*
+
 ## What You'll Learn
 
 Design a **production-grade social media feed** that serves billions of timeline requests:

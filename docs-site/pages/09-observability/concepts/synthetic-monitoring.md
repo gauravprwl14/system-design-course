@@ -13,6 +13,22 @@ status: "published"
 
 # Synthetic Monitoring: Proactive Checks Before Users Hit Problems
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Runner[External Runner\nMultiple Regions] --> HTTP[HTTP Checks\nevery 30s]
+    Runner --> Browser[Browser Transaction\nPlaywright / Puppeteer]
+    HTTP --> Assert[Assert: status 200\nlatency < 800ms]
+    Browser --> Assert2[Assert: login completes\ncheckout succeeds]
+    Assert --> Alert[PagerDuty / Slack Alert]
+    Assert2 --> Alert
+    Alert --> OncallEng[On-Call Engineer\nwakes before users notice]
+    OncallEng --> Runbook[Runbook / Incident]
+```
+
+*Synthetic monitoring fires within 30 seconds of CDN-cached errors, SSL expiry, or broken flows — before a single real user is affected.*
+
 **Your app has been down for 22 minutes. Your monitoring system hasn't fired a single alert. Why? Because your monitoring checks server health — not user experience. The server was healthy. The CDN was serving a cached 500 error. To your users: 22 minutes of broken checkout. To your monitoring: all green. A synthetic check running every 30 seconds from an external network would have fired within 30 seconds of the CDN caching that error. Twenty-one and a half minutes of user impact avoided. That is why you build synthetic monitoring.**
 
 ---

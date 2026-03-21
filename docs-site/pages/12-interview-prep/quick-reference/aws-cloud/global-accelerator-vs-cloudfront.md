@@ -14,6 +14,23 @@ tags: [aws, global-accelerator, cloudfront, cdn, anycast, latency, networking, e
 
 # AWS Global Accelerator vs CloudFront: Global Traffic Routing
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Goal?} -->|Serve cached content globally| B[CloudFront — CDN]
+    A -->|Route packets to AWS faster, no caching| C[Global Accelerator — smart router]
+    A -->|Need static IPs for firewall whitelisting| C
+    A -->|UDP traffic e.g. gaming, VoIP| C
+    B --> D[450+ edge POPs, HTTP/HTTPS only]
+    B --> E[Reduces origin load via caching]
+    C --> F[2 static anycast IPs, TCP + UDP]
+    C --> G[AWS backbone routing, not public internet]
+    C --> H[Health-check-based failover between regions]
+```
+
+*CloudFront reduces origin load by caching; Global Accelerator reduces network latency by routing over the AWS backbone.*
+
 > **Common Interview Question**: "We're building a global gaming platform for 50 million users where every millisecond of latency matters. Which AWS service do you use to route traffic — Global Accelerator or CloudFront? What's the difference?"
 
 Common in: AWS Solutions Architect, Senior Backend, Platform Engineering, and Gaming/Media infrastructure interviews

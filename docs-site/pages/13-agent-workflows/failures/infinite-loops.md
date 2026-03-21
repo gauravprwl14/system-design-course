@@ -21,6 +21,24 @@ level: advanced
 
 > Every agent needs two things: a reason to keep going, and a reason to stop. Most bugs involve the second one.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    TASK[Ambiguous task / no termination] --> LOOP[Agent Loop]
+    LOOP --> ACT[Take action]
+    ACT --> CHECK{Success condition met?}
+    Check -->|never satisfied| LOOP
+    Check -->|A2A cycle| AGT_B[Agent B calls Agent A]
+    AGT_B --> LOOP
+    LOOP --> EXHAUST[Budget / context exhausted]
+    EXHAUST --> FAIL[Run fails with no output]
+
+    CB[Circuit Breaker\nstep limit + progress detector] -->|breaks| LOOP
+```
+
+*Single-agent self-loops and multi-agent cycles both exhaust budgets; circuit breakers and explicit termination conditions are the fix.*
+
 ---
 
 ## The Problem Class `[Agent Reliability — Severity: Critical]`

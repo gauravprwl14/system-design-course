@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/write-scaling-patterns.png"
 
 # Write Scaling: Append-Only, CQRS, Event Sourcing, and Write Sharding
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    WRITES[83k writes/s] --> PATTERN{Write Pattern}
+    PATTERN --> APPEND[Append-Only Log<br/>No index updates]
+    PATTERN --> CQRS[CQRS Command Side<br/>Write model only]
+    PATTERN --> SHARD[Write Sharding<br/>Partition by key]
+    PATTERN --> BUFFER[Redis Write Buffer<br/>Batch + flush]
+    APPEND --> WAL[WAL / Kafka]
+    BUFFER -->|Periodic flush| DB[(Database)]
+    WAL --> READ_MODEL[Read Model<br/>Async projection]
+```
+
+*High write throughput requires moving beyond a single primary — append-only logs, CQRS, sharding, and Redis buffering are the four canonical patterns.*
+
 **Read scaling is straightforward: add replicas. Write scaling is where things get hard — every write must eventually touch a primary, and primaries don't scale horizontally without fundamental architectural changes.**
 
 The good news: most write bottlenecks are solved by one of four patterns. The bad news: each pattern comes with a complexity tax that most teams underestimate.

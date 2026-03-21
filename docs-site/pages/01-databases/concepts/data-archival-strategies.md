@@ -36,6 +36,22 @@ tags:
 **Reading Time**: 20 minutes
 **Prerequisites**: Database basics, partitioning concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Write Path"] --> B["Primary DB\nHot: < 90 days"]
+    B -->|"Archive Worker\nbatch move"| C["Archive DB\nWarm: 90d–2yr\nTimescaleDB/ClickHouse"]
+    C -->|"Cold export\nParquet"| D["S3\nCold: 2–7yr"]
+    D -->|"Glacier transition"| E["Glacier\nFrozen: 7yr+"]
+    F["Read Path"] --> G["Query Router"]
+    G -->|"date < 90d"| B
+    G -->|"date < 2yr"| C
+    G -->|"date < 7yr"| D
+```
+
+*Data archival moves infrequently accessed rows through progressively cheaper storage tiers — a query router makes this transparent to the application while keeping the primary database lean and fast.*
+
 ---
 
 ## The Problem

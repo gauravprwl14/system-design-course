@@ -33,6 +33,22 @@ tags:
 
 # Social Engagement Counter Race Condition
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Post likes counter = 100] --> B[User A: READ counter = 100]
+    A --> C[User B: READ counter = 100]
+    B --> D[User A: likes + 1 = 101 — WRITE]
+    C --> E[User B: likes + 1 = 101 — WRITE]
+    D --> F[DB: counter = 101]
+    E --> G[DB: counter = 101 — overwrites!]
+    G --> H[Net result: 101 instead of 102]
+    H --> I[Lost increment — incorrect like count displayed]
+```
+
+*Normal path: read-increment-write is atomic, counter advances by 1 per like. Trigger: two concurrent reads before either write completes. Cascade: last write overwrites the other, one increment silently lost.*
+
 **Category**: Concurrency & Race Conditions
 **Domain**: Social Media
 **Industry**: Social Platforms, Content Platforms

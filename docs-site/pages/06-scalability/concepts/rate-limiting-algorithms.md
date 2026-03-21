@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/rate-limiting-algorithms.png"
 
 # Rate Limiting Algorithms: Token Bucket, Leaky Bucket, and Sliding Window
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CLIENT[Client Request] --> RL{Rate Limiter}
+    RL --> TB[Token Bucket<br/>Allows bursts]
+    RL --> LB[Leaky Bucket<br/>Smooths output]
+    RL --> SW[Sliding Window<br/>Precise counts]
+    TB --> REDIS[(Redis<br/>Distributed State)]
+    LB --> REDIS
+    SW --> REDIS
+    REDIS --> ALLOW[Allow Request]
+    REDIS --> DENY[429 Too Many Requests]
+```
+
+*Five major algorithms share a Redis-backed counter; the choice trades burst tolerance for precision and coordination cost.*
+
 **Every rate limiter looks simple until you run it across 50 API pods and discover your "100 req/s per user" limit is actually 5000 req/s because none of the pods are coordinating.**
 
 This article covers every major algorithm, how they behave under burst traffic, and the distributed coordination problem that makes naive implementations wrong at scale.

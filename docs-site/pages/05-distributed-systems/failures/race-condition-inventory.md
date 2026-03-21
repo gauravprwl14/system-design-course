@@ -42,6 +42,23 @@ tags:
 
 # Race Condition in Inventory Management - E-commerce Overselling
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[1 item in stock] --> B[Request A: READ stock = 1]
+    A --> C[Request B: READ stock = 1]
+    B --> D[Request A: stock > 0 — allow ✓]
+    C --> E[Request B: stock > 0 — allow ✓]
+    D --> F[Request A: WRITE stock = 0]
+    E --> G[Request B: WRITE stock = 0]
+    F --> H[Two orders confirmed — 0 actual stock]
+    G --> H
+    H --> I[Oversell: customer disappointment + refund cost]
+```
+
+*Normal path: read-check-decrement completes atomically. Trigger: two concurrent reads before either write. Cascade: both requests pass the guard, both write 0, one order cannot be fulfilled.*
+
 **Category**: Concurrency & Race Conditions
 **Domain**: E-commerce
 **Industry**: Retail

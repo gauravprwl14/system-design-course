@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/multi-layer-caching.png"
 
 # Multi-Layer Caching: L1/L2/CDN Hierarchies and Coherence at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Request[Incoming Request] --> L1[L1 In-Process Cache]
+    L1 -->|Hit ~80%| Response[Return Response]
+    L1 -->|Miss| L2[L2 Redis Cluster]
+    L2 -->|Hit ~95%| L1
+    L2 -->|Miss| CDN[CDN Edge Cache]
+    CDN -->|Hit| L2
+    CDN -->|Miss| Origin[Origin / DB]
+    Origin --> CDN
+```
+
+*Each cache layer absorbs the majority of remaining misses from the layer above it; the combination of L1 + L2 + CDN reduces origin load by 99%+ while each layer adds a new invalidation surface to manage.*
+
 **A single cache layer absorbs 80% of traffic. Two cache layers absorb 98%. Three layers absorb 99.7%. The math is compelling — but each additional layer adds a consistency surface that, if mismanaged, serves stale data from the wrong layer without anyone noticing for hours.**
 
 ---

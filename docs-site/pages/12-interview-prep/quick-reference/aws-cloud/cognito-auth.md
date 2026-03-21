@@ -14,6 +14,23 @@ tags: [aws, cognito, authentication, authorization, user-pools, identity-pools, 
 
 # AWS Cognito: User Pools, Identity Pools, and Authentication Flows
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A[User / Mobile App] -->|Sign-in| B[Cognito User Pool]
+    B -->|Returns JWT tokens| A
+    A -->|Exchange JWT for AWS creds| C[Cognito Identity Pool]
+    C -->|STS AssumeRoleWithWebIdentity| D[Temporary AWS Credentials]
+    D -->|Direct upload| E[S3 Bucket]
+    D -->|Direct query| F[DynamoDB]
+    B --> G[ID Token — who you are]
+    B --> H[Access Token — Cognito API ops]
+    B --> I[Refresh Token — long-lived re-auth]
+```
+
+*User Pool = authentication; Identity Pool = AWS resource authorization. Both together enable serverless mobile backends.*
+
 > **Common Interview Question**: "Design authentication for a mobile app that needs to upload images directly to S3. How does the mobile app get AWS credentials? What's the difference between a User Pool and an Identity Pool?"
 
 Common in: AWS Solutions Architect, Senior Backend, Mobile/App Backend, FAANG-style system design interviews

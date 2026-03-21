@@ -49,6 +49,21 @@ tags:
 
 # Design Netflix Streaming Platform
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User Presses Play] --> B[API Gateway<br/>700+ microservices]
+    B --> C[Recommendation Service<br/>personalized catalog]
+    B --> D[Open Connect CDN<br/>15,000+ edge servers]
+    D --> E[Adaptive Bitrate<br/>ABR streaming]
+    E --> F[Video chunks delivered<br/>sub-2s startup]
+    B --> G[Zuul / Hystrix<br/>circuit breakers]
+    G --> H[Chaos Monkey<br/>continuous resilience testing]
+    H --> I[99.99% availability<br/>190 countries]
+```
+*Normal path: play request → CDN cache hit → adaptive bitrate delivery. Key challenge: 15% of global internet traffic with sub-2s startup across 190 countries and 700+ microservices.*
+
 **Difficulty**: 🔴 Advanced
 **Time**: 60 minutes
 **Companies**: Netflix, Disney+, Hulu, Amazon Prime Video, YouTube (Common for senior/staff roles)

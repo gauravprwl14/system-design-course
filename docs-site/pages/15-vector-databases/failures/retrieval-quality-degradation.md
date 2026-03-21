@@ -11,6 +11,22 @@ tags: [vector-databases, retrieval-quality, monitoring, recall, evaluation, RAG]
 **Level**: 🔴 Advanced
 **Reading Time**: 10 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    VectorSearch["Vector Search Running"] --> NormalMetrics["Latency OK\nError rate: 0\nScores: 0.5–0.85"]
+    NormalMetrics --> SilentFail["Results returned but WRONG"]
+    SilentFail --> Causes["Root Causes"]
+    Causes --> Drift["Data distribution shift"]
+    Causes --> Chunk["Wrong chunking strategy"]
+    Causes --> Filter["Missing metadata filters"]
+    Causes --> Stale["Stale embeddings"]
+    SilentFail --> Detect["Detect: offline recall eval\nground-truth queries + metrics"]
+```
+
+*Silent quality degradation produces no errors or latency spikes — the only signal is measuring retrieval recall against ground-truth queries; most teams skip this and go weeks without noticing.*
+
 > Your vector search is returning results. The latency is normal. The error rate is zero. But the results are wrong — and have been for three weeks. This is the hardest failure mode in production vector systems.
 
 ## The Problem

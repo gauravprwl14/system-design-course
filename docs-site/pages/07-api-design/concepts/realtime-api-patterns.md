@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/realtime-api-patterns.png"
 
 # Real-Time APIs: Long Polling, SSE, and WebSocket Trade-offs
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    NEED[Real-Time Requirement] --> DIR{Direction}
+    DIR -->|Server to client| SSE[Server-Sent Events<br/>HTTP stream, auto-reconnect]
+    DIR -->|Server to client| LONG[Long Polling<br/>Held HTTP request]
+    DIR -->|Bidirectional| WS[WebSockets<br/>Full-duplex, stateful]
+    SSE --> SIMPLE[Standard HTTP<br/>No LB changes]
+    WS --> STICKY[Sticky sessions<br/>or pub/sub fan-out]
+    LONG --> SIMPLE
+    WS --> CHAT[Chat / Gaming<br/>Collaborative editing]
+    SSE --> FEED[Live feeds<br/>Status updates]
+```
+
+*Match the technique to the data direction: SSE covers 80% of server-push needs over plain HTTP; WebSockets are reserved for true bidirectional communication.*
+
 **"Just use WebSockets"** is the wrong answer to most real-time requirements. WebSockets are stateful, bidirectional, and require specialized load balancer configuration. Server-Sent Events handle 80% of real-time use cases with regular HTTP, automatic reconnection, and zero load balancer changes. Choosing the wrong technique wastes engineering effort and creates operational fragility. This article shows you how to match the technique to the requirement.
 
 ---

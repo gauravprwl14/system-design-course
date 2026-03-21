@@ -14,6 +14,23 @@ tags: [aws, waf, shield, guardduty, macie, inspector, security-hub, ddos, threat
 
 # AWS WAF, Shield, GuardDuty & Security Services: Multi-Layer Threat Protection
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Threat type?} -->|SQL injection, XSS, bad bots| B[WAF — Layer 7 HTTP filter]
+    A -->|DDoS SYN floods, UDP reflection| C[Shield Standard — free, always on]
+    A -->|DDoS + need response team| D[Shield Advanced — $3K/month]
+    A -->|Compromised EC2, malware C2 traffic| E[GuardDuty — ML anomaly detection]
+    A -->|PII in S3 buckets| F[Macie — ML PII scanner]
+    A -->|CVEs in EC2 / containers| G[Inspector — vulnerability scanner]
+    E --> H[Security Hub — aggregates all findings]
+    F --> H
+    G --> H
+```
+
+*Match threat type to service: WAF for application layer, GuardDuty for runtime threats, Macie for data exposure.*
+
 > **Common Interview Question**: "How do you protect a public API from DDoS attacks? How do you detect if an EC2 instance has been compromised? What's the difference between WAF and Shield? Your security team says 'we need to know if any S3 bucket contains PII' — which AWS service do you use?"
 
 Common in: AWS Solutions Architect, Security Engineering, Senior Backend, Cloud Security interviews

@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/global-distribution-strategy.png"
 
 # Global Distribution: Data Residency, Latency Routing, and Conflict Resolution
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    USER[Global Users] --> GEO[Geo-Routing DNS<br/>Route53 / Cloudflare]
+    GEO --> US[US-East Region<br/>Primary]
+    GEO --> EU[EU-West Region<br/>GDPR residency]
+    GEO --> APAC[AP-Southeast Region]
+    US -->|Cross-region replication| EU
+    US -->|Cross-region replication| APAC
+    EU --> CONFLICT{Write Conflict?}
+    CONFLICT -->|CRDT / LWW| RESOLVE[Conflict Resolution]
+    US --> RESIDENCY[Data Residency<br/>Rules Engine]
+```
+
+*Geo-routing minimizes latency by directing users to nearby regions; active-active setups require explicit conflict resolution and data-residency enforcement.*
+
 **Every distributed system eventually faces the same question: do you run one region and accept 200ms latency for users in other continents, or do you run multiple regions and accept the write conflict complexity?**
 
 There's no free lunch. Global distribution trades operational simplicity for latency. This article gives you the math to decide which trade-off is right for your system.

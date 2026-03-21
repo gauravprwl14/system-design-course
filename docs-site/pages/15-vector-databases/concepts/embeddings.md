@@ -17,6 +17,20 @@ tags: [embeddings, vectors, semantic-search, text-embedding, dimensions]
 **Level**: 🟢 Beginner
 **Reading Time**: 10 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    Text["Raw Text"] --> Tokenize["Tokenize\n(BPE / WordPiece)"]
+    Tokenize --> Transformer["Transformer Encoder\n(12–24 attention layers)"]
+    Transformer --> Pool["Pooling\n(CLS token or mean)"]
+    Pool --> Vector["Dense Vector\n[1536 floats]"]
+    Vector --> Similar["Similar texts → nearby vectors\ncosine similarity ~0.97"]
+    Vector --> Dissimilar["Unrelated texts → far apart\ncosine similarity ~0.12"]
+```
+
+*An embedding model converts raw text into a fixed-length float vector; semantically similar texts land geometrically close in the high-dimensional space regardless of shared vocabulary.*
+
 > An embedding is a dense float vector that captures the meaning of a piece of data. Two semantically similar inputs produce vectors that are close together in high-dimensional space — even if they share no words.
 
 ## The Problem

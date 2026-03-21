@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/hot-key-problem.png"
 
 # Hot Key Problem: Detection, Local Caching, and Read Replica Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Clients[Millions of Clients] --> AppServers[App Server Fleet]
+    AppServers -->|All reads for celebrity:profile| Node7[Redis Node 7 HOT]
+    AppServers -->|Normal traffic| OtherNodes[Nodes 1-6, 8-30 IDLE]
+    Node7 -->|Saturated| Overload[Bottleneck / Errors]
+    AppServers --> L1[Local In-Process Cache]
+    L1 -->|Hit| FastReturn[Sub-ms return]
+    L1 -->|Miss| Node7
+```
+
+*A single Redis node receives all traffic for a popular key while other nodes sit idle; the fix is an L1 in-process cache on each app server so the hot key is served locally without hitting Redis.*
+
 **One Redis node getting 400,000 GET requests per second for a single key while the other 29 nodes sit idle at 5,000 req/sec each — that's the hot key problem. It's invisible until it causes a node-level bottleneck, and the usual distributed-systems solutions (add nodes, consistent hashing) make it worse.**
 
 ---

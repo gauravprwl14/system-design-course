@@ -18,6 +18,21 @@ tags: [cosine-similarity, dot-product, euclidean, ann, nearest-neighbor, recall]
 **Level**: 🟡 Intermediate
 **Reading Time**: 12 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Query["Query Vector"] --> Metric{"Distance Metric"}
+    Metric --> Cosine["Cosine Similarity\nangle between vectors\n(normalize magnitude)"]
+    Metric --> Dot["Dot Product\nangle + magnitude\n(use if vectors are normalized)"]
+    Metric --> Euclid["Euclidean Distance\nabsolute spatial distance\n(coordinates matter)"]
+    Query --> ANN{"Exact vs ANN"}
+    ANN --> Exact["Exact KNN\nO(N·d) — slow at scale"]
+    ANN --> HNSW["HNSW / IVF\n~1ms, 95–99% recall"]
+```
+
+*Cosine similarity is the default for text embeddings; use dot product only if vectors are unit-normalized; HNSW approximate nearest neighbor gives sub-millisecond search at the cost of ~1–5% recall.*
+
 > Choosing the wrong distance metric is one of the most common errors in production vector systems. Cosine similarity, dot product, and Euclidean distance look similar but behave very differently — and the wrong choice silently degrades retrieval quality.
 
 ## The Problem

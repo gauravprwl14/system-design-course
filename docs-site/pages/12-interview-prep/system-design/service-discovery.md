@@ -23,6 +23,22 @@ tags: [service-discovery, microservices, kubernetes, consul, eureka, dns-based-d
 
 # Service Discovery - How Microservices Find Each Other
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    ServiceA["Service A (client)"] --> Registry["Service Registry (Consul / Eureka)"]
+    ServiceB["Service B"] --> Registry
+    ServiceC["Service C"] --> Registry
+    Registry --> HealthCheck["Health Check Agent"]
+    ServiceA --> LoadBalancer["Client-side LB / DNS"]
+    LoadBalancer --> ServiceB
+    LoadBalancer --> ServiceC
+    Orchestrator["Kubernetes / Envoy"] --> Registry
+```
+
+*Services register on startup and heartbeat the registry; on failure health checks remove stale entries so the client-side load balancer only routes to healthy instances.*
+
 ## What You'll Learn
 
 Master **service discovery** patterns used in production microservices:

@@ -19,6 +19,21 @@ tags: [hybrid-search, bm25, sparse, dense, rrf, fusion, keyword-semantic]
 **Level**: 🟡 Intermediate
 **Reading Time**: 11 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Query["User Query"] --> Dense["Dense Retrieval\nANN / bi-encoder\ncaptures: semantic meaning"]
+    Query --> Sparse["Sparse Retrieval\nBM25 / keyword index\ncaptures: exact terms, IDs"]
+    Dense --> TopDense["Top-100 by cosine similarity"]
+    Sparse --> TopSparse["Top-100 by BM25 score"]
+    TopDense --> Fusion["Fusion Layer\nRRF or score normalization"]
+    TopSparse --> Fusion
+    Fusion --> Final["Final Top-K results"]
+```
+
+*Hybrid search runs both semantic and keyword paths then fuses them with Reciprocal Rank Fusion (RRF); consistently outperforms either alone because each covers the other's blind spots.*
+
 > Pure vector search misses "iPhone 15 Pro Max". Pure BM25 misses "a smartphone with excellent low-light photography". Hybrid search catches both — and consistently outperforms either alone in production benchmarks.
 
 ## The Problem

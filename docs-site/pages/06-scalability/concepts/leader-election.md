@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/leader-election.png"
 
 # Leader Election: ZooKeeper, etcd, and Raft-Based Coordination
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    NODES[Candidate Nodes] --> COORD[Coordination Service<br/>ZooKeeper / etcd]
+    COORD --> ELECT{Election}
+    ELECT -->|Lease granted| LEADER[Leader Node<br/>Holds lease TTL]
+    ELECT -->|Wait| FOLLOWER[Follower Nodes]
+    LEADER -->|Heartbeat| COORD
+    LEADER -->|Exclusive writes| DB[(Database)]
+    COORD -->|Lease expired| REELECT[Re-election]
+    REELECT --> ELECT
+```
+
+*Candidates race for a lease in a coordination store; only the lease holder writes to shared resources, preventing split-brain data corruption.*
+
 **Leader election is the distributed systems problem that looks solved — until your "leader" and the new leader are both writing to the database simultaneously because one of them didn't know it was dethroned.**
 
 Split-brain is not a theoretical concern. It has caused data corruption at Google, Cloudflare, and dozens of production systems in 2024 alone.

@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/feature-flag-architecture.png"
 
 # Feature Flag Architecture: Gradual Rollout, Kill Switches, and Technical Debt
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Code Deployed<br/>flag off by default] --> B[Flag Service<br/>evaluates rules]
+    B --> C{User segment?}
+    C --> D[1% canary<br/>flag on]
+    C --> E[99% users<br/>flag off / old path]
+    D --> F[Monitor metrics<br/>errors / latency]
+    F --> G{Healthy?}
+    G --> H[Gradual rollout<br/>10% → 50% → 100%]
+    G --> I[Kill switch<br/>instant rollback]
+    H --> J[Retire flag<br/>remove dead code]
+```
+*Normal path: flag off → gradual enable → 100% → retire. Trigger: bad metrics detected. Failure cascade: unretired flags accumulate into 2^N combinatorial test explosion.*
+
 **Feature flags are the easiest way to reduce deployment risk and the easiest way to accumulate catastrophic technical debt. A mature flags system with 500 live flags has a test surface of 2^500 combinations — more states than atoms in the observable universe. This article covers how to use flags effectively and, critically, how to retire them before they collapse your system.**
 
 ---

@@ -38,6 +38,24 @@ tags:
 
 # Storage Bloat from Soft Deletes & Uncompressed Data
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    DB[5TB Database] --> Active[Active Data 800GB 16%]
+    DB --> SoftDel[Soft-Deleted 3.5TB 70%]
+    DB --> Logs[Uncompressed Logs 500GB 10%]
+    DB --> Images[Unused Images 200GB 4%]
+    SoftDel --> Tier[Tiered Storage S3 Glacier]
+    Logs --> Compress[Compression LZ4 / Zstd 3-10x ratio]
+    SoftDel --> Retain[Retention Policy 90-day purge]
+    Tier --> Save[82% Cost Reduction]
+    Compress --> Save
+    Retain --> Save
+```
+
+*84% of storage can be waste — tiered archival, compression, and retention policies reclaim it.*
+
 **Category**: 💰 Cost & Resource Waste
 **Domain**: Database Storage, Cost Optimization
 **Industry**: All (SaaS, E-commerce, Social Media)

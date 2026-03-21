@@ -23,6 +23,23 @@ tags: [database, replication, read-replicas, high-availability, master-slave, po
 
 # Database Replication - Scale Reads and High Availability
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    WriteClient["Write Client"] --> Primary["Primary DB (Master)"]
+    Primary --> WAL["Write-Ahead Log (WAL)"]
+    WAL --> Replica1["Read Replica 1"]
+    WAL --> Replica2["Read Replica 2"]
+    WAL --> Replica3["Read Replica 3 (standby)"]
+    ReadClient["Read Client"] --> ReadLB["Read Load Balancer"]
+    ReadLB --> Replica1
+    ReadLB --> Replica2
+    Replica3 --> Primary
+```
+
+*All writes go to the primary which streams the WAL to replicas; a read load balancer directs read queries across replicas while a standby replica is promoted automatically on primary failure.*
+
 ## What You'll Learn
 
 Master **database replication** for read scaling and fault tolerance:

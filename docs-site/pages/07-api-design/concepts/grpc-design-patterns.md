@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/grpc-design-patterns.png"
 
 # gRPC Design: Streaming, Deadlines, Retry, and Schema Evolution
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CLIENT[gRPC Client] -->|Protobuf + HTTP/2| SVC_A[Service A]
+    SVC_A -->|Deadline propagated| SVC_B[Service B]
+    SVC_B -->|Remaining budget| SVC_C[Service C]
+    CLIENT --> STREAM{Stream Type}
+    STREAM --> UNARY[Unary RPC]
+    STREAM --> SS[Server Streaming]
+    STREAM --> CS[Client Streaming]
+    STREAM --> BIDI[Bidirectional Stream]
+    SVC_A --> SCHEMA[Proto Schema<br/>Backward-compatible evolution]
+```
+
+*gRPC propagates the original deadline through the entire call chain and supports four streaming modes over a single multiplexed HTTP/2 connection.*
+
 **REST APIs use timeouts. gRPC uses deadlines. This distinction is not semantic — it's architectural.** A REST timeout is local to a single connection. A gRPC deadline propagates through the entire call chain: client sets a 500ms deadline, service A receives it and passes the remaining time to service B, which passes what remains to service C. Every service in the chain knows how much time the original caller has left. This eliminates the silent timeout amplification that makes microservice latency debugging so difficult in REST systems.
 
 ---

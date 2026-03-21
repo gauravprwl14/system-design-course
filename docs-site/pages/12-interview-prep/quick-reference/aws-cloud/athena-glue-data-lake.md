@@ -14,6 +14,23 @@ tags: [aws, athena, glue, data-lake, s3, parquet, lake-formation, kinesis, fireh
 
 # AWS Athena, Glue & Data Lake Architecture: Querying Petabytes Cheaply
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A[Kinesis Firehose] -->|Real-time ingest| B[S3 Data Lake]
+    C[Glue Crawler] -->|Discover schema| D[Glue Data Catalog]
+    B --> C
+    D --> E[Athena — serverless SQL]
+    E --> F[Query results — $5 per TB scanned]
+    B --> G{File format?}
+    G -->|JSON / CSV| H[Scan all columns — expensive]
+    G -->|Parquet columnar| I[Scan only needed columns — 75% cheaper]
+    D --> J[Lake Formation — row/column access control]
+```
+
+*Convert raw data to Parquet with partitioning to reduce Athena scan costs by 75%+.*
+
 > **Common Interview Question**: "You have 10 years of clickstream data — 500TB. How do you query it cost-effectively? Design a real-time analytics pipeline for 1 million events per second. How do you build a data lake that both data scientists and BI tools can query?"
 
 Common in: AWS Solutions Architect, Data Engineering, Senior Backend, Analytics Architecture interviews

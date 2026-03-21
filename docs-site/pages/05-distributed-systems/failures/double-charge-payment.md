@@ -40,6 +40,24 @@ tags:
 
 # Payment Double-Charge Race Condition - Fintech Payment Processing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User clicks Pay $299.99] --> B[Request 1 sent to payment service]
+    B --> C[Charge sent to payment gateway]
+    C --> D[Gateway timeout — no response]
+    D --> E[Client retries: Request 2 sent]
+    E --> F[Gateway processes Request 2]
+    C --> G[Gateway also processes Request 1 — delayed]
+    F --> H[Charge #1: $299.99 deducted]
+    G --> I[Charge #2: $299.99 deducted]
+    H --> J[Customer charged twice — $599.98 total]
+    I --> J
+```
+
+*Normal path: charge completes, idempotency key prevents retry from double-firing. Trigger: gateway timeout causes retry with no dedup. Cascade: both requests processed, two charges applied, refund required.*
+
 **Category**: Concurrency & Race Conditions
 **Domain**: Fintech
 **Industry**: Payment Processing

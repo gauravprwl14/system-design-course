@@ -62,6 +62,21 @@ tags:
 **Difficulty**: 🟡 Intermediate
 **Estimated Impact**: $1M-$10M/hour revenue loss, database crashes
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Celebrity posts\n1M followers"] --> B["All requests hash\nto same shard"]
+    B --> C["Shard 45: 1M QPS\n999x overload → CRASH"]
+    D["Solutions"] --> E["Hierarchical Sharding\nCelebrity tier isolated"]
+    D --> F["Fan-Out on Write\nDistribute writes to\nfollower inboxes"]
+    D --> G["Read Replicas\n5 replicas × 200K QPS\n= 1M QPS capacity"]
+    E --> H["Proactive detection\n> 100K followers"]
+    F --> I["Write amplification\n1 post → 1M writes"]
+```
+
+*Hot partitions occur when a small number of entities receive a disproportionate share of traffic — uniform hash sharding cannot prevent them without tier separation or write fan-out.*
+
 ---
 
 ## The Scenario

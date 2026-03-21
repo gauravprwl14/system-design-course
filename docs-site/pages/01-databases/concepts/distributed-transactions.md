@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/distributed-transactions.png"
 
 # Distributed Transactions: 2PC, Saga, and TCC at Production Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Need atomic op\nacross services?"] --> B{"All participants\nsupport XA?"}
+    B -->|"Yes + same DC\nlow throughput"| C["2PC\nACID, but blocks\non coordinator failure"]
+    B -->|"No: HTTP APIs,\nmixed systems"| D{"Need partial\nisolation?"}
+    D -->|"Yes"| E["TCC\nTry / Confirm / Cancel\nsoft locks"]
+    D -->|"No, eventual OK"| F{"Simple linear\n< 5 steps?"}
+    F -->|"Yes"| G["Choreography Saga\nKafka events"]
+    F -->|"No / financial"| H["Orchestration Saga\nTemporal.io"]
+```
+
+*There is no distributed transaction that is both consistent and available — choose 2PC for strong isolation in same-DC XA systems, or Saga/TCC for heterogeneous microservices that need eventual consistency.*
+
 **The moment you split a transaction across two databases, you've made a bet.** Either you accept the complexity of distributed coordination (2PC, TCC) or you accept eventual consistency and compensating logic (Saga). There is no third option. Engineers who try to find one end up with distributed systems that are neither consistent nor available.
 
 This article is about making that bet deliberately.

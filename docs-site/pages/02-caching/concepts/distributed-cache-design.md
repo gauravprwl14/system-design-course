@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/distributed-cache-design.png"
 
 # Distributed Cache Design: Partitioning, Replication, and Consistency
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client[Client Request] --> Router[Consistent Hash Router]
+    Router --> N1[Node 1 Primary]
+    Router --> N2[Node 2 Primary]
+    Router --> N3[Node 3 Primary]
+    N1 --> R1[Replica 1a]
+    N2 --> R2[Replica 2a]
+    N3 --> R3[Replica 3a]
+    N1 -->|Rehash on add/remove| Router
+```
+
+*Consistent hashing routes each key to a specific primary node; replicas provide read scale and failover — adding or removing nodes only remaps a fraction of keys.*
+
 **A single Redis node at 25GB RAM and 200K ops/sec is impressive — until it isn't. Distributed caching is not just about adding nodes; partitioning strategy, replication factor, and consistency semantics determine whether your cache saves you or becomes the incident.**
 
 ---

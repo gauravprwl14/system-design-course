@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/time-series-databases.png"
 
 # Time-Series Databases: InfluxDB, TimescaleDB, and Prometheus TSDB Trade-offs
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Time-series storage\ndecision"] --> B{"Already on\nPostgreSQL?"}
+    B -->|"Yes"| C["TimescaleDB extension\n20-80x compression\ncontinuous aggregates"]
+    B -->|"No"| D{"Use case?"}
+    D -->|"Operational metrics\n+ alerting"| E["Prometheus\n+ Thanos/Mimir\nfor long-term"]
+    D -->|"IoT / high ingest"| F{"Need SQL joins?"}
+    F -->|"Yes"| C
+    F -->|"No"| G["InfluxDB 2.x\nTSM engine\nFlux queries"]
+    D -->|"Petabyte analytics"| H["ClickHouse\ncolumnar TSDB"]
+```
+
+*Time-series databases achieve 10-100x compression over plain PostgreSQL on timestamp+metric data by using delta encoding and columnar storage — pick TimescaleDB if you already use Postgres, InfluxDB for pure metrics.*
+
 **Your application emits 50,000 metrics data points per second. At 16 bytes per point, that's 800KB/s — 69 GB/day — 25 TB/year.** Most of that data is useless after 90 days. The right time-series database can compress it 50-100x, auto-expire old data, and answer range queries over billions of rows in milliseconds. The wrong one will have you sharding PostgreSQL at 2am.
 
 ---

@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/mvcc-concurrency-control.png"
 
 # MVCC: Snapshot Isolation, Write Skew, and Phantom Read Prevention
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Transaction starts"] --> B["Snapshot captured\n(xmin/xmax range)"]
+    B --> C["Read rows\n(visibility check)"]
+    C --> D{"Write skew\nanomaly?"}
+    D -->|"Same-row conflict"| E["OCC / SELECT FOR UPDATE"]
+    D -->|"Multi-row invariant"| F["SERIALIZABLE isolation\n(SSI)"]
+    D -->|"Disjoint rows, low contention"| G["Sentinel row lock"]
+    F --> H["~15% overhead\nvs READ COMMITTED"]
+    B --> I["Dead tuples accumulate\n→ AUTOVACUUM cleans up"]
+```
+
+*MVCC gives every transaction a consistent snapshot — but write skew can still violate multi-row business invariants unless you choose the right isolation level.*
+
 **Most engineers believe they understand transactions until a double-booking bug hits production at 3am.** The invariant they were protecting — "no two reservations for the same slot" — was correctly enforced in unit tests. But under concurrent load with snapshot isolation, two transactions each read "slot available," both committed, and now two customers hold the same seat.
 
 This is write skew. MVCC causes it. And understanding why requires going one layer deeper into how PostgreSQL's visibility rules actually work.

@@ -17,6 +17,22 @@ tags: [aws, sqs, sns, eventbridge, messaging, fan-out, pub-sub, event-driven, qu
 
 # AWS SQS vs SNS vs EventBridge: The Messaging Holy Trinity
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Messaging pattern?} -->|Decouple one producer from one consumer| B[SQS — pull-based queue]
+    A -->|Broadcast to many subscribers at once| C[SNS — push pub/sub]
+    A -->|Complex routing, 90+ AWS sources, cross-account| D[EventBridge — event bus]
+    B --> E[FIFO: exactly-once, 300 TPS]
+    B --> F[Standard: at-least-once, unlimited TPS]
+    C --> G[Fan-out: SNS topic → multiple SQS queues]
+    D --> H[Content-based filtering, event archives, replay]
+    G --> I[Combined pattern: SNS fan-out + SQS per service]
+```
+
+*They work together: SNS fan-out to SQS queues per consumer is the canonical decoupling pattern.*
+
 ## Question
 **"When would you use SQS vs SNS vs EventBridge? Give a real-world example of each. How do they work together?"**
 

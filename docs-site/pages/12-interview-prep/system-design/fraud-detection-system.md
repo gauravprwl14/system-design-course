@@ -27,6 +27,27 @@ tags: [fraud, ml, real-time, payments, risk-scoring, streaming]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client / Mobile App"] --> Gateway["API Gateway"]
+    Gateway --> TxnService["Transaction Service"]
+    TxnService --> RulesEngine["Rules Engine (pre-ML)"]
+    TxnService --> MLScorer["ML Scoring Service"]
+    RulesEngine --> Decision["Decision Engine"]
+    MLScorer --> Decision
+    Decision --> ActionService["Action Service (block / allow / challenge)"]
+    TxnService --> EventStream["Kafka Event Stream"]
+    EventStream --> FeatureStore["Feature Store (Redis)"]
+    EventStream --> AuditDB["Audit DB (Postgres)"]
+    FeatureStore --> MLScorer
+```
+
+*High-level fraud detection flow: every transaction passes synchronous rules + ML scoring before a decision is emitted, while an async event stream feeds the feature store and audit trail.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 A fraud detection system intercepts every payment transaction and assigns a risk score in under 50ms by running a fast rule engine followed by an ML model inference step. Low-risk transactions are approved immediately; high-risk ones are declined or sent for manual review. A feedback loop from chargebacks and confirmed fraud continuously retrains the model to adapt to new patterns.

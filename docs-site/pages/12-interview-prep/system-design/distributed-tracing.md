@@ -23,6 +23,24 @@ tags: [distributed-tracing, observability, jaeger, opentelemetry, microservices,
 
 # Distributed Tracing - Debugging Microservices at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client Request"] --> ServiceA["Service A (root span)"]
+    ServiceA --> ServiceB["Service B (child span)"]
+    ServiceA --> ServiceC["Service C (child span)"]
+    ServiceB --> ServiceD["Service D (child span)"]
+    ServiceA --> Collector["OTel Collector"]
+    ServiceB --> Collector
+    ServiceC --> Collector
+    ServiceD --> Collector
+    Collector --> TraceBackend["Trace Backend (Jaeger / Zipkin)"]
+    TraceBackend --> Dashboard["Trace Explorer UI"]
+```
+
+*Each service propagates trace context in headers, emits spans to an OTel collector, which batches and forwards them to Jaeger where the full request waterfall can be visualised.*
+
 ## What You'll Learn
 
 Master **distributed tracing** to debug and monitor complex microservice architectures:

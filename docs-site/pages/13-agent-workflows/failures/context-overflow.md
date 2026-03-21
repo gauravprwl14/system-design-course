@@ -21,6 +21,23 @@ level: intermediate
 
 > A context window is a buffer. Like all buffers, it fills up. The question is what happens when it does.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    START[Agent starts — small context]
+    START --> S1[Step 1: +query tokens]
+    S1 --> S2[Step 2: +tool result tokens]
+    S2 --> S3[Step N: +reasoning + errors]
+    S3 --> FULL{Context at limit}
+    FULL -->|hard overflow| ERR[API Error — call fails]
+    FULL -->|soft overflow| TRUNC[Silent truncation\nagent loses instructions]
+    ERR --> FIX[Handle: compress / summarize]
+    TRUNC --> FIX
+```
+
+*Tool results and reasoning steps accumulate until the model limit is hit; without proactive management the agent crashes or silently degrades.*
+
 ---
 
 ## The Problem Class `[Agent Reliability — Severity: High]`

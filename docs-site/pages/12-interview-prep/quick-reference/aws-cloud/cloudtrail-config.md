@@ -14,6 +14,23 @@ tags: [aws, cloudtrail, config, compliance, audit, governance, security, eventbr
 
 # AWS CloudTrail & Config: Audit, Governance, and Compliance
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{What do you need?} -->|Who did what and when?| B[CloudTrail]
+    A -->|What does a resource look like now vs before?| C[AWS Config]
+    B --> D[Management Events: free, on by default]
+    B --> E[Data Events: S3/Lambda, costs extra]
+    B --> F[Insights: anomaly detection on API volume]
+    C --> G[Config Rules: evaluate compliance continuously]
+    C --> H[Config History: resource state timeline]
+    G -->|Non-compliant| I[Alert / Auto-remediate via SSM]
+    F -->|Anomaly detected| J[EventBridge → SNS alert]
+```
+
+*CloudTrail = audit log of actions; Config = compliance state of resources. Use both together.*
+
 > **Common Interview Question**: "How do you prove who deleted the S3 bucket? How do you detect when someone changes a security group? How do you achieve continuous compliance across 50 AWS accounts?"
 
 Common in: AWS Solutions Architect, Security Engineering, Compliance/Governance, DevSecOps, CISO-level platform interviews

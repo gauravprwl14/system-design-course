@@ -20,6 +20,21 @@ linked_from: []
 tags: [cdc, debezium, kafka, replication, event-streaming, data-sync, postgres, wal]
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["PostgreSQL\nOLTP DB"] -->|"WAL logical\nreplication slot"| B["Debezium\nConnector"]
+    B -->|"INSERT/UPDATE/DELETE\nevents"| C["Kafka Topics"]
+    C --> D["Data Warehouse\nBigQuery"]
+    C --> E["Search Index\nElasticsearch"]
+    C --> F["Cache\nRedis"]
+    C --> G["Microservice\nConsumer"]
+    B -->|"LSN = idempotency key\nat-least-once delivery"| C
+```
+
+*CDC reads the database's own WAL to stream every committed change to downstream systems with near-zero write overhead — eliminating polling, dual-writes, and missed deletes.*
+
 **Without CDC, you are either polling your database to death or shipping stale data to every downstream system.**
 
 ## The Problem Class

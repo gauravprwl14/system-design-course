@@ -21,6 +21,22 @@ level: advanced
 
 > A chatbot that gets injected gives you a wrong answer. An agent that gets injected takes wrong actions — sends emails you didn't authorize, exfiltrates data, bypasses safety rules.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    NORMAL[Agent processes task normally]
+    NORMAL --> TR[Reads external content\nweb page / doc / DB record]
+    TR --> INJ[Malicious instruction embedded\nin content]
+    INJ --> HJ[Agent instruction hijacked]
+    HJ --> BA[Bad action executed\nexfiltrate / delete / send email]
+    BA --> IMPACT[Real-world damage\nunauthorized side effects]
+
+    NORMAL -->|no injection| SAFE[Task completed safely]
+```
+
+*Adversarial content in external sources hijacks agent instructions, turning tool access into a weapon.*
+
 ---
 
 ## The Problem Class `[Agent Security — Severity: Critical]`

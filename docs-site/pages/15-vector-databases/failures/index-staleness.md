@@ -11,6 +11,20 @@ tags: [vector-databases, hnsw, index-staleness, write-amplification, recall-degr
 **Level**: 🟡 Intermediate
 **Reading Time**: 7 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Delete["Soft-delete vector"] --> StaleEdge["HNSW edges remain\n(stale pointers)"]
+    StaleEdge --> WastedTraversal["Search wastes steps\non deleted nodes"]
+    WastedTraversal --> RecallDrop["Recall@K degrades\n97% → 68% at 70% deleted"]
+    RecallDrop --> Fix["Fix: periodic index rebuild\nor segment compaction"]
+    Write["High write rate"] --> WriteAmp["Write amplification:\neach insert updates\nmultiple HNSW layers"]
+    WriteAmp --> Latency["Insert latency spikes\nat high throughput"]
+```
+
+*HNSW soft-deletes leave stale edges that waste search traversal; recall degrades proportionally with deletion rate and only recovers after a full index rebuild.*
+
 > You delete outdated documents. Six months later, your search recall has quietly dropped from 97% to 84%. The data is correct — the index isn't.
 
 ## The Problem

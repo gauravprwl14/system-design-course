@@ -37,6 +37,23 @@ tags:
 
 # Duplicate Order Creation Race Condition
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User taps Submit on slow network] --> B[Request 1 sent — no response]
+    A --> C[User taps Submit again / timeout retry]
+    C --> D[Request 2 sent]
+    B --> E[Server processes Order #1001]
+    D --> F[Server processes Order #1002]
+    E --> G[Two identical orders in DB]
+    F --> G
+    G --> H[Double charge + duplicate fulfillment]
+    H --> I[Manual refund + inventory correction]
+```
+
+*Normal path: single submit creates one order. Trigger: network timeout causes retry. Cascade: both requests land, no deduplication guard, two orders created for one intent.*
+
 **Category**: Concurrency & Race Conditions
 **Domain**: E-commerce, Food Delivery
 **Industry**: Retail, Online Services

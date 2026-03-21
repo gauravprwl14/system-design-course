@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/oauth2-oidc-deep-dive.png"
 
 # OAuth 2.0 and OIDC: Flows, Token Storage, and Refresh Strategy at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    USER[User] -->|Login| CLIENT[Client App]
+    CLIENT -->|Auth Code + PKCE| AS[Authorization Server]
+    AS -->|Access Token + Refresh Token| CLIENT
+    CLIENT -->|Bearer token| RS[Resource Server]
+    RS -->|Introspect / verify| AS
+    CLIENT -->|Token expiring| REFRESH[Refresh Flow]
+    REFRESH -->|Refresh token| AS
+    AS -->|New access token| CLIENT
+    REFRESH --> ROTATE[Token Rotation<br/>Invalidate old refresh token]
+```
+
+*OAuth 2.0 separates authorization from resource access; PKCE prevents code interception, and refresh token rotation limits the blast radius of stolen tokens.*
+
 **Most OAuth implementations work fine until they don't — then they fail in ways that lock out thousands of users simultaneously.** Token expiry storms, refresh race conditions in distributed clients, and misunderstood token storage trade-offs are the failure modes that separate production-hardened auth from a tutorial implementation.
 
 ---

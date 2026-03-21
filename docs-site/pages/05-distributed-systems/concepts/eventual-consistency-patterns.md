@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/eventual-consistency-patterns.png"
 
 # Eventual Consistency Patterns: CRDTs, Conflict Resolution, and Convergence
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Concurrent writes on AP replicas] --> B{Conflict resolution strategy}
+    B -->|Last-Write-Wins| C[LWW: latest timestamp survives]
+    B -->|Operational Transform| D[OT: intent-preserving merge]
+    B -->|CRDT| E[CRDT: mathematically guaranteed convergence]
+    C --> F[Silent data loss on every conflict]
+    D --> G[Correct but requires coordination]
+    E --> H[G-Counter / PN-Counter / OR-Set]
+    H --> I[All replicas converge to same state]
+    I --> J[Strong Eventual Consistency — no locks needed]
+```
+
+*AP systems must choose a conflict resolution strategy. LWW is simple but lossy; CRDTs guarantee convergence without coordination if the data model permits it.*
+
 **Last-write-wins is not a conflict resolution strategy. It's a conflict elimination strategy that discards data.** In an AP system under partition, concurrent writes create genuine conflicts that must be resolved — and the resolution strategy is a business decision, not a database default. CRDTs prove that some conflict resolutions can be mathematically guaranteed to converge without coordination.
 
 The core insight: if you can model your data in a way where concurrent updates can always be merged deterministically, you can have full availability (accept every write) with strong eventual consistency (all replicas converge to the same state) — without any locks, coordination, or conflict resolution at application level.

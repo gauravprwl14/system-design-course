@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/vector-clocks-logical-time.png"
 
 # Vector Clocks and Logical Time: Causality, Ordering, and Conflict Detection
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Node 1: write x=5, VC=[1,0,0]] --> B[Replicate to Node 2]
+    B --> C[Node 2: write x=7, VC=[1,1,0]]
+    A --> D[Node 3: write x=9, VC=[1,0,1] — concurrent!]
+    C --> E{Compare VCs on merge}
+    D --> E
+    E -->|One dominates the other| F[Causal — later write wins]
+    E -->|Neither dominates| G[Concurrent — genuine conflict]
+    G --> H[Conflict resolution required: LWW / CRDT / app logic]
+    F --> I[Safe to discard older write]
+```
+
+*Vector clocks track causal history per node. When two writes' VCs are incomparable, they are concurrent; when one dominates, causal order is established without wall-clock coordination.*
+
 **You cannot trust wall-clock time for ordering events in a distributed system.** NTP drift of 100-500ms is normal. VM time jumps of seconds occur during live migration. An event with timestamp T+100 may have happened before an event with timestamp T+50, depending on which server's clock you're reading. Vector clocks provide a causal ordering mechanism that doesn't depend on synchronized clocks — instead, they track "what a node knew when it generated an event."
 
 The practical value: vector clocks let you distinguish "these two writes conflict and need resolution" from "write B happened after write A and supersedes it" — without any coordination between nodes.

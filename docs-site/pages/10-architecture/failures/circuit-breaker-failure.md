@@ -34,6 +34,21 @@ tags:
 
 # Circuit Breaker Stuck Open/Closed - Microservices
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Payment Service<br/>Brief 30s outage] --> B[Circuit Breaker<br/>opens correctly]
+    B --> C{Service recovers<br/>but...}
+    C --> D[Stuck OPEN<br/>low traffic can't<br/>collect test sample]
+    C --> E[Stuck CLOSED<br/>bad thresholds miss<br/>actual failures]
+    D --> F[All payments rejected<br/>for hours]
+    E --> G[Traffic floods<br/>failing service]
+    F --> H[Fix: time-based half-open<br/>+ adaptive thresholds]
+    G --> H
+```
+*Normal path: CB opens on failure, half-opens to test, closes on recovery. Trigger: misconfigured thresholds or low traffic. Failure cascade: stuck state blocks legitimate traffic or allows floods into failing service.*
+
 **Category**: 🚨 Availability & Reliability
 **Domain**: Microservices Architecture
 **Industry**: All (E-commerce, SaaS, Fintech)

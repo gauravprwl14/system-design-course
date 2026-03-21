@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/consistent-hashing-deep-dive.png"
 
 # Consistent Hashing: Virtual Nodes, Rehashing Cost, and Hot Spot Avoidance
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    KEY[Cache Key] --> HASH[Hash Function<br/>SHA-1 mod 2^32]
+    HASH --> RING[Hash Ring<br/>0 to 2^32]
+    RING --> VNODE[Virtual Nodes<br/>150 per server]
+    VNODE --> S1[Server A<br/>~33% of ring]
+    VNODE --> S2[Server B<br/>~33% of ring]
+    VNODE --> S3[Server C<br/>~33% of ring]
+    S1 -->|Node added/removed| REHASH[~1/N keys migrate<br/>not all keys]
+    REHASH --> STABLE[Cluster remains stable]
+```
+
+*Virtual nodes spread each server across the ring so adding or removing one server migrates only 1/N of keys instead of rehashing everything.*
+
 **Consistent hashing is one of those topics every engineer thinks they understand — until they have to size virtual nodes, explain why a node removal causes a thundering herd, or debug why 30% of keys land on one shard.**
 
 This is the deep-dive that fills those gaps.

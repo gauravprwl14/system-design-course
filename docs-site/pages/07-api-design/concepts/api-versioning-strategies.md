@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/api-versioning-strategies.png"
 
 # API Versioning: URL, Header, and Content-Type Negotiation at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CHANGE[Breaking API Change] --> STRATEGY{Versioning Strategy}
+    STRATEGY --> URL[URL Path<br/>/v1/ /v2/]
+    STRATEGY --> HEADER[Accept Header<br/>application/vnd.api+json;v=2]
+    STRATEGY --> PARAM[Query Param<br/>?version=2]
+    URL --> ROUTER[Gateway Routes<br/>by path prefix]
+    HEADER --> NEGOTIATION[Content Negotiation<br/>at handler level]
+    ROUTER --> V1[v1 Handler]
+    ROUTER --> V2[v2 Handler]
+    V1 --> DEPRECATE[Sunset header<br/>+ deprecation notice]
+```
+
+*A versioning strategy makes breaking changes survivable; URL versioning is the most discoverable, while header negotiation keeps URLs clean at the cost of visibility.*
+
 **Every public API eventually breaks its consumers. The question is whether you break them on purpose, with warning, or by accident.** API versioning is not about avoiding breaking changes — it's about making them predictable, discoverable, and survivable. The strategy you choose determines whether your platform team spends its time building features or fielding angry partner calls.
 
 ---

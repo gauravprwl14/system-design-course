@@ -17,6 +17,22 @@ tags: [aws, kinesis, streaming, data-streams, firehose, analytics, real-time, sh
 
 # AWS Kinesis: Real-Time Streaming at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Streaming need?} -->|Multiple consumers, replay, ordering| B[Kinesis Data Streams]
+    A -->|Deliver to S3 / Redshift, zero code| C[Kinesis Firehose]
+    A -->|Real-time SQL aggregations on stream| D[Kinesis Data Analytics]
+    A -->|Simple task queue, no replay| E[SQS]
+    A -->|Massive scale, rich ecosystem, self-managed| F[Kafka]
+    B --> G[Shards: 1MB/s in, 2MB/s out each]
+    B --> H[Up to 7-day replay window]
+    C --> I[60s buffer, auto-scales, Parquet conversion]
+```
+
+*Kinesis for real-time multi-consumer streaming; SQS for simple task queues; Kafka when self-managed scale justifies the ops cost.*
+
 ## Question
 **"When would you use Kinesis Data Streams vs SQS vs Kafka? How does sharding work? Design a real-time fraud detection system."**
 

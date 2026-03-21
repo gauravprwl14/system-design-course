@@ -14,6 +14,24 @@ tags: [aws, step-functions, state-machine, orchestration, workflow, serverless, 
 
 # AWS Step Functions: Workflow Orchestration & State Machines
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A[Step Functions Workflow] --> B[Task State — call Lambda / AWS service]
+    B --> C{Choice State — branch logic}
+    C -->|Success path| D[Parallel State — concurrent steps]
+    C -->|Failure path| E[Catch → Compensation workflow]
+    D --> F[Map State — loop over array]
+    F --> G[Wait State — pause for event or time]
+    G --> H[Succeed / Fail]
+    B --> I{Error?}
+    I -->|Retry with backoff| B
+    I -->|Max retries exceeded| E
+```
+
+*Step Functions handles retry, compensation, and visibility automatically — use it instead of DIY SQS chains for multi-step workflows.*
+
 > **Common Interview Question**: "Design an order processing pipeline that validates the order, reserves inventory, charges the customer, sends a confirmation, and triggers shipping. How do you handle failures at each step? What if the payment succeeds but shipping fails?"
 
 Common in: AWS Solutions Architect, Backend Engineering, Senior Backend, Platform Engineering, and MLOps interviews

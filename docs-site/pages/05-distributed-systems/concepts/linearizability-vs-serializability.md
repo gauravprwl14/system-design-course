@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/linearizability-vs-serializability.png"
 
 # Linearizability vs Serializability: Formal Consistency and Why It Matters
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Consistency guarantees] --> B[Linearizability — single-object recency]
+    A --> C[Serializability — multi-object transaction ordering]
+    B --> D[Every read sees the most recent write globally]
+    B --> E[Required for: distributed locks, leader election, CAS operations]
+    C --> F[Concurrent transactions appear to execute serially]
+    C --> G[Prevents: dirty reads, non-repeatable reads, write skew]
+    F --> H[Strict Serializability = Linearizability + Serializability]
+    G --> I[SSI in PostgreSQL — detects and aborts conflicting txns]
+    H --> J[Spanner / FoundationDB — highest correctness, highest cost]
+```
+
+*Linearizability gives recency for single objects; serializability gives ordering for multi-object transactions. Most databases claiming one do not automatically provide the other.*
+
 **The word "serializable" in your database documentation may not mean what you think it means.** PostgreSQL's `SERIALIZABLE` isolation level uses Serializable Snapshot Isolation (SSI) — a real implementation that prevents most anomalies. But MySQL's default `REPEATABLE READ` is often mislabeled as "serializable-like," and most NoSQL databases advertising "strong consistency" provide linearizability for single objects but not serializability for multi-object transactions.
 
 Understanding the difference between these terms is the difference between a payment system that correctly handles concurrent transfers and one that occasionally creates money from nothing.

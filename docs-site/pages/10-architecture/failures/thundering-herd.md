@@ -57,6 +57,20 @@ tags:
 
 # Thundering Herd on Cache Miss - Cache Stampede
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Popular Cache Entry<br/>TTL expires at midnight] --> B[14,000 simultaneous<br/>cache misses]
+    B --> C[All requests query DB<br/>simultaneously]
+    C --> D[DB connection pool<br/>exhausted]
+    D --> E[DB CPU at 100%<br/>queries timing out]
+    E --> F[Six services fail<br/>site-wide outage]
+    F --> G[Mutex lock / XFetch<br/>only one repopulates]
+    G --> H[Staggered TTL jitter<br/>prevents future storms]
+```
+*Normal path: cache hit returns instantly. Trigger: synchronized TTL expiry under high traffic. Failure cascade: all requests hit database simultaneously, overwhelming connection pool and causing database collapse.*
+
 **Category**: Availability & Reliability
 **Domain**: Content Platforms, Web Applications
 **Industry**: Social Media, E-commerce, Media Streaming

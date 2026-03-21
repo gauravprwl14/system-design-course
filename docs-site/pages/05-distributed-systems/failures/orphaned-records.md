@@ -33,6 +33,24 @@ tags:
 
 # Orphaned Records After Failed Cascade Delete
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User Deletion Request] --> B[DELETE users table ✓]
+    B --> C[CASCADE to posts ✓]
+    C --> D[Timeout at 5s]
+    D --> E[comments table — NOT deleted ❌]
+    D --> F[likes table — NOT deleted ❌]
+    D --> G[orders/payments — NOT deleted ❌]
+    E --> H[753K Orphaned Records]
+    F --> H
+    G --> H
+    H --> I[GDPR Violation + Storage Bloat]
+```
+
+*Normal path: cascade deletes all child rows atomically. Trigger: timeout mid-cascade. Cascade: parent deleted, children orphaned, referential integrity broken.*
+
 **Category**: 🗄️ Data Integrity
 **Domain**: Databases, Referential Integrity
 **Industry**: All (E-commerce, SaaS, Social Media)

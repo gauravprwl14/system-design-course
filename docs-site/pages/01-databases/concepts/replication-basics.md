@@ -61,6 +61,22 @@ tags:
 **Reading Time**: 10 minutes
 **Practical Application**: Essential for any app with 10,000+ concurrent users
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Application"] -->|"Writes"| B["Primary DB"]
+    A -->|"Reads"| C["Replica 1"]
+    A -->|"Reads"| D["Replica 2"]
+    B -->|"Async replication\n(fast, may lag)"| C
+    B -->|"Sync replication\n(slow, no loss)"| D
+    E{"Type?"} --> F["Async: social feeds,\ncatalogs"]
+    E --> G["Sync: financial,\ncritical data"]
+    E --> H["Semi-sync: e-commerce,\nbest of both"]
+```
+
+*Replication copies writes from a single primary to N replicas, scaling read capacity linearly while keeping writes on one authoritative source.*
+
 ## 🎯 Problem Statement
 
 Your application runs on a single database. What happens when:

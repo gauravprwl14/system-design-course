@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/strangler-fig-migration.png"
 
 # Strangler Fig Migration: Incremental Monolith Decomposition Patterns
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A[Live Monolith<br/>500K lines] --> B[Facade / Proxy<br/>intercepts all traffic]
+    B --> C{Route by feature}
+    C --> D[New Microservice<br/>extracted feature]
+    C --> E[Old Monolith<br/>remaining features]
+    D --> F[Anti-Corruption Layer<br/>translates data models]
+    E --> F
+    F --> G[Parallel Run<br/>compare outputs]
+    G --> H[Monolith feature<br/>decommissioned]
+```
+*Normal path: proxy routes to monolith. Trigger: feature extracted to microservice. Migration: traffic gradually shifts, monolith shrinks incrementally until safely retired.*
+
 **Every system design discussion about microservices assumes you're starting fresh. You're not. You have a 500K-line Rails monolith handling $50M/day in transactions, and you need to decompose it without a single minute of planned downtime.**
 
 **The Strangler Fig pattern is the only sane path. But "strangler fig" is not a plan — it's a philosophy. Here's the engineering.**

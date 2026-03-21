@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/zero-downtime-migrations.png"
 
 # Zero-Downtime Database Migrations: Online Schema Changes at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Schema change needed"] --> B{"Type?"}
+    B -->|"Add index"| C["CREATE INDEX CONCURRENTLY\nno write-blocking lock"]
+    B -->|"Add column"| D["PG 11+: fast if\nnon-volatile default"]
+    B -->|"Rename column"| E["Expand/Contract\n4-phase pattern"]
+    B -->|"Table rewrite\nMySQL"| F["gh-ost\n50-200ms cutover"]
+    B -->|"Table rewrite\nPostgres"| G["pg_repack\n< 1s cutover"]
+    E --> H["1.Add new col\n2.Dual-write\n3.Backfill\n4.Drop old col"]
+    C --> I["Always set\nlock_timeout=5s"]
+```
+
+*Zero-downtime migrations require specific tooling for each change type — always set `lock_timeout` to prevent lock queues from silently taking down production.*
+
 **`ALTER TABLE orders ADD COLUMN discount_pct DECIMAL(5,2);` on a 2-billion-row table takes 4 hours and holds an `ACCESS EXCLUSIVE` lock the entire time.** Every query against that table — reads included — queues. Your application is down for 4 hours during a "routine schema migration." This is not a hypothetical — it is the default behavior of PostgreSQL `ALTER TABLE` for most DDL operations.
 
 Zero-downtime migrations require specific tooling, a specific pattern (expand/contract), and specific failure mode awareness. Here's everything you need.

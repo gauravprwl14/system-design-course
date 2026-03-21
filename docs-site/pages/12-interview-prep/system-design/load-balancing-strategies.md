@@ -24,6 +24,24 @@ tags: [load-balancing, round-robin, consistent-hashing, nginx, haproxy, high-ava
 
 # Load Balancing Strategies - Distribute Traffic at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> DNS["DNS (Global Load Balancing)"]
+    DNS --> L4LB["L4 Load Balancer (TCP/UDP)"]
+    L4LB --> L7LB["L7 Load Balancer (HTTP/HTTPS)"]
+    L7LB --> AppServer1["App Server 1"]
+    L7LB --> AppServer2["App Server 2"]
+    L7LB --> AppServer3["App Server 3"]
+    L7LB --> HealthCheck["Health Check Monitor"]
+    HealthCheck --> AppServer1
+    HealthCheck --> AppServer2
+    HealthCheck --> AppServer3
+```
+
+*DNS distributes across regions; L4 handles raw TCP connections; L7 applies HTTP-aware routing algorithms (round-robin, least-connections, consistent hashing) and removes unhealthy nodes via health checks.*
+
 ## What You'll Learn
 
 Master **load balancing** algorithms and strategies used in production systems:

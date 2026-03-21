@@ -13,6 +13,24 @@ status: "published"
 
 # Metric Cardinality Management: The Silent Prometheus Killer
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Label[High-Cardinality Label Added] --> Explode[Time Series Explosion]
+    Explode --> OOM[Prometheus OOM at 3 AM]
+    OOM --> Blind[Monitoring Blind Spot]
+    Label --> Fix1[Label Design: low-cardinality only]
+    Label --> Fix2[Exemplars: attach trace_id to sample]
+    Label --> Fix3[Recording Rules: pre-aggregate]
+    Fix1 --> Safe[Stable Cardinality]
+    Fix2 --> Safe
+    Fix3 --> Safe
+    Safe --> Scale[Scales to Millions of Series]
+```
+
+*Adding a user_id label to one metric can multiply time series by 50,000x — label design is the single highest-leverage Prometheus decision.*
+
 **You add `user_id` as a label to your HTTP request metric.** Your Prometheus has 50,000 users. You now have 50,000 × routes × methods × status_codes time series. At 3 AM, Prometheus OOMs. Your monitoring is down. You can't see if your service is healthy. Your dashboards are blank. Your alerts are silent. You open an incident to fix your monitoring, while the actual production incident you would have caught is running undetected. Your monitoring killed your monitoring.
 
 This is not a theoretical problem. It happens in production, regularly, to teams that understand metrics conceptually but don't understand how Prometheus actually stores and queries them.

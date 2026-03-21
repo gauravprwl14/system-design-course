@@ -20,6 +20,21 @@ tags: [pinecone, weaviate, qdrant, pgvector, chroma, milvus, comparison]
 **Level**: 🟡 Intermediate
 **Reading Time**: 13 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Decision["Choose a Vector DB"] --> AlreadyPG{"On Postgres?"}
+    AlreadyPG -->|Yes| pgvector["pgvector\n(stay in SQL)"]
+    AlreadyPG -->|No| Scale{"Scale?"}
+    Scale -->|"< 1M, local dev"| Chroma["Chroma\n(prototype fast)"]
+    Scale -->|"1M–100M, self-host"| Qdrant["Qdrant (Rust, fast)\nor Weaviate (multi-modal)"]
+    Scale -->|"100M+, managed"| Pinecone["Pinecone\n(serverless)"]
+    Scale -->|"Billions, K8s"| Milvus["Milvus\n(enterprise)"]
+```
+
+*No single best choice: pgvector wins if you're already on Postgres; Pinecone for zero-infra managed; Qdrant/Weaviate for self-hosted mid-scale; Milvus for billion-vector enterprise.*
+
 > There is no single best vector database. The right choice depends on whether you're on Postgres already, whether you need managed infrastructure, how many vectors you'll store, and whether you need multi-modal search. This article makes the decision systematic.
 
 ## The Six Contenders

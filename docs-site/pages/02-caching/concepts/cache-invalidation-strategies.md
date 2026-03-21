@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/cache-invalidation-strategies.png"
 
 # Cache Invalidation: TTL, Event-Driven Purging, and Consistency Windows
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Write[DB Write] --> CDC[Change Data Capture / Event]
+    CDC --> Invalidator[Cache Invalidator]
+    Invalidator -->|DELETE key| Redis[(Redis Cache)]
+    Invalidator -->|Tag-based purge| CDN[CDN Edge]
+    Redis -->|TTL fallback| Expiry[Key auto-expires]
+    NextRead[Next Read Request] --> Redis
+    Redis -->|Miss after invalidation| DB[(Database)]
+    DB --> Redis
+```
+
+*Writes trigger CDC events that proactively delete or tag-purge cached entries; TTL acts as a safety net for any invalidation events that are missed.*
+
 **Phil Karlton's axiom holds: cache invalidation remains one of the two hard problems in computer science. TTL is the escape hatch most engineers reach for — but at scale it either leaves you serving stale data for minutes or triggering invalidation storms that DDoS your own database.**
 
 ---

@@ -25,6 +25,24 @@ tags: [postgresql, archival, data-lifecycle, storage, partitioning]
 > [`database-archival-poc/`](https://github.com/your-repo/system-design/tree/main/docs-site/pages/interview-prep/practice-pocs/database-archival-poc) folder.
 > Run `docker-compose up -d` to start the infrastructure, then execute the Python/Node.js scripts.
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant W as Archive Worker
+    participant PG as Primary DB
+    participant AR as Archive DB
+    participant S3 as S3 / Parquet
+    W->>PG: SELECT rows older than 90 days
+    PG-->>W: Batch of 10K records
+    W->>AR: INSERT into archive table
+    W->>S3: Upload compressed Parquet (> 2yr)
+    W->>PG: DELETE archived rows
+    Note over PG,S3: Query Router transparently\nreads from the right tier
+```
+
+*This POC builds a tiered archival pipeline: old rows move from the hot primary to a cheaper archive store and eventually to object storage, while a query router keeps reads transparent.*
+
 ---
 
 ## What You'll Build

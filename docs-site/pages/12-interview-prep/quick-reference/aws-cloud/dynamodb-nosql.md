@@ -14,6 +14,23 @@ tags: [aws, dynamodb, nosql, partition-key, gsi, lsi, single-table-design, dynam
 
 # AWS DynamoDB: Partition Keys, GSI/LSI, and NoSQL Design
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A[DynamoDB Table] --> B{Access pattern?}
+    B -->|Primary lookup| C[Partition Key — high cardinality required]
+    B -->|Range / sort within partition| D[Sort Key optional]
+    B -->|Different partition key at query time| E[GSI — eventual consistency]
+    B -->|Same partition, different sort| F[LSI — strong consistency possible]
+    C --> G{Cardinality ok?}
+    G -->|Low cardinality hot partition| H[Throttling — bad design]
+    G -->|High cardinality, even distribution| I[Scales to infinite throughput]
+    A --> J[DAX cache — microsecond reads]
+```
+
+*Partition key cardinality is the single most important DynamoDB design decision.*
+
 ## Question
 
 **"How do you choose a partition key for DynamoDB? What happens if you pick a bad one?"**

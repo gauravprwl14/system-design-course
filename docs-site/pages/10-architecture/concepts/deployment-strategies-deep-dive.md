@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/deployment-strategies-deep-dive.png"
 
 # Deployment Strategies: Blue-Green, Canary, and Feature-Flag Rollouts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[New Version Ready] --> B{Strategy?}
+    B --> C[Blue-Green<br/>duplicate environment]
+    B --> D[Canary<br/>1% → gradual rollout]
+    B --> E[Rolling<br/>replace pods one batch]
+    C --> F[Instant cutover<br/>1s rollback]
+    D --> G[Monitor error rate<br/>auto-promote or abort]
+    E --> H[Slow rollback<br/>redeploy old image]
+    F --> I[2x infrastructure cost<br/>during migration]
+    G --> J[Minimal blast radius<br/>% of users affected]
+```
+*Normal path: deploy → validate → promote. Trigger: errors detected after rollout. Recovery speed and blast radius vary drastically by strategy — blue-green wins on rollback speed, canary wins on blast radius.*
+
 **Every deployment is a bet that the new version is better. The strategy you choose determines how much you lose when the bet is wrong — and you will be wrong eventually. The difference between a 1-second rollback and a 30-minute rollback is pure architecture.**
 
 ---

@@ -37,6 +37,21 @@ tags:
 
 # Split-Brain - Dual Masters After Network Partition
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Network Switch Fails<br/>DC-A ↔ DC-B severed] --> B[Normal Failover<br/>attempt]
+    B --> C[DC-B promotes itself<br/>to primary]
+    C --> D[Split-Brain<br/>Two primaries writing]
+    D --> E[DC-A writes<br/>orders 1-500]
+    D --> F[DC-B writes<br/>orders 1-300]
+    E --> G[Network Partition Heals<br/>conflicting data]
+    F --> G
+    G --> H[Manual conflict resolution<br/>or quorum fence]
+```
+*Normal path: primary → replica replication. Trigger: network partition between datacenters. Failure cascade: both sides accept writes independently, creating irreconcilable data divergence.*
+
 **Category**: 🚨 Availability & Reliability
 **Domain**: Distributed Systems, Databases
 **Industry**: All (E-commerce, Fintech, SaaS)

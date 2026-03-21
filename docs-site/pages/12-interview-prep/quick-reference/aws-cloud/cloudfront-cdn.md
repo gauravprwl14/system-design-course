@@ -14,6 +14,23 @@ tags: [aws, cloudfront, cdn, s3, lambda-edge, oac, signed-urls, cache-invalidati
 
 # AWS CloudFront: CDN, Caching, and Global Content Delivery
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A[User] -->|DNS resolves to nearest POP| B[CloudFront Edge Location]
+    B -->|Cache HIT| A
+    B -->|Cache MISS| C[Origin: S3 / ALB / API GW]
+    C -->|Response + cache fill| B
+    D[Cache Behaviors] -->|/images/* → 30-day TTL| B
+    D -->|/api/* → no-cache| B
+    E[Lambda@Edge] -->|Auth, A/B test, rewrites| B
+    F[CloudFront Functions] -->|Simple redirects, header manipulation| B
+    G[OAC] -->|S3 private, CloudFront only| C
+```
+
+*OAC locks S3 to CloudFront only; Cache Behaviors control TTL per URL pattern; Lambda@Edge for complex edge logic.*
+
 > **Common Interview Questions**: "How does CloudFront work, and how is it different from S3 Transfer Acceleration?" / "You need to serve dynamic API responses from CloudFront — what are the caching considerations?" / "How do you restrict S3 bucket access so only CloudFront can read it?" / "Design a global static website with custom domain, HTTPS, and geo-restriction."
 
 Common in: AWS Solutions Architect, Senior Backend, Platform Engineering, and AWS SAA/SAP certification exams

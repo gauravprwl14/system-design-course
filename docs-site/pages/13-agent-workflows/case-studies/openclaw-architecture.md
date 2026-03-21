@@ -18,6 +18,20 @@ tags: [openclaw, multi-agent, gateway, session-management, tool-policy, real-wor
 
 > Most agent tutorials show you a 50-line loop. OpenClaw shows you what happens when that loop needs to handle WhatsApp, Telegram, Discord, Slack, Signal, and iMessage simultaneously — without ever leaking one user's context into another's session.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    CH[20+ Channels\nWhatsApp / Telegram / Slack / Discord]
+    CH --> GW[Layer 1: Gateway\nWebSocket broker + orchestrator]
+    GW --> CE[Layer 2: Context Engine\nToken budget + compaction]
+    CE --> AR[Layer 3: Agent Runtime\nModel adapters + auth rotation]
+    AR --> SR[Layer 4: Skills Registry\n82+ tool definitions]
+    AR --> WF[Layer 5: Workspace Files\nSOUL / TOOLS / AGENTS per agent]
+```
+
+*OpenClaw's five-layer architecture separates channel routing, context management, agent execution, tool access, and per-agent configuration.*
+
 ## What OpenClaw Is
 
 OpenClaw is a self-hosted, MIT-licensed AI gateway platform written in TypeScript/Node.js. It runs on your own hardware and bridges 20+ messaging platforms with AI agents.

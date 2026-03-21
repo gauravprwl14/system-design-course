@@ -23,6 +23,23 @@ tags: [concurrency, trading, hft, atomic-operations, lock-free, financial]
 
 # Stock Order Matching Race Condition - Trading Platform
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[MSFT @ $420 — 100 shares available] --> B[Broker A: READ 100 shares available]
+    A --> C[Broker B: READ 100 shares available]
+    B --> D[Broker A: match BUY 100 shares]
+    C --> E[Broker B: match BUY 100 shares]
+    D --> F[Order filled for Broker A]
+    E --> G[Order filled for Broker B]
+    F --> H[200 shares sold from 100-share pool]
+    G --> H
+    H --> I[Short position created — regulatory violation]
+```
+
+*Normal path: order book locks the lot, matches single buyer, releases. Trigger: two match engines read the same available lot concurrently. Cascade: both confirm fills, exchange oversells, creates phantom short position.*
+
 **Category**: Concurrency & Race Conditions
 **Domain**: Stock Trading / Fintech
 **Industry**: Financial Services

@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/cap-theorem-practical.png"
 
 # CAP Theorem in Practice: Partition Tolerance, Trade-offs, and PACELC
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[3-node cluster — writes arriving] --> B{Network partition occurs}
+    B --> C[2 nodes in DC-A — can reach each other]
+    B --> D[1 node in DC-B — isolated]
+    C --> E{CP or AP choice}
+    E -->|CP system| F[DC-B node rejects writes — preserves consistency]
+    E -->|AP system| G[DC-B node accepts writes — risks divergence]
+    F --> H[Partition healed — data consistent, but DC-B was unavailable]
+    G --> I[Partition healed — both sides have writes — conflict resolution needed]
+    H --> J[PACELC: also consider latency vs consistency under normal ops]
+    I --> J
+```
+
+*Partitions are inevitable; CAP forces a choice: reject writes to stay consistent (CP) or accept writes and risk divergence (AP). PACELC extends this to latency trade-offs during normal operation.*
+
 **Every distributed system experiences network partitions. The CAP theorem doesn't give you a choice about whether to tolerate partitions — it forces you to decide what your system does when they occur.** The real question is: when your database cluster splits, do you keep serving potentially stale data (AP) or do you stop accepting writes to preserve correctness (CP)?
 
 Most engineers treat CAP as a classification exercise. Staff+ engineers treat it as a failure-mode design exercise: "when the partition happens at 2 AM, exactly which guarantees break, by how much, and how will the on-call know?"

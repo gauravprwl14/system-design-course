@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/graphql-production-patterns.png"
 
 # GraphQL at Scale: N+1 Problem, DataLoader, Persisted Queries, and Federation
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CLIENT[GraphQL Client] --> GW[GraphQL Gateway]
+    GW --> PARSE[Query Parse<br/>+ Complexity Check]
+    PARSE --> RESOLVE[Field Resolvers]
+    RESOLVE -->|Naive: N+1 queries| DB[(Database)]
+    RESOLVE --> DL[DataLoader<br/>Batch + Dedupe]
+    DL -->|Single batched query| DB
+    GW --> PQ[Persisted Query<br/>Hash lookup]
+    GW --> FED[Apollo Federation<br/>Subgraph routing]
+    FED --> SVC_A[Users Subgraph]
+    FED --> SVC_B[Products Subgraph]
+```
+
+*DataLoader batches N field-resolver DB calls into one; persisted queries and federation add production safety and multi-team ownership.*
+
 **GraphQL is a query language, not a performance guarantee.** The flexibility to request exactly the fields you need comes with a cost: each field resolver runs independently, and naive implementations turn a single API request into hundreds of database queries. Understanding DataLoader, query complexity analysis, and persisted queries is the difference between a GraphQL API that's faster than REST and one that silently destroys your database.
 
 ---

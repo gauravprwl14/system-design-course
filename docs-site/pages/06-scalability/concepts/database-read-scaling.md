@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/database-read-scaling.png"
 
 # Database Read Scaling: Read Replicas, Connection Routing, and Replication Lag
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    APP[Application] --> POOL[Connection Pool<br/>pgBouncer / ProxySQL]
+    POOL --> PRIMARY[(Primary<br/>Writes only)]
+    POOL --> R1[(Replica 1<br/>Reads)]
+    POOL --> R2[(Replica 2<br/>Reads)]
+    POOL --> R3[(Replica 3<br/>Reads)]
+    PRIMARY -->|WAL Streaming| R1
+    PRIMARY -->|WAL Streaming| R2
+    PRIMARY -->|WAL Streaming| R3
+    R1 --> LAG[Replication Lag<br/>SLO Check]
+```
+
+*A connection proxy routes writes to the primary and distributes reads across replicas; replication lag determines which reads are safe to offload.*
+
 **Most applications are read-heavy: 90% reads, 10% writes is common. Yet most teams only scale the write path. The result is a primary database at 100% CPU while replicas sit idle at 5% — and users experiencing timeouts.**
 
 This article covers every layer of the read-scaling stack, from physical replication to application-layer routing to the replication lag SLOs that determine which reads can safely go to replicas.

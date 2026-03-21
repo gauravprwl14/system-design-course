@@ -14,6 +14,21 @@ tags: [aws, elasticache, redis, memcached, caching, thundering-herd, cache-inval
 
 # AWS ElastiCache Redis: Caching Patterns, Cluster Modes, and Thundering Herd
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Caching pattern?} -->|Read-heavy, tolerate stale| B[Cache-Aside: read cache first, populate on miss]
+    A -->|Keep cache always consistent| C[Write-Through: update cache on every write]
+    A -->|Evict on write, lazy reload| D[Write-Around: bypass cache on writes]
+    B --> E{Cache expires simultaneously?}
+    E -->|Yes — thundering herd| F[Probabilistic early expiry or mutex lock]
+    G{Redis topology?} -->|Single shard, simple| H[Cluster Mode Disabled — up to 5 replicas]
+    G -->|Horizontal sharding needed| I[Cluster Mode Enabled — up to 500 nodes]
+```
+
+*Cache-Aside is the default pattern; protect cache expiry with probabilistic refresh to prevent thundering herd.*
+
 ## Question
 
 **"When would you use ElastiCache vs a database? What patterns benefit most from caching?"**

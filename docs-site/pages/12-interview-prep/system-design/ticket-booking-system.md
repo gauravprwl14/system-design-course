@@ -26,6 +26,23 @@ tags: [ticket-booking, concurrency, distributed-locks, inventory, high-traffic, 
 
 # Ticket Booking System - Handle 10M Concurrent Users
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> Gateway["API Gateway"]
+    Gateway --> InventoryService["Inventory Service"]
+    InventoryService --> RedisLock["Distributed Lock (Redis)"]
+    InventoryService --> InventoryDB["Inventory DB (Postgres)"]
+    RedisLock --> ReservationService["Reservation Service"]
+    ReservationService --> PaymentService["Payment Service"]
+    PaymentService --> OrderDB["Order DB"]
+    ReservationService --> QueueExpiry["Expiry Queue (TTL Locks)"]
+    QueueExpiry --> InventoryService
+```
+
+*Redis distributed locks serialize seat claims; a TTL expiry queue automatically releases unpaid reservations back to inventory, preventing indefinite holds under high concurrency.*
+
 ## What You'll Learn
 
 Design a **production-grade ticket booking system** that handles massive concurrent traffic:

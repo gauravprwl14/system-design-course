@@ -14,6 +14,25 @@ featured_image: "/assets/diagrams/read-your-writes-consistency.png"
 
 # Read-Your-Writes Consistency: Session Semantics and Sticky Routing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User submits write] --> B[Write goes to Primary DB]
+    B --> C[Primary acknowledges success]
+    C --> D[User's next read request]
+    D --> E{Read routing strategy}
+    E -->|Load-balanced to replica| F[Replica — 200ms replication lag]
+    F --> G[Write not yet replicated — user sees stale data]
+    G --> H[User confused: post disappeared]
+    E -->|Sticky to primary| I[Read from primary — consistent ✓]
+    E -->|Token-based routing| J[Route by replication LSN token ✓]
+    I --> K[RYW guarantee satisfied]
+    J --> K
+```
+
+*Write goes to primary; subsequent read must see that write. Without sticky routing or LSN tokens, a replica serving the read may be behind, breaking the session guarantee.*
+
 **You've shipped a bug before you wrote a line of code.** The moment you added read replicas to your database, you created a window where a user's write goes to the primary but the subsequent read hits a replica that hasn't received it yet. The user refreshes the page, their post is missing, and they submit it again — now you have a duplicate.
 
 Read-your-writes consistency is a session guarantee: after a user writes data, subsequent reads by that same user should reflect the write. It sounds simple. It's surprisingly hard to guarantee at scale, and the wrong fix (route all reads to primary) destroys the latency benefit of read replicas.

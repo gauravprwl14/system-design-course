@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/service-mesh-architecture.png"
 
 # Service Mesh: Istio, Linkerd, and the Sidecar Tax at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Service A Pod] --> B[Sidecar Proxy<br/>Envoy/Linkerd]
+    B --> C[mTLS encrypted<br/>service-to-service call]
+    C --> D[Sidecar Proxy<br/>on Service B Pod]
+    D --> E[Service B Pod]
+    F[Control Plane<br/>Istiod / Linkerd CP] --> B
+    F --> D
+    F --> G[Traffic policy<br/>retries, timeouts, canary]
+    F --> H[Observability<br/>traces, metrics, logs]
+    B --> I[50MB RAM + 0.5-2ms<br/>per-pod overhead]
+```
+*Normal path: service-to-service over plaintext HTTP. With mesh: sidecar proxies handle mTLS, retries, and tracing transparently — at the cost of 50MB RAM and 0.5-2ms p99 latency per pod.*
+
 **A service mesh solves real problems: mutual TLS between every service pair without code changes, zero-config distributed tracing, traffic management for canary deployments without touching application code. But at 500 pods, the sidecar tax is 25 GB of RAM just for proxy processes. Every decision to adopt a service mesh must account for that math.**
 
 ---

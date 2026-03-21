@@ -53,6 +53,25 @@ tags:
 **Reading Time**: 15 minutes
 **Practical Application**: When single database > 1TB or writes > 50,000/sec
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Request with shard key"] --> B["Shard Router"]
+    B --> C{"Strategy?"}
+    C -->|"Hash-based"| D["Even distribution\nno range queries"]
+    C -->|"Range-based"| E["Range queries OK\nhotspot risk"]
+    C -->|"Geographic"| F["Data locality\nuneven distribution"]
+    C -->|"Directory-based"| G["Flexible reassign\nextra lookup hop"]
+    D --> H["Shard 0..N"]
+    E --> H
+    F --> H
+    G --> H
+    H --> I["Co-locate related data\n(user + posts same shard)"]
+```
+
+*Sharding splits writes and storage across multiple databases using a shard key — choose the key based on your dominant query pattern and co-locate related data to avoid cross-shard joins.*
+
 ## 🎯 Problem Statement
 
 Your database has grown too large:

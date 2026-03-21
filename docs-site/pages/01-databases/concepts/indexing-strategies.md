@@ -48,6 +48,22 @@ tags:
 **Reading Time**: 12 minutes
 **Practical Application**: Every query > 50ms should be reviewed for indexing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Query:\nWHERE / JOIN /\nORDER BY"] --> B{"Choose Index Type"}
+    B -->|"Equality + range"| C["B-Tree\n(default)"]
+    B -->|"JSONB / arrays"| D["GIN"]
+    B -->|"Geo / ranges"| E["GiST"]
+    B -->|"Exact match only"| F["Hash"]
+    C --> G["Composite:\nequality cols first,\nrange cols last"]
+    C --> H["Partial index:\nWHERE status='active'"]
+    C --> I["Covering index:\nINCLUDE extra cols"]
+```
+
+*Indexes trade slower writes for dramatically faster reads — choose the right type based on query pattern, and always verify with EXPLAIN ANALYZE.*
+
 ## 🎯 Problem Statement
 
 ```sql

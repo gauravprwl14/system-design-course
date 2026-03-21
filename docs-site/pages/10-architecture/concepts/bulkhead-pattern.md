@@ -14,6 +14,20 @@ featured_image: "/assets/diagrams/bulkhead-pattern.png"
 
 # Bulkhead Pattern: Thread Pool Isolation and Failure Domain Containment
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Order Service<br/>shared thread pool] --> B[Inventory slow<br/>threads pile up]
+    B --> C[Shared pool exhausted<br/>100/100 threads waiting]
+    C --> D[Payment calls also blocked<br/>healthy service fails too]
+    D --> E[Full service unavailability<br/>all features down]
+    E --> F[Bulkhead: separate pools<br/>per dependency]
+    F --> G[Inventory pool exhausted<br/>only 10/10 threads]
+    G --> H[Payment pool still free<br/>unaffected]
+```
+*Normal path: requests complete quickly, threads return to pool. Trigger: one dependency slows without timeout. Without bulkheads, thread pool exhaustion in one dependency silently starves all others.*
+
 **An inventory service goes down. Your order service should degrade gracefully — but instead, all threads pile up waiting for inventory responses, and the order service becomes unavailable too. The bulkhead pattern is why Netflix, Amazon, and every serious distributed systems team isolates thread pools per dependency.**
 
 **The non-obvious part: bulkheads cost resources. Sizing the isolation tax is the difference between a resilient system and a resource-starved one.**

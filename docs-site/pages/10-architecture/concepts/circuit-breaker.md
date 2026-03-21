@@ -33,6 +33,20 @@ tags:
 
 # Circuit Breaker Pattern
 
+## 🗺️ Quick Overview
+
+```mermaid
+stateDiagram-v2
+    [*] --> Closed: initial state
+    Closed --> Open: error rate exceeds threshold
+    Open --> HalfOpen: reset timeout expires
+    HalfOpen --> Closed: test requests succeed
+    HalfOpen --> Open: test request fails
+    Closed --> Closed: requests pass through normally
+    Open --> Open: fast-fail all requests
+```
+*Normal path: CLOSED state passes all requests. Trigger: error rate threshold breached. Recovery: after timeout, HALF-OPEN sends probe requests; success closes the breaker, failure re-opens it.*
+
 **Difficulty**: 🟡 Intermediate
 **Reading Time**: 15 minutes
 **Practical Application**: Essential for any system calling external services

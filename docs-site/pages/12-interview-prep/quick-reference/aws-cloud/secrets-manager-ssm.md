@@ -14,6 +14,22 @@ tags: [aws, secrets-manager, ssm, parameter-store, kms, rotation, credentials, s
 
 # AWS Secrets Manager & SSM Parameter Store: Credential Management Done Right
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Secret type?} -->|DB password / API key needing rotation| B[Secrets Manager]
+    A -->|App config / feature flags / non-sensitive| C[SSM Parameter Store Standard — FREE]
+    A -->|Encrypted config, budget constrained| D[SSM Parameter Store Advanced]
+    B --> E[Auto-rotation via Lambda]
+    E --> F[Create → Set → Test → Promote]
+    B --> G[$0.40/secret/month]
+    C --> H[10K params, 4KB, KMS optional]
+    D --> I[$0.05 per 10K API calls, 100KB]
+```
+
+*Use Secrets Manager for anything needing rotation; SSM Parameter Store for static config.*
+
 > **Common Interview Question**: "How do you handle database password rotation across 500 Lambda functions without downtime? What's the difference between Secrets Manager and SSM Parameter Store? When would you use each?"
 
 Common in: AWS Solutions Architect, Security Engineering, Senior Backend, DevOps/Platform interviews

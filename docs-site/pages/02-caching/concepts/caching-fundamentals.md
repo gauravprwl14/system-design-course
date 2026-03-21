@@ -100,6 +100,20 @@ tags:
 **Reading Time**: 10 minutes
 **Practical Application**: Essential for any app with > 1,000 users
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Client[Client Request] --> AppServer[App Server]
+    AppServer -->|Cache Hit| Cache[(Cache Layer)]
+    AppServer -->|Cache Miss| DB[(Database)]
+    DB -->|Fetch + Store| Cache
+    Cache -->|Return Data| AppServer
+    AppServer --> Client
+```
+
+*On a cache miss the app fetches from the database and stores the result; subsequent requests for the same data are served from the fast in-memory cache, reducing database load and latency.*
+
 ## 🎯 Problem Statement
 
 ```javascript

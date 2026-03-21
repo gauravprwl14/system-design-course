@@ -14,6 +14,23 @@ tags: [aws, ecs, eks, fargate, containers, docker, kubernetes, microservices, se
 
 # AWS ECS vs EKS vs Fargate: Container Orchestration
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Container orchestration need?} -->|AWS-native, simpler ops| B[ECS]
+    A -->|K8s ecosystem, multi-cloud, CRDs| C[EKS]
+    B --> D{Manage EC2 nodes?}
+    C --> D
+    D -->|No — serverless compute| E[Fargate]
+    D -->|Yes — control instance type| F[EC2 launch type]
+    E --> G[Slower startup, higher cost/vCPU]
+    F --> H[Full control, patching required]
+    E -->|Batch / interruptible| I[Fargate Spot — 70% cheaper]
+```
+
+*80% organizational: team knows K8s → EKS; AWS-native simplicity → ECS + Fargate.*
+
 ## Question
 **"When would you choose ECS over EKS? When is Fargate the right choice? How does ECS task scheduling work, and how do you handle service-to-service communication in a containerized microservices architecture?"**
 

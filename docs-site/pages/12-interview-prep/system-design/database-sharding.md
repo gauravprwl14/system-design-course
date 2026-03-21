@@ -24,6 +24,23 @@ tags: [database, sharding, horizontal-scaling, cassandra, mysql, distributed-sys
 
 # Database Sharding - Horizontal Scaling for Massive Data
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> AppLayer["Application Layer"]
+    AppLayer --> ShardRouter["Shard Router / Proxy"]
+    ShardRouter --> Shard1["Shard 1 (DB)"]
+    ShardRouter --> Shard2["Shard 2 (DB)"]
+    ShardRouter --> Shard3["Shard 3 (DB)"]
+    ShardRouter --> ShardN["Shard N (DB)"]
+    Shard1 --> Replica1["Replica 1"]
+    Shard2 --> Replica2["Replica 2"]
+    Shard3 --> Replica3["Replica 3"]
+```
+
+*The shard router hashes or ranges the shard key to direct every query to the correct shard; each shard runs its own primary-replica pair for fault tolerance.*
+
 ## What You'll Learn
 
 Master **database sharding** to scale beyond single database limits:

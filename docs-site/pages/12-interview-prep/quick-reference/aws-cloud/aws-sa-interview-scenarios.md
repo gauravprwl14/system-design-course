@@ -14,6 +14,23 @@ tags: [aws, interview, solutions-architect, system-design, certification, saa-c0
 
 # AWS Solutions Architect Interview Master Guide
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A[SA Interview Question] --> B{Question category?}
+    B -->|Which service to use?| C[Service Selection Decision Trees]
+    B -->|Design a system| D[Architecture Design Questions]
+    B -->|Cost trade-offs| E[Pricing and Purchase Model Questions]
+    B -->|Security scenario| F[Security and Compliance Questions]
+    C --> G[Think: reject alternatives, justify choice]
+    D --> H[Think: availability vs performance vs cost]
+    E --> I[On-Demand vs RI vs Spot vs Savings Plans]
+    F --> J[Least privilege + defense in depth]
+```
+
+*The SA thought process matters more than the correct answer: explain trade-offs and why you rejected alternatives.*
+
 > This is the capstone guide for the entire AWS interview prep section. It covers 50 questions actually asked in Solutions Architect interviews and on the AWS SAA-C03 certification exam, organized by theme, with model answers that show the SA thought process — not just the right answer, but *why* it's right and *how* to arrive at it under pressure.
 
 **Who this is for**: Engineers preparing for AWS SA interviews, the SAA-C03 certification, or senior engineering roles where infrastructure decisions are expected.

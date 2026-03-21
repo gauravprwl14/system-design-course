@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/thread-pool-sizing.png"
 
 # Thread Pool Sizing: CPU-Bound vs I/O-Bound and Little's Law Formula
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Work[Incoming Work] --> Decision{Work Type?}
+    Decision -->|CPU-Bound| CPUPool[Pool = CPU Cores + 1]
+    Decision -->|I/O-Bound| IOPool[Pool = Cores × 1 + Wait/Service ratio]
+    CPUPool --> LittlesLaw[Little's Law: N = λ × W]
+    IOPool --> LittlesLaw
+    LittlesLaw --> Measure[Measure: p99 latency + throughput]
+    Measure --> VirtualThreads[Java 21 Virtual Threads\nfor pure I/O workloads]
+    VirtualThreads --> EventLoop[Node.js / async for\nI/O-only workloads]
+```
+
+*Thread pool size is not a guess — Little's Law gives the formula; the mistake is applying CPU-bound sizing to I/O-bound workloads.*
+
 **You set your thread pool size to 500 because "more threads = more concurrency." Response times went up, not down. CPU is at 100% but throughput decreased by 30%.** You just discovered that oversizing a thread pool can be worse than undersizing it — context-switch overhead consumed the CPU cycles you needed for actual work.
 
 ---

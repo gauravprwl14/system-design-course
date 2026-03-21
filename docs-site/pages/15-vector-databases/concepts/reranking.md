@@ -20,6 +20,20 @@ tags: [reranking, cross-encoder, cohere-rerank, bge-reranker, precision, recall]
 **Level**: 🟡 Intermediate
 **Reading Time**: 10 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Query["User Query"] --> Stage1["Stage 1: Bi-encoder\n(fast — ~5–10ms)\nRetrieves Top-100 candidates"]
+    Stage1 --> Stage2["Stage 2: Cross-encoder\n(slow — ~50–200ms)\nScores each (query, doc) pair jointly"]
+    Stage2 --> Top5["Top-5 reranked results"]
+    Top5 --> LLM["LLM / Final output"]
+    BiEnc["Bi-encoder: parallel encoding\ngood recall, weaker precision"]
+    CrossEnc["Cross-encoder: joint encoding\nhigh precision, can't pre-compute"]
+```
+
+*Two-stage retrieval: a fast bi-encoder gets top-100 candidates for recall, then a slow cross-encoder reranks them for precision by reading query and document together in a single forward pass.*
+
 > Your vector search returns the 100 most semantically similar chunks. Your cross-encoder reranker reads all 100 alongside the original query and returns the 5 that actually answer the question. That's the difference between retrieval and precision.
 
 ## The Problem

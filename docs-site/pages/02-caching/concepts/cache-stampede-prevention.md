@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/cache-stampede-prevention.png"
 
 # Cache Stampede: Dog-Pile Prevention and Probabilistic Early Expiration
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Cache Key Expires] --> B{Multiple Requests}
+    B -->|Thread 1| C[Acquire Lock]
+    B -->|Thread 2-N| D[Wait / Return Stale]
+    C --> E[Query Database]
+    E --> F[Populate Cache]
+    F --> G[Release Lock]
+    D --> H{Lock Released?}
+    H -->|Yes| I[Read from Cache]
+    G --> I
+```
+
+*When a popular key expires, only one thread is allowed to recompute while others serve stale data or wait — preventing the database from being hit by every concurrent request simultaneously.*
+
 **The cache stampede is a self-inflicted DoS: your own traffic overwhelms your own database the instant a popular cache key expires. Preventing it requires combining lock mechanics, probabilistic expiry, and background refresh — each with distinct failure modes you must design around.**
 
 ---

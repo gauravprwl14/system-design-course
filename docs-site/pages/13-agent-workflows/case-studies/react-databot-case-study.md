@@ -19,6 +19,23 @@ tags: [react, tool-calling, token-efficiency, dispatcher, intent-classification,
 
 > If you pass your entire database to the LLM and ask it to answer a question, you will pay 50x more tokens than you need to, and your answers will be worse. The fix is ReAct — reason first, fetch only what you need, then generate.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Q[User Data Query] --> D[Dispatcher\nintent classification]
+    D --> RA[ReAct Agent]
+    RA --> T[Thought: what do I need?]
+    T --> FC[Tool Call: targeted fetch]
+    FC --> DB[(Database / API)]
+    DB --> OBS[Observation: minimal data]
+    OBS --> RA
+    RA -- enough data --> GEN[Generate Answer]
+    GEN --> USER[User Response]
+```
+
+*ReAct + targeted tool calls replace naive full-database dumps — reducing token cost by up to 50x and improving answer quality.*
+
 ---
 
 ## The Problem This Case Study Solves

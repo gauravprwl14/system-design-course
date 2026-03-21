@@ -14,6 +14,25 @@ tags: [aws, well-architected, cost-optimization, reserved-instances, savings-pla
 
 # AWS Well-Architected Framework: 6 Pillars & Cost Optimization
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Well-Architected Framework] --> B[Operational Excellence]
+    A --> C[Security]
+    A --> D[Reliability]
+    A --> E[Performance Efficiency]
+    A --> F[Cost Optimization]
+    A --> G[Sustainability]
+    F --> H{Workload type?}
+    H -->|Steady baseline| I[Reserved / Savings Plans — 40-60% off]
+    H -->|Variable / unpredictable| J[On-Demand]
+    H -->|Fault-tolerant batch| K[Spot — up to 90% off]
+    C -.->|Trade-off| E
+```
+
+*The 6 pillars conflict with each other — your role is to make intentional, justified trade-off decisions.*
+
 > **Common Interview Questions**: "What are the 6 pillars of the Well-Architected Framework? Give an example of a trade-off between them." / "How would you apply the Reliability pillar to a multi-region e-commerce application?" / "A startup is spending $50K/month on AWS — what's your approach to cost optimization?" / "How do Reserved Instances, Savings Plans, and Spot Instances differ?"
 
 Common in: AWS Solutions Architect Professional, Engineering Manager, Cloud Cost Engineer, and senior technical interviews at companies with meaningful AWS spend.

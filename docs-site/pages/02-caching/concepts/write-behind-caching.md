@@ -14,6 +14,25 @@ featured_image: "/assets/diagrams/write-behind-caching.png"
 
 # Write-Behind Caching: Async Persistence, Durability Windows, and Failure Recovery
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant Cache as Cache (Redis)
+    participant Queue as Write Queue
+    participant DB as Database
+
+    App->>Cache: WRITE score update (< 1ms)
+    Cache->>Queue: Enqueue async persist job
+    App-->>App: Continue (no DB wait)
+    Queue->>DB: Batch flush every N ms
+    Note over Cache,DB: Durability window: data in cache only
+    DB-->>Queue: Persist confirmed
+```
+
+*Writes land in cache immediately for sub-millisecond latency; a background worker drains the queue into the database — but any crash before flush means data loss.*
+
 **Write-behind caching writes to cache first and persists to the database asynchronously — giving you sub-millisecond write latency at the cost of a durability window where data lives only in cache. The failure mode is not "slow writes" — it's "data loss you didn't know was possible."**
 
 ---

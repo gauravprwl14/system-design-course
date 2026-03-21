@@ -27,6 +27,27 @@ tags: [machine-learning, recommendations, collaborative-filtering, two-tower-mod
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> APIGateway["API Gateway"]
+    APIGateway --> RecService["Recommendation Service"]
+    RecService --> CandidateGen["Candidate Generation (Two-Tower)"]
+    RecService --> Ranker["Ranking Model (DNN)"]
+    CandidateGen --> EmbeddingStore["Embedding Store (FAISS)"]
+    Ranker --> FeatureStore["Feature Store (Redis)"]
+    EventStream["User Events (Kafka)"] --> FeatureStore
+    EventStream --> TrainingPipeline["Offline Training Pipeline"]
+    TrainingPipeline --> ModelStore["Model Registry"]
+    ModelStore --> CandidateGen
+    ModelStore --> Ranker
+```
+
+*User events flow into a feature store and offline training pipeline; at serving time the two-tower model retrieves candidates from an ANN index which the ranking model re-scores using fresh features.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 A production recommendation system has three stages: candidate retrieval (narrow millions of items to ~100 candidates using approximate nearest neighbor search on embedding vectors), ranking (score those 100 candidates with a heavy ML model), and re-ranking (apply business rules like diversity and freshness). It combines collaborative filtering (what similar users watched) with content-based signals (item features) in a hybrid model.

@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/webhook-design.png"
 
 # Webhook Design: Reliable Delivery, Retry Logic, and Consumer Security
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    PLATFORM[Platform Event] --> QUEUE[(Webhook Queue)]
+    QUEUE --> WORKER[Webhook Worker]
+    WORKER -->|POST + HMAC signature| CONSUMER[Consumer Endpoint]
+    CONSUMER -->|200 OK| ACK[Mark Delivered]
+    CONSUMER -->|500 / Timeout| RETRY[Exponential Backoff<br/>Retry with jitter]
+    RETRY -->|Max attempts| DLQ[Dead Letter Queue]
+    WORKER --> SIGN[HMAC-SHA256<br/>Signature header]
+    CONSUMER --> IDEMPOTENT[Idempotency Check<br/>event_id dedupe]
+```
+
+*Reliable webhook delivery requires a durable queue, signed payloads, exponential-backoff retries, and idempotent consumers to handle at-least-once delivery.*
+
 **A webhook is an HTTP request that your system makes to someone else's server. Everything that can go wrong with their server is now your problem.** Their server is down, slow, returns 500, accepts the payload but discards it, or processes it twice because your retry hit a race condition. Building reliable webhook delivery means solving distributed systems problems on behalf of consumers who aren't even on your team.
 
 ---

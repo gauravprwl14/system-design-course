@@ -21,6 +21,22 @@ tags: [scaling, memory, sharding, hnsw, diskann, multi-tenant, hot-shard, oom]
 **Level**: 🔴 Advanced
 **Reading Time**: 12 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Scale["Growing Vector Collection"] --> Mem["Memory Exhaustion\nHNSW outgrows RAM"]
+    Scale --> Cold["Cold Query Latency\nindex evicted to disk"]
+    Scale --> Shard["Hot-Shard Imbalance\none tenant dominates"]
+    Scale --> Rebuild["Rebuild Blocking\noptimization locks queries"]
+    Mem --> Fix1["DiskANN / quantization\nor shard by size"]
+    Cold --> Fix2["Pin hot indexes in RAM\npre-warm on startup"]
+    Shard --> Fix3["Per-tenant collections\nor rate limiting"]
+    Rebuild --> Fix4["Shadow index\nthen atomic swap"]
+```
+
+*Vector DB scaling cliffs appear suddenly in production: HNSW is RAM-resident by default, and once indexes exceed available memory, query latency can increase 1000x.*
+
 > HNSW gives you sub-millisecond search — until your index grows past available RAM and everything grinds to a halt.
 
 ## The Problem

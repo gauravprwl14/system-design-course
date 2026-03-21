@@ -47,6 +47,23 @@ tags:
 **Reading Time**: 12 minutes
 **Practical Application**: When read queries outnumber writes 10:1
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Application"] -->|"Writes"| B["Primary DB"]
+    A -->|"Reads (90%)"| C["Load Balancer"]
+    C --> D["Replica 1"]
+    C --> E["Replica 2"]
+    C --> F["Replica 3"]
+    B -->|"Async replication"| D
+    B -->|"Async replication"| E
+    B -->|"Async replication"| F
+    G["Read-after-write\nproblem"] -->|"Force primary\nfor own data"| B
+```
+
+*Read replicas offload 90%+ of traffic from the primary by routing reads to horizontally scaled copies — but replication lag means reads may return stale data for a brief window after writes.*
+
 ## 🎯 Problem Statement
 
 Your application has:

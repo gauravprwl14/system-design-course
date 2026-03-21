@@ -11,6 +11,21 @@ tags: [vector-databases, embedding-drift, model-migration, recall-degradation]
 **Level**: 🔴 Advanced
 **Reading Time**: 8 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    ModelA["Model A\n(existing stored vectors)"] --> VectorSpaceA["Vector Space A"]
+    ModelB["Model B\n(new query embeddings)"] --> VectorSpaceB["Vector Space B"]
+    VectorSpaceA --> Mismatch["Dot product is meaningless\nacross spaces"]
+    VectorSpaceB --> Mismatch
+    Mismatch --> WrongResults["Plausible scores (0.4–0.7)\nbut wrong rankings"]
+    WrongResults --> Fix["Fix: re-embed full corpus\nwith Model B before switching queries"]
+    Fix --> Validate["Validate recall before\ncutover"]
+```
+
+*Switching embedding models mid-stream silently corrupts search: old and new vectors live in incompatible geometric spaces, producing plausible-looking scores that rank results incorrectly.*
+
 > You upgrade your embedding model to improve quality. The next day, search results are garbage — but no error was thrown. This is embedding model drift.
 
 ## The Problem

@@ -24,6 +24,24 @@ tags: [microservices, monolith-migration, strangler-fig, ddd, netflix, uber, ama
 
 # Monolith to Microservices - Migration Strategies at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> Gateway["API Gateway / Reverse Proxy"]
+    Gateway --> Monolith["Legacy Monolith"]
+    Gateway --> ServiceA["Extracted Service A"]
+    Gateway --> ServiceB["Extracted Service B"]
+    Monolith --> SharedDB["Shared DB (transitional)"]
+    ServiceA --> ServiceADB["Service A DB"]
+    ServiceB --> ServiceBDB["Service B DB"]
+    EventBus["Event Bus (Kafka)"] --> ServiceA
+    EventBus --> ServiceB
+    Monolith --> EventBus
+```
+
+*The strangler-fig pattern routes new traffic to extracted microservices via the gateway while the monolith shrinks; an event bus decouples data sync between legacy and new service databases.*
+
 ## What You'll Learn
 
 Master the **migration from monolith to microservices** used by Netflix, Amazon, and Uber:

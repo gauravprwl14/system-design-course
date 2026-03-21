@@ -53,6 +53,19 @@ tags:
 **Difficulty**: 🟢 Beginner
 **Estimated Impact**: $500K-$5M/hour revenue loss, 10-100x response time degradation
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Fetch 1000 users\n1 query"] -->|"Lazy load posts\nper user"| B["1000 extra queries\n× 30ms = 30 seconds"]
+    C["Fix options"] --> D["Eager Loading\nprefetch_related/includes\n1 JOIN query → 30ms"]
+    C --> E["Batch Loading\nDataLoader / WHERE IN\n2 queries → 60ms"]
+    C --> F["Denormalization\npost_count column\n1 query → 10ms"]
+    D -->|"Best for\nmost cases"| G["EXPLAIN ANALYZE\nverify index scan"]
+```
+
+*The N+1 problem turns one list query into N+1 database roundtrips — fix it with eager loading (one JOIN) or batch loading (WHERE IN), and always confirm with EXPLAIN ANALYZE.*
+
 ---
 
 ## The Scenario

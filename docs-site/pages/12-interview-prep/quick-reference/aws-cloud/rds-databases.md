@@ -14,6 +14,23 @@ tags: [aws, rds, aurora, mysql, postgresql, multi-az, read-replicas, database, s
 
 # AWS RDS: Multi-AZ, Read Replicas, Aurora, and Scaling
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Primary problem?} -->|Availability / failover| B[Multi-AZ]
+    A -->|Read performance / scaling| C[Read Replicas]
+    A -->|Both + high scale| D[Aurora]
+    B --> E[Synchronous standby, auto-failover ~1-2 min]
+    C --> F[Asynchronous, up to 5 RDS replicas]
+    D --> G[6-way replication across 3 AZs]
+    D --> H[Up to 15 read replicas, shared storage]
+    F --> I[Lambda flood problem?]
+    I --> J[RDS Proxy — connection pooling]
+```
+
+*Multi-AZ = availability; Read Replicas = performance. Aurora combines both at higher scale.*
+
 ## Question
 
 **"How does RDS Multi-AZ work? What's the failover time and how is it different from Read Replicas?"**

@@ -16,6 +16,24 @@ tags: [database, replication, master-slave, multi-master, high-availability, con
 
 # Database Replication: Master-Slave & Multi-Master
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A{Replication Goal?} -->|High availability / failover| B[Master-Slave]
+    A -->|Multi-region writes| C[Multi-Master]
+    B --> D[Primary: reads + writes]
+    D --> E[Replica 1: reads only]
+    D --> F[Replica 2: reads only]
+    C --> G[Master A: reads + writes]
+    C --> H[Master B: reads + writes]
+    G <-->|Bidirectional sync| H
+    E --> I[Async replication lag risk]
+    H --> J[Conflict resolution needed]
+```
+
+*Decision: Master-Slave for read scaling and failover; Multi-Master only when write availability across regions is required.*
+
 ## Overview
 
 Database replication is the process of copying data from one database server to one or more other servers. This is critical for:

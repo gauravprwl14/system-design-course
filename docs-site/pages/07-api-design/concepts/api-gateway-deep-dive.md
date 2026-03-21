@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/api-gateway-deep-dive.png"
 
 # API Gateway Deep Dive: Routing, Auth, Rate Limiting, and Circuit Breaking
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CLIENTS[Mobile / Web / Partners] --> GW[API Gateway]
+    GW --> TLS[TLS Termination]
+    TLS --> AUTH[Auth / JWT Validation]
+    AUTH --> RL[Rate Limiting]
+    RL --> ROUTE[Request Routing]
+    ROUTE --> SVC_A[Service A]
+    ROUTE --> SVC_B[Service B]
+    ROUTE --> SVC_C[Service C]
+    ROUTE --> CB[Circuit Breaker]
+    CB -->|Tripped| FALLBACK[Fallback / 503]
+```
+
+*The gateway centralizes cross-cutting concerns — TLS, auth, rate limiting, routing, and circuit breaking — between external clients and internal microservices.*
+
 **The API gateway is the front door to your entire platform. It's also the most frequently over-engineered and under-operated component in microservice architectures.** Teams bolt on feature after feature until the gateway becomes a distributed monolith: handling auth, rate limiting, routing, transformation, circuit breaking, caching, and logging — all in a single process that must be deployed, scaled, and operated by one team. This article covers what belongs in the gateway, what doesn't, and how to keep it from becoming the single point of failure it was meant to prevent.
 
 ---

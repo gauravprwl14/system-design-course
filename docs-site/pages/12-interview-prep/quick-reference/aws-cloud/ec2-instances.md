@@ -14,6 +14,25 @@ tags: [aws, ec2, auto-scaling, spot-instances, reserved-instances, placement-gro
 
 # AWS EC2: Instance Types, Purchase Options & Fleet Design
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Workload type?} -->|Compute-intensive| B[C-family: c6i, c7g]
+    A -->|Memory-intensive| C[R-family: r6i, x2idn]
+    A -->|Balanced / general| D[M or T-family]
+    A -->|Storage IOPS| E[I-family: i4i NVMe]
+    D --> F{Purchase model?}
+    B --> F
+    C --> F
+    E --> F
+    F -->|Unpredictable / short-term| G[On-Demand]
+    F -->|Steady baseline 1-3 yr| H[Reserved / Savings Plan]
+    F -->|Fault-tolerant batch| I[Spot — up to 90% off]
+```
+
+*Match instance family to workload first, then optimize cost with the right purchase model.*
+
 ## Question
 **"How do you choose the right EC2 instance type for a workload? Walk me through your decision process. What's the difference between On-Demand, Reserved, Spot, and Savings Plans?"**
 
