@@ -23,6 +23,28 @@ tags: [postgresql, window-functions, analytics, ranking, sql]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Input rows\n(all kept)"] --> B["Window function\nOVER (PARTITION BY ... ORDER BY ...)"]
+    B --> C["Output rows\n(same count + new column)"]
+
+    D["Ranking"] --> E["ROW_NUMBER — unique 1,2,3"]
+    D --> F["RANK — ties get same rank, gaps after"]
+    D --> G["DENSE_RANK — ties, no gaps"]
+
+    H["Aggregates"] --> I["SUM / AVG OVER () — running total"]
+    H --> J["PARTITION BY dept — group calc, keep rows"]
+
+    K["Row access"] --> L["LAG — previous row value"]
+    K --> M["LEAD — next row value"]
+```
+
+*Window functions add calculated columns without collapsing rows — unlike GROUP BY, every original row stays in the result.*
+
+---
+
 ## 📊 The Problem Everyone Faces
 
 You need to show a sales leaderboard with:

@@ -15,6 +15,25 @@ tags: [database, sql, nosql, postgresql, mongodb, redis, data-modeling]
 
 # SQL vs NoSQL: When to Use Each
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A{Data Requirements?} --> B{Need ACID transactions?}
+    B -->|Yes| C[SQL - PostgreSQL / MySQL]
+    B -->|No| D{Schema stable?}
+    D -->|Fixed schema| E{Complex JOINs needed?}
+    D -->|Flexible / evolving| F[Document DB - MongoDB]
+    E -->|Yes| C
+    E -->|No - key lookups| G[Key-Value - Redis / DynamoDB]
+    F --> H{Write volume?}
+    H -->|"Massive (IoT / logs)"| I[Wide-Column - Cassandra]
+    H -->|Normal| F
+    A --> J{Graph relationships?} -->|Yes| K[Graph DB - Neo4j]
+```
+
+*SQL for consistency and complex queries; NoSQL for flexible schema, horizontal scale, or specialized data models — most production systems use both.*
+
 ## Question
 **"Explain the difference between SQL and NoSQL databases. When would you use one over the other?"**
 

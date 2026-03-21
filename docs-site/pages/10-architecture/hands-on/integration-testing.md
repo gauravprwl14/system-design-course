@@ -25,6 +25,22 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, Docker basics, Testing fundamentals
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Suite["Test Suite\nbeforeAll / afterAll / beforeEach"] --> Infra["Test Infrastructure\nDocker containers"]
+    Infra --> Postgres["PostgreSQL\n(real DB)"]
+    Infra --> Redis["Redis\n(real cache)"]
+    Suite --> App["App Under Test\nOrderService"]
+    App --> Postgres
+    App --> Redis
+    App --> Mock["External Service Mock\nPaymentAPI"]
+    Suite -->|"assert side effects"| Assertions["Verify DB rows\nVerify cache keys\nVerify mock calls"]
+```
+
+*Spin up real dependencies in containers, wire the app to them, then assert end-to-end behavior.*
+
 ## What You'll Learn
 
 Integration tests verify that multiple components work together correctly. This covers testing APIs, databases, external services, and message queues as a system.

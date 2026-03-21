@@ -41,6 +41,25 @@ Pub/Sub enables real-time features without complex WebSocket coordination.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant Publisher
+    participant Redis
+    participant Sub1 as Subscriber 1
+    participant Sub2 as Subscriber 2
+    Sub1->>Redis: SUBSCRIBE notifications
+    Sub2->>Redis: SUBSCRIBE notifications
+    Publisher->>Redis: PUBLISH notifications "new_message"
+    Redis-->>Sub1: message: "new_message"
+    Redis-->>Sub2: message: "new_message"
+```
+
+*Publishers and subscribers are fully decoupled — Redis fans out each published message to all active channel subscribers in real time.*
+
+---
+
 ## Prerequisites
 - Docker installed
 - Node.js 18+

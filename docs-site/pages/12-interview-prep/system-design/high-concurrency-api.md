@@ -25,6 +25,30 @@ tags: [high-concurrency, api-design, connection-pooling, load-balancing, async, 
 
 # Designing High-Concurrency APIs
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Clients["100K+ Clients"]
+    LB["Load Balancer\n(NGINX / ALB)"]
+    API["API Servers\n(stateless pool)"]
+    CB["Circuit Breaker"]
+    Cache["Redis Cache"]
+    Pool["Connection Pool\n(DB connections)"]
+    DB["Database\n(read replicas)"]
+    MQ["Async Queue\n(non-critical ops)"]
+
+    Clients --> LB
+    LB --> API
+    API --> Cache
+    API --> CB
+    CB --> Pool
+    Pool --> DB
+    API --> MQ
+```
+
+*Stateless API servers behind a load balancer, with a Redis cache and connection pool shielding the database from raw concurrency.*
+
 ## Question
 **"Design an API that can handle 100,000+ concurrent requests. How would you optimize for performance and reliability?"**
 

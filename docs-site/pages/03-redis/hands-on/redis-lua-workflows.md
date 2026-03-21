@@ -61,6 +61,25 @@ This POC shows you how to build bulletproof multi-step workflows.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Client Request] --> B["Single Lua Script\n(EVAL)"]
+    B --> C{Check Inventory}
+    C -->|In stock| D[Reserve Inventory]
+    D --> E[Validate Payment]
+    E --> F[Create Order]
+    F --> G[Update Loyalty Points]
+    G --> H[All committed atomically]
+    C -->|Out of stock| I[Abort - nothing changed]
+    E -->|Fail| I
+```
+
+*The entire multi-step order workflow runs inside one Lua script — either all steps succeed together or none of them apply, eliminating partial-failure data drift.*
+
+---
+
 ## The Problem: Non-Atomic Multi-Step Operations
 
 ### Partial Failures Break Consistency

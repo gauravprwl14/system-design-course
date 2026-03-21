@@ -26,6 +26,26 @@ tags: [security, authentication, jwt, sessions, oauth, stateless]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A{Auth Mechanism?} --> B{Stateless needed?}
+    B -->|Yes - microservices / mobile| C[JWT]
+    B -->|No - server-rendered web| D{Easy revocation needed?}
+    D -->|Yes - admin / sensitive| E[Session]
+    D -->|No| C
+    C --> F{Third-party login?}
+    F -->|Yes - Google / GitHub| G[OAuth 2.0 + JWT]
+    F -->|Own users only| C
+    E --> H["Server stores session — sticky sessions or Redis"]
+    C --> I["Client stores token — stateless, scales easily"]
+```
+
+*Session is stateful and easy to revoke; JWT is stateless and scales horizontally; OAuth 2.0 is an authorization framework for third-party login, not a replacement for either.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 **Session-Based Auth** (Traditional):

@@ -47,6 +47,21 @@ tags:
 > **Difficulty:** Intermediate
 > **Prerequisites:** Docker, Node.js/Python, basic messaging concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    D["Drivers<br/>(500K)"] -->|"key: driver-id"| P["Kafka Producer<br/>(batched + compressed)"]
+    P -->|publish| T["Topic: driver-locations<br/>(3 partitions)"]
+    T -->|partition 0| C1["Consumer 1"]
+    T -->|partition 1| C2["Consumer 2"]
+    T -->|partition 2| C3["Consumer 3"]
+    C1 & C2 & C3 -->|update| R["Redis Cache"]
+    R -->|serve| RIDERS["20M Riders"]
+```
+
+*Partition key guarantees same driver always routes to same partition, preserving per-driver ordering.*
+
 ## How Uber Tracks 500,000 Driver Locations Per Second
 
 **Uber's Real-Time Location System (2024)**

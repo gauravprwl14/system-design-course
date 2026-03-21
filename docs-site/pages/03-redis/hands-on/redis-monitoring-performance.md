@@ -63,6 +63,26 @@ This POC shows you how to build production-grade Redis observability.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Redis Instance] --> B["INFO command\n(memory, clients, stats)"]
+    A --> C["SLOWLOG GET\n(slow commands)"]
+    A --> D["MONITOR / LATENCY\n(real-time events)"]
+    B --> E[Metrics Collector]
+    C --> E
+    D --> E
+    E --> F[Grafana Dashboard]
+    E --> G{Threshold Breach?}
+    G -->|Yes| H[PagerDuty Alert]
+    G -->|No| I[All green]
+```
+
+*Metrics from INFO, SLOWLOG, and LATENCY feed a central collector that drives dashboards and fires alerts before latency spikes become outages.*
+
+---
+
 ## The Problem: Flying Blind Without Monitoring
 
 ### No Visibility = Long Outages

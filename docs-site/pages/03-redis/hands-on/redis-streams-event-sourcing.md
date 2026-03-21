@@ -64,6 +64,25 @@ This POC shows you how to build reliable event-sourced systems.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    P[Producer] -->|"XADD orders:stream * field val"| S[Redis Stream]
+    S --> CG[Consumer Group]
+    CG --> W1[Worker 1]
+    CG --> W2[Worker 2]
+    W1 -->|"XACK on success"| S
+    W2 -->|"XACK on success"| S
+    S -->|Messages persisted| D[Disk / AOF]
+    W1 -->|Crash before ACK| R[Redelivered by Redis]
+    R --> W1
+```
+
+*Redis Streams persist every message to disk and track acknowledgments per consumer group — unacknowledged messages are automatically redelivered, guaranteeing at-least-once processing.*
+
+---
+
 ## The Problem: Pub/Sub Loses Messages
 
 ### Pub/Sub is Fire-and-Forget

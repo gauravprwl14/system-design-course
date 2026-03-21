@@ -26,6 +26,28 @@ tags: [live-streaming, twitch, cdn, hls, websocket, adaptive-bitrate, real-time]
 
 # Live Streaming System - How Twitch Handles 15M Concurrent Viewers
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Streamer["Streamer (OBS / RTMP)"]
+    Ingest["Ingest Servers\n(RTMP edge)"]
+    Transcode["Transcoding Farm\n(HLS segments)"]
+    CDN["CDN Edge Nodes\n(global PoPs)"]
+    Viewers["15M Viewers\n(HLS playback)"]
+    Chat["Chat Service\n(WebSocket)"]
+    Meta["Metadata Service\n(stream info)"]
+
+    Streamer -->|"RTMP"| Ingest
+    Ingest --> Transcode
+    Transcode -->|"HLS segments"| CDN
+    CDN -->|"adaptive bitrate"| Viewers
+    Viewers <-->|"messages"| Chat
+    Viewers --> Meta
+```
+
+*Video takes the CDN path (high throughput); chat takes WebSocket (low latency) — two separate pipelines for two different constraints.*
+
 **Scale**: Twitch streams to 15M+ concurrent viewers with <2 second latency. YouTube Live handles 100M+ streams per month. Here's how they built systems that don't buffer.
 
 **What You'll Learn**:

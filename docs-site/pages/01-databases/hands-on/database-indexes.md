@@ -43,6 +43,25 @@ A **comprehensive index demonstration** showing when and how to use database ind
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Query"] --> B{"Index exists?"}
+    B -->|"No"| C["Seq Scan\nscan all N rows\n~128 ms"]
+    B -->|"Yes"| D{"Index type"}
+    D -->|"B-Tree single col"| E["Equality + range\n~2 ms"]
+    D -->|"Composite col1,col2"| F["Multi-condition\nleft-prefix rule"]
+    D -->|"Partial WHERE cond"| G["Filtered rows only\nsmaller + faster"]
+    D -->|"Functional LOWER(col)"| H["Expression queries"]
+    C -->|"Add index"| D
+    E & F & G & H --> I["Result rows"]
+```
+
+*Indexes trade write overhead for dramatically faster reads — choose type based on query shape, not guesswork.*
+
+---
+
 ## Why This Matters
 
 ### Real-World Usage

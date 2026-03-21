@@ -30,6 +30,27 @@ tags:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["DML event — INSERT / UPDATE / DELETE"] --> B["Trigger fires automatically"]
+    B --> C{Timing}
+    C -- BEFORE --> D["Modify NEW row before write"]
+    C -- AFTER --> E["Log change, cascade update"]
+    D --> F["Validation, timestamps, computed fields"]
+    E --> G["Audit tables, derived aggregates"]
+
+    H["Common patterns"] --> I["Auto-update updated_at"]
+    H --> J["Audit log to *_audit table"]
+    H --> K["Enforce business rules"]
+    H --> L["Recalculate order totals"]
+```
+
+*Triggers execute atomically with the transaction — they cannot be forgotten or bypassed by any client.*
+
+---
+
 ## 📊 The Problem Everyone Faces
 
 You're reviewing a critical bug report. A customer's order was modified, but nobody knows **who changed it** or **when**.

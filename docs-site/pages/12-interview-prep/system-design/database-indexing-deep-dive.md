@@ -25,6 +25,29 @@ tags: [database, indexing, postgresql, query-optimization, b-tree, performance]
 
 # Database Indexing Deep Dive - The $47M Query Optimization
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Query["SQL Query"]
+    Planner["Query Planner\n(EXPLAIN ANALYZE)"]
+    SeqScan["Sequential Scan\nO(N) — slow"]
+    BTree["B-Tree Index\nO(log N) — fast"]
+    Composite["Composite Index\n(col1, col2)"]
+    Covering["Covering Index\n(no table lookup)"]
+    Table["Table Storage"]
+
+    Query --> Planner
+    Planner -->|"no index"| SeqScan
+    Planner -->|"index exists"| BTree
+    BTree --> Composite
+    BTree --> Covering
+    SeqScan --> Table
+    BTree --> Table
+```
+
+*Adding the right index turns a full 1.2-billion-row table scan into a logarithmic lookup — the difference between 3,200ms and 4ms.*
+
 > **Time to Read:** 25-30 minutes
 > **Difficulty:** Intermediate-Advanced
 > **Key Concepts:** B-Tree, Hash, Composite Indexes, Query Optimization, EXPLAIN ANALYZE

@@ -18,6 +18,26 @@ tags: [database, scaling, sharding, read-replicas, horizontal-scaling, partition
 
 # Database Scaling Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A{DB Bottleneck?} --> B{Which type?}
+    B -->|Slow queries| C[Add Indexes + Query Optimization]
+    B -->|Read overload| D[Add Read Replicas]
+    B -->|Write overload| E{Data size?}
+    B -->|General slowness| F[Vertical Scale - bigger server]
+    D --> G["Route SELECTs to replicas — 10x read capacity"]
+    E -->|"Fits 1 server (< 5TB)"| H[Connection Pooling + Caching]
+    E -->|"Multi-server needed"| I[Sharding]
+    I --> J{Shard Strategy?}
+    J -->|Even distribution| K[Hash-Based]
+    J -->|Time-series data| L[Range-Based]
+    J -->|Data residency| M[Geographic]
+```
+
+*Follow the scaling ladder: indexes → caching → vertical → read replicas → sharding; sharding is last resort due to cross-shard complexity.*
+
 ## Question
 **"How do you scale a database to handle millions of users? Explain vertical vs horizontal scaling, read replicas, and sharding."**
 

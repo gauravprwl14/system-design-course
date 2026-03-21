@@ -22,6 +22,21 @@ tags:
 
 # 5️⃣7️⃣ GraphQL Server Implementation
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    C[Client Query] --> GQL[Apollo Server]
+    GQL --> VL[Validation\nDepth + Cost Limits]
+    VL --> R[Resolvers]
+    R --> DL[DataLoader\nBatch + Cache]
+    DL --> DB[(PostgreSQL)]
+    R --> CTX[Context\nAuth + Per-Request Cache]
+    GQL --> ERR[Error Formatter]
+```
+
+*The client sends a single flexible query; DataLoader batches all N+1 sub-queries into one SQL call before they ever reach the database.*
+
 ## 🎯 What You'll Learn
 How Shopify reduced **mobile app payload by 70%** and **API calls by 73%** using GraphQL to save $4.2M/year in bandwidth costs.
 

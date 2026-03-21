@@ -23,6 +23,20 @@ status: "published"
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    KEY["Key: user:42<br/>(hash → position 1500)"] -->|"clockwise lookup"| RING["Hash Ring<br/>(0 → 2^32)"]
+    RING --> NA["cache-A<br/>(pos 800)"]
+    RING --> NB["cache-B<br/>(pos 1800) ← assigned"]
+    RING --> NC["cache-C<br/>(pos 3200)"]
+    ADD["Add cache-D<br/>(pos 1600)"] -->|"only keys 800..1600 move"| ND["cache-D<br/>(~25% of keys)"]
+    VIRT["Virtual Nodes<br/>(150 per physical)"] -->|"spread positions evenly"| RING
+```
+
+*Adding one node to a 3-node cluster moves only ~25% of keys instead of ~75% with modulo hashing.*
+
 ## The Concept `[Intermediate]`
 
 Consistent hashing solves the *reshuffling problem* in distributed caches and databases. With a naive modulo hash (`key % N`), adding or removing a node causes almost **every key** to remap to a different node — invalidating your entire cache.

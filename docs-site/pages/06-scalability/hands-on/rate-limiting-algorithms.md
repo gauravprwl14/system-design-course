@@ -32,6 +32,32 @@ tags:
 > **Time:** 30 minutes
 > **Prerequisites:** Node.js, Redis basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    subgraph "Fixed Window"
+        FW["Count resets<br/>at boundary"]
+    end
+    subgraph "Sliding Window Log"
+        SL["Timestamps list<br/>per user"]
+    end
+    subgraph "Sliding Window Counter"
+        SC["Weighted avg of<br/>current + previous"]
+    end
+    subgraph "Token Bucket"
+        TB["Tokens refill<br/>at steady rate<br/>allows bursts"]
+    end
+    subgraph "Leaky Bucket"
+        LB["Queue drains<br/>at constant rate<br/>no bursts"]
+    end
+    REQ["API Request"] --> TB
+    TB -->|"token available"| ALLOW["200 OK"]
+    TB -->|"empty"| DENY["429 Too Many Requests"]
+```
+
+*Token bucket is the most flexible — it allows short bursts while enforcing a sustained average rate.*
+
 ## What You'll Learn
 
 Rate limiting protects APIs from abuse. This POC implements the four main algorithms: Fixed Window, Sliding Window Log, Sliding Window Counter, and Token Bucket.

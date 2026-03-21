@@ -37,6 +37,26 @@ tags:
 **Time**: 60 minutes
 **Companies**: Google, Dropbox, Microsoft, Amazon, Box (Common for senior roles)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    U["Users / Clients"] --> GW["API Gateway"]
+    GW --> MS["Metadata Service"]
+    GW --> US["Upload Service"]
+    US --> CS["Chunk Splitter"]
+    CS --> OBJ["Object Storage (S3/GCS)"]
+    MS --> DB["Metadata DB (PostgreSQL)"]
+    MS --> IDX["Search Index"]
+    GW --> SS["Sync Service"]
+    SS --> MQ["Message Queue (Kafka)"]
+    MQ --> NS["Notification Service"]
+    OBJ --> CDN["CDN (Download Path)"]
+    CDN --> U
+```
+
+*Files are split into chunks, stored in object storage, and metadata is tracked separately — sync events flow through a message queue to keep all devices up to date.*
+
 ## 1. Problem Statement
 
 Design a cloud file storage and synchronization system where users store, share, and sync files across devices.

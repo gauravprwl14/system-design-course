@@ -16,6 +16,28 @@ tags: [redis, hyperloglog, unique-counting, cardinality, analytics]
 
 # POC #10: Unique Counting with HyperLogLog
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Events["User Events\n(billions/day)"]
+    PFADD["PFADD hll:visitors\nuser_id"]
+    HLL["HyperLogLog Key\n12 KB fixed size"]
+    PFCOUNT["PFCOUNT\n~0.81% error"]
+    Result["Unique Count\n~10,000,000"]
+    SetApproach["Redis SET\nsadd visitors user_id"]
+    SetMem["160 MB per day\n(exact)"]
+
+    Events -->|"approximate"| PFADD
+    PFADD --> HLL
+    HLL --> PFCOUNT
+    PFCOUNT --> Result
+    Events -->|"exact"| SetApproach
+    SetApproach --> SetMem
+```
+
+*HyperLogLog tracks billions of unique values in a fixed 12 KB structure with ~0.81% error — versus a Redis Set that grows linearly and consumes gigabytes.*
+
 ## What You'll Build
 
 A **highly memory-efficient unique counting system** using Redis HyperLogLog that tracks millions of unique users with minimal memory:

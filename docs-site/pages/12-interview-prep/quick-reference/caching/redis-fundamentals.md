@@ -18,6 +18,24 @@ tags: [redis, caching, eviction, ttl, data-structures, in-memory, fundamentals]
 
 # Redis Caching - Fundamentals & Best Practices
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A{Use Case?} --> B{Data Structure?}
+    B -->|"Single value / JSON"| C[STRING - set/get]
+    B -->|"Object fields"| D[HASH - hget/hset]
+    B -->|"Ordered rankings"| E[SORTED SET - zadd/zrevrange]
+    B -->|"Unique items"| F[SET - sadd/sismember]
+    B -->|"Queue / Feed"| G[LIST - lpush/lrange]
+    A --> H{Memory Full?}
+    H -->|General cache| I[allkeys-lru policy]
+    H -->|Mixed data| J[volatile-lru policy]
+    H -->|Critical data| K[noeviction policy]
+```
+
+*Pick the right Redis data structure for the use case; configure eviction policy to control what gets dropped when memory is full.*
+
 ## Question
 **"Explain Redis caching strategies. How do you handle TTL, eviction policies, and what are the common use cases?"**
 

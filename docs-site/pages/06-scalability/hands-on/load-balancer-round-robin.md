@@ -29,6 +29,20 @@ tags:
 > **Time:** 20 minutes
 > **Prerequisites:** Node.js basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    R1["Request 1"] --> S1["Server 1"]
+    R2["Request 2"] --> S2["Server 2"]
+    R3["Request 3"] --> S3["Server 3"]
+    R4["Request 4"] --> S1
+    R5["Request 5"] --> S2
+    LB["Round-Robin<br/>Load Balancer"] --> R1 & R2 & R3 & R4 & R5
+```
+
+*Requests cycle through servers in fixed order — equal distribution regardless of server speed or current load.*
+
 ## What You'll Learn
 
 Round-robin is the simplest load balancing algorithm - distribute requests evenly across all servers in order.

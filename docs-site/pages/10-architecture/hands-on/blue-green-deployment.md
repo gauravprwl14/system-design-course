@@ -28,6 +28,23 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Docker basics, Load balancing concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Users["Users"] --> LB["Load Balancer"]
+    LB -->|"Active traffic"| Blue["BLUE env (v1.0) ✅ LIVE"]
+    LB -.->|"Idle"| Green["GREEN env (v1.0) ⚪ IDLE"]
+    Green -->|"Deploy v2.0"| Green2["GREEN env (v2.0) 🔄 DEPLOYING"]
+    Green2 -->|"Health check passes"| Switch["Traffic Switch"]
+    Switch -->|"New active"| Green3["GREEN env (v2.0) ✅ LIVE"]
+    Switch -.->|"Standby for rollback"| Blue2["BLUE env (v1.0) ⚪ STANDBY"]
+    Green3 -->|"Issue detected"| Rollback["Instant Rollback"]
+    Rollback --> Blue2
+```
+
+*Traffic flips atomically between two identical environments — zero downtime, instant rollback.*
+
 ## What You'll Learn
 
 Blue-Green deployment maintains two identical production environments. Traffic switches instantly between them, enabling zero-downtime deployments and instant rollbacks.

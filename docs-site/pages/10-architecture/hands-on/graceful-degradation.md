@@ -33,6 +33,22 @@ tags:
 > **Time:** 20 minutes
 > **Prerequisites:** Node.js, Circuit breaker concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Load["System Load Monitor"] -->|"load < 50%"| Full["Full Mode\nall features enabled"]
+    Load -->|"50-70%"| Partial["Partial Mode\nreviews + recs disabled"]
+    Load -->|"70-90%"| Reduced["Reduced Mode\npersonalization disabled"]
+    Load -->|"90%+"| Minimal["Minimal Mode\nstatic prices + cached data only"]
+    Full -->|"service error"| Fallback["Try cached / default value"]
+    Partial --> Fallback
+    Reduced --> Fallback
+    Minimal --> Fallback
+```
+
+*Drop non-critical features under load in priority order so the core user journey always works.*
+
 ## What You'll Learn
 
 Graceful degradation keeps your system functional when dependencies fail, by falling back to cached data, default values, or reduced functionality.

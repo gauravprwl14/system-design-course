@@ -31,6 +31,24 @@ tags:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Live Tables\norders, customers, products"] -->|"Expensive JOIN + GROUP BY\n45 s on 10M rows"| B["Regular View\nexecutes every time"]
+    A -->|"CREATE MATERIALIZED VIEW"| C["Materialized View\npre-computed on disk"]
+    C --> D["Add indexes\nfor fast lookups"]
+    D --> E["Query result\n40 ms"]
+    F{"Refresh strategy"} -->|"Manual"| C
+    F -->|"pg_cron schedule"| C
+    F -->|"Trigger on insert"| C
+    B -->|"Slow path\nfalls back to"| A
+```
+
+*A materialized view stores aggregation results on disk — trade data freshness (refresh lag) for a 100–1000x query speedup.*
+
+---
+
 ## 📊 The Problem Everyone Faces
 
 You're running a SaaS analytics platform. The executive dashboard shows:

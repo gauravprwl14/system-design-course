@@ -33,6 +33,32 @@ tags:
 > **Difficulty:** Advanced
 > **Prerequisites:** Redis basics, understanding of distributed systems, sharding concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client Request"]
+    Hash["CRC16(key) % 16384"]
+    M1["Master 1\nSlots 0-5460"]
+    M2["Master 2\nSlots 5461-10922"]
+    M3["Master 3\nSlots 10923-16383"]
+    R1["Replica 1"]
+    R2["Replica 2"]
+    R3["Replica 3"]
+    Failover["Auto-Failover\n< 2 sec"]
+
+    Client --> Hash
+    Hash -->|"slot 0-5460"| M1
+    Hash -->|"slot 5461-10922"| M2
+    Hash -->|"slot 10923-16383"| M3
+    M1 -->|replication| R1
+    M2 -->|replication| R2
+    M3 -->|replication| R3
+    R1 -->|"master down"| Failover
+```
+
+*A 6-node Redis Cluster distributes 16,384 hash slots across 3 masters, each backed by a replica for automatic failover in under 2 seconds.*
+
 ## How Twitter Scaled Redis to 1,000+ Nodes
 
 **2015 - Twitter's Redis Infrastructure**

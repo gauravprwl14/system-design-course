@@ -24,6 +24,26 @@ tags:
 
 # POC: Leaderboard System with Redis Sorted Sets
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Score["ZADD leaderboard\n500 charlie"]
+    ZSet["Redis Sorted Set\nleaderboard:global\n(score → member)"]
+    TopN["ZREVRANGE 0 9\nTop 10 players"]
+    Rank["ZREVRANK player\nGet rank in O(log N)"]
+    Nearby["ZREVRANGE rank-5 rank+5\nPlayers around me"]
+    Range["ZREVRANGEBYSCORE\nPlayers by tier"]
+
+    Score --> ZSet
+    ZSet --> TopN
+    ZSet --> Rank
+    ZSet --> Nearby
+    ZSet --> Range
+```
+
+*Redis Sorted Sets store members ordered by score, enabling top-N queries, instant rank lookups, and contextual "players near me" views all in sub-millisecond time.*
+
 ## What You'll Build
 A high-performance real-time leaderboard using Redis Sorted Sets for gaming, social rankings, and competitive features.
 

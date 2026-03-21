@@ -17,6 +17,25 @@ tags: [performance, bottlenecks, profiling, debugging, latency, throughput, opti
 
 # Performance Bottleneck Identification & Resolution
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Slow Request Detected] --> B{Check APM / Traces}
+    B --> C{Where is the time?}
+    C -->|"DB query (60%)"| D[EXPLAIN ANALYZE]
+    C -->|"Network I/O (20%)"| E[Parallelize API Calls]
+    C -->|"CPU (10%)"| F[Worker Threads / Scale Out]
+    C -->|"Memory Leak (5%)"| G[Heap Snapshot Analysis]
+    D --> H{Sequential Scan?}
+    H -->|Yes| I[Add Index]
+    H -->|N+1 pattern| J[Rewrite as JOIN]
+    I --> K[Verify with EXPLAIN ANALYZE]
+    J --> K
+```
+
+*Start with APM tracing to locate the bottleneck; 60% of slow requests trace to missing database indexes or N+1 query patterns.*
+
 ## Question
 **"How do you identify performance bottlenecks in a system? Walk me through your debugging process."**
 

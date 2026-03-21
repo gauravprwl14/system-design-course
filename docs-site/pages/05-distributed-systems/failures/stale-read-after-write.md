@@ -60,6 +60,21 @@ tags:
 > **Detection Difficulty:** Hard (users report "my changes disappeared")
 > **Impact:** User frustration, data confusion, support tickets
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    U["User writes tweet"] -->|"T=0ms: write"| PRI["Primary DB<br/>(tweet saved)"]
+    PRI -->|"T=50ms: async replication"| REP["Read Replica<br/>(still stale)"]
+    U -->|"T=10ms: page refresh"| REP
+    REP -->|"returns old data"| U
+    U -->|"T=2000ms: refresh again"| REP
+    REP -->|"replication complete"| U2["Tweet now visible"]
+    FIX["Fix: read-your-writes"] -->|"sticky to primary for 5s"| PRI2["Primary DB<br/>(always fresh)"]
+```
+
+*The writer reads from a replica that hasn't yet received the replication — the gap between primary write and replica sync causes the ghost update.*
+
 ## The Twitter Problem: "Where Did My Tweet Go?"
 
 **Real User Experience Pattern:**

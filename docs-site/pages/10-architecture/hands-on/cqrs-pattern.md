@@ -29,6 +29,21 @@ tags:
 > **Time:** 30 minutes
 > **Prerequisites:** Node.js, Event Sourcing basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] -->|"Command\n(create, update)"| CH["Command Handler"]
+    Client -->|"Query\n(read)"| QH["Query Handler"]
+    CH --> WriteDB["Write DB\n(normalized)"]
+    CH -->|"publishes events"| EP["Event Publisher"]
+    EP -->|"updates"| RM["Read Model\n(denormalized views)"]
+    QH --> RM
+    RM --> ReadDB["Read DB\n(optimized per query)"]
+```
+
+*Commands mutate write state through events; queries hit pre-computed read models for fast, join-free access.*
+
 ## What You'll Learn
 
 CQRS (Command Query Responsibility Segregation) separates read and write operations into different models, allowing independent optimization.

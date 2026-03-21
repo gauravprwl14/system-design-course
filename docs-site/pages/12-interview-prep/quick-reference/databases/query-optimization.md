@@ -18,6 +18,25 @@ tags: [database, query-optimization, explain-analyze, n-plus-one, performance, s
 
 # Database Query Optimization
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Slow Query] --> B[EXPLAIN ANALYZE]
+    B --> C{Execution Plan}
+    C -->|"Seq Scan — rows filtered?"| D[Add Index]
+    C -->|"N+1 pattern"| E["Rewrite as JOIN or DataLoader"]
+    C -->|"Large result set"| F[Add LIMIT / Pagination]
+    C -->|Index scan but slow| G["Covering Index — INCLUDE cols"]
+    D --> H[Re-run EXPLAIN ANALYZE]
+    E --> H
+    F --> H
+    G --> H
+    H --> I{Still slow?} -->|Yes| J[Cache with Redis]
+```
+
+*EXPLAIN ANALYZE reveals sequential scans and high row-filter counts — the two clearest signals that an index is missing.*
+
 ## Question
 **"How do you optimize slow database queries? Explain EXPLAIN ANALYZE, N+1 queries, and common optimization techniques."**
 

@@ -30,6 +30,20 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Async/await, understanding of network errors
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Call["Call fn()"] -->|"success"| Return["Return result"]
+    Call -->|"error"| Check["Is error retryable?\n5xx / network / 429"]
+    Check -->|"no"| Throw["Throw immediately"]
+    Check -->|"yes + attempts left"| Delay["Wait: base * 2^attempt + jitter"]
+    Delay --> Call
+    Check -->|"max retries exhausted"| Throw
+```
+
+*Exponential backoff with jitter spaces out retries to avoid thundering-herd storms after an outage.*
+
 ## What You'll Build
 
 A robust retry utility that:

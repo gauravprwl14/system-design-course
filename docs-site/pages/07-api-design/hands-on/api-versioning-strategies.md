@@ -21,6 +21,21 @@ tags:
 
 # 5️⃣9️⃣ API Versioning Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    C[Client] --> GW[API Gateway]
+    GW --> V1["/v1 Router\n(deprecated)"]
+    GW --> V2["/v2 Router\n(current)"]
+    V1 --> T[Version Transform\nMiddleware]
+    V2 --> T
+    T --> DB[(Database)]
+    GW -- "Header: API-Version: 2024-11-20" --> T
+```
+
+*Major breaking changes get a new URL version; non-breaking additions use a date-based header version — together they give clients full control over when to migrate.*
+
 ## 🎯 What You'll Learn
 How Stripe maintains **99.999% uptime** while supporting **v1 API from 2015** (9+ years of backwards compatibility) without breaking existing integrations.
 

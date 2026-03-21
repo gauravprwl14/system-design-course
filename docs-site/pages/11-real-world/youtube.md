@@ -53,6 +53,28 @@ tags:
 **Time**: 60 minutes
 **Companies**: Google, Amazon, Netflix, Meta, TikTok (Common for senior roles)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    U["Users"] --> GW["API Gateway / CDN"]
+    GW --> US["Upload Service"]
+    US --> RAW["Raw Video Storage (S3)"]
+    RAW --> TC["Transcoding Pipeline (Workers)"]
+    TC --> PROC["Processed Video Storage (S3)"]
+    PROC --> CDN["CDN (Edge Nodes)"]
+    CDN --> U
+    GW --> VS["Video Metadata Service"]
+    VS --> DB["Metadata DB (Spanner)"]
+    VS --> CACHE["Cache (Redis)"]
+    GW --> RS["Recommendation Service"]
+    RS --> ML["ML Ranking Model"]
+    US --> MQ["Message Queue (Pub/Sub)"]
+    MQ --> TC
+```
+
+*After upload, a message queue triggers parallel transcoding workers that produce multiple quality variants; the CDN serves the right bitrate to each viewer based on their network conditions.*
+
 ## 1. Problem Statement
 
 Design a video sharing and streaming platform where users upload, transcode, and stream videos at global scale.

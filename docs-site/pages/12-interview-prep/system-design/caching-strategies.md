@@ -26,6 +26,26 @@ tags: [caching, redis, memcached, cdn, cache-invalidation, performance]
 
 # Caching Strategies: Redis, Memcached, CDN, Application-Level
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Client["Client"]
+    CDN["CDN\n(static assets)"]
+    AppCache["App-Level Cache\n(in-process)"]
+    Redis["Redis / Memcached\n(distributed cache)"]
+    DB["Primary Database"]
+    Replica["Read Replica"]
+
+    Client --> CDN
+    CDN -->|"miss"| AppCache
+    AppCache -->|"miss"| Redis
+    Redis -->|"miss"| Replica
+    Replica --> DB
+```
+
+*Cache layers are ordered by latency — each level absorbs the majority of reads before reaching the expensive database.*
+
 ## 🎯 The $12M Question
 
 How do you reduce database load by **95%** and API latency from **850ms → 12ms** (70x faster)?

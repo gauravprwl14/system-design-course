@@ -30,6 +30,22 @@ tags:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Parent Table\ncustomers(id)"] -->|"FK constraint"| B["Child Table\norders(customer_id)"]
+    B --> C{"ON DELETE action"}
+    C -->|"RESTRICT (default)"| D["Block delete\nif children exist"]
+    C -->|"CASCADE"| E["Auto-delete\nchild rows"]
+    C -->|"SET NULL"| F["Nullify FK\nin child rows"]
+    G["No FK"] --> H["Orphaned records\ncrashes & bad data"]
+```
+
+*Foreign keys move referential integrity from error-prone application code into the database, where it cannot be bypassed.*
+
+---
+
 ## 📊 The Problem Everyone Faces
 
 You're debugging a production crash. The API returns 500 errors for certain customer dashboards.

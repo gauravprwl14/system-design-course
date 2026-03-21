@@ -16,6 +16,24 @@ tags: [api, metrics, p95, p99, sla, slo, latency, performance, observability]
 
 # API Metrics: P50, P95, P99 Response Times & SLAs
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A[100 Requests] --> B[Sort by Latency]
+    B --> C[P50 = 50th fastest]
+    B --> D[P95 = 95th fastest]
+    B --> E[P99 = 99th fastest]
+    C -->|Typical user| F["~100ms"]
+    D -->|Most users| G["~500ms"]
+    E -->|Worst case| H["~2000ms"]
+    H --> I{P99 breached SLA?}
+    I -->|Yes| J[Add index / cache / timeout]
+    I -->|No| K[Monitor continuously]
+```
+
+*Use P95/P99 instead of averages — one slow outlier skews averages but P99 accurately reveals worst-case user experience.*
+
 ## Question
 **"Explain P95 and P99 response times. How do you measure and improve them? What's the difference between P95 and average response time?"**
 

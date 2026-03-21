@@ -47,6 +47,21 @@ tags:
 
 # Thread Pool Exhaustion - When Your App Stops Processing Requests
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    REQ[Incoming Requests\nhigh traffic] --> TP[Thread Pool\ne.g. 100 threads]
+    TP --> BUSY{All threads\nblocked on I/O?}
+    BUSY -- "No - threads free" --> PROC[Process Request\nrelease thread]
+    BUSY -- "Yes - pool full" --> QUEUE[Request Queue]
+    QUEUE --> TIMEOUT[30s timeout\n503 error]
+    PROC --> RESP[Fast response]
+    FIX[Fix: timeouts +\nasync I/O + bulkheads] --> TP
+```
+
+*Thread pool exhaustion shows 3% CPU yet 100% timeouts — threads are waiting, not working; the fix is adding timeouts to all I/O calls and separating fast from slow pools.*
+
 > **Category:** Performance
 > **Frequency:** Top 5 production incident cause
 > **Detection Difficulty:** Medium (CPU low, but requests timing out)

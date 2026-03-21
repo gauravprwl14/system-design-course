@@ -25,6 +25,21 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, Configuration management basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Request["Incoming Request\n(userId, plan, country)"] --> FFS["Feature Flag Service"]
+    FFS -->|"check overrides"| Override["Test Override\n(bypasses rules)"]
+    FFS -->|"evaluate rules"| Rules["Targeting Rules\nplan=premium / country=US / beta list"]
+    FFS -->|"no rule match"| Pct["Percentage Rollout\nconsistent hash % 100"]
+    Rules -->|"rule matched"| Val["Return rule value\nor A/B variant"]
+    Pct -->|"in bucket"| Enabled["Feature ON"]
+    Pct -->|"out of bucket"| Disabled["Feature OFF (default)"]
+```
+
+*Evaluate targeting rules first, then fall through to percentage rollout for gradual, safe releases.*
+
 ## What You'll Learn
 
 Feature flags enable runtime control of features without deployment. This covers flag types, targeting rules, gradual rollouts, and A/B testing.

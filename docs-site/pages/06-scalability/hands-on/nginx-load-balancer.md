@@ -36,6 +36,21 @@ tags:
 > **Time:** 20 minutes
 > **Prerequisites:** Docker basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CLI["Client"] -->|"HTTP :80"| NX["NGINX<br/>(reverse proxy)"]
+    NX -->|"round-robin /api/v1"| A1["app1:3000"]
+    NX -->|"least_conn /api/v2"| A2["app2:3000"]
+    NX -->|"ip_hash /api/session"| A3["app3:3000"]
+    NX -->|"rate limit /api/limited"| RL["429 Too Many Requests"]
+    NX -->|"health check"| HC["max_fails=3 fail_timeout=30s"]
+    HC -->|"mark down"| BACK["backup server"]
+```
+
+*NGINX supports multiple balancing strategies per upstream block — round-robin, least-conn, weighted, and ip-hash — all configurable without code.*
+
 ## What You'll Learn
 
 Configure NGINX as a production-grade load balancer with health checks, sticky sessions, and rate limiting.

@@ -25,6 +25,26 @@ tags:
 
 # POC #79: Distributed Tracing Setup
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant GW as API Gateway
+    participant OS as Order Service
+    participant PS as Payment Service
+    participant J as Jaeger
+
+    GW->>OS: POST /orders\ntraceparent: 00-abc123-span1-01
+    OS->>PS: POST /payments\ntraceparent: 00-abc123-span2-01
+    PS-->>OS: { paymentId }
+    OS-->>GW: { orderId, paymentId }
+    GW->>J: Export spans (trace_id: abc123)
+    OS->>J: Export spans
+    PS->>J: Export spans
+```
+
+*Every service propagates the same `trace_id` via the W3C `traceparent` header, so Jaeger can stitch all spans into one flame graph showing exactly where the 450ms went.*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 30 minutes
 > **Prerequisites:** Docker, Node.js, Microservices concepts

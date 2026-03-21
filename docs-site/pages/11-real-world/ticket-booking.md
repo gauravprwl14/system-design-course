@@ -40,6 +40,25 @@ tags:
 **Time**: 45 minutes
 **Companies**: Amazon, Google, Microsoft, Flipkart (Common - tests concurrency knowledge)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    U["Users"] --> LB["Load Balancer"]
+    LB --> API["Booking API"]
+    API --> RL["Rate Limiter"]
+    API --> DL["Distributed Lock (Redis)"]
+    DL --> INV["Inventory Service"]
+    INV --> DB["Seats DB (PostgreSQL)"]
+    INV --> CACHE["Seat Cache (Redis)"]
+    API --> PAY["Payment Service"]
+    PAY --> MQ["Message Queue (Kafka)"]
+    MQ --> CONF["Confirmation Service"]
+    CONF --> NS["Notification Service"]
+```
+
+*A distributed lock ensures only one booking transaction can hold a seat at a time — the lock is released only after payment confirmation, preventing double-booking under extreme concurrency.*
+
 ## 1. Problem Statement
 
 Design a system for booking event tickets (concerts, sports, movies) that handles extreme concurrency — thousands of users competing for the same seats simultaneously.

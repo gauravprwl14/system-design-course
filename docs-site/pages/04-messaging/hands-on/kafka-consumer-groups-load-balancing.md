@@ -30,6 +30,21 @@ tags:
 > **Difficulty:** Intermediate-Advanced
 > **Prerequisites:** POC #46 (Kafka Basics), understanding of distributed systems
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    T["Topic: user-events<br/>(6 partitions)"] --> CG["Consumer Group<br/>analytics-processors"]
+    CG --> C1["Consumer 1<br/>partitions 0,1"]
+    CG --> C2["Consumer 2<br/>partitions 2,3"]
+    CG --> C3["Consumer 3<br/>partitions 4,5"]
+    CRASH["Consumer 2 Crashes"] -->|triggers| RB["Rebalance"]
+    RB --> C1R["Consumer 1<br/>partitions 0,1,2"]
+    RB --> C3R["Consumer 3<br/>partitions 3,4,5"]
+```
+
+*Each partition belongs to exactly one consumer in a group — crash triggers automatic rebalance with zero message loss.*
+
 ## How Netflix Processes 500 Billion Events Per Day with Consumer Groups
 
 **Netflix's Real-Time Analytics Platform (2024)**

@@ -42,6 +42,24 @@ Every public API needs rate limiting to prevent abuse and ensure fair usage.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[API Request] --> B["ZREMRANGEBYSCORE\nremove expired entries"]
+    B --> C["ZADD timestamp\nto sorted set"]
+    C --> D["ZCARD count\nrequests in window"]
+    D --> E{Count <= Limit?}
+    E -->|Yes| F[Allow - 200 OK]
+    E -->|No| G["Reject - 429\nToo Many Requests"]
+    F --> H[Backend Handler]
+    G --> I["Return Retry-After\nheader"]
+```
+
+*The sliding window algorithm uses a Redis Sorted Set keyed by user ID — timestamps are the scores, allowing precise per-window counting without fixed-boundary spikes.*
+
+---
+
 ## Prerequisites
 - Docker installed
 - Node.js 18+

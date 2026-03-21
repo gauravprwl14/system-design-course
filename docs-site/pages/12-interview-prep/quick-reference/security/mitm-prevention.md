@@ -23,6 +23,26 @@ tags: [security, mitm, tls, https, hsts, certificate-pinning, mtls]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[MITM Prevention] --> B[HTTPS/TLS - mandatory]
+    A --> C[HSTS - force HTTPS]
+    A --> D[Certificate Pinning]
+    A --> E[Mutual TLS - mTLS]
+    B --> F{Enough?}
+    F -->|Web app| G[HTTPS + HSTS sufficient]
+    F -->|Mobile app| H[Add Certificate Pinning]
+    F -->|Service-to-service| I[Add mTLS]
+    D --> J["App rejects certs not matching pinned hash"]
+    E --> K["Both client and server present certificates"]
+```
+
+*HTTPS/TLS is the non-negotiable baseline; add HSTS to prevent SSL stripping, certificate pinning for mobile apps, and mTLS for microservice communication.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 **MITM Attack** = Attacker intercepts communication between client and server

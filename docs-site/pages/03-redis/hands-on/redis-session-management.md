@@ -38,6 +38,25 @@ Every web application needs sessions. Without Redis, you're limited to single-se
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    U[User Login] --> S1[Server 1]
+    S1 -->|"HSET session:{id}\nuserId, role, cart"| R[Redis Hash]
+    R -->|TTL auto-expiry| X[Session Expires]
+    LB[Load Balancer] --> S2[Server 2]
+    LB --> S3[Server 3]
+    S2 -->|"HGETALL session:{id}"| R
+    S3 -->|"HGETALL session:{id}"| R
+    R --> S2
+    R --> S3
+```
+
+*All app servers read and write session data from a single Redis Hash store, making authentication stateless across any number of server instances.*
+
+---
+
 ## Prerequisites
 - Docker installed
 - Node.js 18+

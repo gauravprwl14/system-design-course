@@ -26,6 +26,31 @@ tags:
 
 # POC: Job Queue with Redis Lists (Background Processing)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    API["API Server\n(Producer)"]
+    Q["Redis List\nqueue:emails"]
+    PQ["Processing List\nqueue:emails:processing"]
+    W1["Worker 1"]
+    W2["Worker 2"]
+    JobStore["Job Store\njob:uuid → status"]
+    Done["Completed / Failed\n(retry up to 3x)"]
+
+    API -->|"RPUSH job_id"| Q
+    W1 -->|"BRPOPLPUSH"| Q
+    W2 -->|"BRPOPLPUSH"| Q
+    Q -->|"atomic move"| PQ
+    PQ --> W1
+    PQ --> W2
+    W1 --> JobStore
+    W2 --> JobStore
+    JobStore --> Done
+```
+
+*Jobs are atomically moved from the queue to a processing list via BRPOPLPUSH — if a worker crashes mid-job, the job remains in the processing list for recovery.*
+
 ## What You'll Build
 A production-ready job queue using Redis Lists for async background processing: email sending, image processing, report generation.
 

@@ -23,6 +23,28 @@ tags: [api-design, rest, graphql, grpc, microservices, protocol-buffers]
 
 # API Design: REST vs GraphQL vs gRPC
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Client["Client (Mobile/Web)"]
+    Gateway["API Gateway"]
+    REST["REST Service\n(public API)"]
+    GQL["GraphQL Service\n(client-driven UI)"]
+    GRPC["gRPC Service\n(internal microservices)"]
+    DB["Storage"]
+
+    Client --> Gateway
+    Gateway --> REST
+    Gateway --> GQL
+    REST --> DB
+    GQL --> DB
+    GQL --> GRPC
+    GRPC --> DB
+```
+
+*Each protocol targets a different caller: REST for external consumers, GraphQL for flexible UIs, gRPC for high-speed internal communication.*
+
 ## 🎯 The $47M Question
 
 How do you choose between **REST, GraphQL, and gRPC** when the wrong choice could cost millions?

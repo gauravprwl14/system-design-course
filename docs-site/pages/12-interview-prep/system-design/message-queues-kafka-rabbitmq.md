@@ -24,6 +24,28 @@ tags: [kafka, rabbitmq, message-queue, pub-sub, event-streaming, uber, distribut
 
 # Message Queues: Kafka vs RabbitMQ - Choose the Right Tool
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Producer["Producer Services\n(drivers, riders)"]
+    Kafka["Apache Kafka\n(event log / replay)"]
+    Rabbit["RabbitMQ\n(task queue)"]
+    Analytics["Analytics Consumer\n(read from offset)"]
+    Worker["Worker Consumer\n(one-time task)"]
+    Storage["Time-Series Storage"]
+    Results["Task Results DB"]
+
+    Producer -->|"high-throughput events"| Kafka
+    Producer -->|"one-off tasks"| Rabbit
+    Kafka --> Analytics
+    Kafka --> Storage
+    Rabbit --> Worker
+    Worker --> Results
+```
+
+*Kafka retains and replays events for analytics; RabbitMQ routes and deletes tasks once consumed — pick based on whether replay matters.*
+
 > **Time to Read:** 20-25 minutes
 > **Difficulty:** Intermediate-Advanced
 > **Key Concepts:** Message Queues, Pub/Sub, Event Streaming, Distributed Systems

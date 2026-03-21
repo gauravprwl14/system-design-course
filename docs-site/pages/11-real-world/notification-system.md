@@ -43,6 +43,25 @@ tags:
 **Time**: 45 minutes
 **Companies**: Amazon, Meta, Google, Uber, LinkedIn (Common interview question)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SVC["Upstream Services"] --> NS["Notification API"]
+    NS --> PF["Preference Filter"]
+    PF --> MQ["Message Queue (Kafka)"]
+    MQ --> PW["Push Worker"]
+    MQ --> EW["Email Worker"]
+    MQ --> SW["SMS Worker"]
+    PW --> APNs["APNs / FCM"]
+    EW --> ESP["Email Provider (SES)"]
+    SW --> SMSP["SMS Provider (Twilio)"]
+    APNs --> DEV["Mobile Devices"]
+    NS --> DT["Delivery Tracker (Redis)"]
+```
+
+*Events from any upstream service are queued and routed to channel-specific workers, each responsible for one delivery provider — failures are retried independently per channel.*
+
 ## 1. Problem Statement
 
 Design a system that sends notifications across multiple channels (push, email, SMS, in-app) at scale, with user preferences, rate limiting, and delivery tracking.

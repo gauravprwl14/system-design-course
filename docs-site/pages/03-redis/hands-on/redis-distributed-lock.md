@@ -35,6 +35,29 @@ tags:
 
 # POC: Distributed Lock with Redis (Prevent Race Conditions)
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant S1 as Server 1
+    participant S2 as Server 2
+    participant R as Redis
+    participant DB as Database
+
+    S1->>R: SET lock:product:1 token1 NX EX 10
+    R-->>S1: OK (lock acquired)
+    S2->>R: SET lock:product:1 token2 NX EX 10
+    R-->>S2: nil (locked)
+    S1->>DB: check stock, sell item
+    S1->>R: DEL lock:product:1 (if token matches)
+    R-->>S1: released
+    S2->>R: SET lock:product:1 token2 NX EX 10
+    R-->>S2: OK (lock acquired)
+    S2->>DB: check stock = 0, reject
+```
+
+*A unique token and Lua-based release ensure only the lock owner can free it, preventing race conditions even if a server crashes mid-operation.*
+
 ## What You'll Build
 A distributed lock system using Redis to prevent race conditions when multiple servers access shared resources.
 

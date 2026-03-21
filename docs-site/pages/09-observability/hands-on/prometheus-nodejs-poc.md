@@ -13,6 +13,19 @@ status: "published"
 
 # POC: Prometheus + Grafana with Node.js — Full Stack Metrics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    APP["Node.js App\n(prom-client)"] -- "GET /metrics\nscrape every 15s" --> PROM[Prometheus\ntime-series DB]
+    PROM --> GRAFANA[Grafana\nRED Dashboard]
+    PROM --> AM[AlertManager\nerror-rate rules]
+    AM -- "fire" --> SLACK[Slack / PagerDuty]
+    PROM --> QL[PromQL\nrate + histogram_quantile]
+```
+
+*Node.js exposes a `/metrics` endpoint; Prometheus scrapes it on a schedule, stores all four metric types, and feeds AlertManager thresholds and Grafana's RED method panels.*
+
 This is the complete implementation. By the end, you will have:
 - A Node.js Express app instrumented with all 4 Prometheus metric types
 - A local Prometheus + Grafana + AlertManager stack via Docker Compose

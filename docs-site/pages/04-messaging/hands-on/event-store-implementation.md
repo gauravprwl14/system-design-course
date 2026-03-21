@@ -29,6 +29,20 @@ tags:
 > **Time:** 35 minutes
 > **Prerequisites:** Node.js, PostgreSQL, Event Sourcing concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    W["Writer<br/>(appendToStream)"] -->|"BEGIN TXN<br/>version check"| PG["PostgreSQL<br/>events table"]
+    PG -->|"COMMIT / ConcurrencyError"| W
+    PG -->|"global_position order"| SUB["Subscription Processor<br/>(poll readAll)"]
+    SUB -->|"track position"| SUBS["subscriptions table"]
+    SUB -->|"project events"| RM["Read Model / View"]
+    AGG["Aggregate Load<br/>(readStream)"] -->|"stream_id + version"| PG
+```
+
+*All writes are append-only with optimistic concurrency; subscriptions poll by global position to build read models.*
+
 ## What You'll Learn
 
 Build a production-grade event store with PostgreSQL that supports append-only storage, optimistic concurrency, and efficient stream reading.

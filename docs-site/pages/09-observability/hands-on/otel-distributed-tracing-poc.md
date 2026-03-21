@@ -13,6 +13,21 @@ status: "published"
 
 # POC: OpenTelemetry Distributed Tracing — 3 Services, Full Trace in Jaeger
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CLIENT[Client] --> AGW["API Gateway\n(port 3001)"]
+    AGW --> OS["Order Service\n(port 3002)"]
+    OS --> FS["Fraud Service\n(port 3003)"]
+    AGW -- "OTLP gRPC" --> COL[OTel Collector\nport 4317]
+    OS -- "OTLP gRPC" --> COL
+    FS -- "OTLP gRPC" --> COL
+    COL --> J[Jaeger UI\nport 16686]
+```
+
+*All three services send spans to a shared OTel Collector; W3C `traceparent` headers link every child span to the root trace, producing a single flame-graph waterfall in Jaeger.*
+
 This is the complete implementation. By the end, you will have:
 - 3 Node.js microservices passing trace context across HTTP boundaries
 - Auto-instrumented HTTP spans + manual business logic spans

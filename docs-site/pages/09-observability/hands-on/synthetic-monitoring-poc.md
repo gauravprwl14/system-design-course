@@ -13,6 +13,24 @@ status: "published"
 
 # Synthetic Monitoring POC: Playwright + Alerts + Dashboard
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SCHED[Scheduler\nevery 30s] --> HTTP[HTTP Check\navailability]
+    SCHED --> API[API Correctness\nresponse body]
+    SCHED --> BROWSER[Playwright\nbrowser transaction]
+    HTTP --> STORE[SQLite Result Store]
+    API --> STORE
+    BROWSER --> STORE
+    STORE --> AM[Alert Manager\nconsecutive failures]
+    AM --> SLACK[Slack webhook]
+    AM --> PD[PagerDuty]
+    STORE --> DASH[Express Dashboard\nlive status]
+```
+
+*Synthetic checks run on a schedule and probe real user paths (login → navigate → assert), catching outages in under 30 seconds before any real user reports them.*
+
 This POC builds a production-grade synthetic monitoring system from scratch:
 - HTTP availability checks (endpoint up + response correct)
 - API correctness checks (not just 200, but valid response body)

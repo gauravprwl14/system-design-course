@@ -24,6 +24,29 @@ tags: [collaborative-editing, crdt, operational-transformation, websocket, real-
 
 # Real-Time Collaborative Editing: How Google Docs Lets 50 People Edit Simultaneously
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    ClientA["Editor A"]
+    ClientB["Editor B"]
+    WS["WebSocket Gateway"]
+    OT["OT / CRDT Engine\n(conflict resolution)"]
+    Queue["Event Queue\n(ordered ops)"]
+    DocStore["Document Store\n(versioned state)"]
+
+    ClientA -->|"op delta"| WS
+    ClientB -->|"op delta"| WS
+    WS --> OT
+    OT --> Queue
+    Queue --> DocStore
+    DocStore -->|"broadcast merged state"| WS
+    WS -->|"acknowledge"| ClientA
+    WS -->|"acknowledge"| ClientB
+```
+
+*Operations are transformed before being applied so every editor converges to the same document state regardless of arrival order.*
+
 > **Time to Read:** 18-22 minutes
 > **Difficulty:** Advanced
 > **Key Concepts:** CRDT, Operational Transformation, WebSocket, Conflict Resolution

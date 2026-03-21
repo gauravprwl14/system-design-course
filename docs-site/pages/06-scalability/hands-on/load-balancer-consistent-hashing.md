@@ -35,6 +35,21 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Hashing basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    K["Request Key<br/>(e.g. user-123)"] -->|"MD5 → ring position"| RR["Hash Ring"]
+    RR -->|"clockwise first node"| S1["server1"]
+    RR --> S2["server2"]
+    RR --> S3["server3"]
+    ADD["Add server4"] -->|"only 25% of keys move"| S4["server4"]
+    REM["Remove server2"] -->|"only server2 keys redistribute"| S1
+    MOD["Modulo hashing"] -->|"75% of keys move"| BUST["Cache bust!"]
+```
+
+*Consistent hashing limits key redistribution to 1/N on topology changes versus near-total remapping with modulo.*
+
 ## What You'll Learn
 
 Consistent hashing minimizes key redistribution when servers are added/removed - critical for caching and session affinity.

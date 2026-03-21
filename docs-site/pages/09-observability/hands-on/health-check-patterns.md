@@ -34,6 +34,22 @@ tags:
 
 # POC #99: Health Check Patterns
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    K8S[Kubernetes / Load Balancer] --> LIV["/healthz\nLiveness Probe"]
+    K8S --> RDY["/ready\nReadiness Probe"]
+    K8S --> DEEP["/health\nDeep Check"]
+    LIV -- "Fails" --> RESTART[Restart container]
+    RDY -- "Fails" --> TRAFFIC[Remove from LB\nstop traffic]
+    DEEP --> DB[(DB connection)]
+    DEEP --> CACHE[(Cache connection)]
+    DEEP --> DEPS[Downstream deps]
+```
+
+*Liveness and readiness are different concerns: a liveness failure triggers a restart, while a readiness failure just drains traffic — conflating them causes unnecessary restarts during slow startups.*
+
 > **Difficulty:** 🟢 Beginner
 > **Time:** 20 minutes
 > **Prerequisites:** HTTP basics, Load balancing concepts

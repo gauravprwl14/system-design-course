@@ -28,6 +28,24 @@ tags: [postgresql, jsonb, flexible-schema, nosql, indexing]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Structured columns\nemail, name, price"] -->|"hot / fixed schema"| B["Regular columns\n+ B-Tree index"]
+    C["Flexible fields\nattributes, metadata"] -->|"variable schema"| D["JSONB column"]
+    D --> E["GIN Index\nfor fast JSON queries"]
+    E --> F{"Operators"}
+    F -->|"key exists"| G["attributes ? 'storage'"]
+    F -->|"contains"| H["attributes @> '{...}'"]
+    F -->|"extract"| I["attributes->>'color'"]
+    B & G & H & I --> J["Fast query result"]
+```
+
+*Use JSONB for schema-flexible data alongside regular columns — always add a GIN index or queries degrade to full scans.*
+
+---
+
 ## Why This Matters
 
 | Company | Use Case | JSONB Strategy |

@@ -30,6 +30,21 @@ tags:
 > **Time:** 30 minutes
 > **Prerequisites:** Node.js, Database concepts, Domain modeling
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CMD["Command<br/>(deposit $500)"] --> AGG["Aggregate<br/>(BankAccount)"]
+    AGG -->|validate + emit| EVT["Domain Events<br/>[AccountOpened, MoneyDeposited, ...]"]
+    EVT -->|append| ES["Event Store<br/>(immutable log)"]
+    ES -->|replay all events| STATE["Current State<br/>(balance: $500)"]
+    ES -->|project| RM["Read Model<br/>(AccountBalanceProjection)"]
+    ES -->|load from snapshot| SNAP["Snapshot<br/>(state at v10)"]
+    SNAP -->|apply delta events| STATE
+```
+
+*State is never stored directly — it is always derived by replaying the immutable event stream.*
+
 ## What You'll Learn
 
 Event Sourcing stores state changes as a sequence of events instead of current state. You can rebuild any past state by replaying events.

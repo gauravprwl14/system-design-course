@@ -23,6 +23,22 @@ tags:
 
 # POC #56: RESTful API Best Practices
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    DEV[Developer] -- "POST /v1/charges\nIdempotency-Key: uuid" --> GW[API Gateway\nRate Limit + Auth]
+    GW --> VAL[Validation Layer]
+    VAL --> IDEM{Idempotency\nKey check}
+    IDEM -- "Seen before" --> CACHED[Return cached response]
+    IDEM -- "New key" --> BIZ[Business Logic]
+    BIZ --> DB[(SQLite / Postgres)]
+    BIZ -- "201 Created" --> DEV
+    VAL -- "400 Bad Request\n+ error.param" --> DEV
+```
+
+*Idempotency keys, resource-based URLs, proper HTTP status codes, and detailed error shapes are the four pillars of a Stripe-quality REST API.*
+
 ## What You'll Build
 
 A **Stripe-quality REST API** following industry best practices:

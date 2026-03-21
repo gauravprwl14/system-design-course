@@ -27,6 +27,20 @@ tags:
 > **Time:** 20 minutes
 > **Prerequisites:** Round-robin basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    REQ["Incoming Request"] --> LB["Least-Connections<br/>Load Balancer"]
+    LB -->|"pick min connections"| S1["Fast Server<br/>(2 conns) ← chosen"]
+    LB --> S2["Medium Server<br/>(5 conns)"]
+    LB --> S3["Slow Server<br/>(8 conns)"]
+    S1 -->|"finishes fast, frees slot"| LB
+    S3 -->|"holds connections longer"| FEW["Gets fewer new requests"]
+```
+
+*The fast server receives more requests because it frees connections quickly — self-balancing under heterogeneous load.*
+
 ## What You'll Learn
 
 Route requests to the server with the fewest active connections - better than round-robin for varying request durations.

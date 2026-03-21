@@ -31,6 +31,23 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Microservices basics, Networking fundamentals
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SI["Service Instance<br/>(starts up)"] -->|"register + heartbeat"| REG["Service Registry<br/>(Consul / etcd)"]
+    REG -->|"TTL expired → unhealthy"| DEAD["Stale Instance Removed"]
+    DC["Discovery Client"] -->|"query"| REG
+    REG -->|"list of healthy IPs"| DC
+    DC -->|"round-robin"| S1["instance-1"]
+    DC -->|"round-robin"| S2["instance-2"]
+    DC -->|"cache 5s"| CACHE["Local Cache"]
+    CRASH["Instance crashes"] -->|"no heartbeat"| REG
+    REG -->|"notify watchers"| DC
+```
+
+*Services self-register and send heartbeats; the registry removes stale entries and notifies discovery clients to refresh their local caches.*
+
 ## What You'll Learn
 
 Service discovery enables services to find each other dynamically without hardcoded addresses. This covers client-side vs server-side discovery, service registries, and health-aware routing.

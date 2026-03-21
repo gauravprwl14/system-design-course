@@ -32,6 +32,24 @@ tags:
 **Time**: 45 minutes
 **Companies**: Google, Amazon, Microsoft, Meta (Classic interview question)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    U["Users"] --> LB["Load Balancer"]
+    LB --> API["API Servers"]
+    API --> KG["Key Generator Service"]
+    KG --> KDB["Key DB (pre-generated IDs)"]
+    API --> OBJ["Object Storage (paste content)"]
+    API --> META["Metadata DB (PostgreSQL)"]
+    API --> CACHE["Cache (Redis)"]
+    CACHE --> U
+    OBJ --> CDN["CDN"]
+    CDN --> U
+```
+
+*Short unique keys are pre-generated to avoid hot-spot collisions; paste content lives in object storage while metadata (owner, expiry, views) lives in a relational DB with a Redis read cache in front.*
+
 ## 1. Problem Statement
 
 Design a text sharing service that:

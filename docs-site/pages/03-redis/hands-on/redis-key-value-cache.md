@@ -36,6 +36,30 @@ tags:
 
 # POC: Simple Redis Key-Value Cache
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Request["GET /users/1"]
+    CacheCheck["Check Redis\nuser:1"]
+    Hit["Cache HIT\nreturn in 2ms"]
+    Miss["Cache MISS"]
+    DB["Query PostgreSQL\n~45ms"]
+    Store["SET user:1 data\nTTL 300s"]
+    Update["PUT /users/1"]
+    Invalidate["DEL user:1\n(cache invalidation)"]
+
+    Request --> CacheCheck
+    CacheCheck -->|"found"| Hit
+    CacheCheck -->|"not found"| Miss
+    Miss --> DB
+    DB --> Store
+    Store --> Hit
+    Update --> Invalidate
+```
+
+*Cache-aside pattern: check Redis first, fall back to the database on a miss, then write the result back to Redis — and invalidate on updates.*
+
 ## What You'll Build
 A production-ready key-value cache using Redis to speed up database queries by 100x.
 

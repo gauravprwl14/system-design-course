@@ -24,6 +24,20 @@ tags:
 
 # 5️⃣8️⃣ gRPC Service with Protocol Buffers
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    C[Node.js Client] -- "Protobuf binary\nover HTTP/2" --> GS[Go gRPC Server]
+    GS --> INT[Interceptors\nLogging + Auth]
+    INT --> H[Handlers]
+    H --> DB[(PostgreSQL)]
+    GS -- "Server stream" --> C
+    GS -- "Bidirectional\nstream" --> C
+```
+
+*Protobuf serialization over HTTP/2 multiplexing gives 15x lower latency than JSON/REST — unary, server-streaming, client-streaming, and bidirectional patterns all share one persistent connection.*
+
 ## 🎯 What You'll Learn
 How Netflix achieves **15x faster** microservice communication and **30% smaller payloads** using gRPC instead of REST.
 

@@ -24,6 +24,26 @@ tags:
 
 # POC: Redis Counter with INCR (Analytics & Metrics)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    User["100 Concurrent Users"]
+    INCR["Redis INCR\n(atomic)"]
+    Counter["Counter Key\narticle:1:views"]
+    Result["Final Count: 100\n✅ No race conditions"]
+    DB["Database UPDATE\n(non-atomic)"]
+    Lost["Lost Updates\n❌ Count: 87"]
+
+    User -->|"Redis path"| INCR
+    INCR --> Counter
+    Counter --> Result
+    User -->|"DB path"| DB
+    DB --> Lost
+```
+
+*Redis INCR is atomic — 100 concurrent increments always yield exactly 100, unlike database UPDATE which suffers race conditions and lost writes.*
+
 ## What You'll Build
 A high-performance counter system using Redis INCR for real-time analytics: page views, API calls, likes, votes.
 

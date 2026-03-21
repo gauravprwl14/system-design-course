@@ -40,6 +40,26 @@ Production-ready optimistic locking with Redis WATCH to prevent race conditions:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Start] --> B["WATCH key"]
+    B --> C["GET key\n(read current value)"]
+    C --> D[Business logic]
+    D --> E[MULTI]
+    E --> F["Queue SET/DECR commands"]
+    F --> G[EXEC]
+    G --> H{Key changed\nsince WATCH?}
+    H -->|No - success| I[Transaction committed]
+    H -->|Yes - conflict| J["nil returned\nRetry from WATCH"]
+    J --> B
+```
+
+*WATCH monitors a key between read and write; if another client modifies it before EXEC, the transaction aborts and the caller retries — optimistic locking with no blocking.*
+
+---
+
 ## Why This Matters
 
 ### The $100,000 Inventory Bug

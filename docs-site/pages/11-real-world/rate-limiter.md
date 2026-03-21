@@ -34,6 +34,22 @@ tags:
 **Time**: 45 minutes
 **Companies**: Stripe, Cloudflare, Google, Amazon, Meta (Very common interview question)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    C["Clients"] --> GW["API Gateway / Edge"]
+    GW --> RL["Rate Limiter Middleware"]
+    RL --> RS["Redis Counter Store"]
+    RS --> RL
+    RL -->|"Allowed"| SVC["Backend Services"]
+    RL -->|"Blocked (429)"| C
+    RL --> LOG["Audit Log / Metrics"]
+    GW --> CFG["Config Service (rules per key)"]
+```
+
+*Every inbound request is checked against a counter in Redis; the gateway enforces the decision at the edge before traffic ever reaches backend services.*
+
 ## 1. Problem Statement
 
 Design a system that limits the number of requests a client can make within a time window.

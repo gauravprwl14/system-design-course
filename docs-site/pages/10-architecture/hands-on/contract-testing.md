@@ -26,6 +26,25 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, API concepts, Testing basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Consumer (Order Svc)
+    participant B as Contract Broker
+    participant P as Provider (User Svc)
+
+    C->>B: Publish contract (expected requests + responses)
+    Note over C: Consumer tests run against mock provider
+    C->>C: Run consumer tests with mock
+    P->>B: Fetch latest contract
+    P->>P: Run provider verification against real API
+    P->>B: Report verification result
+    B-->>C: Notify pass/fail
+```
+
+*Consumer owns the contract; provider verifies it — no shared test environment required.*
+
 ## What You'll Learn
 
 Contract Testing verifies that services communicate correctly by defining and validating API contracts between consumers and providers. This catches integration issues before deployment.

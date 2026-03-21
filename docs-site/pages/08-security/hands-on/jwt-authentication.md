@@ -25,6 +25,32 @@ tags:
 
 # POC #86: JWT Authentication
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as API Server
+    participant TM as TokenManager
+
+    C->>API: POST /login (credentials)
+    API->>TM: generateTokenPair(userId, claims)
+    TM-->>API: accessToken (15min) + refreshToken (7d)
+    API-->>C: { accessToken, refreshToken }
+
+    C->>API: GET /resource\nAuthorization: Bearer <accessToken>
+    API->>TM: verifyAccessToken(token)
+    TM-->>API: payload { sub, role, exp }
+    API-->>C: 200 OK + data
+
+    C->>API: POST /refresh (refreshToken)
+    API->>TM: refreshAccessToken(refreshToken)
+    TM-->>API: new accessToken
+    API-->>C: { accessToken }
+```
+
+*Short-lived access tokens (15 min) keep sessions stateless and scalable; refresh tokens (7 days, stored server-side) allow revocation without invalidating every active session.*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, HTTP basics, Cryptography basics

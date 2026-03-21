@@ -31,6 +31,29 @@ tags:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["UPDATE / DELETE row"] --> B["Old row marked DEAD — not removed"]
+    B --> C["Dead rows accumulate — table bloats"]
+    C --> D["Queries slow down — more pages to scan"]
+
+    E["VACUUM"] --> F["Mark dead space reusable"]
+    E --> G["Update query planner statistics"]
+    F --> H["Queries faster — less I/O"]
+
+    I["VACUUM FULL"] --> J["Rewrite table — reclaim disk to OS"]
+    J --> K["Locks table — run in maintenance window"]
+
+    L["autovacuum daemon"] --> M["Runs automatically in background"]
+    M --> N["Trigger: >20% dead rows by default"]
+```
+
+*PostgreSQL's MVCC model never removes dead rows inline — VACUUM is the garbage collector that keeps the database healthy.*
+
+---
+
 ## 📊 The Problem Everyone Faces
 
 You deployed your SaaS app 6 months ago. Everything was fast. Now queries are slowing down mysteriously.

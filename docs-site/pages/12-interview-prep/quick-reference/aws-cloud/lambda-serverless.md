@@ -15,6 +15,22 @@ tags: [aws, lambda, serverless, cold-start, event-driven, faas, cloud]
 
 # AWS Lambda for Serverless Architecture
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A{Need Lambda?} --> B{Task Duration?}
+    B -->|"< 15 min"| C{Traffic Pattern?}
+    B -->|"> 15 min"| D[Use ECS / EC2]
+    C -->|Sporadic / Bursty| E[Use Lambda]
+    C -->|Constant High Load| F[Use EC2 - cheaper]
+    E --> G{Cold Start Issue?}
+    G -->|Latency-critical| H[Provisioned Concurrency]
+    G -->|Acceptable| I[Default Lambda]
+```
+
+*Choose Lambda for event-driven, short-lived tasks; use provisioned concurrency when cold start latency is unacceptable.*
+
 ## Question
 **"Explain AWS Lambda and serverless architecture. When would you use Lambda vs EC2? What are cold starts and how do you mitigate them?"**
 

@@ -23,6 +23,26 @@ tags: [security, hashing, sha256, sha1, cryptography, integrity]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A{Hashing Use Case?} --> B{Passwords?}
+    B -->|Yes| C["Use bcrypt / argon2 — NOT raw SHA"]
+    B -->|No| D{SHA-1 acceptable?}
+    D -->|Never for security| E{SHA-2 variant?}
+    E -->|General purpose| F["SHA-256 — 64 hex chars"]
+    E -->|High security / 64-bit| G["SHA-512 — 128 hex chars"]
+    F --> H[File integrity]
+    F --> I["Digital signatures + TLS certs"]
+    F --> J["Blockchain — Bitcoin double SHA-256"]
+    G --> K["Government / military grade"]
+```
+
+*SHA-1 is broken since 2017 — never use it for security; SHA-256 is the standard for file integrity, signatures, and blockchain; use bcrypt for passwords.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 **SHA** = **Secure Hash Algorithm**

@@ -26,6 +26,26 @@ tags: [cdn, edge-computing, netflix, video-streaming, media-delivery, latency]
 
 # CDN & Edge Computing for Media: How Netflix Streams to 260M Users
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    User["Viewer (Browser/TV)"]
+    EdgePOP["CDN Edge POP\n(city-level)"]
+    RegionCache["Regional Cache\n(ISP peering)"]
+    Origin["Origin Server\n(Netflix backend)"]
+    Encode["Video Encoding\n(multiple bitrates)"]
+    S3["Object Storage\n(S3 / Open Connect)"]
+
+    User -->|"15ms"| EdgePOP
+    EdgePOP -->|"miss"| RegionCache
+    RegionCache -->|"miss"| Origin
+    Origin --> S3
+    Encode --> S3
+```
+
+*Content is pre-positioned at ISP-level edge nodes so the video never travels far — that is how 15ms startup latency is achieved.*
+
 > **Time to Read:** 15-20 minutes
 > **Difficulty:** Intermediate
 > **Key Concepts:** CDN, Edge Computing, Content Delivery, Geo-Distribution

@@ -13,6 +13,18 @@ status: "published"
 
 # ELK Stack POC: Ship Node.js Logs to Elasticsearch + Kibana
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    APP["Node.js App\n(Pino JSON logs)"] -- "stdout / file" --> LS[Logstash\npipeline]
+    LS -- "parse + enrich + route" --> ES[Elasticsearch\nindex per day]
+    ES --> KB[Kibana\nKQL queries\n+ dashboards]
+    ES --> ILM[ILM Policy\nhot → warm → delete]
+```
+
+*Pino writes ECS-compatible JSON to stdout; Logstash parses and enriches it; Elasticsearch indexes it for sub-second full-text search; Kibana lets you build dashboards and set retention policies.*
+
 This POC builds a complete log aggregation pipeline from scratch:
 - Elasticsearch + Logstash + Kibana via Docker Compose
 - A Node.js sample app logging with Pino in ECS-compatible JSON

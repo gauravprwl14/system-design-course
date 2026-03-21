@@ -76,6 +76,21 @@ This POC shows you how to achieve the same performance gains.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["MULTI/EXEC\n7 round-trips\n450ms"] -->|"Replace with"| B["Lua Script\n1 round-trip\n23ms"]
+    B --> C[EVAL or EVALSHA]
+    C --> D["Redis executes\natomically\nserver-side"]
+    D --> E["Single result\nreturned"]
+    A2["Client app"] -->|"EVAL script"| C
+```
+
+*A Lua script ships the logic to Redis and executes all operations in a single atomic round-trip, eliminating network latency between commands.*
+
+---
+
 ## The Problem: MULTI/EXEC Performance Bottleneck
 
 ### Network Latency Kills Performance

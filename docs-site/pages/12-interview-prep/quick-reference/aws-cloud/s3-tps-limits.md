@@ -15,6 +15,24 @@ tags: [aws, s3, storage, tps, throughput, partitioning, scalability]
 
 # AWS S3 TPS Limits & Optimization
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A{S3 Operation Type?} --> B{Reads or Writes?}
+    B -->|Reads| C["5,500 GET/HEAD per prefix"]
+    B -->|Writes| D["3,500 PUT/DELETE per prefix"]
+    C --> E{Read-Heavy Workload?}
+    E -->|Yes| F[Add CloudFront CDN]
+    E -->|No| G[Multiple Prefixes]
+    D --> H{High TPS Needed?}
+    H -->|Yes| I["Hash-Based Prefix Distribution"]
+    H -->|No| J[Single Prefix OK]
+    I --> K["N prefixes = N x 3,500 TPS capacity"]
+```
+
+*S3 TPS limits apply per prefix — distribute across multiple prefixes or add CloudFront to scale beyond single-prefix limits.*
+
 ## Question
 **"What are S3 TPS limits? How do you handle high-throughput scenarios with S3? Explain partitioning strategies."**
 

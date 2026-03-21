@@ -31,6 +31,24 @@ tags:
 
 # POC #73: Idempotency Keys Implementation
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    REQ[Client Request\n+ Idempotency-Key] --> MW[Express Middleware]
+    MW --> CHECK{Key in Redis?}
+    CHECK -- "Yes: completed" --> CACHED[Return Cached Result]
+    CHECK -- "Yes: processing" --> CONFLICT[409 Conflict]
+    CHECK -- "No" --> LOCK[Acquire Redis Lock\nNX + TTL]
+    LOCK -- "Lock acquired" --> OP[Execute Operation\ne.g. charge payment]
+    OP -- "Success" --> STORE[Store Result\nTTL 24h]
+    OP -- "Error" --> STOREE[Store Error\nfor consistent retry]
+    STORE --> RESP[Return Response]
+    STOREE --> THROW[Re-throw Error]
+```
+
+*The Redis distributed lock ensures that even 10 concurrent retries with the same key execute the operation exactly once and return identical responses.*
+
 > **Difficulty:** 🔴 Advanced
 > **Time:** 45 minutes
 > **Prerequisites:** Redis, Express.js, understanding of distributed systems

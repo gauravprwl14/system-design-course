@@ -25,6 +25,26 @@ tags: [audio-streaming, cdn, spotify, p2p, adaptive-bitrate, media-delivery]
 
 # Audio Streaming Architecture: How Spotify Streams to 574M Users
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Client["Client App"]
+    P2P["P2P Network\n(peer cache)"]
+    CDN["CDN Edge Nodes"]
+    Origin["Origin Servers\n(Spotify backend)"]
+    Storage["Audio Storage\n(S3 / GCS)"]
+    Meta["Metadata DB\n(tracks, playlists)"]
+
+    Client -->|"1. check peer"| P2P
+    P2P -->|"cache miss"| CDN
+    CDN -->|"cache miss"| Origin
+    Origin --> Storage
+    Client -->|"metadata"| Meta
+```
+
+*Hybrid P2P + CDN architecture slashes bandwidth costs by 96% — peers serve popular tracks before CDN is ever hit.*
+
 > **Time to Read:** 15-20 minutes
 > **Difficulty:** Intermediate
 > **Key Concepts:** CDN, Adaptive Bitrate, P2P Networks, Audio Codecs

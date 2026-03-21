@@ -43,6 +43,26 @@ A **production-ready partitioning system** for handling billions of records effi
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Large table\nbillions of rows"] --> B{Partition strategy}
+
+    B --> C["Range\nby created_at\ntime-series data"]
+    B --> D["Hash\nby user_id\neven distribution"]
+    B --> E["List\nby country_code\ncategorical / multi-tenant"]
+
+    C --> F["Partition pruning\nQuery scans 1 of 12 partitions"]
+    F --> G["66x faster\n24s → 0.36s — Discord"]
+
+    C --> H["Archive old partition\nDetach → pg_dump → S3\n70% storage cost reduction"]
+```
+
+*Partitioning splits one huge table into smaller physical chunks; queries that include the partition key skip irrelevant chunks entirely — called partition pruning.*
+
+---
+
 ## Why This Matters
 
 ### Real-World Usage

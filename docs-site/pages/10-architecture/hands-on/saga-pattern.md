@@ -29,6 +29,23 @@ tags:
 > **Time:** 35 minutes
 > **Prerequisites:** Node.js, Distributed systems, Message queues
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Start["Start Saga"] --> S1["Step 1: Create Order"]
+    S1 -->|"ok"| S2["Step 2: Reserve Inventory"]
+    S2 -->|"ok"| S3["Step 3: Process Payment"]
+    S3 -->|"ok"| S4["Step 4: Confirm + Notify"]
+    S4 --> Done["Saga Complete"]
+    S3 -->|"payment fails"| C2["Compensate: Release Inventory"]
+    C2 --> C1["Compensate: Cancel Order"]
+    C1 --> Failed["Saga Rolled Back"]
+    S2 -->|"out of stock"| C1
+```
+
+*Each local transaction has a compensating action — failure triggers reverse execution to restore consistency.*
+
 ## What You'll Learn
 
 The Saga pattern manages distributed transactions across multiple services by breaking them into local transactions with compensating actions for rollback.

@@ -49,6 +49,29 @@ Master **ACID transactions and isolation levels** to prevent data corruption:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["BEGIN transaction"] --> B["Execute queries"]
+    B --> C{Error?}
+    C -- No --> D["COMMIT — all changes persist"]
+    C -- Yes --> E["ROLLBACK — all changes undone"]
+    D --> F["ACID guaranteed"]
+    E --> F
+
+    G["Isolation Levels"] --> H["Read Committed — default"]
+    G --> I["Repeatable Read — no phantom rows"]
+    G --> J["Serializable — strictest, slowest"]
+
+    K["Locking"] --> L["Pessimistic — SELECT FOR UPDATE"]
+    K --> M["Optimistic — version column + retry"]
+```
+
+*Transactions wrap multiple SQL operations into an all-or-nothing unit; isolation level controls what concurrent transactions can see.*
+
+---
+
 ## Why This Matters
 
 ### Real-World Impact

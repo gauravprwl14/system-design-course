@@ -23,6 +23,24 @@ tags: [postgresql, views, sql, query-reuse, abstraction]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Base tables\n(users, orders, products)"] --> B["CREATE VIEW\nuser_stats AS SELECT ..."]
+    B --> C["App queries\nSELECT * FROM user_stats"]
+    C --> D["Database expands\nto full query at runtime"]
+
+    E["View types"] --> F["Regular — always fresh, no perf gain"]
+    E --> G["Security — hide columns / rows by role"]
+    E --> H["Materialized — cached result, fast reads"]
+    E --> I["Updatable — single-table, no aggregates"]
+```
+
+*A view is a stored query that looks like a table — write the JOIN once, reuse it everywhere, and update logic in one place.*
+
+---
+
 ## 📊 The Problem Everyone Faces
 
 You're building a user dashboard that shows:

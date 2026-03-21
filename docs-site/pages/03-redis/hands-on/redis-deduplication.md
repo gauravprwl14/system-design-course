@@ -29,6 +29,29 @@ tags:
 > **Time:** 30 minutes
 > **Prerequisites:** Redis, understanding of message queues
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant Q as Message Queue
+    participant C as Consumer
+    participant R as Redis "dedup:event_id"
+    participant H as Handler
+
+    Q->>C: event_123 (1st delivery)
+    C->>R: SET dedup:event_123 NX EX 86400
+    R-->>C: OK (new)
+    C->>H: process event
+    H-->>C: done
+
+    Q->>C: event_123 (retry delivery)
+    C->>R: SET dedup:event_123 NX EX 86400
+    R-->>C: nil (exists)
+    C-->>Q: ack (skip processing)
+```
+
+*SETNX atomically marks an event ID as seen; a retry of the same event finds the key already set and is silently discarded, ensuring exactly-once processing.*
+
 ## What You'll Build
 
 A Redis-based deduplication system for:

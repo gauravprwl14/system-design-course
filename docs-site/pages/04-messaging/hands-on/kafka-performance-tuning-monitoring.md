@@ -30,6 +30,20 @@ tags:
 > **Difficulty:** Advanced
 > **Prerequisites:** POC #46-49 (Kafka Basics, Consumer Groups, Streams, Exactly-Once)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    P["Producer<br/>(batch 16KB, LZ4, linger 10ms)"] -->|"58x throughput"| B["Kafka Broker<br/>(tuned OS + JVM)"]
+    B -->|"1MB fetch batches"| C["Consumer<br/>(eachBatch, not eachMessage)"]
+    B -->|"JMX metrics"| JMX["JMX Exporter"]
+    JMX --> PROM["Prometheus"]
+    PROM --> G["Grafana<br/>(lag, throughput, latency)"]
+    G -->|"lag alert"| OPS["Ops Team"]
+```
+
+*Default config yields 3,200 msg/sec; batching + compression + batch-fetch pushes to 187,000+ msg/sec.*
+
 ## How Uber Optimized Kafka from 3,200 msg/sec to 1.2M msg/sec
 
 **Uber's Real-Time Platform Performance Crisis (2023)**

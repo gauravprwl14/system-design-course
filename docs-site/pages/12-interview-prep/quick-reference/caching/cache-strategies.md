@@ -20,6 +20,24 @@ tags: [caching, cache-aside, write-through, write-behind, read-through, redis, s
 
 # Cache Strategies: Cache-Aside, Write-Through, Write-Behind
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A{Cache Strategy?} --> B{Consistency Need?}
+    B -->|Strong| C[Write-Through]
+    B -->|Eventual OK| D{Write Volume?}
+    D -->|High throughput| E[Write-Behind]
+    D -->|Normal| F{Access Pattern?}
+    F -->|Predictable / Hot data| G[Refresh-Ahead]
+    F -->|General purpose| H[Cache-Aside]
+    C --> I["Write cache + DB sync — 55ms write"]
+    E --> J["Write cache only — 5ms write, async DB"]
+    H --> K["Read: check cache → DB on miss — 80% of cases"]
+```
+
+*Cache-Aside is the default choice; use Write-Through for consistency, Write-Behind for write throughput, Refresh-Ahead to eliminate miss latency.*
+
 ## Question
 **"Explain different caching strategies (cache-aside, write-through, write-behind, read-through). When would you use each?"**
 

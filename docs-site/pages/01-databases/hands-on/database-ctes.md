@@ -23,6 +23,23 @@ tags: [postgresql, ctes, sql, query-readability, recursive]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Nested Subquery\n(unreadable)"] -->|"Refactor"| B["WITH clause"]
+    B --> C["CTE 1: Filter rows\ne.g. recent_users"]
+    C --> D["CTE 2: Aggregate\ne.g. user_orders"]
+    D --> E["CTE 3: Rank / Score\ne.g. power_users"]
+    E --> F["Final SELECT\nfrom last CTE"]
+    G["RECURSIVE CTE"] -->|"Base case\n+ UNION ALL"| G
+    G --> H["Hierarchical output\norg chart, paths"]
+```
+
+*CTEs let you write SQL like code — break one giant nested query into named, independently testable steps.*
+
+---
+
 ## 📊 The Problem Everyone Faces
 
 You need to find "power users" - users who:

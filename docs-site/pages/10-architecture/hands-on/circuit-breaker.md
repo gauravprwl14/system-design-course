@@ -37,6 +37,19 @@ tags:
 > **Time:** 35 minutes
 > **Prerequisites:** Understanding of failure modes, async patterns
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    CLOSED["CLOSED\n(normal)"] -->|"failures >= threshold"| OPEN["OPEN\n(fail fast)"]
+    OPEN -->|"timeout expires"| HALF["HALF-OPEN\n(probe)"]
+    HALF -->|"success threshold met"| CLOSED
+    HALF -->|"any failure"| OPEN
+    OPEN -->|"request arrives"| Reject["Return fallback\nor throw immediately"]
+```
+
+*Three-state machine stops cascading failures by short-circuiting calls to an unhealthy downstream.*
+
 ## What You'll Build
 
 A production-ready circuit breaker that:

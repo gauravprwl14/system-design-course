@@ -29,6 +29,21 @@ tags:
 > **Time:** 30 minutes
 > **Prerequisites:** Node.js, Distributed systems concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SS["Define Steady State\n(error rate, latency, uptime)"] --> Hyp["Form Hypothesis\n'System survives X failure'"]
+    Hyp --> Inject["Inject Failure\nlatency / errors / partition / kill"]
+    Inject --> Monitor["Monitor Metrics\ncompare against steady state"]
+    Monitor -->|"Steady state maintained"| Expand["Expand Blast Radius\nprod / larger scope"]
+    Monitor -->|"Degradation detected"| Fix["Fix Weakness\nretries / circuit breaker / timeout"]
+    Fix --> SS
+    Expand --> SS
+```
+
+*Proactively inject controlled failures to find weaknesses before they cause real incidents.*
+
 ## What You'll Learn
 
 Chaos Engineering proactively tests system resilience by injecting controlled failures. This reveals weaknesses before they cause production incidents.

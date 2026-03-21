@@ -21,6 +21,22 @@ tags:
 
 # POC #90: RBAC Implementation
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    REQ[Incoming Request\nreq.user.id] --> MW[RBAC Middleware]
+    MW --> UR[User Roles\nMap lookup]
+    UR --> RP[Role Permissions\nwith inheritance]
+    RP --> CHK{Permission\ncheck}
+    CHK -- "Has permission" --> ABAC[ABAC Policy Check\nattribute conditions]
+    CHK -- "No permission" --> F[403 Forbidden]
+    ABAC -- "Policy passes" --> NEXT[next handler]
+    ABAC -- "Policy denies" --> F2[403 Forbidden\n+ reason]
+```
+
+*RBAC keeps permission logic out of business code — roles inherit from parent roles, and optional ABAC policies layer on fine-grained attribute checks like "only edit your own posts".*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 30 minutes
 > **Prerequisites:** Node.js, Database basics

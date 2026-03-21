@@ -22,6 +22,28 @@ tags:
 
 # POC #87: OAuth 2.0 Flows
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant App as Client App
+    participant Auth as Auth Server
+    participant API as Resource API
+
+    U->>App: Click "Login with OAuth"
+    App->>Auth: GET /authorize?client_id&scope&state
+    Auth->>U: Show consent screen
+    U->>Auth: Grant permission
+    Auth->>App: Redirect with ?code=abc&state=xyz
+    App->>Auth: POST /token (code + client_secret)
+    Auth-->>App: access_token + refresh_token
+    App->>API: GET /data\nAuthorization: Bearer <access_token>
+    API-->>App: Protected resource data
+```
+
+*The authorization code is one-time-use and short-lived (10 min); it is never exposed to the browser, unlike the implicit flow which OAuth 2.1 deprecates.*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 30 minutes
 > **Prerequisites:** Node.js, HTTP basics, JWT concepts

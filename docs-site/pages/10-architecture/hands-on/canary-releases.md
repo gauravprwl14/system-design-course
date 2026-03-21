@@ -28,6 +28,20 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Load balancing concepts, Monitoring basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    LB["Load Balancer"] -->|"99% traffic"| Stable["Stable (v1.0)"]
+    LB -->|"1% traffic"| Canary["Canary (v2.0)"]
+    Canary --> Metrics["Metrics Collector\nerror rate / latency / p95"]
+    Metrics -->|"Below thresholds"| Promote["Promote: 1% → 10% → 50% → 100%"]
+    Metrics -->|"Above thresholds"| Rollback["Rollback: 0% canary traffic"]
+    Promote -->|"100% healthy"| Done["v2.0 fully live"]
+```
+
+*Traffic shifts to the canary in small increments while metrics guard each promotion gate.*
+
 ## What You'll Learn
 
 Canary releases gradually shift traffic to new versions while monitoring for errors. Unlike blue-green, canary reduces blast radius by exposing only a small percentage of users initially.

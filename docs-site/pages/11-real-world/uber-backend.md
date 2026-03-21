@@ -49,6 +49,27 @@ tags:
 **Time**: 60 minutes
 **Companies**: Uber, Lyft, Grab, Ola, DiDi (Common interview question)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    R["Rider App"] --> GW["API Gateway"]
+    D["Driver App"] --> GW
+    GW --> LOC["Location Service"]
+    LOC --> GEO["Geo Index (Redis / QuadTree)"]
+    GW --> MATCH["Matching Service"]
+    MATCH --> GEO
+    MATCH --> MQ["Message Queue (Kafka)"]
+    MQ --> TRIP["Trip Service"]
+    TRIP --> DB["Trips DB (Cassandra)"]
+    TRIP --> NS["Notification Service"]
+    NS --> R
+    NS --> D
+    GW --> PRICE["Pricing Service"]
+```
+
+*Driver locations are continuously indexed in a geospatial store; when a rider requests a trip the matching service queries nearby drivers, selects the best match, and coordinates both parties via async events.*
+
 ## 1. Problem Statement
 
 Design a ride-hailing system where riders request rides and nearby drivers are matched in real-time.

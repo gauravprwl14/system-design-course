@@ -45,6 +45,25 @@ A **production-ready database architecture** with connection pooling and read re
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["100K app connections"] --> B["PgBouncer\nTransaction pooling"]
+    B --> C["25 DB connections\n4000:1 ratio"]
+    C --> D["PostgreSQL Primary\nWrites only"]
+    D --> E["Streaming replication\n~0.1s lag"]
+    E --> F["Read Replicas x1-12\n90% of traffic"]
+
+    G["App layer"] --> H{"Write?\nINSERT/UPDATE/DELETE"}
+    H -- Yes --> D
+    H -- No --> F
+```
+
+*PgBouncer multiplexes thousands of app connections onto a small pool; read replicas absorb the majority of traffic and scale horizontally.*
+
+---
+
 ## Why This Matters
 
 ### Real-World Usage

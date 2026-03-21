@@ -32,6 +32,20 @@ tags:
 > **Difficulty:** Advanced
 > **Prerequisites:** POC #46 (Kafka Basics), POC #47 (Consumer Groups), understanding of transactions
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    P["Idempotent Producer<br/>(producerID + seqNum)"] -->|"dedup by broker"| K["Kafka Broker"]
+    K -->|"only committed visible"| C["Consumer<br/>(isolation: read_committed)"]
+    C -->|"BEGIN TXN"| DB["Database"]
+    DB -->|"INSERT ... ON CONFLICT DO NOTHING"| IK["Idempotency Key<br/>(UNIQUE constraint)"]
+    IK -->|"COMMIT + commit offset"| DONE["Exactly Once"]
+    IK -->|"duplicate detected"| SKIP["Skip silently"]
+```
+
+*Three layers of deduplication: broker-level (producer ID), consumer-level (read_committed), database-level (unique key).*
+
 ## How Stripe Prevents $847M in Duplicate Payments with Exactly-Once Processing
 
 **Stripe's Payment Processing Platform (2024)**

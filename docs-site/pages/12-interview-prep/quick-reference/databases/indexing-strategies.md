@@ -24,6 +24,23 @@ tags:
 
 # Database Indexing Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A{Index Type?} --> B{Query Pattern?}
+    B -->|"Equality, range, sort"| C["B-Tree — 90% of cases"]
+    B -->|Equality only| D["Hash — O(1) lookup"]
+    B -->|"Full-text / JSONB"| E[GIN]
+    B -->|Spatial / Geometric| F[GiST]
+    C --> G{Multi-column?}
+    G -->|Yes| H["Composite — order: equality → range → sort"]
+    G -->|Subset of rows| I["Partial — WHERE active = true"]
+    G -->|Include SELECT cols| J["Covering — INCLUDE(col1, col2)"]
+```
+
+*Default to B-Tree; for composite indexes always put equality columns first, range columns last to satisfy the leftmost prefix rule.*
+
 ## Question
 **"Explain different types of database indexes (B-Tree, Hash, GiST, GIN). When would you use each? What are the trade-offs of adding indexes?"**
 

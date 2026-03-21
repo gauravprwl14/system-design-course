@@ -57,6 +57,24 @@ This POC shows you how to build the same protection.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Incoming Request] --> B{Lua Script on Redis}
+    B --> C["INCR counter\n+ SET TTL"]
+    C --> D{Count <= Limit?}
+    D -->|Yes| E[Allow Request]
+    D -->|No| F[Reject 429]
+    E --> G[Backend Server]
+    F --> H[Return Error to Client]
+    B --> I["Atomic: no race\nconditions possible"]
+```
+
+*A single atomic Lua script increments the counter and enforces the limit in one Redis round-trip, preventing race-condition bypasses.*
+
+---
+
 ## The Problem: Why Application-Level Rate Limiting Fails
 
 ### Race Conditions Lead to Bypass

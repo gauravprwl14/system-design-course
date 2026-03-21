@@ -108,6 +108,25 @@ This POC shows you how to choose the right index type.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Query type?"] --> B{Equality only\nWHERE col = val}
+    A --> C{Range / Sort\nWHERE col > val\nORDER BY col}
+
+    B -- Yes --> D["Hash Index\nO(1) lookup\n3.9x faster, 56% smaller"]
+    B -- No --> E["B-Tree Index\nO(log n) lookup\nHandles all query types"]
+    C -- Yes --> E
+
+    D --> F["UUIDs, emails,\nAPI keys, tokens"]
+    E --> G["Timestamps, prices,\nages, names"]
+```
+
+*Choose Hash for equality-only lookups (3.9x faster, 56% smaller index); use B-Tree for everything else — range queries and sorting require it.*
+
+---
+
 ## The Problem: Using B-Tree for Everything
 
 ### Anti-Pattern: Default to B-Tree Without Thinking

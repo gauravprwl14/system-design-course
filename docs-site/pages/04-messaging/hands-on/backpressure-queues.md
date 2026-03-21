@@ -36,6 +36,21 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, Queue concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    P["Producer<br/>(fast: 50/sec)"] -->|enqueue| Q["Bounded Queue<br/>(max: 100)"]
+    Q -->|consume| C["Consumer<br/>(slow: 33/sec)"]
+    Q -->|"≥70% full"| BP["Backpressure Signal<br/>(PAUSE)"]
+    BP -->|slow down| P
+    Q -->|"≤30% full"| RE["Resume Signal"]
+    RE -->|speed up| P
+    Q -->|"100% full"| DR["Reject / Drop"]
+```
+
+*Producer rate is throttled by queue fill level — preventing OOM and keeping throughput stable.*
+
 ## What You'll Learn
 
 Backpressure prevents system overload by controlling the rate at which work is accepted.

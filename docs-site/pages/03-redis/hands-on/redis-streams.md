@@ -39,6 +39,24 @@ A **production-ready event sourcing system** using Redis Streams that captures e
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    E1[Event: order.placed] -->|XADD| ST[Redis Stream]
+    E2[Event: payment.charged] -->|XADD| ST
+    E3[Event: order.shipped] -->|XADD| ST
+    ST -->|XREAD / XREADGROUP| CG1[Consumer Group:\nOrder Service]
+    ST -->|XREAD / XREADGROUP| CG2[Consumer Group:\nNotification Service]
+    ST -->|XRANGE from 0| RP[Replay from any point]
+    CG1 -->|XACK| ST
+    CG2 -->|XACK| ST
+```
+
+*Each service reads the same stream independently via consumer groups; the immutable event log enables both real-time processing and full historical replay.*
+
+---
+
 ## Why This Matters
 
 ### Real-World Usage

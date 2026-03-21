@@ -29,6 +29,20 @@ tags:
 > **Difficulty:** Advanced
 > **Prerequisites:** POC #46 (Kafka Basics), POC #47 (Consumer Groups), understanding of stream processing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    IN["Input Topic<br/>profile-events"] -->|filter view events| KS["Kafka Streams App"]
+    KS -->|"groupByKey + window(1hr)"| SS["State Store<br/>(RocksDB)"]
+    SS -->|"count per window"| OUT["Output Topic<br/>profile-view-counts"]
+    OUT --> REDIS["Redis Cache"]
+    REDIS --> API["API: 47 views in last hour"]
+    SS -->|"changelog"| CL["Changelog Topic<br/>(fault tolerance)"]
+```
+
+*Stateful windowed aggregations run inside the app process backed by RocksDB, with Kafka as the fault-tolerant state store.*
+
 ## How LinkedIn Processes 7 Trillion Events Per Day in Real-Time
 
 **LinkedIn's Real-Time Analytics Platform (2024)**

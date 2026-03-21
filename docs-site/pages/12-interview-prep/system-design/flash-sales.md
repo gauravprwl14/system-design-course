@@ -27,6 +27,28 @@ tags: [flash-sales, high-traffic, concurrency, inventory, redis, e-commerce]
 
 # Flash Sales Architecture - High Traffic Design
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Users["Millions of Users"]
+    CDN["CDN\n(static pages)"]
+    Queue["Virtual Waiting Queue\n(rate control)"]
+    API["Order API"]
+    Redis["Redis\n(inventory counter)"]
+    MQ["Message Queue\n(async orders)"]
+    DB["Sharded DB\n(order records)"]
+
+    Users --> CDN
+    Users -->|"purchase request"| Queue
+    Queue -->|"metered release"| API
+    API -->|"DECR atomic"| Redis
+    API -->|"enqueue order"| MQ
+    MQ --> DB
+```
+
+*The waiting queue is the key — it converts a thundering-herd spike into a controlled drip that Redis and the DB can safely absorb.*
+
 **Interview Question**: *"How do you prepare for flash sales to handle high traffic efficiently? Design a system to handle millions of concurrent users."*
 
 **Difficulty**: 🔴 Advanced

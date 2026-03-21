@@ -50,6 +50,25 @@ tags:
 **Time**: 60 minutes
 **Companies**: Meta, Google, X (Twitter), LinkedIn, TikTok (Top-5 most asked)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    U["Users"] --> LB["Load Balancer"]
+    LB --> PS["Post Service"]
+    LB --> FS["Feed Service"]
+    PS --> DB["Posts DB (Sharded)"]
+    PS --> MQ["Message Queue (Kafka)"]
+    MQ --> FO["Fan-Out Worker"]
+    FO --> FC["Feed Cache (Redis)"]
+    FS --> FC
+    FS --> RR["Read Replica"]
+    FC --> CDN["CDN / Edge Cache"]
+    CDN --> U
+```
+
+*When a user posts, a fan-out worker pushes the post ID into each follower's cached feed — reads become a fast Redis lookup rather than a live database query.*
+
 ## 1. Problem Statement
 
 Design a news feed system that shows users a personalized, ranked stream of posts from people they follow.

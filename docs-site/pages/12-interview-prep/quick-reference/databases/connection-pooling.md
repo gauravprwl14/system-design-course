@@ -16,6 +16,23 @@ tags: [database, connection-pooling, performance, pgbouncer, scalability]
 
 # Database Connection Pooling
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Incoming Request] --> B{Pool has idle connection?}
+    B -->|Yes| C["Borrow connection — 0.5ms"]
+    B -->|No - pool not full| D["Create new connection — 50ms"]
+    B -->|No - pool at max| E{Wait for connection}
+    E -->|Within timeout| C
+    E -->|Timeout exceeded| F[503 Error - pool exhausted]
+    C --> G[Execute Query]
+    G --> H[Return connection to pool]
+    D --> G
+```
+
+*Pool reuses existing connections, eliminating the 20–50ms creation overhead per request; size the pool with formula: CPU cores × 2 + 1.*
+
 ## Question
 **"Explain database connection pooling. Why is it important? How do you configure pool size?"**
 

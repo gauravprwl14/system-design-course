@@ -130,6 +130,29 @@ This POC shows you how to use EXPLAIN ANALYZE to find and fix slow queries.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Slow query identified\npg_stat_statements"] --> B["EXPLAIN ANALYZE BUFFERS"]
+    B --> C{Scan type?}
+    C -- "Seq Scan + high\nRows Removed" --> D["Add index on\nfilter column"]
+    C -- "Index Scan +\nHeap Fetches" --> E["Add INCLUDE clause\nfor covering index"]
+    C -- "Index-Only Scan" --> F["Optimal — no changes needed"]
+
+    D --> G["Re-run EXPLAIN\nverify improvement"]
+    E --> G
+
+    H["Red flags"] --> I["Rows Removed by Filter > 90%"]
+    H --> J["Buffers: shared read > 1000"]
+    H --> K["Sort without index ORDER BY"]
+    H --> L["Hash batches > 1 — spills to disk"]
+```
+
+*EXPLAIN ANALYZE is a microscope for query execution — read the scan type, check rows filtered, and watch buffer counts to pinpoint bottlenecks.*
+
+---
+
 ## The Problem: Flying Blind Without Query Plans
 
 ### Anti-Pattern #1: Guessing Performance Issues

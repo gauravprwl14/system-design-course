@@ -15,6 +15,23 @@ tags: [aws, cloudwatch, monitoring, observability, alarms, metrics, logging]
 
 # AWS CloudWatch Monitoring & Alarms
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Application] --> B[CloudWatch]
+    B --> C[Metrics]
+    B --> D[Logs]
+    B --> E[Dashboards]
+    C --> F{Threshold Breached?}
+    F -->|Yes| G[Alarm ALARM]
+    F -->|No| H[Alarm OK]
+    G --> I[SNS Notification]
+    I --> J[Email / PagerDuty / Lambda]
+```
+
+*CloudWatch collects metrics and logs, triggers alarms when thresholds are breached, and routes notifications via SNS.*
+
 ## Question
 **"How do you monitor applications in AWS? Explain CloudWatch metrics, alarms, dashboards, and logs. How do you set up alerting?"**
 

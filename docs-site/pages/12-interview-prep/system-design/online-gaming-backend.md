@@ -25,6 +25,29 @@ tags: [gaming, real-time, state-synchronization, websocket, lag-compensation, fo
 
 # Online Gaming Backend: How Fortnite Handles 350M Players
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Player["Player Client"]
+    Matchmaker["Matchmaking Service"]
+    GameServer["Dedicated Game Server\n(100 players / match)"]
+    StateSync["State Sync\n(30 Hz tick)"]
+    AntiCheat["Anti-Cheat Service"]
+    Leaderboard["Leaderboard\n(Redis)"]
+    Profile["Player Profile DB"]
+
+    Player -->|"find match"| Matchmaker
+    Matchmaker -->|"allocate server"| GameServer
+    GameServer <-->|"UDP packets"| StateSync
+    StateSync --> Player
+    GameServer --> AntiCheat
+    GameServer -->|"match result"| Leaderboard
+    GameServer --> Profile
+```
+
+*Each match runs on an isolated game server — state synchronization at 30 Hz keeps 100 players in sync with 20ms latency.*
+
 > **Time to Read:** 20-25 minutes
 > **Difficulty:** Advanced
 > **Key Concepts:** Client-Server Architecture, State Synchronization, Lag Compensation, Tick Rate

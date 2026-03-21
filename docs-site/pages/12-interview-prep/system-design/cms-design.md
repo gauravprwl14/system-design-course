@@ -24,6 +24,30 @@ tags: [cms, content-management, caching, cdn, versioning, publishing]
 
 # Content Management System (CMS) - System Design
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Author["Content Author"]
+    Admin["CMS Admin UI"]
+    API["CMS API\n(Node.js / Python)"]
+    DB["Metadata DB\n(pages, versions)"]
+    S3["Object Storage S3\n(media, static files)"]
+    Redis["Redis Cache"]
+    CDN["CDN (CloudFront)"]
+    Reader["End User"]
+
+    Author --> Admin
+    Admin --> API
+    API --> DB
+    API --> S3
+    API --> Redis
+    Reader -->|"cached content"| CDN
+    CDN -->|"miss"| API
+```
+
+*High read / low write: CDN + Redis absorb nearly all reader traffic; authors only touch the API when publishing.*
+
 **Interview Question**: *"How would you design a Content Management System? Consider cost optimization for 25,000 pages with high read, low write operations."*
 
 **Difficulty**: 🟡 Intermediate

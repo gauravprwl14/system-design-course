@@ -41,6 +41,26 @@ Learn to **read and optimize PostgreSQL query plans** using EXPLAIN:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Slow Query"] --> B["EXPLAIN ANALYZE"]
+    B --> C{"Node Type?"}
+    C -->|"Seq Scan"| D["Full table scan\ncost > 10 000 → bad"]
+    C -->|"Index Scan"| E["Binary search\ncost < 100 → good"]
+    C -->|"Nested Loop"| F["JOIN on large tables\n→ add FK index"]
+    D --> G["Add / fix index"]
+    F --> G
+    G --> H["Re-run EXPLAIN"]
+    H --> I["Verify Index Scan\n+ lower cost"]
+    E --> I
+```
+
+*EXPLAIN ANALYZE shows exactly what PostgreSQL does — find the most expensive node, fix it, repeat until fast.*
+
+---
+
 ## Why This Matters
 
 **Real-World Usage**: Every major company uses EXPLAIN to optimize queries:

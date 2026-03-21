@@ -110,6 +110,26 @@ This POC shows you how to design composite and covering indexes.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Design composite index"] --> B["Step 1: Equality columns first\nhigh selectivity → low selectivity"]
+    B --> C["Step 2: Range column next\nonly one range per index"]
+    C --> D["Step 3: Sort column last\nmatch ORDER BY direction"]
+
+    D --> E["Regular index\nIndex Scan + heap fetch"]
+    D --> F["Add INCLUDE clause\nCovering index"]
+    F --> G["Index-Only Scan\nno table access — fastest"]
+
+    H["Wrong order\n2,847ms"] --> I["Correct order\n42ms — 67x faster"]
+    I --> J["Add INCLUDE\n5ms — 530x total"]
+```
+
+*Column order is everything: equalities first, range last. Add INCLUDE to avoid heap fetches entirely and unlock index-only scans.*
+
+---
+
 ## The Problem: Wrong Column Order = Wasted Index
 
 ### Anti-Pattern #1: Random Column Order

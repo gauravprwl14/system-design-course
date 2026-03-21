@@ -30,6 +30,26 @@ Production-ready error handling and rollback patterns for Redis transactions:
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Start Operation] --> B[Step 1: Charge Card]
+    B -->|Success| C[Step 2: Update Balance]
+    C -->|Fail| D{Compensating Transaction}
+    D --> E[Refund Card Charge]
+    E --> F[Mark Operation Failed]
+    C -->|Success| G[Step 3: Send Receipt]
+    G -->|Fail| H{Compensating Transaction}
+    H --> I[Reverse Balance Update]
+    I --> E
+    G -->|Success| J[All Done - Committed]
+```
+
+*When any step fails, compensating transactions undo all previously completed steps in reverse order, restoring the system to its pre-operation state.*
+
+---
+
 ## Why This Matters
 
 ### The $500K Payment Incident

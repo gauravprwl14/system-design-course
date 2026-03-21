@@ -16,6 +16,24 @@ tags: [cdn, content-delivery, edge-computing, caching, cloudfront, performance, 
 
 # CDN (Content Delivery Network) - Use Cases & Optimization
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User Request] --> B{CDN Edge Cache?}
+    B -->|Cache HIT| C["Serve from Edge — ~20ms"]
+    B -->|Cache MISS| D[Forward to Origin Server]
+    D --> E["Origin responds — ~220ms"]
+    E --> F[CDN caches response]
+    F --> G[Return to user]
+    C --> H{Content Type?}
+    H -->|"Static (JS/CSS/images)"| I["Cache-Control: max-age=31536000"]
+    H -->|HTML pages| J["Cache-Control: no-cache"]
+    H -->|API responses| K["Cache-Control: s-maxage=300"]
+```
+
+*CDN serves cached content from edge nodes close to users — cache hit delivers 10x faster response; set correct Cache-Control headers to control TTLs.*
+
 ## Question
 **"Explain what a CDN is, when to use it, and how to optimize its performance. What are the trade-offs?"**
 

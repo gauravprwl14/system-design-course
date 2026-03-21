@@ -33,6 +33,25 @@ tags:
 **Time**: 45 minutes
 **Companies**: Twitter, Discord, Instagram, Uber (Asked frequently)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    SVC["Upstream Services"] --> LB["Load Balancer"]
+    LB --> N1["ID Gen Node 1"]
+    LB --> N2["ID Gen Node 2"]
+    LB --> N3["ID Gen Node N"]
+    N1 --> ID["64-bit Snowflake ID"]
+    N2 --> ID
+    N3 --> ID
+    N1 --> ZK["Zookeeper (worker ID assignment)"]
+    N2 --> ZK
+    N3 --> ZK
+    ID --> SVC
+```
+
+*Each generator node combines a millisecond timestamp, an assigned worker ID, and a per-node sequence counter to produce a 64-bit ID — no coordination needed at generation time, only at node startup.*
+
 ## 1. Problem Statement
 
 Design a system that generates globally unique IDs in a distributed environment.

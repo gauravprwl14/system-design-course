@@ -31,6 +31,26 @@ A production-ready Redis transaction system using MULTI/EXEC for atomic operatio
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant App
+    participant Redis
+    App->>Redis: MULTI
+    App->>Redis: DECR inventory:item
+    App->>Redis: LPUSH orders:queue orderId
+    App->>Redis: INCR user:revenue
+    Note over Redis: Commands queued, not executed
+    App->>Redis: EXEC
+    Redis-->>App: [result1, result2, result3]
+    Note over Redis: All 3 execute atomically
+```
+
+*MULTI queues commands in a pipeline; EXEC fires them all atomically — no other client can interleave between the queued commands during execution.*
+
+---
+
 ## Why This Matters
 
 ### The $50,000 Race Condition

@@ -27,6 +27,20 @@ tags:
 
 # POC #80: SLO Dashboard & Error Budgets
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    MET[Metrics\nrequests / errors] --> SLO[SLO Engine\ne.g. 99.9% availability]
+    SLO --> EB[Error Budget\n43.8 min/30-day]
+    EB --> BURN{Burn Rate}
+    BURN -- "Burn rate > 1x" --> ALERT[Alert: budget draining\nfreeze deployments]
+    BURN -- "Burn rate < 1x" --> SAFE[Safe: ship features]
+    SLO --> DASH[Dashboard\ntrend + remaining budget]
+```
+
+*The error budget is the gap between 100% and your SLO; burn rate tells you whether you are consuming it faster than it replenishes — exceeding 1x burn rate means you will miss your SLO.*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, Metrics concepts

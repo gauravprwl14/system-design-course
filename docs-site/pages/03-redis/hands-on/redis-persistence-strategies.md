@@ -51,6 +51,24 @@ This POC shows you how to choose the right persistence strategy.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A[Redis Writes] --> B{Persistence Mode}
+    B -->|RDB| C["Snapshot every N min\n.rdb file\nFast restart"]
+    B -->|AOF| D["Log every write\n.aof file\nMax 1s data loss"]
+    B -->|Hybrid| E["RDB + AOF\nFast load + full log"]
+    B -->|None| F["In-memory only\nData lost on crash"]
+    C --> G["Use for: cache\nbulk analytics"]
+    D --> H["Use for: sessions\nshopping carts"]
+    E --> I["Use for: production\nprimary store"]
+```
+
+*RDB gives fast restarts with some data loss risk; AOF gives near-zero data loss with slower restarts; Hybrid combines both for production reliability.*
+
+---
+
 ## The Problem: Redis is In-Memory (Volatile)
 
 ### Default Redis = Data Loss on Crash

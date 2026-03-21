@@ -61,6 +61,24 @@ This POC shows you how to build real-time messaging that scales.
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    P1[Publisher A] -->|PUBLISH channel msg| R[Redis Pub/Sub]
+    P2[Publisher B] -->|PUBLISH channel msg| R
+    R -->|Push delivery| S1[Subscriber 1]
+    R -->|Push delivery| S2[Subscriber 2]
+    R -->|Push delivery| S3[Subscriber 3]
+    S1 --> C1[WebSocket Client]
+    S2 --> C2[WebSocket Client]
+    S3 --> C3[WebSocket Client]
+```
+
+*Publishers emit events to a Redis channel; all active subscribers receive messages instantly via push, eliminating polling overhead entirely.*
+
+---
+
 ## The Problem: Polling is Wasteful
 
 ### HTTP Polling Creates Massive Waste

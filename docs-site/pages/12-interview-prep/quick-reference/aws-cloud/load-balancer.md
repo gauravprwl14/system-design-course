@@ -19,6 +19,23 @@ tags: [aws, load-balancing, alb, nlb, elb, availability, scalability]
 
 # AWS Load Balancers: ELB, ALB, NLB
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A{Load Balancer Type?} --> B{Protocol?}
+    B -->|HTTP/HTTPS| C[ALB - Layer 7]
+    B -->|TCP/UDP| D[NLB - Layer 4]
+    C --> E{Routing Needed?}
+    E -->|Path or Host routing| F["ALB Rules (/api/* → Service A)"]
+    E -->|Simple forwarding| G[ALB Default Action]
+    D --> H{Static IP needed?}
+    H -->|Yes| I[NLB with Elastic IP]
+    H -->|No| J[NLB Standard]
+```
+
+*ALB handles HTTP/HTTPS with content-based routing; NLB handles TCP/UDP with ultra-low latency and static IPs.*
+
 ## Question
 **"Explain different types of AWS load balancers (ALB, NLB, CLB). When would you use each? How do load balancers improve availability?"**
 

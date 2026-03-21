@@ -25,6 +25,26 @@ tags: [rate-limiting, token-bucket, sliding-window, redis, api-design, throttlin
 
 # Rate Limiting - Implementation & Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Client["Client Request"]
+    Gateway["API Gateway\n(rate-limit middleware)"]
+    Redis["Redis Counter\n(token / window state)"]
+    Allow["Allow → Service"]
+    Deny["429 Too Many Requests"]
+    Service["Backend Service"]
+
+    Client --> Gateway
+    Gateway -->|"check quota"| Redis
+    Redis -->|"within limit"| Allow
+    Redis -->|"exceeded"| Deny
+    Allow --> Service
+```
+
+*Redis stores the counter atomically — every API gateway instance reads the same shared state, giving distributed rate limiting without coordination overhead.*
+
 **Interview Question**: *"How will you design and implement rate limiting in your application?"*
 
 **Difficulty**: 🟡 Intermediate

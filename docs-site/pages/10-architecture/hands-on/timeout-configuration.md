@@ -32,6 +32,20 @@ tags:
 > **Time:** 20 minutes
 > **Prerequisites:** Node.js, HTTP basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Client["Client\n30s"] -->|"request"| LB["Load Balancer\n25s"]
+    LB --> GW["API Gateway\n15s"]
+    GW --> Svc["Service\n10s"]
+    Svc -->|"cache lookup"| Cache["Redis\n200ms"]
+    Svc -->|"query"| DB["Database\n3s"]
+    Svc -->|"async"| Notify["Notification\n1s non-critical"]
+```
+
+*Each layer's timeout must be shorter than its upstream so the caller never retries a request still in flight downstream.*
+
 ## What You'll Learn
 
 Proper timeout configuration prevents cascading failures. Wrong timeouts cause either premature failures or resource exhaustion.

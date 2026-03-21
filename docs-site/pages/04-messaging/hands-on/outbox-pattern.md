@@ -35,6 +35,21 @@ tags:
 > **Time:** 30 minutes
 > **Prerequisites:** Node.js, PostgreSQL, Message queues
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SVC["Service<br/>(createOrder)"] -->|"BEGIN TXN"| DB["Database"]
+    DB --> OT["orders table<br/>(business data)"]
+    DB --> OB["outbox table<br/>(pending events)"]
+    OT & OB -->|"COMMIT atomically"| DONE["Both written or neither"]
+    PUB["Outbox Publisher<br/>(background poller)"] -->|"poll unpublished"| OB
+    PUB -->|"publish"| MQ["Message Queue / Kafka"]
+    PUB -->|"mark published_at"| OB
+```
+
+*Storing the event in the outbox within the same DB transaction guarantees the event is never lost even if the message broker is down.*
+
 ## What You'll Learn
 
 The Outbox Pattern ensures reliable message publishing by storing events in a database table as part of the same transaction, then publishing them asynchronously.

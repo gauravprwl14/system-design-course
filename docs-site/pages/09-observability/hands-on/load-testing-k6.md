@@ -24,6 +24,21 @@ tags:
 
 # POC #91: Load Testing with k6
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    SCRIPT[k6 Script\nJS scenarios] --> RAMP[Ramp-up\nVUs over time]
+    RAMP --> SUT[System Under Test\nAPI / service]
+    SUT --> METRICS[k6 Metrics\nRPS / p99 / errors]
+    METRICS --> THRESH{Thresholds\npassed?}
+    THRESH -- "Pass" --> PASS[Test passes]
+    THRESH -- "Fail" --> FAIL[Exit code 1\nCI pipeline fails]
+    METRICS --> OUT[Output\nJSON / InfluxDB / Grafana]
+```
+
+*k6 runs JavaScript scenarios that ramp virtual users up and down; threshold checks on p99 latency and error rate make load tests a gate in your CI pipeline.*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 25 minutes
 > **Prerequisites:** JavaScript basics, HTTP concepts
