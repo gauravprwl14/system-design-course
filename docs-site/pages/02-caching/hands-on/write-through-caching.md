@@ -33,6 +33,24 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Cache-aside pattern, Redis basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    W[Write Request] --> WT{Pattern}
+
+    WT -->|Write-Through| C1[Cache]
+    C1 -->|sync| DB1[(DB)]
+    DB1 -->|confirm| C1
+    C1 -->|"~8ms — strong consistency"| OK1[✅ Success]
+
+    WT -->|Write-Behind| C2[Cache]
+    C2 -->|"~1ms — immediate"| OK2[✅ Success]
+    C2 -.->|async batch| DB2[(DB)]
+```
+
+*Write-through guarantees cache and DB are always in sync; write-behind sacrifices durability for up to 5x lower write latency.*
+
 ## What You'll Learn
 
 Two strategies for keeping cache and database in sync during writes:

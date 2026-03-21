@@ -28,6 +28,29 @@ tags:
 > **Difficulty:** Advanced
 > **Prerequisites:** Redis MULTI/EXEC, WATCH, transaction basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant App
+    participant Redis
+
+    App->>Redis: Check idempotency key (transfer:txn-123:status)
+    Redis-->>App: null (not processed yet)
+    App->>Redis: WATCH balance:alice, balance:bob
+    App->>Redis: GET balance:alice → 1000
+    Note over App: balance >= amount?
+    App->>Redis: MULTI
+    App->>Redis: DECRBY balance:alice 100
+    App->>Redis: INCRBY balance:bob 100
+    App->>Redis: HSET transfer:txn-123 (audit record)
+    App->>Redis: SETEX transfer:txn-123:status 86400 "completed"
+    App->>Redis: EXEC
+    Redis-->>App: [900, 100, OK, OK] — zero money lost
+```
+
+*Every transfer uses WATCH + MULTI/EXEC for atomicity and an idempotency key to prevent double-charges on retry — the same pattern Stripe and PayPal use.*
+
 ## The $873,000 Bug That Almost Destroyed a Fintech Startup
 
 **March 15, 2021, 2:47 PM** - A junior developer deploys code without transactions. Within 8 minutes:

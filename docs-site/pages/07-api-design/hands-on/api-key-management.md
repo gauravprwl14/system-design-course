@@ -16,6 +16,22 @@ tags: [api-keys, security, authentication, hashing, rate-limiting]
 
 # POC #88: API Key Management
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Gen["Generate\n256-bit secret"] --> Hash["Hash key\n(SHA-256)"]
+    Hash --> Store["Store hash\nin DB"]
+    Client["Client sends\nraw key"] --> Validate["Hash incoming\nkey"]
+    Validate --> Compare["Compare to\nstored hash"]
+    Compare -->|"Match"| Allow["Allow request"]
+    Compare -->|"No match"| Deny["401 Unauthorized"]
+    Allow --> RL["Check rate limit"]
+    RL -->|"Within quota"| API["API Handler"]
+```
+
+*Only the hash is ever stored — the raw key is shown once at generation and never saved, so a database breach exposes nothing usable.*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, Cryptography basics

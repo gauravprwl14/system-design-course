@@ -32,6 +32,27 @@ tags:
 > **Difficulty:** Intermediate
 > **Prerequisites:** Redis basics, MULTI/EXEC, WATCH patterns
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant R as Redis
+
+    C->>R: WATCH inventory:ps5
+    C->>R: GET inventory:ps5 → 100
+    Note over C: stock >= quantity?
+    C->>R: MULTI
+    C->>R: DECRBY inventory:ps5 1
+    C->>R: HSET orders:xyz ...
+    C->>R: EXEC
+    R-->>C: [99, OK] — atomic success
+
+    Note over R: If another client wrote between WATCH and EXEC,<br/>EXEC returns nil → retry
+```
+
+*WATCH + MULTI/EXEC implements optimistic locking: if the watched key changes before EXEC, the whole transaction aborts — preventing oversells.*
+
 ## The $2.4M Black Friday Nightmare
 
 **November 27, 2020, 12:01 AM EST** - A major retailer's website crashes. 10,000 customers successfully ordered the new PlayStation 5. Problem? They only had 8,500 units in stock.

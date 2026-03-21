@@ -26,6 +26,25 @@ tags:
 
 # POC #15: Advanced Connection Pooling - Scale to 100k Requests/Sec
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["1000 App Servers<br/>20 conns each = 20k conns"] --> B["PgBouncer<br/>transaction pooling"]
+    B --> C["PostgreSQL<br/>100 actual connections"]
+
+    D["No pooling"] --> E["New connection per request<br/>20-50ms overhead"]
+    D --> F["Hit max_connections at 101 users"]
+
+    G["With pooling"] --> H["Reuse idle conns<br/>~2ms overhead"]
+    G --> I["20 conns handle<br/>10k+ req/sec"]
+
+    J["Pool size formula"] --> K["cores × 2 + 1<br/>e.g. 4 cores → 9 conns"]
+    K --> L["Monitor waitingCount<br/>If > 0: scale horizontally"]
+```
+
+*A small pool of reused connections dramatically outperforms per-request connections — the optimal size is surprisingly small (cores × 2 + 1), and PgBouncer multiplexes thousands of app connections onto that small DB pool.*
+
 ## What You'll Build
 
 **Production-ready connection pooling strategies** for high-traffic applications:

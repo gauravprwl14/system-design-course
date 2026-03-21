@@ -71,6 +71,23 @@ tags:
 > **Detection Difficulty:** Medium
 > **Impact:** Cascading failures, system-wide slowdown
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Normal Traffic<br/>Even distribution"] --> B["Bad Partition Key<br/>(date, status, celebrity ID)"]
+    B --> C["Hot Partition<br/>500k req/sec 🔥"]
+    B --> D["Cold Partitions<br/>~1k req/sec each"]
+    C --> E["Throttling / OOM"]
+    E --> F["Collateral Damage<br/>Other keys on same shard fail"]
+    F --> G["Cascading Failure<br/>System-wide slowdown"]
+
+    H["Fix: Write Sharding"] --> I["Spread hot key<br/>across N sub-shards"]
+    J["Fix: Caching Layer"] --> K["Redis shields<br/>hot partition reads"]
+```
+
+*A single popular entity floods one shard while others sit idle — the fix is to spread the heat through write sharding or a caching layer.*
+
 ## The DynamoDB Meltdown: When Justin Bieber Breaks Your Database
 
 **Real Incident (Simplified):**

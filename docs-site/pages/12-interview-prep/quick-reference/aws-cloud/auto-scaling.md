@@ -15,6 +15,27 @@ tags: [aws, auto-scaling, asg, ec2, scaling, cloud, high-availability]
 
 # AWS Auto-Scaling Groups (ASG)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    M[CloudWatch Metric<br/>e.g. CPU, Request Count] --> P{Scaling Policy}
+    P -->|Target Tracking| TT["Maintain target<br/>(e.g. CPU = 50%)"]
+    P -->|Step Scaling| SS["Add N instances<br/>at CPU 70/80/90%"]
+    P -->|Scheduled| SC["Scale at specific<br/>time/cron"]
+    P -->|Predictive| PR["ML forecast<br/>14-day history"]
+    TT --> ASG[Auto Scaling Group]
+    SS --> ASG
+    SC --> ASG
+    PR --> ASG
+    ASG -->|Scale Out| ADD[Launch new EC2<br/>from Launch Template]
+    ASG -->|Scale In| REM[Terminate instance<br/>per termination policy]
+    ADD --> HC{Health Check}
+    HC -->|Fail 3x| REPLACE[Replace unhealthy<br/>instance]
+```
+
+*ASG continuously monitors metrics and adjusts EC2 count between Min and Max to meet the target.*
+
 ## Question
 **"Explain AWS Auto-Scaling Groups. How do they work? What scaling policies would you use for different scenarios?"**
 

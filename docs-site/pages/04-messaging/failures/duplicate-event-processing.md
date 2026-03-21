@@ -53,6 +53,30 @@ tags:
 
 # Duplicate Event Processing - When At-Least-Once Becomes At-Least-Twice
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    P[Producer] -->|send event| Q[Message Queue]
+    Q -->|deliver| C[Consumer]
+    C -->|process| DB[(Database)]
+    C -->|crash before ack| X[❌ No Ack]
+    X -->|timeout| Q
+    Q -->|redeliver| C2[Consumer B]
+    C2 -->|process AGAIN| DB
+
+    style X fill:#f88,stroke:#c00
+    style C2 fill:#ffa,stroke:#a80
+
+    DB -->|dedup check| ID{Event ID\nalready seen?}
+    ID -->|yes| SKIP[Skip duplicate]
+    ID -->|no| OK[Process normally]
+
+    style SKIP fill:#8f8,stroke:#080
+```
+
+*At-least-once delivery guarantees the queue retries; idempotency ensures processing the same event twice causes no harm.*
+
 > **Category:** Data Integrity
 > **Frequency:** Very common in event-driven systems
 > **Detection Difficulty:** Medium (often silent corruption)

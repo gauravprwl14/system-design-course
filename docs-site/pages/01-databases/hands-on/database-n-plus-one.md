@@ -24,6 +24,26 @@ tags:
 
 # POC #13: Fix the N+1 Query Problem - 100x Faster Queries
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["App: fetch 10 users"] --> B["Query 1: SELECT users"]
+    B --> C["Loop over users"]
+    C --> D["Query 2..11: SELECT posts WHERE user_id=?"]
+    D --> E["❌ 11 queries, 110ms"]
+
+    A2["App: fetch 10 users"] --> F["Query 1: SELECT users JOIN posts"]
+    F --> G["✅ 1 query, 15ms"]
+
+    A3["App: fetch 10 users"] --> H["Query 1: SELECT users"]
+    H --> I["DataLoader batches all user IDs"]
+    I --> J["Query 2: SELECT posts WHERE user_id IN (...)"]
+    J --> K["✅ 2 queries, 25ms"]
+```
+
+*N+1 fires one extra query per row — JOIN or DataLoader collapses them into one roundtrip.*
+
 ## What You'll Build
 
 A demonstration of **the N+1 query problem** and how to fix it with proper query optimization:

@@ -30,6 +30,27 @@ tags:
 > **Time:** 20 minutes
 > **Prerequisites:** HTTP basics, Node.js/Express
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant C as CDN
+    participant S as Server
+
+    B->>S: GET /resource
+    S-->>B: 200 OK + ETag: "abc" + Cache-Control: max-age=300
+
+    Note over B: Cache stores response
+
+    B->>S: GET /resource (If-None-Match: "abc")
+    S-->>B: 304 Not Modified (no body sent)
+
+    Note over B: Use cached version — bandwidth saved
+```
+
+*HTTP caching lets the browser and CDN skip full responses by asking "has this changed?" — the server answers with 304 or a fresh 200.*
+
 ## What You'll Learn
 
 Browser and CDN caching using HTTP headers:

@@ -15,6 +15,24 @@ tags: [postgresql, testing, fixtures, test-isolation, migrations]
 
 # POC #94: Database Testing Patterns
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Test Suite"] --> B["TestDatabaseManager\nisolated schema per run"]
+    B --> C["Run Migrations\ncreate tables in schema"]
+    C --> D["TestDataFactory\ncreate users, orders, scenarios"]
+    D --> E["Repository Under Test\nUserRepo / OrderRepo"]
+    E --> F["Assertions\nexpect().toBe()"]
+    F --> G["Teardown\nDROP SCHEMA CASCADE"]
+
+    H["Test Strategies"] --> I["Unit: Mock Pool"]
+    H --> J["Integration: Docker PostgreSQL"]
+    H --> K["E2E: Full app + seeded data"]
+```
+
+*Each test suite gets its own schema namespace — migrations run fresh, data is isolated, and teardown is a single DROP SCHEMA.*
+
 > **Difficulty:** 🟡 Intermediate
 > **Time:** 25 minutes
 > **Prerequisites:** Node.js, SQL basics, Testing fundamentals

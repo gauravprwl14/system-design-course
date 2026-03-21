@@ -22,6 +22,21 @@ tags:
 
 # Database Sequences - Generate Unique IDs Without Conflicts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["App Code\nSELECT MAX+1"] -->|"Race condition\n2 threads = same ID"| B["❌ Duplicate Key Error"]
+
+    C["DB Sequence\nnextval()"] -->|"Atomic counter\ncannot collide"| D["✅ Unique ID"]
+
+    D --> E["SERIAL / BIGSERIAL\nauto-increment PK"]
+    D --> F["Shared Sequence\nglobal IDs across tables"]
+    D --> G["Custom Sequence\nINV-1000, INV-1001"]
+```
+
+*Database sequences are atomic — two concurrent calls can never return the same value, eliminating all application-level ID race conditions.*
+
 **The Problem**: Your application generates duplicate IDs causing primary key violations and data corruption.
 
 **The Solution**: Database sequences generate guaranteed-unique IDs - eliminating race conditions and conflicts.

@@ -31,6 +31,23 @@ tags:
 
 # POC #17: Read Replicas - Scale Reads to Millions
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    App["App Server"] --> Router["Read/Write Router"]
+    Router -->|"Writes"| Master["Primary DB\n(all writes)"]
+    Master -->|"Streaming\nReplication"| R1["Replica 1\n33K reads/sec"]
+    Master -->|"Streaming\nReplication"| R2["Replica 2\n33K reads/sec"]
+    Master -->|"Streaming\nReplication"| R3["Replica 3\n33K reads/sec"]
+    Router -->|"Reads\n(round-robin)"| R1
+    Router -->|"Reads"| R2
+    Router -->|"Reads"| R3
+    R1 -.->|"Lag: 10-100ms"| Warn["Read-After-Write\nConsistency Risk"]
+```
+
+*Writes go to the primary; reads are load-balanced across replicas — horizontal read scaling with async replication lag as the trade-off.*
+
 ## What You'll Build
 
 **Read replica architecture** for massive read scalability:

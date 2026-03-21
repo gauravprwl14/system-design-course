@@ -42,6 +42,23 @@ tags:
 **Time**: 60 minutes
 **Companies**: Meta, Google, Microsoft, Uber, Amazon (Top-3 most asked system design question)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Users (Mobile / Web)"] --> B["WebSocket Gateway\n(500M connections)"]
+    B --> C["Message Service"]
+    B --> D["Presence Service"]
+    C --> E["Kafka\n(message events)"]
+    C --> F["Group Service"]
+    E --> G["Cassandra\n(messages)"]
+    E --> H["Push Service\n(FCM / APNs)"]
+    D --> I["Redis\n(presence + routing)"]
+    C --> J["Media Store (S3)\n+ CDN"]
+```
+
+*Messages flow through persistent WebSocket connections to stateless services backed by Cassandra for storage and Redis for real-time routing.*
+
 ## 1. Problem Statement
 
 Design a real-time messaging system that supports:

@@ -28,6 +28,26 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Prerequisites:** Docker, Node.js, PostgreSQL basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Peak RPS × Avg Query ms<br/>÷ 1000 × 1.5"] --> B["Recommended<br/>Pool Size"]
+
+    B --> C{"Pool too small?"}
+    C -- "Yes" --> D["Connection wait time > 0<br/>Timeouts appear"]
+
+    B --> E{"Pool too large?"}
+    E -- "Yes" --> F["Wasted RAM (10 MB/conn)<br/>DB CPU overhead"]
+
+    B --> G["Optimal<br/>sweet spot"]
+    G --> H["Error rate < 0.1%<br/>P99 latency acceptable<br/>Wait time ≈ 0"]
+
+    I["Load test at<br/>50% / 100% / 200%<br/>of calculated size"] --> G
+```
+
+*Pool size is calculable, not guessable — run load tests at 50%, 100%, and 200% of the formula result and pick the smallest size that keeps error rate and wait time at zero.*
+
 ## How Stripe Handles $640B with 50 Connections Per Service
 
 **Stripe's Database Strategy (2024):**

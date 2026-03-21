@@ -26,6 +26,21 @@ tags:
 
 # 6️⃣0️⃣ API Gateway with Rate Limiting
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client Request"] --> GW["API Gateway"]
+    GW --> RL["Rate Limiter\n(Token Bucket)"]
+    RL -->|"Within limit"| Backend["Backend Services"]
+    RL -->|"Exceeded limit"| Reject["429 Too Many Requests"]
+    GW --> Redis["Redis\n(Token Store)"]
+    Redis --> RL
+    Backend --> Resp["200 OK Response"]
+```
+
+*The API gateway checks a token bucket in Redis before forwarding each request — exhausted tokens mean instant rejection, protecting backends from abuse.*
+
 ## 🎯 What You'll Learn
 How GitHub prevents **$2.7M in infrastructure costs** and stops **99.8% of abuse** using token bucket rate limiting at the API gateway level.
 

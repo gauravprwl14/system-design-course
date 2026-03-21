@@ -32,6 +32,23 @@ tags:
 > **Time:** 25 minutes
 > **Prerequisites:** Cache-aside pattern, Redis basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    DB[(Database)] -->|data changes| E{Strategy}
+
+    E -->|TTL-Based| T["⏱️ Auto-expire after N seconds\n(stale window risk)"]
+    E -->|Event-Based| EV["📢 Emit event → delete cache key\n(immediate consistency)"]
+    E -->|Version-Based| V["🏷️ New version = new cache key\n(old keys ignored)"]
+
+    T --> R1["❌ May return stale data\n✅ Simple, no coordination"]
+    EV --> R2["✅ Strongly consistent\n⚠️ Needs event bus"]
+    V --> R3["✅ No explicit delete\n⚠️ Multiple keys in memory"]
+```
+
+*Three strategies for answering "when should the cache stop trusting its data?" — each trades consistency for simplicity differently.*
+
 ## What You'll Learn
 
 "There are only two hard things in Computer Science: cache invalidation and naming things." - Phil Karlton

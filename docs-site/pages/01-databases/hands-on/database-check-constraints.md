@@ -16,6 +16,26 @@ tags: [postgresql, check-constraints, validation, data-integrity, sql]
 
 # Check Constraints - Stop Invalid Data at the Database Level
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["INSERT / UPDATE"] --> B{"App validation"}
+    B -- "Bypassed<br/>(admin tool, script)" --> C["Raw SQL hits DB"]
+    B -- "Passes app" --> C
+
+    C --> D{"Check Constraint<br/>evaluated by DB"}
+    D -- "Violation" --> E["ERROR: constraint failed ❌<br/>Row rejected"]
+    D -- "Passes" --> F["Row stored ✅"]
+
+    G["Constraint types"] --> H["Value range<br/>price > 0"]
+    G --> I["Enum set<br/>status IN (...)"]
+    G --> J["Regex format<br/>email ~ pattern"]
+    G --> K["Cross-column rule<br/>end_date >= start_date"]
+```
+
+*Check constraints are the final safety net that no amount of application-code bypass can circumvent — invalid data simply cannot enter the database.*
+
 **The Problem**: Your application code validates data in 50 places, but invalid data still gets into the database through admin tools and scripts.
 
 **The Solution**: Check constraints enforce validation rules at the database level - impossible to bypass.

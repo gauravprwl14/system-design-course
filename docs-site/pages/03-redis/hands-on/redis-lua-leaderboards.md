@@ -22,6 +22,23 @@ tags:
 
 # POC #38: Atomic Leaderboard Updates with Redis Lua
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Player scores points"] --> B["Lua Script (single roundtrip)"]
+    B --> C["ZINCRBY — update score"]
+    C --> D["ZREVRANK — get rank"]
+    D --> E["ZCARD — total players"]
+    E --> F["Return score + rank atomically"]
+    F --> G["Multi-leaderboard: global / weekly / country"]
+
+    style B fill:#f59e0b,color:#000
+    style F fill:#10b981,color:#fff
+```
+
+*A single Lua script replaces 3+ separate Redis calls, eliminating rank conflicts under concurrent updates.*
+
 > **Time to Complete:** 25-30 minutes
 > **Difficulty:** Intermediate-Advanced
 > **Prerequisites:** Redis sorted sets (ZADD, ZRANK), Lua scripting basics

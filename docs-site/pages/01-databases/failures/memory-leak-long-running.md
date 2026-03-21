@@ -35,6 +35,24 @@ tags:
 > **Detection Difficulty:** Hard (gradual, often missed until crash)
 > **Impact:** OOM crashes, degraded performance, cascading failures
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Service starts<br/>Memory: 1.2 GB"] --> B["Unbounded cache / listener leak<br/>+50 MB/day silently"]
+    B --> C["Week 1-3: Memory grows<br/>GC pauses increase"]
+    C --> D["Week 4: GC thrashing<br/>Response times degrade"]
+    D --> E["OOM Killed at 3 AM 💥"]
+    E --> F["Restart + investigate heap dump"]
+
+    G["Prevention"] --> H["Every cache: maxSize + TTL"]
+    G --> I["Every resource: try-with-resources"]
+    G --> J["Every listener: cleanup on destroy"]
+    G --> K["Monitor: memory growth rate alert"]
+```
+
+*Memory leaks produce no single error event — just a slow monotonic climb until the process is killed; the only defense is proactive growth-rate monitoring.*
+
 ## The Incident: Death by a Thousand Allocations
 
 **Week 1:** "Memory at 40%, looks fine"

@@ -26,6 +26,26 @@ tags:
 
 # Table Partitioning - Make 100M Row Queries 50x Faster
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Large Table: 100M rows"] --> B{"Partition Strategy?"}
+    B --> C["Range: by date/id"]
+    B --> D["List: by region/status"]
+    B --> E["Hash: by user_id"]
+
+    C --> F["events_2024_01\nevents_2024_02\nevents_2024_03"]
+    D --> G["orders_us\norders_eu\norders_asia"]
+    E --> H["users_p0\nusers_p1\nusers_p2"]
+
+    I["Query: WHERE date = June"] --> J["Partition Pruning"]
+    J --> K["Scan only events_2024_06\n2M rows instead of 100M"]
+    K --> L["850ms → 50x faster"]
+```
+
+*Partitioning divides a giant table into physical slices — queries scan only the relevant slice.*
+
 **The Problem**: Your queries are scanning 100M rows when they only need 2M - killing performance.
 
 **The Solution**: Table partitioning splits large tables into smaller chunks - queries scan only relevant partitions.

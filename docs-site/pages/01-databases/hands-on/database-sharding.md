@@ -28,6 +28,25 @@ tags:
 
 # POC #18: Database Sharding - Scale Writes to Billions
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    App["App"] --> Router["Shard Router\nhash(user_id) % N"]
+    Router --> S0["Shard 0\nusers 0-25%"]
+    Router --> S1["Shard 1\nusers 25-50%"]
+    Router --> S2["Shard 2\nusers 50-75%"]
+    Router --> S3["Shard 3\nusers 75-100%"]
+
+    Cross["Cross-shard query"] --> S0
+    Cross --> S1
+    Cross --> S2
+    Cross --> S3
+    S0 & S1 & S2 & S3 --> Merge["Scatter-Gather\n+ Merge Results"]
+```
+
+*Hash-based sharding spreads writes evenly across databases; cross-shard queries require scatter-gather and are the primary cost of sharding.*
+
 ## What You'll Build
 
 **Horizontal database sharding** for unlimited write scalability:

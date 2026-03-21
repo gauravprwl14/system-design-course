@@ -16,6 +16,21 @@ tags: [redis, lua, performance, benchmarking, latency, throughput]
 
 # POC #40: Redis Lua Performance Benchmarks - The Definitive Guide
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A["Individual Commands\n5 roundtrips × 0.3ms"] -->|"3–20x slower"| B["Lua Script\n1 roundtrip total"]
+    C["MULTI/EXEC\n2 roundtrips, no conditionals"] -->|"6–14x slower"| B
+    B --> D["Server-side execution\n0.05ms for all ops"]
+    D --> E["Result returned\n1 network hop"]
+
+    style B fill:#10b981,color:#fff
+    style D fill:#10b981,color:#fff
+```
+
+*Lua scripts collapse N network roundtrips into 1, delivering 6–20x throughput gains with zero race conditions.*
+
 > **Time to Complete:** 20-25 minutes
 > **Difficulty:** Intermediate
 > **Prerequisites:** Redis Lua basics, understanding of latency and throughput

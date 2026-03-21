@@ -28,6 +28,27 @@ tags:
 > **Difficulty:** 🟡 Intermediate
 > **Prerequisites:** Docker, Node.js, PostgreSQL basics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["pool.connect()"] --> B{"try / finally?"}
+    B -- "No (leaky path)" --> C["Error thrown or early return"]
+    C --> D["Connection never released"]
+    D --> E["Pool fills up<br/>active = max, idle = 0"]
+    E --> F["New requests timeout ❌"]
+
+    B -- "Yes (safe path)" --> G["Query executes"]
+    G --> H["finally: client.release()"]
+    H --> I["Connection returned to pool ✅"]
+
+    J["LeakDetectingPool"] --> K["Wraps each checkout<br/>with timestamp + stack trace"]
+    K --> L{"Held > threshold?"}
+    L -- "Yes" --> M["Alert: potential leak<br/>with call-site info"]
+```
+
+*Every leaked connection permanently shrinks your usable pool — wrapping checkouts with try/finally and a monitoring wrapper catches leaks before they exhaust the pool.*
+
 ## The Slow Death: When Connections Disappear One by One
 
 **Real Incident Pattern:**

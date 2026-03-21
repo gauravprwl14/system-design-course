@@ -31,6 +31,23 @@ tags:
 > **Time:** 30 minutes
 > **Prerequisites:** Redis basics, Clustering concepts
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client -->|"CRC16(key) mod 16384"| Router{Hash Slot Router}
+
+    Router -->|"Slots 0-5460"| M1[Master 1\nPort 7001]
+    Router -->|"Slots 5461-10922"| M2[Master 2\nPort 7002]
+    Router -->|"Slots 10923-16383"| M3[Master 3\nPort 7003]
+
+    M1 --- R1[Replica 1]
+    M2 --- R2[Replica 2]
+    M3 --- R3[Replica 3]
+```
+
+*Each key hashes to one of 16,384 slots, automatically routing reads and writes to the correct node — transparent sharding with built-in failover.*
+
 ## What You'll Learn
 
 How Redis Cluster distributes data across multiple nodes using hash slots:

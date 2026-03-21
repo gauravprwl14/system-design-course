@@ -44,6 +44,31 @@ tags:
 
 # Message Out-of-Order Processing - When Sequence Breaks Everything
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    E1[Event A: Deposit 1000] -->|T=0ms| P1[Partition 0]
+    E2[Event B: Withdraw 800] -->|T=50ms| P2[Partition 1]
+
+    P1 -->|rebalance| CA[Consumer A]
+    P2 -->|processed first| CB[Consumer B]
+
+    CB -->|Withdraw 800 from 0| ERR[❌ Insufficient funds\nRejected]
+    CA -->|Deposit 1000| BAL[Balance = 1000]
+
+    ERR --> WRONG[Final: 1000\nExpected: 200]
+
+    style ERR fill:#f88,stroke:#c00
+    style WRONG fill:#f88,stroke:#c00
+
+    FIX[Fix: Partition by\nentity ID] -->|same key same partition| ORDER[In-order guarantee]
+    style FIX fill:#8f8,stroke:#080
+    style ORDER fill:#8f8,stroke:#080
+```
+
+*Out-of-order events silently corrupt state — the system keeps running but produces wrong results.*
+
 > **Category:** Consistency
 > **Frequency:** Common in event-driven systems
 > **Detection Difficulty:** Very Hard (often silent corruption)

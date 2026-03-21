@@ -42,6 +42,28 @@ tags:
 > **Detection Difficulty:** Medium (symptoms appear downstream)
 > **Impact:** Complete system outage from a single slow dependency
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A["Normal: Payment 50ms"] -->|"Payment slows to 30s"| B["Checkout threads block"]
+    B --> C["Checkout thread pool exhausted (100 threads)"]
+    C --> D["Gateway threads back up"]
+    D --> E["Gateway pool exhausted (200 threads)"]
+    E --> F["All user requests timeout"]
+    F --> G["Health checks fail → Complete outage"]
+
+    style A fill:#22c55e,color:#fff
+    style B fill:#f59e0b,color:#fff
+    style C fill:#f97316,color:#fff
+    style D fill:#ef4444,color:#fff
+    style E fill:#dc2626,color:#fff
+    style F fill:#b91c1c,color:#fff
+    style G fill:#7f1d1d,color:#fff
+```
+
+*One slow dependency triggers a chain reaction that exhausts thread pools upstream — a dead service is safer than a slow one.*
+
 ## The Amazon Problem: 100ms = 1% Sales Loss
 
 **Real Incident Pattern:**
