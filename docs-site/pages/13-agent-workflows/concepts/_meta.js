@@ -1,12 +1,14 @@
 export default {
   index: "Overview",
   "from-zero-to-production-agent": "🟢 From Zero to Production Agent",
+  "enterprise-agent-deployment": "🔴 Enterprise Agent Deployment",
   "what-is-an-agent": "🟢 What is an AI Agent?",
   "llm-fundamentals-for-agents": "🟢 LLM Fundamentals for Agent Builders",
   "react-pattern": "🟢 ReAct Pattern",
   "tool-use-function-calling": "🟢 Tool Use & Function Calling",
   "prompt-engineering-for-agents": "🟡 Prompt Engineering for Agents",
   "agent-memory-types": "🟡 Agent Memory Types",
+  "agent-skills": "🟡 Agent Skills & Dynamic Context",
   "single-agent-architecture": "🟡 Single-Agent Architecture",
   "multi-agent-systems": "🟡 Multi-Agent Systems",
   "orchestrator-worker-pattern": "🟡 Orchestrator-Worker Pattern",
@@ -16,6 +18,8 @@ export default {
   "hierarchical-multi-agent": "🔴 Hierarchical Multi-Agent",
   "agent-communication-protocols": "🔴 Agent Communication Protocols",
   "long-running-agents": "🔴 Long-Running Agents",
+  "event-triggered-agents": "🔴 Event-Triggered Agents",
+  "code-sandbox-agents": "🔴 Code Sandbox Agents",
   "human-in-the-loop": "🟡 Human-in-the-Loop Workflows",
   "planning-patterns": "🔴 Agent Planning Patterns",
   "context-window-management": "🔴 Context Window Management",
@@ -28,5 +32,10 @@ export default {
   "agent-client-protocol": "🔴 Agent Client Protocol (ACP)",
   "model-context-protocol": "⚫ Model Context Protocol",
   "langgraph-stateful-agents": "⚫ LangGraph Stateful Agents",
-  "agent-tool-registry": "⚫ Agent Tool Registry"
+  "agent-tool-registry": "⚫ Agent Tool Registry",
+  "context-engineering": "🔴 Context Engineering",
+  "agent-harness-design": "🔴 Agent Harness Design",
+  "procedural-memory-poc": "🟡 POC: Procedural Memory",
+  "llm-judge-alignment-poc": "🟡 POC: LLM-as-Judge Alignment",
+  "trace-to-prompt-improvement-poc": "🔴 POC: Trace→Prompt Improvement Loop"
 }

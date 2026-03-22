@@ -312,6 +312,154 @@ function regressionCheck(currentResults, baselineResults, threshold=0.05):
   return { passed: true, deltas: computeDeltas(current, baseline) }
 ```
 
+## LLM-as-Judge Alignment (Align Eval)
+
+The core problem with naive LLM-as-judge: a judge prompt that says "rate this response 1-10" produces scores that often fail to match what humans actually prefer. The judge might score verbose answers higher (length bias), prefer confident-sounding answers (confidence bias), or reward responses that agree with the question's framing (sycophancy bias).
+
+**Align eval** fixes this by calibrating the judge against human labels:
+
+1. Label a small dataset (50-200 examples) with human preferences and rationale
+2. Use labeled data to calibrate the judge prompt — add few-shot examples, refine the rubric
+3. Measure judge-human agreement (Cohen's kappa or simple % within 1 point)
+4. Iterate: find cases where judge and human disagree, add those as calibration examples
+5. Only deploy the judge when agreement is sufficiently high (>0.7 kappa is a common threshold)
+
+```python
+class AlignEval:
+    def __init__(self, judge_llm, task_name: str):
+        self.judge = judge_llm
+        self.labels = []  # human-labeled examples
+        self.judge_scores = []
+
+    def add_human_label(self, trace: AgentTrace, human_score: int, reason: str):
+        self.labels.append(HumanLabel(trace, human_score, reason))
+
+    def evaluate_agreement(self) -> float:
+        """Measure judge-human agreement on labeled set."""
+        self.judge_scores = [self.judge.score(l.trace) for l in self.labels]
+        human_scores = [l.human_score for l in self.labels]
+        return cohen_kappa(human_scores, self.judge_scores)
+
+    def refine_judge_prompt(self) -> str:
+        """Use labeled examples to improve judge prompt."""
+        disagreements = [
+            (l, js) for l, js in zip(self.labels, self.judge_scores)
+            if abs(l.human_score - js) > 1
+        ]
+        # Add disagreements as few-shot examples to judge prompt
+        examples = "\n".join([
+            f"Task: {d[0].trace.input}\nOutput: {d[0].trace.output}\n"
+            f"Human score: {d[0].human_score} ({d[0].reason})\n"
+            for d in disagreements[:10]
+        ])
+        return self.judge.improve_prompt(examples)
+
+    def is_ready_for_production(self, min_kappa: float = 0.7) -> bool:
+        return self.evaluate_agreement() >= min_kappa
+```
+
+### Why Alignment Matters
+
+An unaligned judge is worse than no judge: it gives you false confidence. You think you have automated quality measurement, but the scores don't reflect what your users actually experience.
+
+Key biases to watch for:
+- **Length bias**: LLM judges often prefer longer responses, even when concise is better
+- **Self-preference bias**: Using GPT-4o to judge GPT-4o responses creates a biased eval — the judge validates its own style
+- **Position bias**: Judges often favor the first option when presented with A/B comparisons (shuffle your examples)
+
+---
+
+## The Regression Testing Flywheel
+
+The most valuable eval dataset is one that grows from production. How to build it:
+
+1. Agent runs in production → traces logged to LangSmith/Langfuse
+2. Engineer identifies an interesting trace: a new edge case, a failure, a surprisingly good response, an adversarial input from a user
+3. Engineer labels the trace with expected behavior and adds it to the eval dataset
+4. CI pipeline runs the full eval dataset on every code change or prompt change
+5. Any regression in eval score (e.g., >5% drop in overall score) blocks the deploy
+6. Dataset grows over time → coverage increases → confidence grows
+
+```
+Production traces
+       ↓
+  Engineer reviews
+       ↓
+Interesting traces labeled → eval dataset grows
+       ↓
+  CI runs eval on PR
+       ↓
+Regression? → Block merge
+No regression? → Deploy
+       ↓
+More production traces → cycle continues
+```
+
+The critical insight: **your eval dataset should be biased toward cases your agent has actually encountered in the wild**, not theoretical test cases you invented upfront. Production traces are the best source of edge cases because they represent real user behavior.
+
+### Growing the Dataset Strategically
+
+- Start with 50 examples: 30 happy path, 10 edge cases, 10 adversarial
+- After 2 weeks in production: review 10-20 failures, add them to the dataset
+- Monthly: review low-confidence judge scores (0.4-0.6) — these are often the most valuable edge cases
+- Target: 200-500 examples for a production agent covering one task domain
+
+---
+
+## Automated Prompt Optimization via Trace Inspection
+
+The most advanced eval pattern — used by LangChain to climb TerminalBench 2:
+
+```
+Step 1: Agent runs tasks → traces saved to LangSmith
+Step 2: LLM-as-judge evaluates traces → low-scoring traces flagged
+Step 3: Optimizer agent reads the flagged traces
+         → identifies patterns in failures
+         → proposes targeted changes to the system prompt
+Step 4: Human reviews proposed changes (optional for low-risk updates)
+Step 5: Changes deployed, new traces collected
+Step 6: Repeat — measure improvement on eval set before/after
+```
+
+```python
+def automated_prompt_improvement(
+    current_prompt: str,
+    eval_traces: List[ScoredTrace],
+    optimizer_llm: LLMAgent,
+    judge: AlignedJudge
+) -> str:
+    # Find the worst-performing traces
+    failures = [t for t in eval_traces if t.score < 0.5]
+    failures.sort(key=lambda t: t.score)
+    worst_10 = failures[:10]
+
+    # Optimizer agent analyzes failure patterns
+    analysis = optimizer_llm.invoke(f"""
+    You are improving an AI agent's system prompt.
+
+    Current system prompt:
+    {current_prompt}
+
+    The 10 worst-performing traces (with judge scores and reasoning):
+    {format_traces(worst_10)}
+
+    Analyze the failure patterns. What systematic mistakes is the agent making?
+    Then propose a minimal targeted update to the system prompt that would fix these failures
+    without breaking the currently working cases.
+
+    Return:
+    1. Failure pattern analysis (2-3 sentences)
+    2. Proposed system prompt update
+    3. Which traces you expect to improve
+    """)
+
+    return analysis.proposed_prompt
+```
+
+This loop can be run manually (engineer reviews each cycle) or semi-automatically (run nightly, engineer reviews weekly). The semi-automatic version is particularly powerful for agents running at scale: when you have 10,000 traces, you can't manually review them, but an optimizer agent reading the worst 10 can surface systematic patterns you'd never spot by hand.
+
+---
+
 ## Common Pitfalls
 
 1. **Testing only happy paths**: If your golden dataset has only easy, well-formed queries, you'll miss failures on edge cases and adversarial inputs.
@@ -319,12 +467,17 @@ function regressionCheck(currentResults, baselineResults, threshold=0.05):
 3. **Single-run evaluation**: LLMs are non-deterministic. A single run isn't enough. Run each test 3-5 times and use the average score.
 4. **Ignoring step count**: An agent that gives a correct answer in 25 steps when 5 suffice is inefficient and expensive. Include efficiency metrics in evaluation.
 5. **Not tracking eval history**: Eval scores should be tracked over time to catch regressions. Store results with timestamps, model versions, and code commit hashes.
+6. **Skipping judge alignment**: A judge you haven't calibrated against human labels gives false confidence. Measure Cohen's kappa before trusting your automated scores.
+7. **Static eval datasets**: An eval dataset that never grows from production traces will miss the edge cases that matter most.
 
 ## Key Takeaways
 
 - Test agents in three layers: deterministic checks (tool calls, step count), LLM-as-judge scoring, and golden dataset comparison
 - LLM judges work best with explicit rubrics (0.0 to 1.0 with descriptions at each level)
+- **Align eval before trusting it**: calibrate LLM-as-judge against human labels; measure Cohen's kappa; target >0.7
 - Golden datasets need adversarial examples — not just happy-path queries
 - Run each test 3-5 times to average out non-determinism
 - Track eval scores over time as regression tests — model updates can silently break agents
 - Efficiency metrics (step count, tokens) are as important as correctness metrics for production agents
+- **The regression testing flywheel**: production traces → labeled dataset → CI eval → regression detection → back to production
+- **Automated prompt optimization**: optimizer agent reads failure traces → proposes system prompt changes → measure improvement → deploy

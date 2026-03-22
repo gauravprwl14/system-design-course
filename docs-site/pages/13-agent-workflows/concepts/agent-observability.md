@@ -343,6 +343,157 @@ Debugging steps:
    }
 ```
 
+## Observability at Scale: Millions of Traces
+
+At small scale (hundreds of traces/day), a developer can manually review failures. At enterprise scale — Clay runs millions of agent traces per month, Replit produces traces with 1000+ steps — manual review is impossible and the observability challenges are qualitatively different.
+
+### What Changes at Scale
+
+**Volume**: You can't read 1 million traces. You need LLM-as-judge running on every trace, automated clustering, and statistical summaries that surface the 37 traces you should actually look at.
+
+**Trace depth**: A 1000-step Replit agent trace is not a trace — it's a document. Finding step 743 in a 1000-step trace is a search problem within a trace, not a search problem between traces. Observability tools need hierarchical navigation and in-trace search.
+
+**Multi-trace threads**: Human-in-the-loop agents pause execution and resume later. One "user conversation" may span 5 separate traces across 3 days. Stitching these into a coherent thread for debugging requires explicit session/thread IDs that propagate across HITL pauses.
+
+**Clustering at scale**: Instead of reviewing individual failures, you want to understand categories of failures:
+
+```
+Insights clustering:
+
+1. Collect 10,000 traces over the past week
+2. LLM-as-judge scores each trace: completeness, correctness, efficiency
+3. Low-scoring traces (score < 0.5) → 1,847 failures identified
+4. Clustering agent groups failures by similarity:
+   - "Date parsing errors" → 682 traces (37% of failures)
+   - "Tool timeout: web_search" → 441 traces (24% of failures)
+   - "Ambiguous user intent" → 318 traces (17% of failures)
+   - "Other" → 406 traces (22% of failures)
+5. Engineer sees: fix date parsing first, it's the biggest failure category
+```
+
+### The Hierarchy of Observability Problems
+
+| Scale | Primary Problem | Solution |
+|-------|----------------|----------|
+| < 100 traces/day | Manual review is possible | Review every failure by hand |
+| 100-10K traces/day | Can't review all, need triage | LLM-as-judge + alerting on anomalies |
+| 10K-1M traces/day | Need statistical understanding | Clustering, trend analysis, sampling |
+| > 1M traces/day | Need automated insights | Full automation, humans only review cluster summaries |
+
+---
+
+## The Automated Prompt Improvement Flywheel
+
+Observability data is only valuable if it feeds back into agent improvement. The flywheel:
+
+```mermaid
+flowchart LR
+    A[Agent runs\nin production] --> B[Traces collected\nin LangSmith/Langfuse]
+    B --> C[LLM-as-judge\nevaluates each trace]
+    C --> D[Low-scoring traces\nflagged for review]
+    D --> E[Optimizer agent reads\nflagged traces]
+    E --> F[Proposes system\nprompt changes]
+    F --> G[Human reviews\napproves/rejects]
+    G --> H[Updated prompt\ndeployed]
+    H --> A
+```
+
+Each cycle:
+1. **Collect**: Agent runs → traces stored with metadata (user ID, timestamps, tool calls)
+2. **Evaluate**: LLM-as-judge runs on every new trace (or sampled subset at high scale)
+3. **Flag**: Traces scoring below threshold added to a review queue
+4. **Analyze**: Optimizer agent reads the worst N traces, identifies systemic patterns
+5. **Propose**: Optimizer suggests minimal changes to system prompt
+6. **Approve**: Human engineer reviews the change (one quick review, not 100 trace reviews)
+7. **Deploy**: Updated agent deployed; new traces start coming in
+8. **Measure**: Compare avg score before/after the change on held-out eval set
+
+This is how agents improve between releases without manual annotation of thousands of examples. One human review of a proposed prompt change can fix a bug that's appearing in 37% of traces.
+
+---
+
+## Trajectory Analysis
+
+An agent's **trajectory** is the sequence of tool calls and reasoning steps across a single run. Individual spans tell you what happened at one step; trajectory analysis tells you what the agent's overall strategy was.
+
+### Trajectory Shapes
+
+```
+Linear trajectory (simple tasks):
+user_query → tool_A → tool_B → tool_C → final_answer
+Good for: well-defined single-path tasks
+
+Tree trajectory (planning with backtracking):
+user_query → [plan step 1, plan step 2, plan step 3]
+             ↓
+         execute step 1 → result
+         execute step 2 → FAIL → retry with different args → result
+         execute step 3 → result
+             ↓
+         final_answer
+Good for: complex multi-step tasks where failures are expected
+
+Loop trajectory (failure mode):
+user_query → tool_A → tool_B → tool_A → tool_B → tool_A → MAX_STEPS
+The agent is cycling between two tools without making progress.
+```
+
+### Trajectory Metrics to Track
+
+```
+TrajectoryMetrics = {
+  // Length metrics
+  avgStepsOverTime: "Is trajectory length growing? Could mean scope creep or improving capability",
+  stepsToFirstToolCall: "Long planning phase = good for complex tasks",
+
+  // Pattern metrics
+  toolRepetitionRate: "Same tool called >3 times in a row → stuck in loop",
+  backtrackingRate: "How often does agent abandon a path and try another?",
+  planningPhaseLength: "Steps before first external tool call",
+
+  // Outcome correlation
+  trajectoryShapeVsSuccess: "Do tree trajectories succeed more than linear for complex tasks?",
+  loopDetectionAccuracy: "% of loop trajectories caught before hitting MAX_STEPS"
+}
+```
+
+### What Trajectory Changes Signal
+
+| Change | Possible Cause | Investigation |
+|--------|----------------|---------------|
+| Avg trajectory length growing by 20% | New task types added / model upgraded and is more thorough | Compare task distribution before/after |
+| More tree trajectories | More complex tasks in production / agent now uses planning | Good sign if success rate is also up |
+| Loop trajectories increasing | Tool returning unexpected format / system prompt regression | Check tool change logs |
+| Planning phase getting shorter | Agent becoming more decisive / losing thoroughness | Check if success rate is maintained |
+
+### Loop Detection
+
+Loop trajectories are the most dangerous: they consume compute and budget without making progress. Detect them in real time:
+
+```python
+def detect_loop(trajectory: List[ToolCall], window: int = 4) -> bool:
+    """Detect if agent is repeating the same tool call pattern."""
+    if len(trajectory) < window * 2:
+        return False
+
+    # Check if last 'window' calls match the previous 'window' calls
+    recent = [t.toolName for t in trajectory[-window:]]
+    previous = [t.toolName for t in trajectory[-(window*2):-window]]
+    return recent == previous
+
+def trajectory_monitor(agent_run, config):
+    """Real-time trajectory monitoring — interrupt loops early."""
+    for step in agent_run.steps:
+        if detect_loop(agent_run.trajectory, window=3):
+            agent_run.interrupt(
+                reason="Loop detected",
+                message="Escalating to human — agent appears stuck."
+            )
+            break
+```
+
+---
+
 ## Common Pitfalls
 
 1. **Not logging full prompts**: "LLM call failed" is useless without the full input. Log complete message arrays for every LLM call.
@@ -350,6 +501,8 @@ Debugging steps:
 3. **No run IDs in user-facing errors**: When a user reports "it didn't work", you need a run ID to find their trace. Include it in error responses.
 4. **Logging PII**: Tool results may contain user data (emails, names, financial info). Scrub PII before logging. Set log retention policies.
 5. **No alerting on gradual degradation**: A completion rate that drops from 97% to 92% over a week may not trigger any alert. Use week-over-week comparison alerts.
+6. **No thread IDs for HITL agents**: When an agent pauses for human approval and resumes later, the two traces must be linked by a thread ID or you can't reconstruct the full conversation.
+7. **No clustering at scale**: At millions of traces, individual trace review is impossible. Without clustering, you're flying blind on failure patterns.
 
 ## Key Takeaways
 
@@ -359,3 +512,7 @@ Debugging steps:
 - Alert on runaway agents (high step counts), cost spikes, and tool failure rate increases
 - Use OpenTelemetry for vendor-neutral tracing or platform-specific tools (LangSmith, Langfuse) for richer LLM-specific features
 - Always include a run ID in error responses so you can trace back to the full span tree when users report issues
+- **At millions of traces, use LLM-as-judge + clustering**: you can't read them; you need to understand categories of failures
+- **The automated prompt improvement flywheel**: traces → judge → flagged failures → optimizer agent → prompt change → deploy → repeat
+- **Trajectory analysis reveals patterns**: loop = stuck, tree = healthy planning, growing length = scope creep or capability growth
+- **Detect loops in real time**: identical tool call sequences are the signature of a stuck agent; interrupt and escalate before hitting MAX_STEPS
