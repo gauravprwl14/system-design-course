@@ -13,6 +13,22 @@ status: "published"
 
 # SLO Burn Rate Alerts: Page When It Matters, Sleep When It Doesn't
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Budget[Monthly Error Budget\n99.9% SLO = 43.2 min] --> Burn{Burn Rate?}
+    Burn -->|14x rate 1h window| FastPage[Page Immediately\nhigh severity]
+    Burn -->|6x rate 6h window| SlowPage[Page: ticket + review\nlow severity]
+    Burn -->|1x normal rate| Sleep[No alert\nsleep well]
+    FastPage --> TwoWindow[Multi-window check\n1h AND 5min confirm]
+    SlowPage --> TwoWindow
+    TwoWindow --> LowFP[Low false positive rate\nhigh true positive rate]
+    LowFP --> OnCallHealth[On-call engineer trust\nin alert quality]
+```
+
+*Burn rate alerts answer "will we exhaust the budget before month end?" — a 1% error rate for 5 minutes is noise; 5% for 30 minutes is a page.*
+
 **Your SLO says 99.9% uptime. Your alert fires when error rate > 1%.** But a 1% error rate for 5 minutes burns only 0.003% of your monthly error budget. You don't need to wake anyone up — the user impact is 18 seconds of downtime across a month. Meanwhile, on a Tuesday afternoon, a 5% error rate runs for 30 minutes. That burns 36% of your error budget in one incident. You're still sleeping. By the time you notice, your SLO is already breached for the month. Your error budget is gone. Product is asking why you can't ship features. The problem is not that your system is unreliable. The problem is that your alerts were measuring the wrong thing.
 
 ---

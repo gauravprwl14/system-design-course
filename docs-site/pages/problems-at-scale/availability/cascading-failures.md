@@ -13,6 +13,22 @@ status: "published"
 
 # Cascading Failures: When One Slow Service Takes Down 23
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Recommendation Service<br/>slow DB query] --> B[Thread pool fills up<br/>all threads blocked waiting]
+    B --> C[Product Service calls Rec<br/>requests queue up]
+    C --> D[Product Service thread pool<br/>also exhausted]
+    D --> E[API Gateway calls Product<br/>all threads blocked]
+    E --> F[23 services down<br/>by 2:19 AM]
+    F --> G[Circuit Breaker<br/>fail fast on known-bad service]
+    G --> H[Bulkhead<br/>isolate thread pools per dependency]
+    H --> I[Failure contained<br/>other services unaffected]
+```
+
+*One slow dependency without a timeout fills thread pools upstream until the entire call graph collapses — circuit breakers and bulkheads stop the propagation.*
+
 **At 2:14 AM, a single slow database query in Recommendation Service started a chain reaction. By 2:19 AM, 23 microservices were down. By 2:31 AM, the entire platform was unavailable for 2.3 million users. The root cause? One service failed to set a timeout. The mechanism? Thread pools.**
 
 ---

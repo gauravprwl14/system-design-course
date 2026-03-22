@@ -20,6 +20,22 @@ tags: [aws, bedrock, managed-agents, action-groups, knowledge-bases, lambda]
 
 > AWS Bedrock Agents is the "zero to production agent" path for teams already in AWS: you configure rather than code, and AWS handles the runtime, state, and orchestration.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    U[User Message] --> SA[Bedrock Agent Session\nAWS managed]
+    SA --> FM[Foundation Model\nClaude / Llama / Titan]
+    FM --> AG[Action Groups\nOpenAPI schema + Lambda]
+    FM --> KB[Knowledge Base\nS3 + OpenSearch RAG]
+    AG --> L1[Your Lambda Functions]
+    L1 --> FM
+    KB --> FM
+    FM --> RESP[Response to User]
+```
+
+*Bedrock Agents is fully managed: you supply the Foundation Model, Lambda-backed Action Groups, and S3 Knowledge Bases; AWS runs the orchestration loop.*
+
 ## The Problem
 
 Building an agent from scratch means writing the reasoning loop, managing conversation state, building tool dispatch, persisting sessions, adding guardrails, setting up tracing, and stitching it all together. For teams with existing AWS infrastructure, that's weeks of undifferentiated work. Bedrock Agents provides a fully managed runtime that handles all of this through configuration — you supply the model, the Lambda functions, and the documentation; AWS runs the rest.

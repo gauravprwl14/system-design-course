@@ -13,6 +13,22 @@ status: "published"
 
 # APM Platforms: Datadog vs New Relic vs Dynatrace
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    APM[APM Platform] --> Traces[Distributed Traces\ncall chain visualization]
+    APM --> Profiler[Continuous Profiler\nflame graph per function]
+    APM --> ServiceMap[Service Map\nautomated dependency graph]
+    Traces --> Datadog[Datadog\nbest-in-class UX + AI insights]
+    Traces --> NewRelic[New Relic\nOTel-native + lower cost]
+    Traces --> Dynatrace[Dynatrace\nfull-stack AI auto-detection]
+    Profiler --> BugFind[Memory leak found in 5 min\nvs 2 days without APM]
+    ServiceMap --> Impact[Understand blast radius\nbefore deploy]
+```
+
+*APM goes from "something is slow" to "here is the exact function and why" — the continuous profiler is the feature that justifies the cost at scale.*
+
 **Your app has a memory leak. It shows up as slow P99 latency every 6 hours, then a pod restart, then fine again. Without APM, you spend 2 days reading code. With Datadog APM, you see it in 5 minutes: the continuous profiler's flame graph shows `UserCache` growing 200MB/hour. One object type. One fix. That is the difference between APM and no APM — not dashboards, not alerts, but the ability to go from "something is wrong" to "here is exactly where and why" before your on-call rotation burns out.**
 
 ---

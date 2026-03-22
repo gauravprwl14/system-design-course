@@ -20,6 +20,21 @@ tags: [langchain, framework, chains, agents, tools, python]
 
 > LangChain is the duct tape and scaffolding of the LLM world — it connects everything quickly, and that's both its strength and its weakness.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    INPUT[Input] --> CHAIN[Chain\nprompt | model | parser]
+    CHAIN --> AGENT[Agent Loop\nLLM decides next tool]
+    AGENT --> TOOLS[Tools\nweb search / DB / code]
+    TOOLS --> AGENT
+    AGENT --> MEM[Memory\nconversation history]
+    AGENT --> RET[Retriever\nRAG / vector store]
+    AGENT --> OUT[Output]
+```
+
+*LangChain wires five composable primitives — chains, agents, tools, retrievers, memory — using the LCEL pipe operator.*
+
 ## The Problem
 
 When you start building with LLMs you face the same setup work every time: connecting to a model API, wrapping prompts into reusable structures, wiring in a retriever for RAG, adding memory across turns, calling tools. LangChain packages all of that boilerplate into composable abstractions so you can go from idea to working prototype in hours, not days.

@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import { useConfig } from 'nextra-theme-docs'
+import { NavDropdowns } from './components/NavDropdowns'
 
 export default {
   logo: (
@@ -64,6 +65,9 @@ export default {
     content: 'Question? Give us feedback →',
     labels: 'feedback'
   },
+  navbar: {
+    extraContent: <NavDropdowns />
+  },
   sidebar: {
     titleComponent({ title, type }) {
       if (type === 'separator') {
@@ -71,7 +75,7 @@ export default {
       }
       return <>{title}</>
     },
-    defaultMenuCollapseLevel: 1,
+    defaultMenuCollapseLevel: 2,
     toggleButton: true
   },
   footer: {

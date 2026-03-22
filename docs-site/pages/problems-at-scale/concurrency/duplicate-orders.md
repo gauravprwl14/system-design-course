@@ -13,6 +13,21 @@ status: "published"
 
 # Duplicate Orders on Retry: When the Network Lies to You
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User taps Place Order<br/>flaky 4G connection] --> B[Server creates order<br/>charges payment]
+    B --> C[Response lost<br/>connection drops]
+    C --> D[Client shows error<br/>user retries]
+    D --> E[Server creates<br/>2nd duplicate order]
+    E --> F[2 orders, 2 charges<br/>2 warehouse tickets]
+    F --> G[Idempotency Key<br/>sent with every request]
+    G --> H[Server deduplicates<br/>returns cached response]
+    H --> I[Exactly-once semantics<br/>despite retries]
+```
+*Normal path: request → response → done. Trigger: server succeeded but response was lost. Failure: client retries create duplicate orders, charges, and fulfillment actions.*
+
 **A mobile app user taps "Place Order" on a flaky 4G connection. The order is created on the server, payment is charged, the fulfillment warehouse gets a pick request. The response takes 8 seconds — the mobile OS kills the connection. The app shows an error: "Order failed. Please try again." The user taps again.** Now there are 2 orders, 2 warehouse pick tickets, and Stripe shows 2 charges. Your warehouse ships 2 packages. The customer gets 2 of the same item. One they want to return, but you're already paying for the return shipping on a mistake that was your system's fault.
 
 This is the duplicate order problem — the specific flavor of network retry hazard that hits hardest in e-commerce, food delivery, and any system where "order" is the core unit of work.

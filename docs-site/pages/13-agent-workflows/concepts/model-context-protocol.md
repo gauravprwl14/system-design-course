@@ -22,6 +22,22 @@ tags: [mcp, model-context-protocol, anthropic, tools, resources, json-rpc, inter
 
 > Before MCP, every AI tool integration was a custom one-off. MCP is the USB standard for AI tools — build once, connect anywhere.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    CLIENT[MCP Client\nLLM / agent host] -->|JSON-RPC| SERVER[MCP Server\ntools + resources + prompts]
+    SERVER -->|tool list| CLIENT
+    CLIENT -->|tool call| SERVER
+    SERVER -->|result| CLIENT
+
+    SERVER --> T1[Tool: GitHub API]
+    SERVER --> T2[Resource: files / docs]
+    SERVER --> T3[Prompt: templates]
+```
+
+*MCP defines a standard JSON-RPC protocol so one server exposes tools, resources, and prompts to any MCP-compatible client — write once, use everywhere.*
+
 ## The Problem
 
 Before MCP, integrating tools with LLMs worked like this:

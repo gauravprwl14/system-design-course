@@ -13,6 +13,21 @@ status: "published"
 
 # Real User Monitoring (RUM): Measuring Actual User Experience
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Browser[Real User Browser\nmobile / slow network] --> WebVitals[web-vitals library\nLCP + INP + CLS]
+    WebVitals --> Beacon[Beacon API\nbatch send to RUM endpoint]
+    Beacon --> Pipeline[Ingest Pipeline\nClickHouse / BigQuery]
+    Pipeline --> Dashboard[RUM Dashboard\nsegment by device / region / ISP]
+    Dashboard --> Geo[Geographic heatmap\nBrazil p99: 8s]
+    Dashboard --> DeviceType[Device breakdown\nmobile vs desktop]
+    Geo --> CDN[Add CDN PoP\nfix root cause]
+```
+
+*Synthetic tests run from datacenters; RUM captures real Brazilian users on mobile — only RUM reveals the 8-second load time that synthetic monitoring misses.*
+
 **Your synthetic tests show 200ms load time. Your P99 server latency is 80ms. But users are complaining the app is "slow." You look at Real User Monitoring data: actual users in Brazil take 8 seconds to load the page. Your servers are in us-east-1. The 200ms test ran from the same datacenter as your server. Your CDN has no edge node in South America. The content is traveling 9,000 miles over ocean cables for every single Brazilian user. RUM is the only way to know what real users actually experience — and it would have caught this before your Brazil launch instead of after your support tickets.**
 
 ---

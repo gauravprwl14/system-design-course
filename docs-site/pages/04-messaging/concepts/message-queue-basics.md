@@ -72,6 +72,20 @@ tags:
 **Reading Time**: 12 minutes
 **Practical Application**: Essential for any app needing async processing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Producer[Producer Service] -->|Publish| Queue[(Message Queue)]
+    Queue -->|Consume| Worker1[Worker 1]
+    Queue -->|Consume| Worker2[Worker 2]
+    Queue -->|Consume| Worker3[Worker 3]
+    Worker1 & Worker2 & Worker3 -->|ACK on success| Queue
+    Queue -->|DLQ on failure| DLQ[Dead Letter Queue]
+```
+
+*Producers publish messages to the queue without waiting for processing; multiple workers consume independently in parallel, and unprocessable messages are routed to a dead letter queue instead of blocking the pipeline.*
+
 ## 🎯 Problem Statement
 
 ```javascript

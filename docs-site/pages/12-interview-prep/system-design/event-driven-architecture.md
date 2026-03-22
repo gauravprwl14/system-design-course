@@ -24,6 +24,22 @@ tags: [event-driven, kafka, pub-sub, microservices, async, distributed-systems]
 
 # Event-Driven Architecture - Building Decoupled Systems at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A[Producer Service] -->|Publish event| B[Event Broker: Kafka / SNS]
+    B -->|Fan-out| C[Inventory Service]
+    B -->|Fan-out| D[Payment Service]
+    B -->|Fan-out| E[Notification Service]
+    B -->|Fan-out| F[Analytics Service]
+    G[Event Store] -->|Replay / audit| B
+    C --> H[Idempotency key — handle duplicates]
+    D --> H
+```
+
+*Producers publish events without knowing consumers. Each consumer subscribes independently, enabling decoupled scaling.*
+
 ## What You'll Learn
 
 Master **Event-Driven Architecture (EDA)** patterns used by the world's largest systems:

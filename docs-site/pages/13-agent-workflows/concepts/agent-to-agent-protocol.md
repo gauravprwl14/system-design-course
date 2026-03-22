@@ -21,6 +21,25 @@ tags: [a2a, google, agent-protocol, interoperability, multi-agent]
 
 > MCP connects agents to tools. A2A connects agents to other agents — turning isolated specialists into a coordinated workforce.
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant OA as Orchestrator Agent
+    participant AR as Agent Registry
+    participant SA as Specialist Agent
+
+    OA->>AR: Discover agents by capability
+    AR-->>OA: Agent Card (skills, endpoint, auth)
+    OA->>SA: POST /tasks/send {task, context}
+    SA-->>OA: 202 Accepted {taskId}
+    SA->>SA: Execute task (async)
+    SA-->>OA: SSE stream / webhook result
+    OA->>OA: Merge result into plan
+```
+
+*A2A standardizes agent discovery via Agent Cards and task lifecycle (submit → work → stream result) so any orchestrator can call any specialist without custom integration.*
+
 ## The Problem
 
 Modern AI applications involve multiple specialized agents: a research agent, a coding agent, a scheduling agent, a communication agent. Each is built by a different team or vendor, running on different infrastructure.

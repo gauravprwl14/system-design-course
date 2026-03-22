@@ -13,6 +13,24 @@ status: "published"
 
 # Write Amplification: When Optimization Makes Things 10x Slower
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[1 logical INSERT] --> B[Heap page write<br/>the row itself]
+    A --> C[WAL entry<br/>for durability]
+    A --> D[Index 1 B-tree update<br/>covering index]
+    A --> E[Index 2 B-tree update<br/>secondary index]
+    A --> F[Index 3 B-tree update<br/>composite index]
+    B --> G[6 physical writes<br/>6x amplification]
+    C --> G
+    D --> G
+    E --> G
+    F --> G
+    G --> H[Write latency 400%+<br/>gradual degradation]
+```
+*Normal path: 1 INSERT = 1 physical write. Trigger: each additional index multiplies disk I/O. Failure cascade: gradual write latency increase goes unnoticed until system is 10x slower.*
+
 **You add an index to speed up reads. Your read latency drops 80%. Everyone is happy. Two months later, your write latency has increased 400% and you can't figure out why. A teammate adds two more indexes for their query patterns. Now writes are taking 8 seconds. You have a new hire who adds a covering index for a report query. Writes hit 15 seconds. One INSERT is now updating 6 B-trees, writing to the WAL 6 times, syncing to disk 6 times. Your "optimization" made your system 10× slower for writes, and nobody noticed because the degradation was gradual and the people who added indexes never looked at write performance. This is write amplification — and it quietly kills write-heavy systems.**
 
 ---

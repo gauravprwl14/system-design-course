@@ -22,6 +22,21 @@ tags: [context-window, token-budget, summarization, memory, sliding-window]
 
 > Context windows have limits. Long-running agents that ignore those limits don't fail gracefully — they fail expensively, mid-task, with a cryptic token count error.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    RUN[Long-running agent] --> ACC[Context accumulates\ntool results + reasoning]
+    ACC --> MON[Token budget monitor\nat 50% threshold]
+    MON -->|compress| SUM[Summarize middle section]
+    MON -->|slide| SLIDE[Drop oldest messages]
+    MON -->|offload| EXT[Move to external memory\nvector store]
+    MON -->|archive| ARCH[Archive full history\nkeep summary in context]
+    SUM & SLIDE & EXT & ARCH --> SAFE[Context stays within\neffective working range]
+```
+
+*Four strategies — summarize, sliding window, external memory, archive — keep accumulated context within the model's effective working range.*
+
 ## The Problem
 
 Every LLM call has a maximum context window — a hard limit on how many tokens can be included in a single call. Long-running agents accumulate:

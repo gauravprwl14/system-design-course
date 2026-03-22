@@ -14,6 +14,22 @@ tags: [aws, disaster-recovery, rto, rpo, pilot-light, warm-standby, active-activ
 
 # AWS Disaster Recovery: RTO, RPO, and the 4 DR Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{DR requirements?} -->|Hours of data loss OK, low cost| B[Backup & Restore — RPO hours, RTO 24h]
+    A -->|Minutes data loss, moderate cost| C[Pilot Light — RPO min, RTO 1h]
+    A -->|Seconds data loss, RTO minutes| D[Warm Standby — scaled-down always running]
+    A -->|Near-zero RPO and RTO, any cost| E[Multi-Site Active-Active — full capacity both regions]
+    B --> F[S3 cross-region replication + restore from backup]
+    C --> G[Data replicated, compute cold — launch on failover]
+    D --> H[Scale up on failover, Route 53 switches]
+    E --> I[Route 53 latency or weighted routing, no failover delay]
+```
+
+*RPO drives replication strategy; RTO drives compute pre-provisioning. Match cost to business impact of downtime.*
+
 > **Common Interview Questions**: "What's the difference between RTO and RPO, and how do they drive DR strategy selection?" / "Explain the 4 AWS DR strategies." / "Design a DR strategy for a financial system that can't lose more than 1 minute of data." / "Your primary region goes down — walk me through the failover process."
 
 Common in: AWS Solutions Architect Professional, Senior Platform/SRE, and systems design interviews at financial services companies, healthcare, and FAANG.

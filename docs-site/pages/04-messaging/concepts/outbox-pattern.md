@@ -14,6 +14,18 @@ featured_image: "/assets/diagrams/outbox-pattern.png"
 
 # The Outbox Pattern: Atomic Database + Message Delivery Without 2PC
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Service[Order Service] -->|Single DB transaction| DB[(PostgreSQL\norders + outbox tables)]
+    DB -->|CDC / Polling relay| Relay[Outbox Relay\nDebezium / Polling worker]
+    Relay -->|Publish| Kafka[Kafka Topic]
+    Kafka --> Consumers[Inventory / Notifications / Analytics]
+```
+
+*The service writes to both the domain table and an outbox table in one atomic transaction; a relay process reads the outbox and publishes to Kafka, guaranteeing the message is published exactly when and only if the database write committed.*
+
 **Every service that writes to a database AND publishes a message has a dual-write problem.** If the database write succeeds and the Kafka publish fails, your data is inconsistent with your event stream. The outbox pattern solves this without distributed transactions — and it's the foundational pattern for reliable event-driven systems.
 
 ---

@@ -14,6 +14,25 @@ featured_image: "/assets/diagrams/distributed-tracing-design.png"
 
 # Distributed Tracing: OpenTelemetry, Sampling Strategies, and Trace Context
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant SvcA as Service A
+    participant SvcB as Service B
+    participant SvcC as Service C
+    participant Jaeger as Jaeger / Tempo
+
+    SvcA->>SvcB: HTTP + traceparent header
+    SvcB->>SvcC: HTTP + traceparent header
+    SvcC-->>SvcB: response (span recorded)
+    SvcB-->>SvcA: response (span recorded)
+    SvcA->>Jaeger: export spans (sampled)
+    Note over Jaeger: Assemble full trace<br/>waterfall view
+```
+
+*Every hop propagates the same trace_id via W3C traceparent — Jaeger assembles spans into a waterfall that shows exactly where your 18-second checkout spent its time.*
+
 **A 200ms checkout fails. Your logs say everything succeeded. Your metrics show p99 is fine. Without distributed tracing, you are debugging a ghost.** Distributed tracing gives you the execution timeline of a single request as it fans out across dozens of services — and the ability to ask "why was *this specific request* slow?" rather than "why is the system slow on average?"
 
 The challenge is scale: 10,000 RPS across 50 services generates 500,000 spans per second. Storing them all costs $400K/year. Dropping the wrong ones means the one trace that would have explained your production incident is gone.

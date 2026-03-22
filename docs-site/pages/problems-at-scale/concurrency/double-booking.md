@@ -13,6 +13,21 @@ status: "published"
 
 # Double Booking: When Two Users Win the Last Seat
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[2 concurrent users<br/>last hotel room] --> B[Both read availability = 1<br/>both pass check]
+    B --> C[Both insert booking<br/>both commit]
+    C --> D[2 confirmed bookings<br/>1 room]
+    D --> E[Guest arrives<br/>no room available]
+    E --> F[SELECT FOR UPDATE<br/>pessimistic locking]
+    F --> G[Optimistic locking<br/>version check on commit]
+    G --> H[Distributed lock<br/>Redis for cross-service]
+    H --> I[One booking succeeds<br/>other gets conflict error]
+```
+*Normal path: read availability → confirm booking → decrement. Trigger: two requests read the same availability before either commits. Failure: gap between read and write allows both to proceed.*
+
 **Black Friday, 11:59 PM. Two users click "Book" on the last hotel room simultaneously. Both see "Booking Confirmed." The guest arriving tomorrow will find there's no room for them — and your support team will spend the next 48 hours handling the fallout.** The hotel will comp the room, eat the cost, and you'll wake up to a Slack message reading: "we need to talk about the booking system."
 
 This is the double booking problem. It's deceptively simple to create and surprisingly tricky to fix correctly at scale.

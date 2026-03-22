@@ -21,6 +21,24 @@ level: advanced
 
 > A chatbot that hallucinates gives you a wrong answer. An agent that hallucinates takes wrong actions — and each action compounds the mistake.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    LLM[LLM generates step 2] --> HAL[Hallucinated fact\nor fabricated tool name]
+    HAL --> S3[Step 3 builds on hallucination]
+    S3 --> S4[Step 4 compounds error]
+    S4 --> WRONG[Wrong final action\nor silent failure]
+
+    FIX1[Structured output validation] --> GUARD[Mitigations]
+    FIX2[RAG grounding] --> GUARD
+    FIX3[Critic agent review] --> GUARD
+    FIX4[Tool name whitelist] --> GUARD
+    GUARD -->|catches| HAL
+```
+
+*Hallucinated facts and tool names compound silently across multi-step agents; grounding and validation layers catch them early.*
+
 ---
 
 ## The Problem Class `[Agent Correctness — Severity: Critical]`

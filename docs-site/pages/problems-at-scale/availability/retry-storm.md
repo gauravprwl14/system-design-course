@@ -13,6 +13,21 @@ status: "published"
 
 # Retry Storm: How Retries Turned a 30-Second Hiccup into a 45-Minute Outage
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Service B hiccup<br/>30 second outage] --> B[All upstreams retry<br/>3x each]
+    B --> C[Service B recovers<br/>faces 4x traffic]
+    C --> D[Slows again<br/>upstreams retry again]
+    D --> E[8x traffic<br/>collapse]
+    E --> F[30s hiccup becomes<br/>45 minute outage]
+    F --> G[Exponential backoff<br/>+ random jitter]
+    G --> H[Circuit breaker<br/>stops retrying early]
+    H --> I[Retry budget<br/>cap total retries]
+```
+*Normal path: transient error → retry once → success. Trigger: synchronized retries with no jitter or backoff. Failure cascade: traffic multiplies with each retry wave, making recovery impossible.*
+
 **Service B had a 500ms hiccup at 3:45 PM. It recovered in 30 seconds. But by then, every upstream service had retried its requests 3 times. Service B was now handling 4x its normal traffic — from the retries. It slowed down again. All services retried again. 8x traffic. It collapsed. The 30-second hiccup became a 45-minute outage.**
 
 ---

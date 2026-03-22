@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/encryption-at-rest.png"
 
 # Encryption at Rest: Key Management, Envelope Encryption, and BYOK
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    DATA[Plaintext Data] -->|Encrypt with DEK| CIPHERTEXT[Ciphertext]
+    DEK[Data Encryption Key<br/>AES-256] -->|Encrypt with KEK| EDEK[Encrypted DEK]
+    KEK[Key Encryption Key<br/>KMS-managed] --> EDEK
+    EDEK -->|Store alongside| CIPHERTEXT
+    KMS[KMS / HSM] --> KEK
+    BYOK[Customer-managed key<br/>BYOK] --> KMS
+    CIPHERTEXT -->|Decrypt flow| APP[Application]
+    EDEK -->|KMS decrypt| DEK
+```
+
+*Envelope encryption wraps a per-record DEK with a KMS-managed KEK; only the encrypted DEK is stored, so rotating or revoking the KEK protects all data at once.*
+
 **Your S3 bucket is encrypted at rest with AES-256. Your database volume is encrypted. Your backup snapshots are encrypted.** And none of it matters if your application's IAM role has `s3:GetObject *` and an attacker compromises a container. Encryption at rest protects you against a very specific threat — someone stealing the physical disk — not against the attacks you'll actually face.
 
 ---

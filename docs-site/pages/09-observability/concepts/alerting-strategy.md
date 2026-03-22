@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/alerting-strategy.png"
 
 # Alerting Strategy: Alert Fatigue, SLO-Based Alerts, and On-Call Ergonomics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Alert400[400 Alert Rules\n78% false positive] --> Fatigue[Alert Fatigue\nengineer ignores pages]
+    Fatigue --> Miss[Real P0 buried in noise\n4-hour MTTR]
+    Alert400 --> Fix[Fix: symptom-based alerting]
+    Fix --> Symptom[Alert on user impact\nnot CPU/memory]
+    Symptom --> SLO[SLO Burn Rate Alerts\npage on 14x burn rate only]
+    SLO --> Hierarchy[Tier alerts: page vs ticket vs log]
+    Hierarchy --> Runbook[Every page has a runbook]
+    Runbook --> LowFatigue[< 5 pages/week\non-call sustainable]
+```
+
+*Alert on symptoms (error rate, latency) not causes (CPU) — 400 noisy rules become 5 actionable pages when you flip to burn-rate alerting.*
+
 **The team that built a monitoring system with 400 alert rules had a 78% false positive rate. Engineers stopped reading pages. A real outage lasted 4 hours because the alert was buried in noise.** Alert fatigue is not a people problem — it is a system design failure. The solution is not "tune the thresholds" — it is a fundamental rethink of what you alert on, and why.
 
 ---

@@ -21,6 +21,26 @@ level: intermediate
 
 > The most common way an agent fails is not a reasoning error — it's a tool call that silently loops until the step budget is gone.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    TC[Tool Call] --> ERR{Error type}
+    ERR -->|503 / timeout| TRANS[Transient\nexponential backoff]
+    ERR -->|429| RATE[Rate limit\nwait Retry-After]
+    ERR -->|400 bad args| MALFORM[Malformed\nDO NOT retry — fix args]
+    ERR -->|404| NF[Not found\nchange strategy]
+    ERR -->|401 / 403| AUTH[Auth failure\nescalate or abort]
+
+    TRANS --> RETRY[Retry]
+    RATE --> RETRY
+    MALFORM --> ABORT[Abort / fix]
+    NF --> ABORT
+    AUTH --> ABORT
+```
+
+*Each error class demands a different response — blind retries on malformed calls exhaust step budgets without ever succeeding.*
+
 ---
 
 ## The Problem Class `[Agent Reliability — Severity: High]`

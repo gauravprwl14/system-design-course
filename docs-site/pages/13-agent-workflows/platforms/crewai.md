@@ -21,6 +21,22 @@ tags: [crewai, multi-agent, roles, crew, tasks, delegation]
 
 > CrewAI makes multi-agent systems feel like hiring a team: you write job descriptions, assign work, and let the crew figure out who does what.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    GOAL[User Goal] --> CREW[Crew\nagents + tasks + process]
+    CREW --> MGR[Manager LLM\nhierarchical process]
+    MGR --> A1[Agent: Researcher\nrole + goal + backstory]
+    MGR --> A2[Agent: Analyst\nrole + goal + backstory]
+    MGR --> A3[Agent: Writer\nrole + goal + backstory]
+    A1 & A2 & A3 --> TOOLS[Shared Tools\nweb_search / read_url]
+    A1 & A2 & A3 --> OUT[Task Outputs\npassed as context]
+    OUT --> FINAL[Final Deliverable]
+```
+
+*CrewAI models agents as team members with roles, goals, and backstories; a manager LLM delegates tasks and coordinates output.*
+
 ## The Problem
 
 When a task needs multiple specialized perspectives — research, analysis, writing, fact-checking — you can either stuff all the instructions into one mega-prompt (context gets noisy, performance degrades) or manually orchestrate a sequence of LLM calls (rigid, hard to extend). CrewAI's answer is to model agents as team members: each has a role, a goal, and a backstory, and a crew coordinator assigns tasks and handles inter-agent communication.

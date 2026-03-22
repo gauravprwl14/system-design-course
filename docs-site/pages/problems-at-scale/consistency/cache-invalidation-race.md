@@ -13,6 +13,21 @@ status: "published"
 
 # Cache Invalidation Race: When Stale Beats Fresh
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Price updated DB<br/>$99 → $79] --> B[Cache invalidated<br/>entry deleted]
+    B --> C[Fresh request populates<br/>cache with $79]
+    C --> D[Slow in-flight request<br/>started before delete]
+    D --> E[Slow request finishes<br/>writes $99 to cache]
+    E --> F[Stale $99 overwrites<br/>correct $79]
+    F --> G[Users see wrong price<br/>for next 5 minutes]
+    G --> H[Cache versioning<br/>write with version stamp]
+    H --> I[Only write if version<br/>is newer than current]
+```
+*Normal path: update DB → invalidate cache → fresh reads populate correct value. Trigger: slow in-flight request completes after invalidation and writes stale value back. Failure: correct value evicted by a request that started before the update.*
+
 **A product price changes from $99 to $79. Your system updates the database. Your cache invalidation logic fires immediately and deletes the cached entry. A cache miss triggers a fresh DB read — the new price, $79, gets cached. Everything looks correct. But 45 seconds later, a user sees $99. Then another. For the next 5 minutes, half your users see the wrong price. You check the cache. It says $99. The database says $79. A stale value that should have been evicted is sitting confidently in your cache, overwriting the correct value every few minutes. Your cache invalidation didn't just fail — it created the conditions for a stale value to win a race against a fresh one.**
 
 ---

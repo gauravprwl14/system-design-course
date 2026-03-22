@@ -27,6 +27,27 @@ tags: [advertising, real-time-bidding, auction, rtb, ctr-prediction, budget-paci
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Publisher["Publisher (ad slot)"] --> AdServer["Ad Server"]
+    AdServer --> AuctionEngine["Auction Engine (<100ms)"]
+    AuctionEngine --> BidStore["Bid Cache (Redis)"]
+    AuctionEngine --> CTRModel["CTR Prediction Model"]
+    AuctionEngine --> BudgetPacer["Budget Pacing Service"]
+    AuctionEngine --> WinnerSelector["Winner: eCPM = bid × CTR"]
+    WinnerSelector --> AdDelivery["Ad Delivery Service"]
+    AdDelivery --> Publisher
+    EventStream["Impression / Click Events"] --> BillingService["Billing Service"]
+    EventStream --> FrequencyCap["Frequency Cap (Redis)"]
+    EventStream --> CTRModel
+```
+
+*Every ad request triggers a sub-100ms auction: bids are ranked by eCPM (bid × predicted CTR), budget pacing caps spend rate, and frequency capping prevents over-exposure, all updated in real time via an event stream.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 An ad auction system must run a complete auction — receive bid requests from publishers, collect bids from advertisers, pick a winner, and serve the ad — all within 100ms. The core is a second-price auction where the winner pays the second-highest bid multiplied by quality score. Critical sub-systems include CTR prediction (which ad will users click?), budget pacing (spread budget evenly across the day), and frequency capping (don't show the same ad too many times to one user).

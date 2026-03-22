@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/redis-rate-limiting-patterns.png"
 
 # Redis Rate Limiting: Token Bucket, Sliding Window, and Lua Atomicity
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Request[Incoming Request] --> RateLimiter[Redis Rate Limiter]
+    RateLimiter --> Lua[Lua Script - Atomic]
+    Lua -->|Token Bucket| TB[Refill tokens at fixed rate]
+    Lua -->|Sliding Window| SW[ZRANGEBYSCORE last N seconds]
+    Lua -->|Fixed Window| FW[INCR + EXPIRE per window]
+    TB -->|Tokens available| Allow[Allow Request]
+    SW -->|Count < limit| Allow
+    FW -->|Count < limit| Allow
+    TB -->|No tokens| Deny[429 Too Many Requests]
+    SW -->|Count >= limit| Deny
+```
+
+*Each rate limiting algorithm is implemented as a Lua script to guarantee the read-check-write sequence is atomic; without Lua, concurrent requests race through MULTI/EXEC and burst past the configured limit.*
+
 **Rate limiting with Redis fails in production when two facts collide: MULTI/EXEC provides ordering but not atomicity for composite operations, and most rate limiting algorithms require multiple operations that must be atomic.** Imagine 1000 concurrent requests hitting your rate limiter simultaneously. Without Lua atomicity, 80 requests can slip through a limit of 100/sec. Here's the exact algorithm, sizing math, and Lua implementation for each rate limiting pattern.
 
 ---

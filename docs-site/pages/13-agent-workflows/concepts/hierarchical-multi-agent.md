@@ -22,6 +22,23 @@ tags: [hierarchical, multi-agent, planning, coordination, recursive]
 
 > When a task is too complex for one level of orchestration, you need orchestrators of orchestrators — and the cost of coordination must be justified by the depth of parallelism.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    TOP[Top-Level Orchestrator\ndecomposes mega-task] --> OA[Sub-Orchestrator A\nAuth module]
+    TOP --> OB[Sub-Orchestrator B\nREST API module]
+    TOP --> OC[Sub-Orchestrator C\nFrontend module]
+    OA --> W1[Worker: design flow]
+    OA --> W2[Worker: implement JWT]
+    OB --> W3[Worker: design schema]
+    OB --> W4[Worker: write endpoints]
+    OC --> W5[Worker: build UI]
+    W1 & W2 & W3 & W4 & W5 --> AGG[Results aggregated\nup the hierarchy]
+```
+
+*Two-level hierarchy — a top orchestrator delegates to sub-orchestrators, each of which decomposes and parallelizes its own sub-tasks.*
+
 ## The Problem
 
 The orchestrator-worker pattern has one planning level. The orchestrator decomposes the task, workers execute. But some tasks have sub-tasks that are themselves complex enough to require their own planning and delegation.

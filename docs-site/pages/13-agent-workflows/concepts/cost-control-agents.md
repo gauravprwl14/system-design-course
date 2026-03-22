@@ -22,6 +22,22 @@ tags: [cost, tokens, budget, model-routing, caching, optimization]
 
 > A single LLM call costs fractions of a cent. An agent that runs 20 steps, each with a 10,000 token context, costs $1 per run. At 10,000 runs per day, that's $10,000 per day — from one feature.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    REQ[Incoming Agent Request] --> BUDGET[Token Budget Guard\nmax steps · max tokens]
+    BUDGET --> ROUTE{Route by\ncomplexity}
+    ROUTE -->|simple decision| CHEAP[Cheap Model\nGPT-4o-mini]
+    ROUTE -->|complex reasoning| LARGE[Large Model\nGPT-4o / Claude]
+    CHEAP & LARGE --> CACHE[Prompt Cache\nreuse repeated prefixes]
+    CACHE --> CTX[Context Compressor\nsummarize old turns]
+    CTX --> OUT[Response]
+    OUT --> TRACK[Cost Tracker\nlog tokens + $ per run]
+```
+
+*Layer budget guards, model routing, prompt caching, and context compression to cut per-run costs by 60–80% without sacrificing quality.*
+
 ## The Problem
 
 Agents are naturally expensive because:

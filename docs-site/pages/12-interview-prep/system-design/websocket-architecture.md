@@ -25,6 +25,22 @@ tags: [websocket, real-time, slack, discord, chat, connection-management, pub-su
 
 # WebSocket Architecture: Real-Time Systems at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client (Browser / Mobile)"] --> WSGateway["WebSocket Gateway"]
+    WSGateway --> ConnRegistry["Connection Registry (Redis)"]
+    WSGateway --> PubSub["Pub/Sub Layer (Redis / Kafka)"]
+    PubSub --> WSGateway
+    AppService["Application Service"] --> PubSub
+    WSGateway --> Client
+    ConnRegistry --> WSGateway
+    PresenceService["Presence Service"] --> ConnRegistry
+```
+
+*Clients hold persistent WebSocket connections to gateway nodes; messages are routed between gateways via pub/sub so any node can deliver a message regardless of which node the recipient is connected to.*
+
 ## Overview
 
 Design a real-time communication system using WebSockets that can handle:

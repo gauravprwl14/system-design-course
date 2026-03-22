@@ -35,6 +35,21 @@ tags:
 
 # Design Spotify (Music Streaming Platform)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User plays track] --> B[CDN Edge<br/>200+ locations]
+    B --> C{Cached at edge?}
+    C --> D[Stream audio chunks<br/>OGG/AAC adaptive]
+    C --> E[Origin storage<br/>fetch + cache at edge]
+    D --> F[DRM enforcement<br/>per track per territory]
+    A --> G[Recommendation Engine<br/>Discover Weekly ML]
+    G --> H[Feature Store<br/>listening history]
+    H --> I[Collaborative Filtering<br/>170M users Monday]
+```
+*Normal path: play request → CDN edge cache hit → adaptive audio streaming. Key challenges: DRM per-territory, sub-second buffering across 184 countries, and personalized discovery for 600M users.*
+
 **Difficulty**: 🔴 Advanced
 **Time**: 45 minutes
 **Companies**: Spotify, Apple Music, Tidal, Amazon Music, YouTube Music (Common for senior roles)

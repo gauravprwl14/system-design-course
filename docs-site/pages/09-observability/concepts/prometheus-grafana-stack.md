@@ -13,6 +13,21 @@ status: "published"
 
 # Prometheus & Grafana: The Production Monitoring Stack
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    App[Application\nprom-client SDK] -->|/metrics scrape| Prometheus[Prometheus\nTime Series DB]
+    Prometheus --> PromQL[PromQL Queries\nrate, histogram_quantile]
+    PromQL --> Grafana[Grafana\nDashboards]
+    Prometheus --> Alertmanager[Alertmanager\nrouting + dedup]
+    Alertmanager --> PagerDuty[PagerDuty / Slack]
+    Prometheus --> Thanos[Thanos / Cortex\nlong-term storage + HA]
+    Grafana --> RED[RED Dashboard\nRate, Errors, Duration]
+```
+
+*Prometheus scrapes metrics, PromQL queries them, Grafana visualizes them, Alertmanager routes pages — instrument this pipeline before your first production incident.*
+
 **Your service goes down at 3 AM. You get a Slack alert 8 minutes later — from a user.** You have no metrics, no dashboards, no alerting. You spend 2 hours SSH-ing into servers reading logs, guessing. You `tail -f` application logs on 6 instances. You grep for "ERROR". You find 47,000 errors. All of them are the same DNS timeout. Which started 8 minutes before the user message. Which you could have caught in 30 seconds with a single Prometheus alert.
 
 This is not a tutorial on what Prometheus is. This is how to actually instrument your production system — the labels that matter, the PromQL queries every engineer must know, the alerting rules that fire before your users do.

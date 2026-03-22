@@ -15,6 +15,21 @@ tags: [recommendation, machine-learning, collaborative-filtering, two-tower, fea
 
 # Recommendation System at Scale — Netflix, Spotify, Amazon
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User Interaction<br/>view, click, play] --> B[Feature Store<br/>real-time features]
+    B --> C[Candidate Generation<br/>two-tower model]
+    C --> D[100M items → 1,000<br/>candidates in ms]
+    D --> E[Ranking Model<br/>personalized scoring]
+    E --> F[Top 50 recommendations<br/>< 100ms total]
+    F --> G[A/B Testing<br/>continuous improvement]
+    G --> H[Offline Training<br/>nightly model updates]
+    H --> B
+```
+*Normal path: user action → feature update → pre-computed candidates → real-time ranking → display. Key challenge: sub-100ms personalization across catalogs of 15K–100M items for 230M–600M users.*
+
 ## The Scale Problem
 
 Recommendation systems look deceptively simple — "show the user something they'll like" — but at platform scale, they become one of the hardest engineering problems:

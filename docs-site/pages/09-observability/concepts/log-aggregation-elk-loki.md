@@ -13,6 +13,22 @@ status: "published"
 
 # Log Aggregation: ELK Stack vs Loki vs CloudWatch
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Services[50 Microservices\nstdout logs] --> Collector[Fluentd / Promtail\nCollector Agent]
+    Collector --> ELK[ELK Stack\nElasticsearch + Kibana]
+    Collector --> Loki[Grafana Loki\nLabel-indexed only]
+    ELK --> FullText[Full-text search\nhigh cost]
+    Loki --> LabelQuery[Label-based query\nlow cost]
+    ELK --> Structured[Structured JSON\nrequired for field search]
+    Loki --> Structured
+    Structured --> Pino[Pino / Winston\nstructured logging library]
+```
+
+*ELK gives full-text search at higher cost; Loki stores only label indices at lower cost — choose based on query patterns, not hype.*
+
 **Production incident at 2 AM. You need to find all requests from user 12345 in the last 10 minutes across 50 microservices. Each service has logs on its own pod. SSH-ing into 50 pods and grepping is not an option. You need centralized logging — and you needed it before the incident, not during it. The engineers who built it at 9 AM on a Tuesday look like heroes. The ones who skipped it because "we can always add it later" are the ones still typing `kubectl exec` at 3 AM.**
 
 ---

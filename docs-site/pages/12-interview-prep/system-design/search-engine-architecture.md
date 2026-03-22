@@ -23,6 +23,24 @@ tags: [search-engine, elasticsearch, inverted-index, tf-idf, bm25, sharding, ful
 
 # Search Engine Architecture - Build Google-Scale Search with Elasticsearch
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> Gateway["API Gateway"]
+    Gateway --> QueryService["Query Service"]
+    QueryService --> QueryParser["Query Parser / Analyzer"]
+    QueryParser --> SearchShards["Search Shards (inverted index)"]
+    SearchShards --> Ranker["Ranking Engine (BM25 / ML)"]
+    Ranker --> ResultCache["Result Cache (Redis)"]
+    ResultCache --> Client
+    Crawler["Web Crawler / Doc Ingestion"] --> IndexPipeline["Index Pipeline"]
+    IndexPipeline --> Tokenizer["Tokenizer / Analyzer"]
+    Tokenizer --> SearchShards
+```
+
+*Client queries are parsed and fan out across inverted-index shards; results are merged and ranked before caching; a separate ingestion pipeline continuously crawls and indexes new documents.*
+
 ## What You'll Learn
 
 Design a **production-grade search engine** that handles billions of queries:

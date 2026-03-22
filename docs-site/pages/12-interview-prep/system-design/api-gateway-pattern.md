@@ -24,6 +24,23 @@ tags: [api-gateway, microservices, rate-limiting, authentication, routing, netfl
 
 # API Gateway Pattern - Single Entry Point for Microservices
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client (mobile / web / 3rd party)"] --> Gateway["API Gateway"]
+    Gateway --> AuthService["Auth Service (JWT/OAuth)"]
+    Gateway --> RateLimiter["Rate Limiter (Redis)"]
+    Gateway --> Router["Request Router"]
+    Router --> ServiceA["User Service"]
+    Router --> ServiceB["Order Service"]
+    Router --> ServiceC["Product Service"]
+    Gateway --> Logger["Centralized Logger"]
+    Gateway --> Cache["Response Cache"]
+```
+
+*The API gateway is the single ingress point for all clients; it enforces auth, rate-limiting, and routing before fanning out to backend services, abstracting the internal service topology from clients.*
+
 ## What You'll Learn
 
 Master the **API Gateway pattern** used by every major microservices architecture:

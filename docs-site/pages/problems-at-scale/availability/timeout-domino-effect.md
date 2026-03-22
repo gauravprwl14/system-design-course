@@ -13,6 +13,21 @@ status: "published"
 
 # Timeout Domino Effect: You've Built a Latency Amplifier
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Checkout: 30s timeout] --> B[Payment: 29s timeout]
+    B --> C[Fraud: 28s timeout]
+    C --> D[ML Model takes 25s<br/>slow prediction]
+    D --> E[Every layer waits<br/>full 25 seconds]
+    E --> F[User sees spinner<br/>hits Pay again]
+    F --> G[Retries multiply<br/>ML model called 3x]
+    G --> H[Deadline propagation<br/>pass remaining budget]
+    H --> I[Context cancellation<br/>abort downstream work]
+```
+*Normal path: each service waits its configured timeout. Trigger: downstream service is slow but within timeout. Failure: without deadline propagation, nested timeouts add (not bound) latency — user waits the full sum.*
+
 **The checkout service has a 30-second timeout. The payment service it calls has a 29-second timeout. The fraud service it calls has a 28-second timeout. When fraud service takes 25 seconds (due to a slow ML model), every request through this stack takes 25+ seconds. Users see the spinner. They hit 'Pay' again. Thread pools fill. The checkout service times out after 30 seconds. Payments are retried. Fraud is called again. The 25-second model call is now called 3× per original request. You've built a timeout amplifier.**
 
 ---

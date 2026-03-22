@@ -26,6 +26,23 @@ tags: [saga, distributed-transactions, compensating-transactions, microservices,
 
 # Saga Pattern - Distributed Transactions at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> Orchestrator["Saga Orchestrator"]
+    Orchestrator --> StepA["Step 1: Reserve Inventory"]
+    StepA -->|success| StepB["Step 2: Charge Payment"]
+    StepB -->|success| StepC["Step 3: Create Order"]
+    StepC -->|success| Done["Done"]
+    StepB -->|failure| CompA["Compensate: Release Inventory"]
+    StepC -->|failure| CompB["Compensate: Refund Payment"]
+    CompA --> Failed["Transaction Rolled Back"]
+    CompB --> CompA
+```
+
+*Each saga step is a local transaction with a compensating action; the orchestrator drives the sequence forward and triggers compensations in reverse order if any step fails, achieving eventual consistency without distributed locks.*
+
 ## What You'll Learn
 
 Master the **Saga pattern** for managing distributed transactions across microservices:

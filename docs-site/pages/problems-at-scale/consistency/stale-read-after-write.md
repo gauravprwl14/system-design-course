@@ -13,6 +13,21 @@ status: "published"
 
 # Stale Read After Write: When Your Own Updates Disappear
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User updates profile picture<br/>write to primary DB] --> B[Write succeeds<br/>primary has new photo]
+    B --> C[User refreshes page<br/>read routed to replica]
+    C --> D[Replica 3s behind<br/>replication lag]
+    D --> E[User sees old photo<br/>thinks write failed]
+    E --> F[User updates again<br/>still old photo]
+    F --> G[Support ticket filed<br/>app feels broken]
+    G --> H[Read-your-writes:<br/>route author to primary]
+    H --> I[Session token tracks<br/>last write timestamp]
+```
+*Normal path: write to primary, read from replica. Trigger: application reads from replica before replication lag closes. Failure: from user's perspective, their own writes are silently discarded.*
+
 **A user updates their profile picture. They refresh the page. They see their old picture. They update it again. Refresh. Old picture again. They try a third time — still the old photo. They file a support ticket: "Your app is broken and keeps deleting my changes." Your support engineer opens the database admin panel and sees the new picture. It's been there the whole time. The app isn't broken. The user is reading from a replica that's 3 seconds behind the primary. But from their perspective, their writes are being silently ignored. You've created an experience that feels like data loss, even though no data was lost.**
 
 ---

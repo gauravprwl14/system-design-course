@@ -13,6 +13,23 @@ status: "published"
 
 # OpenTelemetry: Unified Instrumentation for Traces, Metrics, and Logs
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SDK[OTel SDK\nNode.js / Java / Python] --> Auto[Auto-Instrumentation\nHTTP + DB + queues]
+    SDK --> Manual[Manual Spans\nbusiness logic]
+    Auto --> Context[W3C traceparent header\ncontext propagation]
+    Manual --> Context
+    Context --> Collector[OTel Collector\nrouter + processor]
+    Collector --> Jaeger[Jaeger / Tempo\ntrace storage]
+    Collector --> Prometheus[Prometheus\nmetrics]
+    Collector --> Loki[Loki\nlogs with trace_id]
+    Jaeger --> Debug[Click slow trace\nfind bottleneck in 10s]
+```
+
+*OTel's W3C traceparent header threads a single trace_id across all services — one click from symptom to root cause in Jaeger.*
+
 **A checkout request takes 4.2 seconds. You have logs from 6 services.** Each log entry has a timestamp. You spend 3 hours manually correlating timestamps across services, trying to find where the 4.2 seconds went. You sort grep results. You compare epoch milliseconds. You build a mental model of the call chain. Then you find it: the fraud service took 3.8 seconds, and here's why — it was doing a synchronous call to an external API that was having a slow day. Distributed tracing would have told you this in 10 seconds: click the slow trace, expand the fraud service span, see the external API call, see the 3.8s duration, see the HTTP status code. Done.
 
 This is not a tutorial on what OpenTelemetry is. This is how to wire it through a real Node.js microservices app — SDK setup, context propagation, sampling configuration, and the trace-to-logs correlation that makes it actually useful.

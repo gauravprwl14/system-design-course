@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/slo-error-budget-design.png"
 
 # SLO and Error Budgets: Definition, Measurement, and Budget Policy
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SLI[SLI: What to Measure\ne.g. % requests < 200ms] --> SLO[SLO: Target\ne.g. 99.9% over 30 days]
+    SLO --> Budget[Error Budget\n= 1 - SLO = 43.2 min/month]
+    Budget --> Burn{Budget Burning?}
+    Burn -->|Fast burn 14x| Page[Page on-call immediately]
+    Burn -->|Slow burn 1x| Ticket[Create ticket]
+    Burn -->|Budget exhausted| Freeze[Deploy freeze + reliability sprint]
+    Budget --> Policy[Budget Policy\nfreeze deploys when < 10% left]
+    Policy --> Culture[Engineering Culture\nbalances features vs reliability]
+```
+
+*Error budgets turn abstract SLOs into operational decisions — the budget tells you whether to ship new features or fix reliability.*
+
 **Every team thinks they have SLOs. Most teams have uptime percentages calculated from the wrong boundary, measuring the wrong thing, with policies nobody enforces.** A 99.9% SLO measured at your load balancer means nothing if DNS resolution, CDN, and client-side JavaScript add another 800ms of latency that your SLO ignores. Getting the measurement boundary right is the hardest, most important part of SLO design.
 
 ---

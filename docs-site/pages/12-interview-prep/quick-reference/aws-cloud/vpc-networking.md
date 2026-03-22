@@ -14,6 +14,23 @@ tags: [aws, vpc, networking, subnets, security-groups, nacl, nat-gateway, vpc-pe
 
 # AWS VPC Networking: Design, Subnets, and Connectivity
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Internet Gateway] --> B[Public Subnet: ALB + NAT GW]
+    B --> C[Private Subnet: App Servers]
+    C --> D[DB Subnet: RDS — no internet access]
+    B --> E[NAT Gateway — outbound only for private instances]
+    C --> F[Security Group: stateful, instance level]
+    B --> G[NACL: stateless, subnet level]
+    C --> H[VPC Endpoint — private route to S3 / DynamoDB]
+    I[VPC Peering] -->|1:1, non-transitive| C
+    J[Transit Gateway] -->|Hub-and-spoke, 100s of VPCs| C
+```
+
+*3-tier VPC separates ALB, app servers, and DB into distinct subnets. Security Groups are stateful; NACLs are stateless.*
+
 > **Common Interview Question**: "Walk me through how you'd design the VPC architecture for a 3-tier web application. What's the difference between Security Groups and NACLs? A private EC2 instance needs internet access to download patches — how do you set this up without exposing it to inbound traffic?"
 
 Common in: AWS Solutions Architect, Senior Backend, Platform/Infrastructure, Cloud Architecture interviews

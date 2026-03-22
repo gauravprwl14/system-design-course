@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/cost-monitoring-finops.png"
 
 # Cloud Cost Monitoring: Attribution, Anomaly Detection, and FinOps Culture
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Bill[AWS Bill: $400K/month\nno team attribution] --> Tags[Tagging Taxonomy\nteam + env + service + feature]
+    Tags --> Attribution[Cost Attribution\nper team dashboard]
+    Attribution --> Anomaly[Anomaly Detection\n+20% day-over-day alert]
+    Anomaly --> Alert[Slack alert within hours\nnot end of month]
+    Alert --> Action[Team investigates\nrunaway workload stopped]
+    Attribution --> Showback[Showback: visibility\nno chargeback yet]
+    Showback --> Chargeback[Chargeback: team pays\nwhen culture mature]
+```
+
+*Tagging taxonomy is the foundation — without consistent tags, cost attribution is impossible and anomalies are invisible until the monthly bill arrives.*
+
 **Your AWS bill increased $180,000 in one month. Finance wants to know why. Engineering says "probably something scaled up." Neither can point to the specific service, team, or feature that caused it.** This is the FinOps gap: teams build and deploy freely, but cost accountability is murky, retrospective, and therefore unactionable. By the time you see the bill, the expensive workload has been running for 30 days.
 
 The solution is not budget alerts (reactive). It is cost attribution architecture that makes every team's spend visible in real time, with anomaly detection that catches runaway workloads within hours — not months.

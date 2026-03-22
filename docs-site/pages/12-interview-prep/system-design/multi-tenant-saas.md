@@ -27,6 +27,25 @@ tags: [multi-tenancy, saas, isolation, databases, postgresql, compliance, gdpr]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    TenantA["Tenant A"] --> Gateway["API Gateway (tenant routing)"]
+    TenantB["Tenant B"] --> Gateway
+    TenantC["Tenant C"] --> Gateway
+    Gateway --> AppCluster["App Cluster (shared)"]
+    AppCluster --> TenantResolver["Tenant Resolver / Middleware"]
+    TenantResolver --> SharedDB["Shared DB with RLS"]
+    TenantResolver --> DedicatedDB["Dedicated DB (enterprise)"]
+    AppCluster --> SharedCache["Shared Cache (Redis + tenant prefix)"]
+    AppCluster --> StorageBucket["Object Storage (per-tenant prefix)"]
+```
+
+*All tenants enter through the same gateway; a middleware resolves tenant identity and enforces row-level security so shared infrastructure never leaks data across tenants, with dedicated DB as an option for large enterprise accounts.*
+
+---
+
 ## 🎯 Quick Answer (30 seconds)
 
 A multi-tenant SaaS platform serves thousands of customers (tenants) from shared infrastructure. The core challenge is balancing isolation (tenants cannot see each other's data), cost efficiency (can't give each tenant their own server), and operational simplicity (can't manage 100,000 separate databases manually). The three isolation models — silo, bridge, and pool — represent different points on this spectrum. Most modern SaaS platforms use a hybrid approach: pool for small tenants, silo for enterprise customers with strict compliance requirements.

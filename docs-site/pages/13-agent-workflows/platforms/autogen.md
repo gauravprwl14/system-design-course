@@ -21,6 +21,25 @@ tags: [autogen, microsoft, ag2, conversational-agents, groupchat, human-in-loop]
 
 > AutoGen's core insight: agents that talk to each other in natural language can solve problems that no single agent can — and that conversation is the control plane.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    USER[UserProxyAgent\nhuman input mode] --> ASST[AssistantAgent\nwrites code / reasons]
+    ASST --> EXEC[ExecutorAgent\nruns code in sandbox]
+    EXEC -->|errors| ASST
+    EXEC -->|output| ASST
+    ASST -->|review| REV[Reviewer Agent\ncritiques solution]
+    REV -->|approve| USER
+    REV -->|reject| ASST
+
+    GC[GroupChat\nmanager routes messages] --> ASST
+    GC --> EXEC
+    GC --> REV
+```
+
+*AutoGen uses natural-language conversation between ConversableAgents as the control plane; GroupChat routes messages between agents.*
+
 ## The Problem
 
 Some tasks genuinely require multiple independent reviewers. Code generation is the clearest example: an agent writes code, another reviews it, a third runs it and reports errors, the first fixes them. If you wire this as a fixed pipeline, you miss the case where the reviewer disagrees with the fixer's approach and needs to push back. AutoGen treats this as a **conversation between agents** — natural language messages flow between agents until the group converges on a solution.

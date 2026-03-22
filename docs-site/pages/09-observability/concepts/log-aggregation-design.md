@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/log-aggregation-design.png"
 
 # Log Aggregation: ELK vs Loki, Structured Logging, and Retention Strategy
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Services[50 Services\n500GB logs/day] --> Schema[Structured Log Schema\nJSON with trace_id + level + service]
+    Schema --> Router[Vector / Fluentd\nrouting layer]
+    Router --> Hot[Hot Tier: Loki/ES\n7-day fast query]
+    Router --> Warm[Warm Tier: S3\n30-day compressed]
+    Warm --> Cold[Cold Tier: Glacier\n1-year archive]
+    Hot --> Hybrid[Hybrid 2026\nLoki for recent + ES for analytics]
+    Hybrid --> TraceCorr[trace_id correlation\njump from log to trace]
+```
+
+*Structured logging is the foundation — without JSON fields, even the best aggregation stack degrades to expensive grep on beautiful hardware.*
+
 **Every production incident starts the same way: someone opens a terminal and types `grep ERROR`.** That works for one service. At 100 services with 500GB of logs per day, you need a system that can answer "show me all errors from the payment service in the last 15 minutes, correlated with the deploy that happened at 14:32" — in under 3 seconds.
 
 The tooling choice (ELK vs Loki) is secondary to getting structured logging right. A perfectly configured Elasticsearch cluster ingesting unstructured logs is still a system where you run `grep` on expensive hardware.

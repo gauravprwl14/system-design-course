@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/redis-data-structures-deep-dive.png"
 
 # Redis Data Structures: Choosing the Right Type for Your Access Pattern
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    UseCase[Access Pattern] --> Q1{Key-Value lookup?}
+    Q1 -->|Single value| String[String]
+    Q1 -->|Multiple fields| Hash[Hash]
+    Q1 -->|Ordered ranking| SortedSet[Sorted Set ZADD/ZRANK]
+    Q1 -->|Unique count estimate| HLL[HyperLogLog]
+    Q1 -->|Membership test| Bloom[Bloom Filter]
+    Q1 -->|Time-series / events| Streams[Streams XADD/XREAD]
+    Hash -->|< 128 fields, < 64B each| ZipList[Compact ZipList encoding]
+```
+
+*Each Redis data type maps to specific access patterns; using String for multi-field objects wastes 10x memory compared to Hash, while HyperLogLog provides cardinality estimates at fixed 12KB regardless of dataset size.*
+
 **Every Redis performance problem I've diagnosed in production starts with the same mistake: the engineer used String for everything.** That's 10x the memory of a Hash for small objects, O(N) scan where O(1) Hash lookup exists, and zero cardinality estimation where HyperLogLog saves 99% of memory. The right data structure is the most leverage point in Redis engineering — and it's decided once, early, and lived with forever.
 
 ---

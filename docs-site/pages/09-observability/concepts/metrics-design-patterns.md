@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/metrics-design-patterns.png"
 
 # Metrics Design: RED, USE, Four Golden Signals, and Cardinality Management
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Framework{Choose Framework} --> RED[RED Method\nfor Services\nRate + Errors + Duration]
+    Framework --> USE[USE Method\nfor Infrastructure\nUtilization + Saturation + Errors]
+    Framework --> GS[Four Golden Signals\nLatency + Traffic\n+ Errors + Saturation]
+    RED --> Cardinality[Label Design\nlow-cardinality only]
+    USE --> Cardinality
+    GS --> Cardinality
+    Cardinality --> Safe[Stable Prometheus\n< 1M time series]
+    Safe --> Histogram[Histogram > Summary\nfor percentiles]
+    Histogram --> Record[Recording Rules\npre-aggregate expensive queries]
+```
+
+*Pick RED for microservices, USE for hosts — the choice of framework matters less than enforcing low-cardinality label discipline.*
+
 **Your monitoring system goes down precisely when you need it most.** A Prometheus instance with 10 million active time series consumes 40GB of RAM and crashes under query load. This happens because someone added `{user_id="..."}` as a label to a request counter — innocent-looking, catastrophically wrong. Understanding *why* cardinality kills Prometheus, and how to design metrics that avoid it, separates engineers who build observable systems from engineers who build systems that are observable until you scale.
 
 ---

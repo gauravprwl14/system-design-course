@@ -13,6 +13,21 @@ status: "published"
 
 # Hot Partition / Celebrity Problem: When One User Breaks Your Database
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Celebrity posts<br/>Justin Bieber tweet] --> B[100M followers<br/>refresh feeds]
+    B --> C[All requests hash<br/>to same partition]
+    C --> D[Partition CPU 100%<br/>dropping requests]
+    D --> E[Other 31 partitions<br/>sit at 2% CPU]
+    D --> F[Users see errors<br/>on-call paged]
+    F --> G[Write Sharding<br/>add random suffix to key]
+    G --> H[Fan-out on write<br/>materialized views]
+    H --> I[Load distributed<br/>across partitions]
+```
+*Normal path: hash(user_id) → balanced partition. Trigger: celebrity account generates 1000x average traffic. Failure cascade: horizontal scaling helpless — all hot-item traffic still maps to one node.*
+
 **Justin Bieber posts a new photo. 100 million followers refresh their feeds in the next 60 seconds. All 100 million read requests hash to the same Cassandra partition — the one storing Bieber's user record and recent posts. That partition's CPU hits 100%. Cassandra starts dropping requests. Bieber's fans see errors. Your on-call engineer's phone starts ringing. Your "horizontally scalable" database has a single point of failure hiding in plain sight: popular people. This is the celebrity problem, and it has taken down more production systems than any database bug.**
 
 ---

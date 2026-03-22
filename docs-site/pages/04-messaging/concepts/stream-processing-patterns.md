@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/stream-processing-patterns.png"
 
 # Stream Processing: Kafka Streams, Flink, and Stateful Processing at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    KafkaTopic[Kafka Input Topic] --> KStreams[Kafka Streams / Flink]
+    KStreams --> Window[Tumbling / Sliding Window]
+    Window --> StateStore[Stateful Aggregation RocksDB]
+    StateStore --> Checkpoint[Checkpoint to S3]
+    KStreams --> OutputTopic[Kafka Output Topic]
+    OutputTopic --> Sink[Sink: Dashboard / DB / Alert]
+    Checkpoint -->|On failure| Restore[Restore from checkpoint]
+```
+
+*Stream processors consume from Kafka, maintain keyed state in local RocksDB for windowed aggregations, and checkpoint state to durable storage — allowing exactly-once recovery without replaying the full event log from the beginning.*
+
 **Stream processing is batch processing without the batch boundaries — and that changes everything about how you handle state, failures, and time.** Getting the distinction between event time and processing time wrong is how you build dashboards that show different numbers every time you reload them.
 
 ---

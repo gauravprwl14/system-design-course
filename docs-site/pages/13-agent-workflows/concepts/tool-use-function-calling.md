@@ -22,6 +22,20 @@ tags: [tools, function-calling, llm, json-schema, agents]
 
 > Tools are how agents escape the prison of training data — they can search, compute, read files, and call APIs instead of guessing.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    LLM[LLM decides to call a tool] --> JSON[Output structured JSON\ntool name + args]
+    JSON --> DISPATCH[Your code dispatches\nthe function]
+    DISPATCH --> FUNC[Actual function runs\nweb search / DB / API]
+    FUNC --> RESULT[Result returned]
+    RESULT --> LLM
+    LLM -->|enough info| ANSWER[Final Answer]
+```
+
+*Function calling gives the LLM a formal contract — output JSON, your code executes the function, result flows back for the next reasoning step.*
+
 ## The Problem
 
 LLMs are frozen in time. They know what was in their training data, but they can't:

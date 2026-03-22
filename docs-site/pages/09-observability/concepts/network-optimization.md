@@ -14,6 +14,20 @@ featured_image: "/assets/diagrams/network-optimization.png"
 
 # Network Optimization: TCP Tuning, HTTP/2, and Protocol Selection at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Baseline[85ms request\n12ms logic\n73ms overhead] --> TCP[TCP Keep-Alive\neliminate handshake per request]
+    TCP --> TLS13[TLS 1.3\n1-RTT handshake vs 2-RTT]
+    TLS13 --> HTTP2[HTTP/2 Multiplexing\neliminate head-of-line blocking]
+    HTTP2 --> ConnPool[Connection Pool\nreuse connections across requests]
+    ConnPool --> gRPC[gRPC over HTTP/2\nbinary + streaming]
+    gRPC --> Result[12ms effective latency\n86% reduction]
+```
+
+*73ms of "unavoidable" network overhead is actually fully recoverable — TCP reuse, TLS 1.3, and HTTP/2 eliminate it layer by layer.*
+
 **Your service-to-service calls average 85ms. Your actual business logic takes 12ms. The other 73ms is network overhead you've accepted as "just how it works."** TCP handshakes, TLS negotiation, and HTTP/1.1 request serialization are eating the majority of your latency budget — and all of it is recoverable.
 
 ---

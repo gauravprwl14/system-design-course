@@ -21,6 +21,22 @@ tags: [react, reasoning, chain-of-thought, tool-use, agents]
 
 > ReAct is the simplest recipe for an agent that actually works: let the LLM think out loud before every action, and show it what happened after.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Q[User Query] --> T[Thought\nwhat do I need?]
+    T --> A[Action\ntool call]
+    A --> O[Observation\ntool result]
+    O --> T2[Thought\ndo I have enough?]
+    T2 -->|no| A2[Action\nanother tool call]
+    A2 --> O2[Observation]
+    O2 --> T3[Thought\nyes — ready to answer]
+    T3 --> FA[Final Answer]
+```
+
+*ReAct interleaves Thought → Action → Observation in a loop so the LLM reasons before each action and updates based on real results.*
+
 ## The Problem
 
 Early approaches to LLM agents tried two extremes:

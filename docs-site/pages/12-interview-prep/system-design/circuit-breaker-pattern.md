@@ -25,6 +25,21 @@ tags: [circuit-breaker, resilience, distributed-systems, netflix, hystrix, fault
 
 # Circuit Breaker Pattern - Building Resilient Distributed Systems
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client Service"] --> CB["Circuit Breaker"]
+    CB -->|Closed state| Downstream["Downstream Service"]
+    Downstream -->|Failure threshold exceeded| CB
+    CB -->|Open state| Fallback["Fallback / Cache Response"]
+    CB -->|Half-open probe| Downstream
+    CB --> Metrics["Metrics (error rate, latency)"]
+    Metrics --> CB
+```
+
+*The circuit breaker wraps downstream calls and transitions through Closed → Open → Half-Open states; when open it short-circuits to a fallback, protecting the system from cascading failures while probing for recovery.*
+
 ## What You'll Learn
 
 Master the **Circuit Breaker pattern** used by Netflix, Amazon, and every resilient distributed system:

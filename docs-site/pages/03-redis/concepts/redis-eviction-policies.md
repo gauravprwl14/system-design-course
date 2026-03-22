@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/redis-eviction-policies.png"
 
 # Redis Eviction Policies: Memory Pressure, Hot Keys, and LFU vs LRU
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Write[New Write to Redis] --> Check{maxmemory reached?}
+    Check -->|No| Store[Store Key]
+    Check -->|Yes| Policy{Eviction Policy}
+    Policy -->|noeviction| Reject[Return OOM Error]
+    Policy -->|allkeys-lru| EvictLRU[Evict Least Recently Used]
+    Policy -->|allkeys-lfu| EvictLFU[Evict Least Frequently Used]
+    Policy -->|volatile-lru| EvictTTL[Evict LRU among keys with TTL]
+    EvictLRU --> Store
+    EvictLFU --> Store
+    EvictTTL --> Store
+```
+
+*When Redis reaches its memory limit each incoming write triggers the configured eviction policy; choosing the wrong one silently discards your most-needed keys or rejects writes entirely.*
+
 **When Redis hits `maxmemory`, it doesn't gracefully degrade — it either rejects writes or silently deletes your most important keys.** Which behavior you get depends entirely on the eviction policy, and most teams set it once without understanding the implications. LRU evicts recently-used keys during spikes (the ones you most need). LFU requires proper configuration or it behaves like random. Noeviction causes write failures that look like application bugs. The right policy is workload-specific and requires measurement to choose correctly.
 
 ---

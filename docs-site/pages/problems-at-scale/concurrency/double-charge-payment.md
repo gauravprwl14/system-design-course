@@ -13,6 +13,21 @@ status: "published"
 
 # Double Charge: When a Timeout Costs Your Customer Money
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User clicks Pay<br/>slow connection] --> B[Payment succeeds<br/>Stripe charges card]
+    B --> C[Response takes too long<br/>connection drops]
+    C --> D[Client shows error<br/>Payment failed]
+    D --> E[User clicks Pay again<br/>second charge]
+    E --> F[$598 charged for<br/>$299 purchase]
+    F --> G[Idempotency key<br/>sent with charge request]
+    G --> H[Stripe deduplicates<br/>returns prior result]
+    H --> I[One charge regardless<br/>of how many retries]
+```
+*Normal path: pay → confirm → one charge. Trigger: response lost after server-side success. Failure: client retries without idempotency key results in duplicate charges and chargebacks.*
+
 **A user clicks "Pay" on a slow connection. The payment succeeds on the server — Stripe charges the card, the database records the transaction. Then the response takes too long, the connection drops, and the client receives an error. The app shows "Payment failed. Please try again." The user clicks pay again. Stripe charges the card again. Your dashboard shows 2 successful charges for $299 each. The customer gets charged $598 for a $299 purchase.** They notice at 2 AM when they check their bank app. They dispute the charge. You've lost the customer and you're paying chargeback fees.
 
 This is payment idempotency failure — the most expensive type of race condition in production systems.

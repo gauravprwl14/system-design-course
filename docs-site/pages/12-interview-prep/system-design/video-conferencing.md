@@ -24,6 +24,24 @@ tags: [video-conferencing, webrtc, zoom, google-meet, real-time, media-server, s
 
 # Video Conferencing System Architecture (Zoom/Google Meet Scale)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    ParticipantA["Participant A"] --> SignalingServer["Signaling Server (WebSocket)"]
+    ParticipantB["Participant B"] --> SignalingServer
+    SignalingServer --> SFU["SFU Media Server (Selective Forwarding Unit)"]
+    ParticipantA --> SFU
+    ParticipantB --> SFU
+    SFU --> ParticipantA
+    SFU --> ParticipantB
+    SignalingServer --> SessionDB["Session DB (Redis)"]
+    SFU --> RecordingService["Recording Service (S3)"]
+    TURN["TURN Server (NAT traversal)"] --> SFU
+```
+
+*Participants exchange SDP via the signaling server to establish peer connections; the SFU forwards only the selected streams to each participant instead of a full mesh, dramatically reducing bandwidth at scale.*
+
 ## Overview
 
 Design a video conferencing platform that can handle:

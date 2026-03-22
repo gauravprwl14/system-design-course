@@ -15,6 +15,21 @@ tags: [security, encryption, rsa, aes, cryptography, tls]
 
 # RSA vs AES - Encryption Comparison
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Encryption need?} -->|Encrypt large data fast| B[AES — symmetric, same key]
+    A -->|Encrypt small data or exchange keys| C[RSA — asymmetric, public/private pair]
+    B --> D[AES-128 / 192 / 256 bits, very fast]
+    C --> E[RSA-2048+ bits, 100-1000x slower than AES]
+    F[TLS Handshake] --> C
+    C -->|Securely exchange AES session key| G[AES session key]
+    G -->|Encrypt all data traffic| H[Fast bulk encryption]
+```
+
+*RSA exchanges the key; AES does the actual data encryption. This hybrid is how TLS works.*
+
 **Interview Question**: *"What is the difference between RSA and AES encryption? When would you use each?"*
 
 **Difficulty**: 🟡 Intermediate

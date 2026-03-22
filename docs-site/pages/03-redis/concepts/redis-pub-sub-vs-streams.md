@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/redis-pub-sub-vs-streams.png"
 
 # Redis Pub/Sub vs Streams: Delivery Guarantees and Fan-Out Patterns
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Publisher[Publisher] -->|PUBLISH channel msg| PubSub[Redis Pub/Sub]
+    PubSub -->|Fire-and-forget| Sub1[Subscriber 1]
+    PubSub -->|Dropped if offline| Sub2[Subscriber 2 OFFLINE]
+    Publisher -->|XADD stream msg| Streams[Redis Streams]
+    Streams -->|Persisted| CG1[Consumer Group A]
+    Streams -->|ACK required| CG2[Consumer Group B]
+    CG1 -->|XACK on success| Streams
+```
+
+*Pub/Sub fans out instantly to online subscribers only and drops messages for any offline consumer; Streams persist every message and require explicit ACK, enabling at-least-once delivery with consumer groups.*
+
 **Redis Pub/Sub has exactly zero delivery guarantees — a subscriber that is 1ms slow drops messages forever.** This is not a bug; it is the designed behavior. Redis Streams, introduced in 5.0, provides persistence, consumer groups, and acknowledgment semantics that Pub/Sub will never have. The cost is 10x the operational complexity. Choosing between them requires understanding what you actually lose when a message is dropped.
 
 ---

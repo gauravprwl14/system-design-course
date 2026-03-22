@@ -22,6 +22,20 @@ tags: [communication, message-passing, shared-state, a2a, multi-agent, blackboar
 
 > The difference between a multi-agent system that scales and one that falls apart is how agents communicate — too tightly coupled and you get race conditions; too loosely coupled and you lose coherence.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    P1[Pattern 1\nShared Context Object] -->|all agents read/write\none state dict| SC[(Shared State)]
+    P2[Pattern 2\nMessage Passing] -->|structured envelopes\nthrough a queue| MQ[Message Queue]
+    P3[Pattern 3\nBlackboard] -->|publish/subscribe\nto domain sections| BB[Blackboard\nknowledge store]
+    SC --> SIMPLE[Simple, ordered\npipelines]
+    MQ --> ASYNC[Async, decoupled\nworkflows]
+    BB --> COMPLEX[Complex, event-driven\nmulti-agent systems]
+```
+
+*Three communication patterns — shared context, message passing, and blackboard — each trade coupling for consistency at different scales.*
+
 ## The Problem
 
 Once you have multiple agents, they need to share information. How?

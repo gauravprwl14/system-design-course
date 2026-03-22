@@ -21,6 +21,20 @@ tags: [acp, agent-protocol, rest, sse, streaming, ibm, beeai]
 
 > MCP is the tool layer. A2A is the agent-to-agent layer. ACP is the client layer — the standard interface between end-user applications and the agents that serve them.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    C[Client App\nweb / CLI / IDE] -->|REST + SSE| ACP[ACP Layer\nstandard HTTP]
+    ACP --> A1[LangChain Agent]
+    ACP --> A2[OpenAI Assistant]
+    ACP --> A3[Custom Agent]
+    A1 & A2 & A3 -->|tool calls| T[Tools / MCP]
+    A1 & A2 & A3 -->|delegate| AA[Other Agents\nvia A2A]
+```
+
+*ACP gives every client app one standard REST interface to reach any agent framework, eliminating per-framework SDKs.*
+
 ## The Problem
 
 When a user-facing application (a web app, CLI, IDE, mobile app) wants to communicate with an AI agent, there is no standard way to do it. Every agent framework ships its own client SDK with its own API shape:

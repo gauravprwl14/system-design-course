@@ -13,6 +13,21 @@ status: "published"
 
 # Thundering Herd: How Your Cache Expiry Killed Your Database
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Popular cache key<br/>TTL expires midnight] --> B[14,000 simultaneous<br/>cache misses]
+    B --> C[All query DB<br/>for same 2MB result]
+    C --> D[DB connection pool<br/>exhausted]
+    D --> E[PostgreSQL CPU 100%<br/>six services timeout]
+    E --> F[Cache killed the DB<br/>it was protecting]
+    F --> G[XFetch / mutex lock<br/>only one repopulates]
+    G --> H[Staggered TTL jitter<br/>TTL + random offset]
+    H --> I[Stale-while-revalidate<br/>serve old while refreshing]
+```
+*Normal path: cache hit → instant response. Trigger: synchronized TTL expiry at peak traffic. Failure cascade: the protection mechanism (cache) becomes the single point of failure when it expires.*
+
 **Your Redis cache expires at 00:00:00 after a scheduled TTL. In the next 847 milliseconds, 14,000 concurrent requests all miss the cache, all query the database simultaneously, all load the same 2MB result set, all try to write it back to Redis. Your PostgreSQL CPU hits 100%. Six services time out waiting for DB connections. Your cache just killed your database.**
 
 ---

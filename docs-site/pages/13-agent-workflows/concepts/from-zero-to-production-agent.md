@@ -15,6 +15,23 @@ tags: [learning-path, roadmap, getting-started, production, beginner-guide]
 
 > Most tutorials get you to "hello world in 50 lines." This roadmap gets you to production: cost-controlled, observable, failure-resilient, and ready for real users.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    W1[Week 1\nFoundations\nLLM + tools + ReAct]
+    W2[Week 2\nCore Patterns\nRAG + memory + prompt eng]
+    W3[Week 3\nMulti-Agent\norchestrator + workers]
+    W4[Week 4\nProduction Hardening\ncost + observability + failures]
+    W5[Week 5\nStandards\nMCP + A2A + ACP]
+    W6[Week 6\nReal-World Study\nOpenClaw + case studies]
+
+    W1 --> W2 --> W3 --> W4 --> W5 --> W6
+    W6 --> PROD[Production Ready]
+```
+
+*Six progressive stages take you from first LLM call to a cost-controlled, observable, failure-resilient production agent system.*
+
 ## The Journey at a Glance
 
 ```mermaid

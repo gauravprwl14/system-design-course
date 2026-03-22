@@ -18,6 +18,23 @@ tags: [gdpr, pci-dss, soc2, compliance, privacy, audit-logging, tokenization, en
 
 **Compliance is not a checkbox audit — it's an architectural constraint that shapes every data model, API, and logging decision you make.**
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    FRAMEWORK{Compliance Framework} --> GDPR[GDPR<br/>EU data residency<br/>Right to erasure]
+    FRAMEWORK --> PCI[PCI-DSS<br/>Card data scope<br/>Tokenization]
+    FRAMEWORK --> SOC2[SOC2 Type II<br/>Audit logging<br/>Access controls]
+    GDPR --> RESIDENCY[Data Residency<br/>EU-only storage]
+    PCI --> TOKEN[Tokenize PANs<br/>Reduce scope]
+    SOC2 --> AUDIT[Immutable audit log<br/>Every data access]
+    RESIDENCY --> ARCH[Compliant Architecture]
+    TOKEN --> ARCH
+    AUDIT --> ARCH
+```
+
+*GDPR, PCI-DSS, and SOC2 each impose distinct architectural constraints; designing for all three from the start is cheaper than retrofitting compliance after breaches or audits.*
+
 ## The Problem
 
 A startup launches a SaaS product. Engineers design the system the natural way: log everything for debugging, store user data wherever it's convenient, use production database dumps to test new features. The product ships, customers love it, growth is rapid.

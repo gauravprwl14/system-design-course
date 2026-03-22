@@ -21,6 +21,21 @@ tags: [routing, intent, classifier, handoff, specialization]
 
 > A single generalist agent degrades at scale. Routing — sending each query to the best specialist — is how production systems stay accurate and fast.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    Q[Incoming Query] --> R[Router\nfast / cheap LLM]
+    R --> D{Classified Intent}
+    D -->|code| CA[Code Agent\nrepo tools]
+    D -->|data / analytics| AA[Analytics Agent\nSQL + charts]
+    D -->|support / billing| SA[Support Agent\nCRM + ticketing]
+    D -->|general| GA[General Agent\nno specialized tools]
+    CA & AA & SA & GA --> RESP[Specialist Response]
+```
+
+*Intent classification by a fast cheap model routes each query to the right specialist, keeping each agent's context lean and accurate.*
+
 ## The Problem
 
 A single LLM trying to handle all tasks simultaneously is like a surgeon also handling billing and reception. It can do all three, but poorly. Specialization wins.

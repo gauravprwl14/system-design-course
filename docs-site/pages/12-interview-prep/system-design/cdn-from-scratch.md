@@ -19,6 +19,23 @@ tags: [cdn, caching, dns, edge-computing, networking, distributed-systems]
 
 # Design a CDN from Scratch
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    A[User: Tokyo] -->|GeoDNS / Anycast BGP| B[Edge POP: Tokyo]
+    B -->|Cache HIT| A
+    B -->|Cache MISS| C[Regional POP: Asia]
+    C -->|Cache MISS| D[Origin Server: Virginia]
+    D -->|Response| C
+    C -->|Backfill cache| B
+    E[TTL / Purge API] --> B
+    F[TLS Termination] --> B
+    G[DDoS Absorption] --> B
+```
+
+*Three-tier cache hierarchy: Edge POP → Regional POP → Origin. Cache misses travel up the chain; hits serve locally.*
+
 **Interview Question**: *"Design a Content Delivery Network (CDN) like Cloudflare or Akamai"*
 
 **Difficulty**: 🔴 Advanced

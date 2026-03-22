@@ -21,6 +21,23 @@ level: intermediate
 
 > An agent that loops 200 times instead of 20 doesn't cost 10× more — it costs 100× more, because each step pays for the entire accumulated context.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    TRIGGER[Unbound loop / wide fan-out] --> STEP[Each step pays\nfor full accumulated context]
+    STEP --> GROW[Context grows per step\ncost is superlinear]
+    GROW --> BILL[Unexpected bill\n$10k+ overnight]
+
+    FIX1[Step limit cap] --> GUARD[Guards]
+    FIX2[Token budget per run] --> GUARD
+    FIX3[Model routing cheap tasks] --> GUARD
+    FIX4[Spending alert + kill switch] --> GUARD
+    GUARD -->|prevents| BILL
+```
+
+*Agent costs compound because every step re-sends the entire accumulated context; hard caps and alerts stop runaway before the bill arrives.*
+
 ---
 
 ## The Problem Class `[Agent Cost — Severity: High]`

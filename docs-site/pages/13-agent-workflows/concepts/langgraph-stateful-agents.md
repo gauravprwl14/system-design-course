@@ -23,6 +23,22 @@ tags: [langgraph, stateful, graph, workflow, conditional-edges, nodes, state-sch
 
 > LangGraph turns agent workflows into explicit, inspectable graphs — instead of a chain of function calls you pray works, you get a directed graph where every node, edge, and state transition is visible and testable.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    IN([START]) --> PLAN[Planner Node\nLLM decides next step]
+    PLAN --> COND{Tool call\nor done?}
+    COND -->|tool call| TOOL[Tool Node\nexecute function]
+    TOOL --> UPDATE[State Update\nappend result to messages]
+    UPDATE --> PLAN
+    COND -->|done| OUT([END])
+    PLAN -->|human approval edge| HITL[Human-in-Loop\ncheckpoint]
+    HITL --> PLAN
+```
+
+*LangGraph models the agent loop as a directed graph: planner nodes decide, tool nodes execute, state accumulates, conditional edges handle routing and human interrupts.*
+
 ## The Problem
 
 As agent workflows grow more complex — conditional routing, loops, human interrupts, parallel branches — a simple while loop becomes unmanageable:

@@ -21,6 +21,22 @@ tags: [human-in-loop, approval, escalation, review, hitl, oversight]
 
 > Full automation is the goal for repetitive low-risk tasks. For everything else, knowing when to pause and ask a human is the difference between a useful agent and a dangerous one.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Agent] --> CHECK{Risky action?}
+    CHECK -->|no - reversible, low-cost| AUTO[Execute automatically]
+    CHECK -->|yes - irreversible / high-cost| PAUSE[Pause & enqueue\napproval request]
+    PAUSE --> HUMAN[Human Reviews\nweb UI / Slack / email]
+    HUMAN -->|approve| RESUME[Agent resumes]
+    HUMAN -->|reject / edit| CORRECT[Agent corrects plan]
+    HUMAN -->|timeout| ESCALATE[Escalate or abort]
+    AUTO & RESUME & CORRECT --> NEXT[Continue workflow]
+```
+
+*Agents pause on irreversible or high-cost actions, route an approval request to a human, then resume or correct based on the response.*
+
 ## The Problem
 
 Agents can act at machine speed — which means they can make mistakes at machine speed too. An agent that sends 1,000 emails, deletes 500 records, or processes $50,000 in refunds before a human notices the error is far worse than one that pauses and asks.

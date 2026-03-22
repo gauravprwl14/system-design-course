@@ -14,6 +14,24 @@ featured_image: "/assets/diagrams/latency-percentiles.png"
 
 # Latency Percentiles: p50, p99, p999 and Why Averages Lie
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Requests[10,000 RPS] --> p50[p50 = 45ms\n5,000 users/sec fast]
+    Requests --> p99[p99 = 800ms\n100 users/sec slow]
+    Requests --> p999[p999 = 4s\n10 users/sec very slow]
+    p50 --> Avg[Average = 48ms\nlooks green]
+    p99 --> Avg
+    p999 --> Avg
+    Avg --> Lie[Average hides tail latency]
+    p999 --> Revenue[Revenue loss\ncart abandonment > 3s]
+    p99 --> SLO[SLO target p99 < 200ms]
+    SLO --> HDR[HDR Histogram\naccurate tail measurement]
+```
+
+*At 10,000 RPS, a p999 of 4 seconds means 10 users per second hitting a wall your average dashboard never shows.*
+
 **Your average latency is 45ms. Your users are furious. Both facts are true simultaneously — and that's the problem.** Averages are a lossy compression of a distribution. Percentiles are the compression that preserves what actually matters: the tail.
 
 ---

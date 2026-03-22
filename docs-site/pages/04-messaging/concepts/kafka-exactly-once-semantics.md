@@ -14,6 +14,26 @@ featured_image: "/assets/diagrams/kafka-exactly-once-semantics.png"
 
 # Kafka Exactly-Once: Idempotent Producers, Transactions, and EOS Pitfalls
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant Producer as Idempotent Producer
+    participant Broker as Kafka Broker
+    participant TxCoord as Transaction Coordinator
+    participant Consumer as EOS Consumer
+
+    Producer->>TxCoord: beginTransaction()
+    Producer->>Broker: Produce msg (PID + seq)
+    Broker->>Broker: Deduplicate by PID+seq
+    Producer->>TxCoord: commitTransaction()
+    TxCoord->>Broker: Mark txn COMMITTED
+    Consumer->>Broker: Fetch (isolation=read_committed)
+    Broker-->>Consumer: Only committed messages
+```
+
+*Idempotent producers stamp each message with a producer ID and sequence number so the broker can detect and drop retries; transactions group produce + consumer-offset commits atomically so consumers only see committed results.*
+
 **Every messaging system promises "at-least-once" delivery. Kafka's exactly-once semantics (EOS) is one of the few industrial implementations that actually works — but it costs 20% throughput and introduces new failure modes most teams don't account for.** This article covers the mechanics, the configuration, and where EOS breaks down.
 
 ---

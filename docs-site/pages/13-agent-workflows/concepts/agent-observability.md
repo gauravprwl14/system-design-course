@@ -22,6 +22,21 @@ tags: [observability, tracing, metrics, logging, langsmith, langfuse, debugging]
 
 > Without observability, debugging an agent failure is like debugging a program with no stack traces — you see the crash but not why it happened.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    RUN[Agent Run] --> SPAN[Run Span\ncost · steps · latency · outcome]
+    SPAN --> TS[Tool Spans\nname · args · result · duration]
+    SPAN --> LS[LLM Spans\nprompt · completion · tokens]
+    SPAN --> MS[Memory Spans\nretrieval · hit/miss]
+    SPAN --> HS[Human Spans\napproval wait time]
+    SPAN --> BACKEND[Observability Backend\nLangSmith / Langfuse / OTEL]
+    BACKEND --> DASH[Dashboards\nAlerts · Replay · Debug]
+```
+
+*Every agent run becomes a nested trace of spans — tool calls, LLM calls, memory ops — exported to an observability backend for debugging and alerting.*
+
 ## The Problem
 
 An agent fails on 2% of user requests. Your logs show the error: "Max steps exceeded." But you don't know:

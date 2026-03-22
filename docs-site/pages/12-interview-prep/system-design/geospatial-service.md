@@ -26,6 +26,25 @@ tags: [geospatial, proximity-search, geohash, quadtree, uber, yelp, maps]
 
 ---
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client (mobile)"] --> Gateway["API Gateway"]
+    Gateway --> QueryService["Proximity Query Service"]
+    QueryService --> GeoCache["Geo Cache (Redis GEOSET)"]
+    QueryService --> GeoDB["Geospatial DB (PostGIS / Cassandra)"]
+    GeoDB --> GeohashIndex["Geohash / Quadtree Index"]
+    Driver["Driver App"] --> LocationService["Location Update Service"]
+    LocationService --> GeoCache
+    LocationService --> EventStream["Event Stream (Kafka)"]
+    EventStream --> GeoDB
+```
+
+*Driver location updates are written to an in-memory Redis geospatial set for sub-millisecond proximity queries; a Kafka stream durably persists updates to the geo database with a quadtree index.*
+
+---
+
 ## The Core Problem
 
 You have 100 million points on a sphere (Earth). A user at (lat=37.7749, lng=-122.4194) queries: *"give me 10 restaurants within 5km."*

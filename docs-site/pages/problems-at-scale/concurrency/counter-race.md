@@ -13,6 +13,21 @@ status: "published"
 
 # Lost Counter Updates: The Race Condition Silently Eating Your Analytics
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[50,000 concurrent viewers<br/>each increments counter] --> B[All read counter = 12,847<br/>simultaneously]
+    B --> C[All compute 12,847 + 1<br/>= 12,848]
+    C --> D[All write 12,848<br/>back to DB]
+    D --> E[Counter shows 12,848<br/>should be 62,847]
+    E --> F[37,153 views lost<br/>silent data corruption]
+    F --> G[Redis INCR<br/>atomic increment]
+    G --> H[Counter sharding<br/>merge at read time]
+    H --> I[Accurate counts<br/>at any scale]
+```
+*Normal path: read → add 1 → write. Trigger: concurrent requests all read the same value before any write completes. Failure: silent under-counting worsens with popularity — the more traffic, the more data lost.*
+
 **A YouTube video goes viral. 50,000 concurrent viewers are watching. Your view counter shows 12,847. The real count should be 50,000. Where did 37,153 views go?** They were lost in a race condition that's been silently eating your analytics for months. Every spike in traffic makes it worse. The more popular your content, the more inaccurate your data. And because the counter is just wrong — not broken, not erroring — nobody noticed.
 
 This is the lost update problem on shared counters. It's one of the most pervasive silent bugs in production systems.

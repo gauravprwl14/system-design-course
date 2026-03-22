@@ -13,6 +13,21 @@ status: "published"
 
 # Database Hotspots: When Your Sharding Makes Things Worse
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[32 shards<br/>theoretically balanced] --> B[Popular item traffic<br/>e.g. Beyonce record]
+    B --> C[All requests hash<br/>to Shard 7]
+    C --> D[Shard 7 at 99% CPU<br/>dropping queries]
+    D --> E[Shards 1-6, 8-32<br/>at 2% CPU idle]
+    D --> F[Users see errors<br/>on popular item only]
+    F --> G[Consistent hashing<br/>with virtual nodes]
+    G --> H[Write sharding<br/>key + random suffix]
+    H --> I[Read from multiple<br/>shards, merge results]
+```
+*Normal path: hash(key) distributes evenly across shards. Trigger: traffic concentration on a small set of hot keys. Failure: horizontal scaling provides zero relief for hot items.*
+
 **You have 32 database shards. Your dashboard shows 31 are at 2% CPU. One is at 99% CPU and dropping queries. Thousands of users can't load their data. Your on-call engineer is staring at the load distribution chart, which looks like a ski jump: a flat line punctuated by a single vertical spike. You sharded your database to distribute load. Instead, you concentrated it. Your shard key was chosen by someone who didn't understand that distributing keys is not the same as distributing traffic.**
 
 ---

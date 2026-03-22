@@ -50,6 +50,21 @@ tags:
 
 # Design a Payment System (Stripe / PayPal)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User initiates payment<br/>with idempotency key] --> B[API Gateway<br/>duplicate detection]
+    B --> C[Payment Service<br/>create charge record]
+    C --> D[Card Network<br/>Visa / Mastercard]
+    D --> E{Approved?}
+    E --> F[Confirm transaction<br/>update DB atomically]
+    E --> G[Decline → return error<br/>no retry hazard]
+    F --> H[Outbox Pattern<br/>emit payment event]
+    H --> I[Ledger / Reconciliation<br/>double-entry accounting]
+```
+*Normal path: request → card network → confirmation → ledger. Key challenge: exactly-once payment processing across network timeouts, retries, and distributed state.*
+
 **Difficulty**: 🔴 Advanced
 **Time**: 60 minutes
 **Companies**: Stripe, PayPal, Square, Visa, Mastercard, Adyen, Braintree

@@ -20,6 +20,21 @@ tags: [agents, fundamentals, llm, tools, memory]
 
 > A chatbot responds to what you say. An agent acts on what you need — and keeps going until it's done.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    USER[User Query] --> AGENT[Agent: LLM reasoning\nbrain + memory + tools]
+    AGENT --> D{Need a tool?}
+    D -->|yes| TOOL[Execute Tool\nsearch / DB / API]
+    TOOL --> OBS[Observe Result]
+    OBS --> AGENT
+    D -->|no| ANS[Final Answer]
+    ANS --> USER2[User]
+```
+
+*An agent combines an LLM brain, memory, tools, and an action loop — cycling until the task is done rather than stopping after one response.*
+
 ## The Problem
 
 A plain LLM call is stateless and single-turn: you send a prompt, you get back text. That's fine for summarization or Q&A. But what about a task like: "Research the top 5 competitors to our product, write a comparison table, and save it to our Notion workspace"?

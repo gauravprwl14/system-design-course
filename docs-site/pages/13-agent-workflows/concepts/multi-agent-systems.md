@@ -21,6 +21,20 @@ tags: [multi-agent, orchestration, parallelism, specialization, topology]
 
 > When tasks outgrow a single agent — too long, too parallel, or too complex — multiple specialized agents working together get the job done faster and more reliably.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    USER[User Goal] --> ORC[Orchestrator\ndecomposes task]
+    ORC --> A1[Specialist Agent A\nresearch]
+    ORC --> A2[Specialist Agent B\ncoding]
+    ORC --> A3[Specialist Agent C\nwriting]
+    A1 & A2 & A3 -->|parallel execution| SYNTH[Orchestrator\nsynthesizes results]
+    SYNTH --> OUT[Final Output]
+```
+
+*Multi-agent systems overcome context limits and sequential bottlenecks by distributing sub-tasks across parallel specialist agents coordinated by an orchestrator.*
+
 ## The Problem
 
 A single agent hits three ceilings:

@@ -29,6 +29,25 @@ tags: [checkout, e-commerce, payments, inventory, idempotency, saga, amazon]
 **Asked by**: Amazon, Shopify, eBay, Walmart, Stripe, Square
 **Time to Answer**: 15-20 minutes
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> Gateway["API Gateway"]
+    Gateway --> CartService["Cart Service"]
+    CartService --> InventoryService["Inventory Service (Redis atomic)"]
+    CartService --> PricingService["Pricing Service"]
+    CartService --> CheckoutOrchestrator["Checkout Orchestrator (Saga)"]
+    CheckoutOrchestrator --> PaymentService["Payment Service"]
+    CheckoutOrchestrator --> OrderService["Order Service"]
+    CheckoutOrchestrator --> FulfillmentService["Fulfillment Service"]
+    PaymentService --> PaymentGateway["Payment Gateway (Stripe)"]
+    OrderService --> OrderDB["Order DB (Postgres)"]
+    InventoryService --> InventoryDB["Inventory DB"]
+```
+
+*A saga orchestrator coordinates inventory reservation, payment, and order creation as atomic steps with compensating transactions to roll back on any failure, preventing double charges and overselling.*
+
 ---
 
 ## The Triple Constraint

@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/secret-management.png"
 
 # Secret Management: HashiCorp Vault, KMS, and Secret Rotation at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SVC[Service / Pod] -->|Workload identity| VAULT[HashiCorp Vault<br/>or AWS Secrets Manager]
+    VAULT -->|Dynamic credential| DB_CRED[DB Username + Password<br/>TTL: 15 minutes]
+    VAULT -->|Dynamic credential| CLOUD_KEY[Cloud API Key<br/>TTL: 1 hour]
+    DB_CRED --> DB[(Database)]
+    VAULT --> KMS[KMS Envelope Encryption<br/>Seal / unseal]
+    SVC -->|Lease expiry| RENEW[Auto-renew or re-issue]
+    RENEW --> VAULT
+    VAULT --> AUDIT[Audit Log<br/>Every secret access]
+```
+
+*Dynamic secrets issued with short TTLs shrink the breach window from months to minutes; Vault centralises issuance, rotation, and audit logging across all services.*
+
 **Your `.env` file is a liability that compounds with every new service, every new engineer, and every new environment.** Static secrets never expire, proliferate across CI systems and developer laptops, and turn a single credential breach into a months-long compromise. Dynamic secrets — credentials that exist for minutes, not months — fundamentally change the attacker's economics.
 
 ---

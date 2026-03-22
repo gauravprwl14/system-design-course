@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/dead-letter-queue-design.png"
 
 # Dead Letter Queue Design: Poison Pills, Retry Strategies, and Reprocessing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Topic[Kafka Topic / SQS Queue] --> Consumer[Consumer]
+    Consumer -->|Success| ACK[ACK - message committed]
+    Consumer -->|Failure| Retry{Retry count < max?}
+    Retry -->|Yes| Backoff[Exponential backoff + jitter]
+    Backoff --> Consumer
+    Retry -->|No| DLQ[Dead Letter Queue]
+    DLQ --> Inspector[DLQ Inspector / Alert]
+    Inspector -->|Fix + replay| Topic
+```
+
+*Failed messages retry with exponential backoff until a maximum attempt threshold; messages that exceed the threshold are moved to the DLQ for manual inspection and safe reprocessing after the bug is fixed.*
+
 **A DLQ is where messages go to die — but the real challenge is preventing the DLQ from killing your system first.** Poorly designed retry loops block partitions, DLQ consumers can backpressure the primary topic, and reprocessing without deduplication causes the exact duplicate processing you built the DLQ to avoid.
 
 ---

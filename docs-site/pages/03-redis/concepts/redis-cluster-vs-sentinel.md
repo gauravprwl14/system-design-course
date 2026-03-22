@@ -14,6 +14,26 @@ featured_image: "/assets/diagrams/redis-cluster-vs-sentinel.png"
 
 # Redis HA: Cluster vs Sentinel — Architecture Decisions at Production Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    subgraph Sentinel["Sentinel (Single Shard HA)"]
+        S1[Sentinel 1] & S2[Sentinel 2] & S3[Sentinel 3]
+        Primary[Primary] --> Replica[Replica]
+        S1 -->|Monitor + Failover| Primary
+    end
+    subgraph Cluster["Redis Cluster (Horizontal Sharding)"]
+        Shard1[Shard 1 Primary+Replica]
+        Shard2[Shard 2 Primary+Replica]
+        Shard3[Shard 3 Primary+Replica]
+        Shard1 <-->|Gossip| Shard2
+        Shard2 <-->|Gossip| Shard3
+    end
+```
+
+*Sentinel provides automated failover for a single primary-replica pair; Cluster shards data across multiple primaries for horizontal scale — each shard handles its own failover via the gossip protocol.*
+
 **Redis Sentinel and Redis Cluster are not interchangeable HA options — they solve orthogonal problems.** Sentinel is a failure detector and automatic failover orchestrator for a single primary-replica pair. Cluster is a horizontally sharded system where each shard is a Sentinel-equivalent. Picking Cluster when you need Sentinel adds 3x operational complexity for zero benefit. Picking Sentinel when you need Cluster means you'll be doing emergency resharding during your first Black Friday traffic spike.
 
 ---

@@ -21,6 +21,22 @@ tags:
 
 # Hashing vs Encryption - The Critical Difference
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A{Operation type?} -->|Need to recover original value| B[Encryption — reversible]
+    A -->|Verify without recovering| C[Hashing — one-way]
+    C -->|Passwords| D[bcrypt / Argon2 — slow by design]
+    C -->|Data integrity / checksums| E[SHA-256 — fast]
+    B -->|Symmetric| F[AES — same key encrypt/decrypt]
+    B -->|Asymmetric| G[RSA — public key encrypt, private decrypt]
+    D --> H[Add salt to prevent rainbow table attacks]
+    E --> I[Fixed-length output regardless of input size]
+```
+
+*Never encrypt passwords — hash them. Never use fast hashes like MD5/SHA-1 for passwords.*
+
 **Interview Question**: *"What is the difference between hashing and encryption? When would you use each?"*
 
 **Difficulty**: 🟢 Beginner

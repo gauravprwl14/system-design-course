@@ -23,6 +23,22 @@ tags: [cqrs, event-sourcing, read-write-separation, distributed-systems, scalabi
 
 # CQRS Pattern - Command Query Responsibility Segregation
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Client["Client"] --> CommandSide["Command Side (writes)"]
+    Client --> QuerySide["Query Side (reads)"]
+    CommandSide --> CommandHandler["Command Handler"]
+    CommandHandler --> WriteDB["Write DB (normalized)"]
+    CommandHandler --> EventStore["Event Store / Kafka"]
+    EventStore --> Projector["Event Projector"]
+    Projector --> ReadDB["Read DB (denormalized)"]
+    QuerySide --> ReadDB
+```
+
+*Commands mutate the write model and emit events; projectors consume those events to build optimized read models, completely decoupling read and write throughput scaling.*
+
 ## What You'll Learn
 
 Master the **CQRS pattern** for scaling read-heavy systems:

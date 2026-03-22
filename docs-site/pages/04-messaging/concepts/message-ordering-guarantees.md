@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/message-ordering-guarantees.png"
 
 # Message Ordering: Per-Partition, Per-Key, and Global Ordering Trade-offs
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Messages[Order Events] --> KeyHash{Partition by order_id}
+    KeyHash --> P1[Partition 1: orders 1,3,5]
+    KeyHash --> P2[Partition 2: orders 2,4,6]
+    P1 --> C1[Consumer 1 - ordered within partition]
+    P2 --> C2[Consumer 2 - ordered within partition]
+    P1 & P2 --> GlobalNote[No global order across partitions]
+    SQS_FIFO[SQS FIFO] -->|Global order, 300 msg/s limit| GlobalOrder[Global Ordering]
+```
+
+*Kafka guarantees ordering per partition per key — all events for one order ID land on the same partition and are processed in sequence; global ordering across partitions requires SQS FIFO but caps throughput at 300 msg/s.*
+
 **The more ordering you guarantee, the less throughput you get.** This is not a coincidence — it's a fundamental theorem of distributed systems. This article maps ordering requirements to the right primitive, so you don't accidentally sacrifice 10× throughput for an ordering guarantee you don't need.
 
 ---

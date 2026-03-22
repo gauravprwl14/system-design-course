@@ -24,6 +24,22 @@ tags: [single-agent, architecture, state, context, tools]
 
 > Before adding more agents, make sure one agent with the right tools can't already do the job — complexity compounds, and single agents are far easier to debug.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    U[User Input] --> STATE[State Layer\nconversation history]
+    STATE --> LLM[LLM\nreasoning engine]
+    LLM -->|tool call| DISPATCH[Tool Dispatcher]
+    DISPATCH --> T1[Tool A]
+    DISPATCH --> T2[Tool B]
+    DISPATCH --> T3[Tool C]
+    T1 & T2 & T3 --> STATE
+    LLM -->|done| OUT[Final Answer]
+```
+
+*A single agent runs one LLM that reads accumulated state, dispatches tools, and loops until done — simpler to debug and sufficient for most production tasks.*
+
 ## The Problem
 
 Most real-world tasks that "sound complex" can be handled by a single agent with a good set of tools and a clear system prompt. The temptation to immediately go multi-agent is real, but it introduces coordination overhead, communication failures, and debugging complexity you often don't need.

@@ -25,6 +25,24 @@ tags: [video-streaming, cdn, distributed-systems, netflix, youtube, adaptive-bit
 
 # Video Streaming Platform Architecture (Netflix/YouTube Scale)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Creator["Content Creator"] --> UploadService["Upload Service"]
+    UploadService --> RawStorage["Raw Video Storage (S3)"]
+    RawStorage --> TranscodeWorker["Transcoding Workers"]
+    TranscodeWorker --> CDNOrigin["CDN Origin (multi-bitrate segments)"]
+    CDNOrigin --> EdgeNode["CDN Edge Nodes"]
+    Viewer["Viewer"] --> Gateway["API Gateway"]
+    Gateway --> StreamService["Streaming Service"]
+    StreamService --> MetadataDB["Metadata DB (video info)"]
+    StreamService --> EdgeNode
+    EdgeNode --> Viewer
+```
+
+*Uploaded videos are transcoded into adaptive-bitrate (ABR) segments stored at CDN origin; viewers receive a manifest and stream the nearest edge node, scaling playback independently of upload processing.*
+
 ## Overview
 
 Design a video streaming platform like Netflix or YouTube that can handle:

@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/mtls-certificate-management.png"
 
 # mTLS at Scale: Certificate Management, Rotation, and Service Mesh Integration
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    CA[Root CA<br/>Offline / HSM-protected] --> ICA[Intermediate CA<br/>cert-manager / Vault]
+    ICA -->|Auto-issue short-lived certs| SVC_A[Service A<br/>SPIFFE identity]
+    ICA -->|Auto-issue short-lived certs| SVC_B[Service B<br/>SPIFFE identity]
+    SVC_A -->|mTLS handshake| SVC_B
+    SVC_B -->|Verify peer cert| SPIRE[SPIRE / Istio<br/>Identity verification]
+    ICA --> ROTATE[Auto-rotate before expiry<br/>90 day certs, rotate at 60]
+    ROTATE --> SVC_A
+    ROTATE --> SVC_B
+```
+
+*Automated certificate issuance and rotation via a service mesh removes the manual expiry risk; SPIFFE identities bind certs to workload identity, not IP address.*
+
 **A certificate expired at 3am and took down your entire payment processing pipeline.** Not because nobody knew it would expire — cert-manager had been sending warnings for a week — but because the rotation process required a manual kubectl command that nobody ran, in a namespace owned by a team that didn't get the alert. Certificate management at scale is fundamentally an automation problem, not a cryptography problem.
 
 ---

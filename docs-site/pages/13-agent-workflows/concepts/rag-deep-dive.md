@@ -22,6 +22,26 @@ tags: [rag, retrieval, vector-store, embeddings, chunking, reranking]
 
 > Without RAG, LLMs answer questions about your documents by hallucinating. With RAG, they answer from the actual document — and cite their sources.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    subgraph Indexing
+        DOC[Documents] --> CHUNK[Chunking]
+        CHUNK --> EMBED[Embed chunks\nvector model]
+        EMBED --> VS[Vector Store]
+    end
+    subgraph Query
+        Q[User Query] --> QE[Embed query]
+        QE --> SEARCH[Similarity search\nvector store]
+        SEARCH --> RERANK[Rerank top-K]
+        RERANK --> CTX[Inject context\ninto LLM prompt]
+        CTX --> LLM[LLM generates\ngrounded answer]
+    end
+```
+
+*RAG has two phases: offline indexing (chunk → embed → store) and online retrieval (embed query → search → inject → generate).*
+
 ## The Problem
 
 An LLM trained up to some date doesn't know about:

@@ -23,6 +23,22 @@ tags: [tool-registry, dynamic-discovery, semantic-search, versioning, rate-limit
 
 > When you have 5 tools, hardcode them. When you have 500, you need a registry — dynamic discovery, semantic search, versioning, auth, rate limiting, and audit logs all in one place.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Agent] -->|semantic search query| REG[Tool Registry]
+    REG --> DS[Discovery Service\nvector search on descriptions]
+    REG --> AUTH[Auth & ACL\nwhich agents can call what]
+    REG --> VER[Version Store\ntool schema + changelog]
+    REG --> RL[Rate Limiter\nper-agent quotas]
+    REG --> AUDIT[Audit Log\nwho called what + args]
+    DS -->|matching tool schemas| A
+    A -->|call tool| EXEC[Tool Executor]
+```
+
+*The registry sits between agents and tools, providing dynamic discovery, access control, versioning, rate limiting, and a full audit trail at scale.*
+
 ## The Problem
 
 A simple agent is built with a hardcoded list of 5-10 tools. This works fine at small scale. But as your platform grows:

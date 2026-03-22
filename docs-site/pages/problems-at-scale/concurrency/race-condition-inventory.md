@@ -13,6 +13,20 @@ status: "published"
 
 # Inventory Overselling: How Flash Sales Break Your Warehouse
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[1 unit in stock<br/>500 concurrent buyers] --> B[All 500 read stock = 1<br/>all pass availability check]
+    B --> C[All 500 decrement<br/>stock goes to -499]
+    C --> D[47 order confirmations<br/>sent]
+    D --> E[Warehouse has 1 phone<br/>46 unfulfillable orders]
+    E --> F[Atomic DB operation<br/>UPDATE ... WHERE stock > 0]
+    F --> G[Redis DECR<br/>atomic decrement]
+    G --> H[SELECT FOR UPDATE<br/>pessimistic lock]
+```
+*Normal path: read stock → check > 0 → decrement. Trigger: concurrent requests all pass the check before any decrement completes. Failure: overselling scales with traffic — the more popular the item, the worse the damage.*
+
 **You have 1 iPhone left in stock. 500 users hit "Add to Cart" simultaneously during a product drop. 47 of them get order confirmations. Your warehouse has 1 phone.** Your fulfillment team discovers the problem when they go to pick the orders. 46 customers have already received shipping notifications. Your customer service queue fills up overnight, and tomorrow morning you're authorizing $50,000 in cancellation refunds.
 
 This is inventory overselling. It's one of the most financially damaging race conditions in e-commerce, and it scales in severity with your traffic — the more popular the product, the worse the damage.

@@ -21,6 +21,23 @@ tags: [orchestrator, worker, multi-agent, task-decomposition, delegation]
 
 > One agent plans; many agents execute. The orchestrator is the brain, workers are the hands — and neither does the other's job.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    USER[User Task] --> ORC[Orchestrator Agent\ndecomposes + synthesizes]
+    ORC -- sub-task 1 --> W1[Worker: Specialist A]
+    ORC -- sub-task 2 --> W2[Worker: Specialist B]
+    ORC -- sub-task 3 --> W3[Worker: Specialist C]
+    W1 --> RES[Results]
+    W2 --> RES
+    W3 --> RES
+    RES --> ORC
+    ORC --> FINAL[Final Response]
+```
+
+*The orchestrator decomposes the task and dispatches stateless, single-purpose workers in parallel; results are synthesized into one response.*
+
 ## The Problem
 
 When a task has multiple independent sub-tasks, a single agent processes them one at a time: research company A, then company B, then company C. If each takes 30 seconds, 10 companies takes 5 minutes. With parallelism, it should take 30 seconds.

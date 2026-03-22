@@ -13,6 +13,21 @@ status: "published"
 
 # Connection Pool Starvation: When Your App Freezes at Deploy Time
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[500 app pods<br/>10 connections each] --> B[5,000 connections<br/>attempted]
+    B --> C[DB max_connections: 100<br/>hard limit]
+    C --> D[4,900 requests queue<br/>waiting for connection]
+    D --> E[Requests timeout<br/>then retry]
+    E --> F[App freezes<br/>8+ minutes]
+    F --> G[PgBouncer / RDS Proxy<br/>connection pooler]
+    G --> H[500 pods → pooler<br/>pooler → 100 DB conns]
+    H --> I[Deployment completes<br/>in seconds]
+```
+*Normal path: pool has free connections, requests proceed. Trigger: pods × pool_size exceeds DB max_connections. Failure cascade: self-inflicted DoS on your own database at every deploy.*
+
 **Deployments at your company take 10 minutes. Not because of build time. Not because of tests. Because every time you deploy, the app freezes for 8 minutes while every request times out waiting for a database connection that never comes. Your database has 100 max connections. You have 500 app instances. Each instance is trying to maintain a pool of 10 connections. Do the math: you need 5,000 connections, you have 100. The other 4,900 requests queue. Then they time out. Then they retry. Then they make it worse. Your "scalable" Kubernetes deployment has been quietly DoS-ing your own database since the day you hit 50 pods.**
 
 ---

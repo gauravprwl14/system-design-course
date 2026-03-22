@@ -22,6 +22,25 @@ tags: [long-running, checkpointing, async, human-in-loop, reliability]
 
 > Most agent tutorials show you a 5-step demo. Production agents run for minutes, hours, or days — and need to survive crashes, wait for humans, and resume where they left off.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    TASK[Long Task\nminutes / hours / days] --> LOOP[Agent Loop]
+    LOOP --> CHK[Checkpoint every K steps\npersist to DB / disk]
+    LOOP --> HITL{Needs human approval?}
+    HITL -->|yes| PAUSE[Pause + notify human]
+    PAUSE --> RESUME[Resume on approval]
+    RESUME --> LOOP
+    HITL -->|no| LOOP
+    LOOP --> CRASH{Crash?}
+    CRASH -->|yes| LOAD[Load last checkpoint]
+    LOAD --> LOOP
+    LOOP --> DONE[Task complete]
+```
+
+*Long-running agents require checkpointing for crash recovery, async execution, and human-in-the-loop pause points for irreversible actions.*
+
 ## The Problem
 
 Short agents are simple: run a loop, get an answer, done. Long-running agents face a different set of problems:

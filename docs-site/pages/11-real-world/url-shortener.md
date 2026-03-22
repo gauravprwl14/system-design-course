@@ -37,6 +37,21 @@ tags:
 
 # Design a URL Shortener (like bit.ly)
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[User submits long URL] --> B[Hash / ID Generator<br/>Base62 encode]
+    B --> C[Store mapping<br/>short → long in DB]
+    C --> D[Return short URL<br/>e.g. short.ly/abc123]
+    E[User visits short URL] --> F[Redis Cache<br/>check hot mappings]
+    F --> G{Cache hit?}
+    G --> H[301/302 Redirect<br/>to original URL]
+    G --> I[DB lookup<br/>then cache + redirect]
+    H --> J[Analytics: track<br/>clicks, referrers]
+```
+*Normal path: shorten request → Base62 ID → DB store. Read path: short URL → Redis cache hit → 301 redirect. Read:write ratio is ~100:1, so caching is critical.*
+
 **Difficulty**: 🟢 Beginner
 **Time**: 45 minutes
 **Companies**: Amazon, Google, Microsoft, Meta (most common interview question)

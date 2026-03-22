@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/zero-trust-architecture.png"
 
 # Zero Trust Architecture: Never Trust, Always Verify at Service Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    REQUEST[Any Request] --> VERIFY[Identity Verification<br/>Every request, every time]
+    VERIFY --> mTLS[mTLS Peer Auth<br/>SPIFFE workload identity]
+    VERIFY --> AUTHZ[Policy Engine<br/>OPA / Envoy RBAC]
+    mTLS --> ALLOW{Authorized?}
+    AUTHZ --> ALLOW
+    ALLOW -->|Yes| RESOURCE[Resource Access<br/>Least privilege]
+    ALLOW -->|No| DENY[Deny + Audit log]
+    RESOURCE --> SEGMENT[Microsegmentation<br/>No lateral movement]
+    DENY --> ALERT[Security Alert]
+```
+
+*Zero Trust eliminates implicit trust from network location; every service-to-service call is mutually authenticated, authorized by policy, and logged — regardless of whether it's inside the VPC.*
+
 **Your VPN just became your biggest attack surface.** Once an attacker is inside the perimeter, they move laterally unimpeded — your database, your internal APIs, your secrets manager are all one hop away. Zero Trust eliminates the concept of a trusted network. Every request is verified, every connection is authenticated, every privilege is minimized.
 
 ---

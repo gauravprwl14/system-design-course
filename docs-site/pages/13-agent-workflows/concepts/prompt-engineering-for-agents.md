@@ -22,6 +22,21 @@ tags: [prompt-engineering, system-prompt, few-shot, chain-of-thought, tool-descr
 
 > A chatbot prompt sets tone. An agent prompt defines behavior across dozens of tool calls, error states, and edge cases — and bad prompts cause real production failures.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    SP[System Prompt] --> ROLE[1. Identity & Role]
+    SP --> TOOLS[2. Tool Descriptions\nwhen to use each]
+    SP --> RULES[3. Decision Rules\nwhen to act vs ask]
+    SP --> FORMAT[4. Output Format]
+    ROLE & TOOLS & RULES & FORMAT --> BEHAVIOR[Agent Behavior\nacross all steps]
+    BEHAVIOR -->|ambiguity| FAIL[Wrong tool / infinite loop\n/ bad JSON]
+    BEHAVIOR -->|clarity| SUCCESS[Reliable execution]
+```
+
+*A production agent system prompt has four mandatory sections — miss any one and reliability breaks down across multi-step execution.*
+
 ## The Problem
 
 Prompt engineering for chatbots is relatively forgiving — if the model gives a slightly off-toned response, you iterate. Prompt engineering for agents is high-stakes: a bad system prompt causes the agent to call the wrong tool, enter an infinite loop, produce unparseable JSON, or make destructive API calls in the wrong order.

@@ -13,6 +13,20 @@ status: "published"
 
 # N+1 Query Problem: 50,001 Queries Where You Expected 1
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Fetch 50,000 orders<br/>1 query] --> B[ORM lazy-loads<br/>user for each order]
+    B --> C[50,000 individual<br/>user queries]
+    C --> D[50,001 total queries<br/>each 1ms round-trip]
+    D --> E[50+ seconds total<br/>database meltdown]
+    E --> F[Eager loading<br/>JOIN or include]
+    F --> G[DataLoader batching<br/>for GraphQL]
+    G --> H[2 queries total<br/>15ms response]
+```
+*Normal path: 1 query returns all data. Trigger: ORM lazy-loads related entities per row. Failure cascade: query count scales linearly with result set size, invisible in dev with small datasets.*
+
 **A product listing page loads in 85ms on your laptop. In production with 50,000 products and 200 concurrent users, it takes 47 seconds and melts your database. You have 50,001 queries happening where you expected 1. The query plan looks fine. Indexes exist. The database itself isn't slow. The problem is that you're calling it 50,001 times. Welcome to the N+1 problem — the most common performance bug that ships to production and the one your ORM is most aggressively hiding from you.**
 
 ---

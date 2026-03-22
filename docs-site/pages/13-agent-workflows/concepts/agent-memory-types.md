@@ -22,6 +22,20 @@ tags: [memory, vector-store, rag, episodic, context-window, agents]
 
 > The context window is working memory — finite and expensive. Real agents need layers of memory, just like real brains.
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Agent LLM] --> IC[In-Context\nConversation + recent results\nfast, expensive per token]
+    A --> EM[External / Semantic\nVector store\nretrieve by relevance]
+    A --> EP[Episodic\nPast run summaries\ncheap long-term recall]
+    A --> PM[Procedural\nSystem prompt + instructions\nstatic, always present]
+    IC -->|overflows| EM
+    EP -->|injected on demand| IC
+```
+
+*Four memory layers — in-context, external, episodic, and procedural — let agents manage what's hot in the window vs. stored and retrieved on demand.*
+
 ## The Problem
 
 An agent's LLM has a context window: it can only "see" a fixed number of tokens at once (e.g., 128K tokens for GPT-4o, 200K for Claude). Every tool result, every reasoning step, and every conversation turn adds tokens. Eventually the context fills up and either:

@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/redis-persistence-rdb-aof.png"
 
 # Redis Persistence: RDB vs AOF vs No-Persistence Trade-off at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Write[Write to Redis] --> Memory[In-Memory Dataset]
+    Memory -->|RDB: snapshot every N min| RDB[RDB Snapshot .rdb]
+    Memory -->|AOF: log every write| AOF[Append-Only File .aof]
+    RDB -->|On restart| Reload[Reload from disk]
+    AOF -->|On restart| Reload
+    AOF -->|fsync always| MaxDurability[Max durability, 3x write amp]
+    AOF -->|fsync every sec| BalancedDurability[~1s data loss window]
+    Memory -->|No persistence| NoData[Data lost on restart]
+```
+
+*RDB snapshots have a minutes-long data loss window but cheap writes; AOF logs every command for near-zero data loss at the cost of write amplification; the right choice depends on each data type's durability requirement.*
+
 **Redis persistence is not a binary choice — it's a three-dimensional trade-off between data loss window, write throughput, and operational complexity.** Most teams configure it once during initial setup, discover its implications during a 3am incident, and never revisit it. The wrong combination costs either $200K in lost transactions or 40% of your write throughput. Both outcomes are avoidable.
 
 ---

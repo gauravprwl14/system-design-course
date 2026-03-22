@@ -22,6 +22,21 @@ tags: [safety, guardrails, prompt-injection, pii, toxicity, constitutional-ai]
 
 > An agent with no guardrails is a security vulnerability waiting to be exploited — and "we didn't expect users to try that" is not a defense.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    INPUT[User Input] --> IG[Input Guard\ninjection / toxicity / PII]
+    IG --> AGENT[Agent Loop]
+    AGENT -->|tool call| AG[Action Guard\nallowlist / arg validation]
+    AG --> TOOL[Tool Execution]
+    TOOL --> AGENT
+    AGENT -->|draft output| OG[Output Guard\nPII redaction / hallucination check]
+    OG --> USER[User]
+```
+
+*Guardrails wrap the agent at three layers — input, action, and output — so no single attack vector can cause a catastrophic side effect.*
+
 ## The Problem
 
 Agents are more dangerous than chatbots because they can take actions. A chatbot that's tricked into saying something harmful is bad. An agent that's tricked into deleting records, sending emails on your behalf, or exfiltrating data is catastrophic.

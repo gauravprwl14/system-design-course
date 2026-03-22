@@ -22,6 +22,21 @@ tags: [planning, chain-of-thought, tree-of-thought, rewoo, reflection, self-crit
 
 > Execution without planning is thrashing. Planning without feedback is wishful thinking. The best agents do both.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    TASK[Complex Task] --> COT[Chain-of-Thought\nthink before acting]
+    TASK --> TOT[Tree-of-Thought\nexplore multiple paths]
+    TASK --> REWOO[ReWOO\nplan all tools upfront]
+    TASK --> REFLECT[Reflection\nself-critique & retry]
+    COT & TOT & REWOO & REFLECT --> PLAN[Execution Plan]
+    PLAN --> ACT[Agent Actions]
+    ACT -->|feedback| REFLECT
+```
+
+*Choose a planning pattern by task complexity: CoT for simple sequential tasks, ReWOO to cut token waste, Tree-of-Thought for exploratory problems, Reflection for self-correcting agents.*
+
 ## The Problem
 
 The basic agent loop (sense → act → observe → repeat) works for simple tasks. It fails for complex multi-step tasks because:

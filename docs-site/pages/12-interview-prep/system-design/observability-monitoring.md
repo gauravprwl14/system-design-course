@@ -23,6 +23,22 @@ tags: [observability, monitoring, metrics, logs, traces, prometheus, grafana, al
 
 # Observability & Monitoring - See What's Happening in Production
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Service["Production Service"] --> Metrics["Metrics (Prometheus)"]
+    Service --> Logs["Logs (ELK / Loki)"]
+    Service --> Traces["Traces (Jaeger / OpenTelemetry)"]
+    Metrics --> Dashboard["Grafana Dashboard"]
+    Logs --> Dashboard
+    Traces --> Dashboard
+    Dashboard --> Alerting["Alerting (PagerDuty)"]
+    Alerting --> OnCall["On-Call Engineer"]
+```
+
+*The three pillars — metrics, logs, and distributed traces — flow into a unified dashboard; anomalies trigger alerts that page the on-call engineer with enough context to debug without SSH-ing into servers.*
+
 ## What You'll Learn
 
 Master **observability** for understanding production systems:

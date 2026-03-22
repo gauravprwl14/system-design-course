@@ -14,6 +14,22 @@ tags: [aws, direct-connect, vpn, hybrid-cloud, networking, bgp, transit-gateway,
 
 # AWS Direct Connect & Site-to-Site VPN: Hybrid Connectivity
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    A[On-Premises Data Center] -->|IPSec tunnel, public internet| B[Site-to-Site VPN]
+    A -->|Dedicated fiber, AWS backbone| C[Direct Connect DX]
+    B --> D[Fast setup minutes, max ~1.25 Gbps, variable latency]
+    C --> E[1/10/100 Gbps, sub-10ms, consistent, weeks to provision]
+    C --> F[NOT encrypted by default — add IPSec over DX]
+    G[Best practice] --> H[DX as primary, VPN as failover via BGP]
+    C --> I[DX Gateway — one connection to multiple VPCs / regions]
+    I --> J[Transit Gateway — hundreds of VPCs via Transit VIF]
+```
+
+*DX for high-throughput or latency-sensitive workloads; VPN as fast setup or failover path. Never use DX without encryption.*
+
 > **Common Interview Question**: "Your company has a data center with 50TB/day of medical imaging data that needs to be processed in AWS. How do you connect your on-premises infrastructure? What happens if that connection goes down?"
 
 Common in: AWS Solutions Architect, Senior Infrastructure, Cloud Migration, and Platform Engineering interviews

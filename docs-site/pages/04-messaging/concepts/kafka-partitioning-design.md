@@ -14,6 +14,23 @@ featured_image: "/assets/diagrams/kafka-partitioning-design.png"
 
 # Kafka Partitioning: Ordering Guarantees, Hot Partitions, and Rebalancing
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Producer[Producer] -->|hash order_id| PartRouter[Partition Router]
+    PartRouter --> P1[Partition 0]
+    PartRouter --> P2[Partition 1]
+    PartRouter --> P3[Partition 2]
+    P1 --> C1[Consumer 1]
+    P2 --> C2[Consumer 2]
+    P3 --> C3[Consumer 3]
+    Celebrity[Celebrity User high volume] -->|Same key| HotPartition[Hot Partition - overloaded]
+    HotPartition -->|Backpressure| ConsumerLag[Consumer lag spike]
+```
+
+*All events with the same partition key route to the same partition and consumer, guaranteeing order per key; a key with disproportionate volume creates a hot partition that saturates a single broker and causes consumer lag.*
+
 **Partitioning is the most consequential architectural decision in a Kafka deployment.** Get it wrong and you face hot partitions that saturate brokers, stale ordering guarantees that corrupt downstream state, or eager rebalances that drop your p99 latency off a cliff every time a consumer restarts. This article covers the decisions that matter.
 
 ---

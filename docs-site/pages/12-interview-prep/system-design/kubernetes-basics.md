@@ -24,6 +24,26 @@ tags: [kubernetes, container-orchestration, docker, auto-scaling, devops, deploy
 
 # Kubernetes Basics - Container Orchestration at Scale
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Developer["Developer"] --> KubeCTL["kubectl / CI Pipeline"]
+    KubeCTL --> APIServer["API Server (control plane)"]
+    APIServer --> Scheduler["Scheduler"]
+    APIServer --> etcd["etcd (cluster state)"]
+    Scheduler --> Node1["Worker Node 1"]
+    Scheduler --> Node2["Worker Node 2"]
+    Node1 --> Pod1["Pod (containers)"]
+    Node2 --> Pod2["Pod (containers)"]
+    Service["Service (kube-proxy)"] --> Pod1
+    Service --> Pod2
+    Ingress["Ingress Controller"] --> Service
+    Client["External Client"] --> Ingress
+```
+
+*The control plane schedules pods onto worker nodes; Kubernetes Services provide stable virtual IPs with load balancing, and an Ingress controller handles external HTTP routing.*
+
 ## What You'll Learn
 
 Master **Kubernetes fundamentals** for deploying and managing containerized applications:

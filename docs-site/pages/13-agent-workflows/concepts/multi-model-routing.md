@@ -22,6 +22,20 @@ tags: [model-routing, fallback, latency-optimization, cost-optimization, model-s
 
 > No single model is best at everything. A well-routed pipeline uses GPT-4o-mini to classify, Claude Sonnet to reason, and Gemini for 300-page documents — at 60% of the cost of using the flagship model for everything.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    REQ[Incoming Request] --> ROUTER[Router\nclassify complexity + cost]
+    ROUTER -->|simple / cheap| SMALL[Small Model\nHaiku / GPT-4o-mini]
+    ROUTER -->|reasoning| MID[Mid-tier Model\nSonnet / GPT-4o]
+    ROUTER -->|long context| LARGE[Large Context Model\nGemini 1.5 Pro]
+    SMALL & MID & LARGE -->|failure| FALLBACK[Fallback to\nnext tier model]
+    SMALL & MID & LARGE --> OUT[Response]
+```
+
+*Route each task to the cheapest model that meets its quality bar; fall back to a stronger model only on failure — reducing cost by up to 60%.*
+
 ## The Problem
 
 Most teams start by routing every request to their best model (GPT-4o, Claude Opus). Then the bill arrives.

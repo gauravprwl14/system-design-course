@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/event-sourcing-design.png"
 
 # Event Sourcing: Event Store Design, Projections, and Snapshot Strategies
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph LR
+    Commands[Commands] --> Aggregate[Aggregate]
+    Aggregate -->|Append| EventStore[(Event Store append-only)]
+    EventStore --> P1[Projection: Account Balance]
+    EventStore --> P2[Projection: Audit Trail]
+    EventStore --> P3[Projection: Analytics]
+    Snapshot[Snapshot at event N] -->|Skip replay| Aggregate
+    EventStore -->|Rebuild from event 0| FullReplay[Full Projection Rebuild]
+```
+
+*All state changes are appended as immutable events; projections rebuild current state by replaying events — snapshots skip old events to keep replay fast as the event log grows.*
+
 **Event sourcing stores the sequence of facts that led to current state, not the state itself.** This unlocks audit trails, temporal queries, and projection rebuilding — but introduces a rebuild cost that grows linearly with event volume, projection consistency challenges, and schema evolution complexity that will break consumers if not managed carefully.
 
 ---

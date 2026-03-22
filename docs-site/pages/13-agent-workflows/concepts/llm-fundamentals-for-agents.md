@@ -20,6 +20,22 @@ tags: [llm, tokens, context-window, temperature, models, fundamentals]
 
 > Before you write a single line of agent code, you need to understand how LLMs actually work — because every design decision you make will depend on it.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    TEXT[Input text] --> TOK[Tokenizer\n~0.75 words / token]
+    TOK --> CW[Context Window\nhard token limit]
+    CW --> LLM[LLM Inference\ntemperature / top-p]
+    LLM --> OUT[Output tokens]
+    OUT --> COST[Billing\nper input + output token]
+
+    MODELS[Model Selection\nsize vs cost vs capability] --> LLM
+    TEMP[Temperature\ndeterminism vs creativity] --> LLM
+```
+
+*Every agent design decision — cost, context management, reliability — flows from how LLMs tokenize input, manage context, and bill per token.*
+
 ## The Problem
 
 Most developers jump into building agents using a framework before they understand the underlying model. Then they hit mysterious failures: the agent runs out of context halfway through a task, costs 10x more than expected, gives inconsistent results, or calls tools with garbled arguments. Almost all of these problems trace back to misunderstanding how LLMs work at a fundamental level.

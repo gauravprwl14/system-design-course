@@ -20,6 +20,27 @@ tags: [openai, assistants-api, threads, runs, file-search, code-interpreter]
 
 > The Assistants API is the difference between calling GPT-4 and deploying GPT-4: it adds durable state, built-in RAG, sandboxed code execution, and a managed run lifecycle — all without you writing the agent loop.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart TD
+    AST[Assistant\nmodel + instructions + tools] --> RUN[Run\nexecution instance]
+    THR[Thread\nconversation state] --> RUN
+    RUN --> STATUS{Run status}
+    STATUS -->|requires_action| TC[Tool call\nsubmit results]
+    TC --> RUN
+    STATUS -->|completed| MSG[Messages in Thread]
+    MSG --> USER[User reads response]
+
+    subgraph OpenAI Cloud
+        AST
+        THR
+        MSG
+    end
+```
+
+*The Assistants API manages four persistent objects in OpenAI's cloud — Assistant, Thread, Run, Message — eliminating the need to write the agent loop yourself.*
+
 ## The Problem
 
 The Chat Completions API is stateless — every call starts fresh. Building a stateful assistant means you manage conversation history, implement your own RAG pipeline, run code execution safely, handle retries, and stitch the tool call loop together. The Assistants API packages all of this as a managed service: you configure an assistant, OpenAI stores the state, and you just send messages.

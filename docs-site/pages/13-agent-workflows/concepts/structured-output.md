@@ -20,6 +20,22 @@ tags: [structured-output, json-mode, pydantic, output-parsing, reliability]
 
 > Free-form LLM text is flexible but unpredictable. Structured output turns LLM responses into data your code can actually use.
 
+## 🗺️ Quick Overview
+
+```mermaid
+flowchart LR
+    LLM[LLM output] --> T1[Technique 1\nJSON mode — prompt-based]
+    LLM --> T2[Technique 2\nTool-call trick\nforce via function schema]
+    LLM --> T3[Technique 3\nNative structured output\nAPI-enforced JSON schema]
+
+    T1 -->|fragile| VAL[Validation layer\nPydantic / Zod]
+    T2 -->|robust| VAL
+    T3 -->|guaranteed| VAL
+    VAL --> APP[Application code\ntype-safe data]
+```
+
+*Three progressively more reliable techniques bridge LLM text output to typed data; native structured output with schema enforcement is the production standard.*
+
 ## The Problem
 
 An LLM generates text. Your application needs data. Bridging the gap between natural language output and typed data structures is one of the most common pain points in production LLM systems.

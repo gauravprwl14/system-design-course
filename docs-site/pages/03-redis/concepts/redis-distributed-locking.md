@@ -14,6 +14,27 @@ featured_image: "/assets/diagrams/redis-distributed-locking.png"
 
 # Redis Distributed Locking: Redlock, Fencing Tokens, and When Not to Use Redis
 
+## 🗺️ Quick Overview
+
+```mermaid
+sequenceDiagram
+    participant P1 as Process 1
+    participant Redis as Redis (SET NX EX)
+    participant P2 as Process 2
+    participant Resource as Shared Resource
+
+    P1->>Redis: SET lock:key P1 NX EX 300ms
+    Redis-->>P1: OK (lock acquired)
+    Note over P1: GC pause 500ms
+    Redis->>Redis: Key expires after 300ms
+    P2->>Redis: SET lock:key P2 NX EX 300ms
+    Redis-->>P2: OK (lock acquired)
+    P1->>Resource: Access (STALE — lock already expired!)
+    P2->>Resource: Access (concurrent — both in critical section)
+```
+
+*A GC pause longer than the lock TTL causes the key to expire while the holder is frozen; the second process acquires the lock and both processes enter the critical section simultaneously.*
+
 **Every distributed lock tutorial shows the happy path. None of them show what happens when a JVM GC pause freezes your process for 500ms while holding a lock with a 300ms TTL.** That lock expires. Another process acquires it. Your first process resumes — unaware it no longer holds the lock — and now two processes are in the critical section simultaneously. Redis's single-node lock (`SET NX EX`) has a narrower version of this exact problem. Redlock has it too, just at a different failure boundary. Understanding these failure modes before you pick your locking primitive is the difference between "it works in testing" and "it's safe in production."
 
 ---

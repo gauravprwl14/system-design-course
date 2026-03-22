@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/ddos-protection.png"
 
 # DDoS Protection: Anycast, Rate Limiting, WAF, and Traffic Absorption
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    ATTACKER[Botnet Attack] --> ANYCAST[Anycast Network<br/>Absorb at edge PoPs]
+    ANYCAST --> SCRUB[Traffic Scrubbing<br/>L3/L4 filter]
+    SCRUB --> CDN[CDN / WAF<br/>L7 challenge pages]
+    CDN --> RL[Rate Limiting<br/>Per-IP / per-ASN]
+    RL --> ORIGIN[Origin Infrastructure]
+    CDN -->|Bot detected| CAPTCHA[CAPTCHA / JS challenge]
+    CAPTCHA -->|Fails| DROP[Drop traffic]
+    ORIGIN --> APP[Application Servers]
+```
+
+*Multi-layer DDoS defence absorbs volumetric traffic at edge Anycast PoPs, scrubs L3/L4 floods, and uses WAF challenges to filter L7 application-layer attacks before they reach the origin.*
+
 **A 300Gbps volumetric DDoS will saturate your data center's uplink before your application can respond to a single request.** Modern DDoS protection is not about building walls — it's about absorbing attacks at the edge, near the source, before malicious traffic reaches your infrastructure.
 
 ---

@@ -13,6 +13,21 @@ status: "published"
 
 # Split-Brain: 8 Minutes of Two Databases Both Thinking They're Primary
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Network switch fails<br/>DC-A ↔ DC-B severed] --> B[DC-B promotes itself<br/>to primary]
+    B --> C[DC-A still running<br/>as primary]
+    C --> D[Two primaries<br/>both accepting writes]
+    D --> E[DC-A: orders 1-500<br/>DC-B: orders 1-300]
+    E --> F[Network heals<br/>conflicting data]
+    F --> G[Which side wins?<br/>data loss either way]
+    G --> H[Quorum consensus<br/>Raft / Paxos]
+    H --> I[STONITH fencing<br/>shoot the other node]
+```
+*Normal path: one primary accepts all writes. Trigger: network partition severs datacenter communication. Failure cascade: both sides accept writes independently, creating unresolvable data conflicts.*
+
 **At 4:22 AM, a network switch fails in data center B. The cluster can't reach data center B anymore. But the nodes in B can still reach each other — and they can still accept writes. For 8 minutes, your 'single' database is actually two separate databases, both accepting writes, both thinking they're the primary. When connectivity is restored, you have 8 minutes of conflicting writes. Which do you keep?**
 
 ---

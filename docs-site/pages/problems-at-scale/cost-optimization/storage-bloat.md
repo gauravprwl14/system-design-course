@@ -13,6 +13,22 @@ status: "published"
 
 # Storage Bloat: Your Database Is a Landfill
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    A[Database 50GB<br/>3 years ago] --> B[Soft deletes accumulate<br/>deleted_at IS NOT NULL]
+    A --> C[Audit logs grow<br/>never queried after 90d]
+    A --> D[Retry bug 2023<br/>duplicate events never cleaned]
+    B --> E[Database 2.4TB today<br/>48x growth, 10x users]
+    C --> E
+    D --> E
+    E --> F[$18,000/month<br/>70% is garbage]
+    F --> G[Hard delete policy<br/>archive to S3/Athena]
+    G --> H[Table partitioning<br/>by date for pruning]
+```
+*Normal path: data grows with users. Trigger: no cleanup policy for soft deletes, logs, or orphaned records. Failure cascade: storage costs compound while query performance degrades from bloated indexes.*
+
 **Your database was 50GB three years ago. It's 2.4TB today. Your user count grew 10×. Your storage grew 48×. You're paying $18,000/month for database storage on AWS RDS. A junior engineer runs a few queries to understand what's in there: 40% is soft-deleted records with `deleted_at IS NOT NULL` that have been accumulating since 2021. 15% is audit log rows that your compliance team hasn't accessed in 18 months. 10% is orphaned rows pointing to users who no longer exist. 5% is duplicate event records from a retry bug in 2023 that was fixed but never cleaned up. You're paying $18,000/month for a storage layer that's 70% garbage. Your database is a landfill, and nobody wrote the cleanup job.**
 
 ---

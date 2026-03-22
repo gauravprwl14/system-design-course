@@ -14,6 +14,22 @@ featured_image: "/assets/diagrams/database-query-performance.png"
 
 # Database Query Performance: Slow Query Analysis, Index Hints, and N+1 Prevention
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    SlowQuery[Slow Query Detected\np99 spike] --> Stats[pg_stat_statements\nfind top offenders]
+    Stats --> Explain[EXPLAIN ANALYZE\nread query plan]
+    Explain --> SeqScan{Seq Scan on\nlarge table?}
+    SeqScan -->|Yes| Index[Add Index\nreduces 10M-row scan to ms]
+    SeqScan -->|No| NPlus1{N+1 Pattern?}
+    NPlus1 -->|Yes| Join[Rewrite with JOIN\nor DataLoader batch]
+    NPlus1 -->|No| Lock[Check Lock Contention\npg_locks]
+    Index --> Cache[Query Result Cache\nRedis for repeated queries]
+```
+
+*80% of database latency regressions are three patterns: missing index, N+1 queries, and lock contention — pg_stat_statements surfaces them in seconds.*
+
 **A single unmissed N+1 query pattern under production load can take a service from 50ms to 8,000ms response time at scale — and it will show up as "application slow" in your metrics, not "database slow."** Database query performance failures are the most common source of production latency regressions that look like everything except what they are.
 
 ---

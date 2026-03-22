@@ -14,6 +14,21 @@ featured_image: "/assets/diagrams/gc-pressure-tuning.png"
 
 # GC Pressure and Heap Tuning: JVM, Go, and Node.js Memory Management
 
+## 🗺️ Quick Overview
+
+```mermaid
+graph TD
+    Alloc[Object Allocation\nhigh rate] --> YoungGen[Young Generation\nMinor GC - fast]
+    YoungGen -->|Survived 2+ GCs| OldGen[Old Generation\nMajor GC - slow]
+    OldGen --> STW[Stop-the-World Pause\np999 spike 500ms-3s]
+    STW --> Fix1[JVM: ZGC / G1GC tuning\n-Xmx -XX:MaxGCPauseMillis]
+    STW --> Fix2[Go: GOGC=50 + GOMEMLIMIT\nreduce GC frequency]
+    STW --> Fix3[Node.js: --max-old-space-size\n+ object pooling]
+    Fix1 --> OffHeap[Off-Heap: bypass GC entirely\nfor large caches]
+```
+
+*GC pause storms are invisible in averages but show up as p999 spikes — profile heap allocation before tuning JVM flags.*
+
 **Your service has perfect p99 latency in load tests. Then it runs for 45 minutes in production and suddenly p999 spikes to 3 seconds every few minutes, correlating with nothing in your application logs.** You're looking at GC pause storms — and they're one of the most misdiagnosed latency killers in production systems.
 
 ---
