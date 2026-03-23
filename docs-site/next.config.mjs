@@ -1,4 +1,8 @@
 import nextra from 'nextra'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Nextra 4: theme/themeConfig are removed — theme is configured via app/layout.jsx
 const withNextra = nextra({
@@ -13,6 +17,8 @@ const withNextra = nextra({
 export default withNextra({
   reactStrictMode: true,
   output: 'standalone',
+  // Silence "multiple lockfiles" workspace root warning from Next.js 16
+  outputFileTracingRoot: path.join(__dirname, '../../'),
   basePath: '/system-design',
   assetPrefix: '/system-design',
 
