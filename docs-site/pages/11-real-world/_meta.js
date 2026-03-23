@@ -14,5 +14,8 @@ export default {
   "rate-limiter": "Rate Limiter",
   "ticket-booking": "Ticket Booking",
   "unique-id-generator": "Unique ID Generator",
-  "recommendation-system": "Recommendation System"
+  "recommendation-system": "Recommendation System",
+  "google-file-system": "Google File System (GFS)",
+  "salesforce-architecture": "Salesforce Architecture",
+  "google-ads-auction": "Google Ads Auction"
 }
