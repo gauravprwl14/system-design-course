@@ -31,8 +31,8 @@ export default withNextra({
   productionBrowserSourceMaps: false,
 
   experimental: {
-    // tree-shake large packages at import level
-    optimizePackageImports: ['nextra', 'nextra-theme-docs'],
+    // NOTE: nextra/nextra-theme-docs intentionally excluded from optimizePackageImports —
+    // Nextra's own build pipeline opts out of this optimization (it breaks SSR for search).
 
     // run webpack in a separate worker — reduces peak memory, improves wall-clock time
     webpackBuildWorker: true,
@@ -45,7 +45,7 @@ export default withNextra({
     if (!dev) {
       // force in-memory cache only — the on-disk webpack cache can grow to
       // 3+ GB for 500+ file sites and actually slow down builds via I/O
-      config.cache = Object.freeze({ type: 'memory' })
+      config.cache = { type: 'memory' }
     }
     return config
   },
