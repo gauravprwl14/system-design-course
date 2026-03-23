@@ -966,10 +966,10 @@ Want to build this yourself? Check out:
 
 - [Redis Fundamentals](/interview-prep/caching-cdn/redis-fundamentals) - Redis Pub/Sub deep dive
 - [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies) - Cassandra for chat history
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api) - Handle millions of requests
-- [Video Streaming Platform](/interview-prep/system-design/video-streaming-platform) - Real-time video delivery
+- [High-Concurrency API Design](/interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
+- [Video Streaming Platform](/interview-prep/system-design/real-time-systems/video-streaming-platform) - Real-time video delivery
 - [Connection Pooling](/interview-prep/database-storage/connection-pooling) - Database connection management
 
 ---
 
-**Next**: [Video Conferencing Architecture (Zoom/Google Meet)](/interview-prep/system-design/video-conferencing)
+**Next**: [Video Conferencing Architecture (Zoom/Google Meet)](/interview-prep/system-design/real-time-systems/video-conferencing)

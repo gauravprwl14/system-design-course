@@ -907,8 +907,8 @@ Want to build your own video conferencing app? Check out:
 
 ## Related Articles
 
-- [WebSocket Architecture](/interview-prep/system-design/websocket-architecture) - Signaling server patterns
-- [Video Streaming Platform](/interview-prep/system-design/video-streaming-platform) - Video encoding/delivery
+- [WebSocket Architecture](/interview-prep/system-design/real-time-systems/websocket-architecture) - Signaling server patterns
+- [Video Streaming Platform](/interview-prep/system-design/real-time-systems/video-streaming-platform) - Video encoding/delivery
 - [Redis Fundamentals](/interview-prep/caching-cdn/redis-fundamentals) - Room state caching
 - [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies) - Meeting metadata storage
 - [Load Balancer (ALB/NLB)](/interview-prep/aws-cloud/load-balancer) - Routing SFU traffic

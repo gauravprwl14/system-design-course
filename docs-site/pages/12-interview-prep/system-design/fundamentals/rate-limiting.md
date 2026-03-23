@@ -671,8 +671,8 @@ const redis = new Redis({
 
 ## 🔗 Related Questions
 
-- [Flash Sales Architecture](/interview-prep/system-design/flash-sales)
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api)
+- [Flash Sales Architecture](/interview-prep/system-design/business-and-advanced/flash-sales)
+- [High-Concurrency API Design](/interview-prep/system-design/fundamentals/high-concurrency-api)
 
 ---
 

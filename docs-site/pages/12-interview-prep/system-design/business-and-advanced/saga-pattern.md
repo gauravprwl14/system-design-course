@@ -689,9 +689,9 @@ Scale: 17M trips/day, each is a saga
 
 ## Related Articles
 
-- [Circuit Breaker Pattern](/interview-prep/system-design/circuit-breaker-pattern) - Resilience
+- [Circuit Breaker Pattern](/interview-prep/system-design/fundamentals/circuit-breaker-pattern) - Resilience
 - [Event Sourcing](/interview-prep/system-design/event-sourcing-cqrs) - Event-driven architecture
-- [Message Queues](/interview-prep/system-design/message-queues-kafka-rabbitmq) - Async communication
+- [Message Queues](/interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) - Async communication
 
 ---
 

@@ -599,9 +599,9 @@ Use both: Gateway for external, mesh for internal
 
 ## Related Articles
 
-- [Service Discovery](/interview-prep/system-design/service-discovery) - Gateway finds services
-- [Circuit Breaker](/interview-prep/system-design/circuit-breaker-pattern) - Gateway resilience
-- [Rate Limiting](/interview-prep/system-design/rate-limiting) - Protect backend
+- [Service Discovery](/interview-prep/system-design/scale-and-reliability/service-discovery) - Gateway finds services
+- [Circuit Breaker](/interview-prep/system-design/fundamentals/circuit-breaker-pattern) - Gateway resilience
+- [Rate Limiting](/interview-prep/system-design/fundamentals/rate-limiting) - Protect backend
 
 ---
 

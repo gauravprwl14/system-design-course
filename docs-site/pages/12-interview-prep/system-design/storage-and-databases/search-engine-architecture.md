@@ -1018,7 +1018,7 @@ console.log(results.hits.hits);
 
 - [Full-Text Search POC](/interview-prep/practice-pocs/database-full-text-search) - PostgreSQL tsvector
 - [Database Indexes](/interview-prep/practice-pocs/database-indexes) - B-tree vs inverted
-- [Message Queues](/interview-prep/system-design/message-queues-kafka-rabbitmq) - Indexing pipeline
+- [Message Queues](/interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) - Indexing pipeline
 
 ## Continue Learning
 

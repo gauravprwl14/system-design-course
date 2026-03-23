@@ -634,8 +634,8 @@ Failover:
 
 ## Related Articles
 
-- [Database Sharding](/interview-prep/system-design/database-sharding) - Scale writes
-- [CQRS Pattern](/interview-prep/system-design/cqrs-pattern) - Read/write separation
+- [Database Sharding](/interview-prep/system-design/storage-and-databases/database-sharding) - Scale writes
+- [CQRS Pattern](/interview-prep/system-design/business-and-advanced/cqrs-pattern) - Read/write separation
 - [High Availability](/interview-prep/system-design/high-availability) - Fault tolerance
 
 ---

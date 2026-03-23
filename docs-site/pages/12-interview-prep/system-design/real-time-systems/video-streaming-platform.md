@@ -941,10 +941,10 @@ Want to test this locally? Check out:
 
 - [CDN Usage & Optimization](/interview-prep/caching-cdn/cdn-usage) - Deep dive into CDN caching
 - [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies) - Sharding and replication
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api) - Handle millions of requests
+- [High-Concurrency API Design](/interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
 - [S3 TPS Limits & Optimization](/interview-prep/aws-cloud/s3-tps-limits) - S3 performance tuning
 - [Auto-Scaling Groups](/interview-prep/aws-cloud/auto-scaling) - Auto-scale transcoding workers
 
 ---
 
-**Next**: [WebSocket Architecture (Real-Time Chat)](/interview-prep/system-design/websocket-architecture)
+**Next**: [WebSocket Architecture (Real-Time Chat)](/interview-prep/system-design/real-time-systems/websocket-architecture)

@@ -705,9 +705,9 @@ async function waitForReadModel(productId, maxWait = 10000) {
 
 ## Related Articles
 
-- [Event-Driven Architecture](/interview-prep/system-design/event-driven-architecture) - Event foundation
+- [Event-Driven Architecture](/interview-prep/system-design/messaging-and-streaming/event-driven-architecture) - Event foundation
 - [Event Sourcing](/interview-prep/system-design/event-sourcing) - Store events
-- [Database Replication](/interview-prep/system-design/database-replication) - Read replicas
+- [Database Replication](/interview-prep/system-design/storage-and-databases/database-replication) - Read replicas
 
 ---
 

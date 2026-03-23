@@ -1276,7 +1276,7 @@ After building your live streaming system, share your wins:
 
 ## Continue Learning
 
-- **Next**: [Real-Time Collaborative Editing (Google Docs)](/interview-prep/system-design/collaborative-editing) - CRDT and OT for conflict-free editing
+- **Next**: [Real-Time Collaborative Editing (Google Docs)](/interview-prep/system-design/real-time-systems/collaborative-editing-google-docs) - CRDT and OT for conflict-free editing
 - **Advanced**: [WebRTC for Video Calls](/interview-prep/system-design/webrtc-video-calls) - Ultra-low latency P2P communication
 
 ---

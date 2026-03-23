@@ -718,7 +718,7 @@ Results:
 
 ## Related Articles
 
-- [Saga Pattern](/interview-prep/system-design/saga-pattern) - Distributed transactions
+- [Saga Pattern](/interview-prep/system-design/business-and-advanced/saga-pattern) - Distributed transactions
 - [Bulkhead Pattern](/interview-prep/system-design/bulkhead-pattern) - Isolation
 - [Retry Patterns](/interview-prep/system-design/retry-patterns) - Transient failures
 

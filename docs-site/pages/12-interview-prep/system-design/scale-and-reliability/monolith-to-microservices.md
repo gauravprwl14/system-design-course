@@ -694,9 +694,9 @@ Key decisions:
 
 ## Related Articles
 
-- [Service Discovery Patterns](/interview-prep/system-design/service-discovery-patterns) - Consul, Eureka
-- [Circuit Breaker Pattern](/interview-prep/system-design/circuit-breaker-pattern) - Resilience
-- [Saga Pattern](/interview-prep/system-design/saga-pattern) - Distributed transactions
+- [Service Discovery](/interview-prep/system-design/scale-and-reliability/service-discovery) - Consul, Eureka
+- [Circuit Breaker Pattern](/interview-prep/system-design/fundamentals/circuit-breaker-pattern) - Resilience
+- [Saga Pattern](/interview-prep/system-design/business-and-advanced/saga-pattern) - Distributed transactions
 
 ---
 
