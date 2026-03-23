@@ -1,3 +1,5 @@
+> **Migrated to [/02-caching](/02-caching)**: Topic map and cross-references have been added to `/02-caching/index.md`. Active article content lives in `/02-caching/concepts/` and `/02-caching/hands-on/`. This file is retained for historical reference.
+
 # system-design/caching/ — Layer 2 Router
 
 Routes across caching theory: fundamentals and strategy patterns.

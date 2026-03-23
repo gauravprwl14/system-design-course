@@ -1,3 +1,5 @@
+> **Migrated to [/12-interview-prep](/12-interview-prep)**: Quick navigation table by topic has been added to `/12-interview-prep/index.md`. All content referenced here exists in the active `12-interview-prep/` section: system design questions in `12-interview-prep/system-design/`, POCs throughout the numbered sections, quick reference sheets in `12-interview-prep/quick-reference/`. This file is retained for historical reference.
+
 # interview-prep/ — Layer 2 Router
 
 Routes across all interview preparation subsections: system design questions, hands-on POCs, and topic deep-dives.

@@ -1,3 +1,5 @@
+> **Migrated**: The routing table content from this file has been reviewed. The active content lives in the numbered sections (01-databases through 12-interview-prep). Cross-reference navigation has been added to each active section's index.md. This file is retained for historical reference.
+
 # system-design/ — Layer 2 Router
 
 Routes across all theory subfolders covering foundational and advanced system design concepts.

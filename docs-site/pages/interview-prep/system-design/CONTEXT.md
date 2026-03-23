@@ -1,3 +1,5 @@
+> **Migrated to [/12-interview-prep/system-design](/12-interview-prep/system-design)**: All 33 interview questions listed here exist in the active `12-interview-prep/system-design/` section, organized into subdirectories: `fundamentals/`, `storage-and-databases/`, `real-time-systems/`, `messaging-and-streaming/`, `scale-and-reliability/`, and `business-and-advanced/`. The `index.md` in this directory has been updated with a full question listing with direct links. This file is retained for historical reference.
+
 # interview-prep/system-design/ — Layer 2 Router
 
 Routes across 33 system design interview questions with full answers and implementation details.

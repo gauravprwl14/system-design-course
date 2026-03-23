@@ -1,3 +1,5 @@
+> **Migrated to [/12-interview-prep/quick-reference/databases](/12-interview-prep/quick-reference/databases)**: All 6 database articles listed here (sql-vs-nosql, scaling-strategies, query-optimization, indexing-strategies, connection-pooling, database-replication) exist in the active `/12-interview-prep/quick-reference/databases/` directory. Deep-dive theory at `/01-databases/concepts/`. Hands-on practice throughout `/01-databases/hands-on/`. This file is retained for historical reference.
+
 # interview-prep/database-storage/ — Layer 2 Router
 
 Routes across database and storage concept articles for interview preparation.

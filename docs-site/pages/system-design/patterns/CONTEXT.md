@@ -1,3 +1,5 @@
+> **Migrated to [/10-architecture](/10-architecture)**: Topic map and cross-references for circuit breaker, microservices communication, timeouts/backpressure, event-driven, CQRS, and saga patterns have been added to `/10-architecture/index.md`. Active article content lives in `/10-architecture/concepts/` and `/10-architecture/hands-on/`. This file is retained for historical reference.
+
 # system-design/patterns/ — Layer 2 Router
 
 Routes across resilience and communication design patterns.

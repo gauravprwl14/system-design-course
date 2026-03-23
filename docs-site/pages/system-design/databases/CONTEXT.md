@@ -1,3 +1,5 @@
+> **Migrated to [/01-databases](/01-databases)**: Topic map and cross-references have been added to `/01-databases/index.md`. Active article content lives in `/01-databases/concepts/` and `/01-databases/hands-on/`. This file is retained for historical reference.
+
 # system-design/databases/ — Layer 2 Router
 
 Routes across database scaling concepts: replication, read replicas, sharding, indexing, and data archival.

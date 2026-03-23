@@ -1,3 +1,5 @@
+> **Migrated to [/11-real-world](/11-real-world)**: All 14 case studies exist in `/11-real-world/`. The `index.md` in this directory (`system-design/case-studies/index.md`) has been updated with a redirect table linking to each active case study. This file is retained for historical reference.
+
 # system-design/case-studies/ — Layer 2 Router
 
 Routes across real-world company system design case studies.

@@ -1,3 +1,5 @@
+> **Migrated to [/07-api-design](/07-api-design)**: Topic map and cross-references have been added to `/07-api-design/index.md`. Active article content lives in `/07-api-design/concepts/` and `/07-api-design/hands-on/`. This file is retained for historical reference.
+
 # system-design/api-design/ — Layer 2 Router
 
 Routes across API design concepts: protocols, rate limiting, and idempotency.

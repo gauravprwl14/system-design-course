@@ -1,3 +1,5 @@
+> **Migrated to [/09-observability](/09-observability)**: Topic map and cross-references for SLOs, distributed tracing, health checks, and CloudWatch monitoring have been added to `/09-observability/index.md`. Active content lives in `/09-observability/concepts/` and `/09-observability/hands-on/`. This file is retained for historical reference.
+
 # system-design/monitoring/ — Layer 2 Router
 
 Routes across monitoring, observability, and SLO concepts.

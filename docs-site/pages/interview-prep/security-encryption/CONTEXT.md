@@ -1,3 +1,5 @@
+> **Migrated to [/12-interview-prep/quick-reference/security](/12-interview-prep/quick-reference/security)**: All 5 security articles listed here (hashing-vs-encryption, jwt-vs-session, mitm-prevention, rsa-vs-aes, sha-comparison) exist in the active `/12-interview-prep/quick-reference/security/` directory. Hands-on auth practice is in `/08-security/hands-on/`. This file is retained for historical reference.
+
 # interview-prep/security-encryption/ — Layer 2 Router
 
 Routes across security and cryptography concept articles for interview preparation.

@@ -1,3 +1,5 @@
+> **Migrated to [/06-scalability](/06-scalability)**: Load balancing strategies and POC cross-references have been added to `/06-scalability/index.md`. Active content: concepts in `/06-scalability/concepts/` (including `load-balancing-strategies.md`), hands-on in `/06-scalability/hands-on/` (load-balancer-round-robin, least-connections, consistent-hashing, nginx-load-balancer). AWS load balancing reference at `/12-interview-prep/quick-reference/aws-cloud/load-balancer`. This file is retained for historical reference.
+
 # system-design/load-balancing/ — Layer 2 Router
 
 Routes across load balancing concepts and strategies.

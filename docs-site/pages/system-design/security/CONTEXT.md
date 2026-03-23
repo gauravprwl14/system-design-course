@@ -1,3 +1,5 @@
+> **Migrated to [/08-security](/08-security)**: Topic map and cross-references for authentication, JWT, OAuth, RBAC, session management, API key management, and encryption have been added to `/08-security/index.md`. Active content lives in `/08-security/concepts/` and `/08-security/hands-on/`. Security interview reference at `/12-interview-prep/quick-reference/security/`. This file is retained for historical reference.
+
 # system-design/security/ — Layer 2 Router
 
 Routes across security architecture concepts.

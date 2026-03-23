@@ -1,3 +1,5 @@
+> **Migrated to [/09-observability](/09-observability)**: Connection pool management cross-references (POCs, problems-at-scale, interview prep) have been added to `/09-observability/index.md`. Active concept at `/09-observability/concepts/connection-pool-management.md`. Hands-on POCs: `/01-databases/hands-on/database-connection-pooling`, `connection-pool-sizing`, `postgresql-connection-pooling-replication`, `connection-leak-detection`. Problems at scale: `/problems-at-scale/performance/connection-pool-starvation` and `thread-pool-exhaustion`. This file is retained for historical reference.
+
 # system-design/performance/ — Layer 2 Router
 
 Routes across performance concepts with focus on connection management.

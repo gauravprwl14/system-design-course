@@ -1,3 +1,5 @@
+> **Migrated to [/06-scalability](/06-scalability)**: Topic map and cross-references have been added to `/06-scalability/index.md`. Active content lives in `/06-scalability/concepts/` and `/06-scalability/hands-on/`. Load balancing hands-on POCs also exist in `/06-scalability/hands-on/`. This file is retained for historical reference.
+
 # system-design/scalability/ — Layer 2 Router
 
 Routes across scalability patterns: from basic scaling to multi-region, event-driven, and chaos engineering.

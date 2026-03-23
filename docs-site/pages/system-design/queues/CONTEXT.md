@@ -1,3 +1,5 @@
+> **Migrated to [/04-messaging](/04-messaging)**: Topic map and cross-references have been added to `/04-messaging/index.md`. Active article content lives in `/04-messaging/concepts/` and `/04-messaging/hands-on/`. This file is retained for historical reference.
+
 # system-design/queues/ — Layer 2 Router
 
 Routes across message queue concepts: fundamentals and technology comparison.

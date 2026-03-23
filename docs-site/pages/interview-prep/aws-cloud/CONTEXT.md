@@ -1,3 +1,5 @@
+> **Migrated to [/12-interview-prep/quick-reference/aws-cloud](/12-interview-prep/quick-reference/aws-cloud)**: All 5 AWS articles listed here (s3-tps-limits, lambda-serverless, load-balancer, auto-scaling, cloudwatch-monitoring) exist in the active `/12-interview-prep/quick-reference/aws-cloud/` directory, which also contains 25+ additional AWS articles. Theory cross-links: load balancing at `/06-scalability/`, auto-scaling at `/06-scalability/concepts/auto-scaling.md`. This file is retained for historical reference.
+
 # interview-prep/aws-cloud/ — Layer 2 Router
 
 Routes across AWS and cloud infrastructure concept articles for interview preparation.

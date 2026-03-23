@@ -1,3 +1,5 @@
+> **Migrated to [/12-interview-prep/quick-reference/caching](/12-interview-prep/quick-reference/caching)**: All 5 articles listed here (redis-fundamentals, cdn-usage, cache-strategies, api-metrics, performance-bottlenecks) exist in the active `/12-interview-prep/quick-reference/caching/` directory. Deep-dive caching theory at `/02-caching/`. Hands-on Redis practice at `/03-redis/hands-on/`. This file is retained for historical reference.
+
 # interview-prep/caching-cdn/ — Layer 2 Router
 
 Routes across caching and CDN concept articles for interview preparation.
