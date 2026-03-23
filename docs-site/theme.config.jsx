@@ -16,14 +16,7 @@ export default {
     link: 'https://github.com/yourusername/system-design-kb'
   },
   docsRepositoryBase: 'https://github.com/yourusername/system-design-kb/tree/main/docs-site',
-  useNextSeoProps() {
-    const { asPath } = useRouter()
-    if (asPath !== '/') {
-      return {
-        titleTemplate: '%s – System Design KB'
-      }
-    }
-  },
+  // useNextSeoProps was removed in Nextra 3.x — use <Head> titleTemplate instead
   head: function useHead() {
     const { title } = useConfig()
     const { route } = useRouter()
@@ -34,6 +27,7 @@ export default {
 
     return (
       <>
+        <title>{title ? title + ' – System Design KB' : 'System Design Knowledge Base'}</title>
         <meta name="msapplication-TileColor" content="#fff" />
         <meta name="theme-color" content="#fff" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -58,8 +52,9 @@ export default {
       </>
     )
   },
+  // Nextra 3.x: editLink uses `content` not `text`
   editLink: {
-    text: 'Edit this page on GitHub →'
+    content: 'Edit this page on GitHub →'
   },
   feedback: {
     content: 'Question? Give us feedback →',
@@ -68,18 +63,14 @@ export default {
   navbar: {
     extraContent: <NavDropdowns />
   },
+  // Nextra 3.x: sidebar no longer supports titleComponent — removed
   sidebar: {
-    titleComponent({ title, type }) {
-      if (type === 'separator') {
-        return <div style={{ fontWeight: 'bold', marginTop: '16px' }}>{title}</div>
-      }
-      return <>{title}</>
-    },
     defaultMenuCollapseLevel: 2,
     toggleButton: true
   },
+  // Nextra 3.x: footer uses `content` not `text`
   footer: {
-    text: (
+    content: (
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
         <span>
           MIT {new Date().getFullYear()} © System Design Knowledge Base
@@ -91,7 +82,8 @@ export default {
     )
   },
   toc: {
-    backToTop: true,
+    // Nextra 3.x: backToTop must be ReactNode (a string), not boolean true
+    backToTop: 'Back to top',
     title: 'On This Page',
     extraContent: (
       <div style={{ marginTop: '16px', fontSize: '12px', color: '#666' }}>
@@ -106,8 +98,12 @@ export default {
     next: true
   },
   darkMode: true,
-  primaryHue: 212,
-  primarySaturation: 100,
+  // Nextra 3.x: primaryHue/primarySaturation replaced by color: { hue, saturation, lightness }
+  color: {
+    hue: 212,
+    saturation: 100,
+    lightness: { dark: 65, light: 45 }
+  },
   search: {
     placeholder: 'Search documentation...',
     loading: 'Loading...',
@@ -115,7 +111,8 @@ export default {
   },
   banner: {
     key: 'launch-banner',
-    text: (
+    // Nextra 3.x: banner uses `content` not `text`
+    content: (
       <a href="/get-started" style={{ textDecoration: 'none' }}>
         🎉 New: Interview Preparation section with 149+ real questions! Start here →
       </a>
