@@ -1,8 +1,7 @@
 import nextra from 'nextra'
 
+// Nextra 4: theme/themeConfig are removed — theme is configured via app/layout.jsx
 const withNextra = nextra({
-  theme: 'nextra-theme-docs',
-  themeConfig: './theme.config.jsx',
   defaultShowCopyCode: true,
   readingTime: true,
   latex: true,
@@ -16,11 +15,6 @@ export default withNextra({
   output: 'standalone',
   basePath: '/system-design',
   assetPrefix: '/system-design',
-
-  // skip ESLint during build (run separately via npm run lint)
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 
   // skip TypeScript type checking during build (run tsc --noEmit separately)
   typescript: {
