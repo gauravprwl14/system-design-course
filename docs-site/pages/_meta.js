@@ -78,6 +78,11 @@ export default {
     type: "page",
     display: "hidden"
   },
+  "14-algorithms": {
+    title: "🧮 Algorithms",
+    type: "page",
+    display: "hidden"
+  },
   "15-vector-databases": {
     title: "🧠 Vector Databases",
     type: "page",
