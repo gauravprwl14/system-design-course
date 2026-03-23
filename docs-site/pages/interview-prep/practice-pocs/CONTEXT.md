@@ -1,3 +1,5 @@
+> **Migrated**: POC content referenced here is distributed across the active numbered sections. Redis POCs at `/03-redis/hands-on/`, Database POCs at `/01-databases/hands-on/`, Kafka POCs at `/04-messaging/hands-on/`, API Design POCs at `/07-api-design/hands-on/`, Resilience POCs at `/10-architecture/hands-on/`, Security POCs at `/08-security/hands-on/`, Observability POCs at `/09-observability/hands-on/`, Load Balancing POCs at `/06-scalability/hands-on/`. The `database-archival-poc` sub-directory in this folder contains a standalone POC. This file is retained for historical reference.
+
 # interview-prep/practice-pocs/ — Layer 2 Router
 
 Routes across 101 hands-on POCs grouped by technology and pattern category.
