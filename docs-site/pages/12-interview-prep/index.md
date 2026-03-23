@@ -23,6 +23,20 @@ Concise reference sheets organized by topic:
 - [Databases](./quick-reference/databases) — SQL vs NoSQL, indexes, replication
 - [Caching & CDN](./quick-reference/caching) — Redis, CDN, cache strategies
 
+## Quick Navigation by Topic
+
+| I'm preparing for... | Go to | Pair with theory |
+|----------------------|-------|-----------------|
+| API design questions | [API Design questions](./system-design/fundamentals/) | [07-api-design](/07-api-design) |
+| Database questions | [DB & Storage questions](./system-design/storage-and-databases/) | [01-databases](/01-databases) |
+| Caching questions | [Caching reference](./quick-reference/caching/) | [02-caching](/02-caching) |
+| Streaming/queue questions | [Messaging questions](./system-design/messaging-and-streaming/) | [04-messaging](/04-messaging) |
+| Security questions | [Security reference](./quick-reference/security/) | [08-security](/08-security) |
+| AWS questions | [AWS reference](./quick-reference/aws-cloud/) | [06-scalability](/06-scalability) |
+| Real-time system questions | [Real-time questions](./system-design/real-time-systems/) | [10-architecture](/10-architecture) |
+| Distributed system questions | [Scale & reliability](./system-design/scale-and-reliability/) | [05-distributed-systems](/05-distributed-systems) |
+| System case studies | [Real-World Systems](/11-real-world) | — |
+
 ## Interview Strategy
 
 1. **Clarify requirements first** — Ask about scale, consistency, availability trade-offs
