@@ -21,6 +21,7 @@ export default {
   "database-vacuum": "VACUUM & Autovacuum",
   "database-testing": "Database Testing",
   "database-archival-strategies": "Archival Strategies",
+  "database-archival-poc": "Database Archival POC",
   "postgresql-btree-hash-indexes": "PostgreSQL B-Tree & Hash Indexes",
   "postgresql-composite-covering-indexes": "PostgreSQL Composite & Covering Indexes",
   "postgresql-connection-pooling-replication": "PostgreSQL Connection Pooling & Replication",

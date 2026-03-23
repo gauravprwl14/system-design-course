@@ -78,6 +78,11 @@ export default {
     type: "page",
     display: "hidden"
   },
+  "13-agent-workflows": {
+    title: "🤖 Agent Workflows",
+    type: "page",
+    display: "hidden"
+  },
   "14-algorithms": {
     title: "🧮 Algorithms",
     type: "page",
