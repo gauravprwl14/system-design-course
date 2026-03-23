@@ -2,20 +2,24 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 const CORE_TOPICS = [
-  { title: '🗄️ Databases',           href: '/01-databases' },
-  { title: '⚡ Caching',              href: '/02-caching' },
-  { title: '🔴 Redis',                href: '/03-redis' },
-  { title: '📬 Messaging & Events',   href: '/04-messaging' },
-  { title: '⚖️ Distributed Systems',  href: '/05-distributed-systems' },
-  { title: '📈 Scalability',          href: '/06-scalability' },
+  { title: '🗄️ Databases',            href: '/01-databases' },
+  { title: '⚡ Caching',               href: '/02-caching' },
+  { title: '🔴 Redis',                 href: '/03-redis' },
+  { title: '📬 Messaging & Events',    href: '/04-messaging' },
+  { title: '⚖️ Distributed Systems',   href: '/05-distributed-systems' },
+  { title: '📈 Scalability',           href: '/06-scalability' },
+  { title: '🔥 Problems at Scale',     href: '/problems-at-scale' },
 ]
 
 const BUILD_TOPICS = [
-  { title: '🌐 API Design',              href: '/07-api-design' },
-  { title: '🔒 Security',                href: '/08-security' },
-  { title: '📡 Observability',           href: '/09-observability' },
-  { title: '🏗️ Architecture & Patterns', href: '/10-architecture' },
-  { title: '🏢 Real-World Systems',      href: '/11-real-world' },
+  { title: '🌐 API Design',               href: '/07-api-design' },
+  { title: '🔒 Security',                 href: '/08-security' },
+  { title: '📡 Observability',            href: '/09-observability' },
+  { title: '🏗️ Architecture & Patterns',  href: '/10-architecture' },
+  { title: '🏢 Real-World Systems',       href: '/11-real-world' },
+  { title: '🤖 Agent Workflows',          href: '/13-agent-workflows' },
+  { title: '🧮 Algorithms',               href: '/14-algorithms' },
+  { title: '🧠 Vector Databases',         href: '/15-vector-databases' },
 ]
 
 function Dropdown({ title, items }) {
