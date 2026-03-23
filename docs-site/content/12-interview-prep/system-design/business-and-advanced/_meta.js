@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   "ecommerce-checkout": "🔴 E-Commerce Checkout Flow",
   "ticket-booking-system": "🔴 Ticket Booking System",
   "flash-sales": "🔴 Flash Sales",

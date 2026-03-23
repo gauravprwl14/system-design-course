@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   "api-design-rest-graphql-grpc": "🟡 API Design: REST vs GraphQL vs gRPC",
   "api-gateway-pattern": "🟡 API Gateway Pattern",
   "rate-limiting": "🟡 Rate Limiting",

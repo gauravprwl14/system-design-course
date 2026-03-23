@@ -1,5 +1,4 @@
 export default {
-  index: "Overview & Comparison",
   langchain: "LangChain",
   crewai: "CrewAI",
   autogen: "AutoGen / AG2",

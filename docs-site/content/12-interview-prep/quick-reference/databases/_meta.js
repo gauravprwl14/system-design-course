@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   "connection-pooling": "Connection Pooling",
   "database-replication": "Database Replication",
   "indexing-strategies": "Indexing Strategies",

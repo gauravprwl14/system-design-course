@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
 
   // --- AWS ---
   aws: "☁️ AWS Services",

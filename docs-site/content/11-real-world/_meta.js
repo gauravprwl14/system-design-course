@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   netflix: "Netflix",
   youtube: "YouTube",
   spotify: "Spotify",

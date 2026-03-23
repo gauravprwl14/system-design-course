@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   "embeddings": "🟢 Embeddings",
   "vector-index": "🔴 Vector Index Algorithms",
   "similarity-search": "🟡 Similarity Search",

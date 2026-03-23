@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   "sliding-window-pattern": "🟡 Sliding Window",
   "two-pointers-pattern": "🟢 Two Pointers",
   "binary-search-on-answer": "🟡 Binary Search on Answer",

@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   "websocket-architecture": "🔴 WebSocket Architecture",
   "live-streaming-twitch": "🔴 Live Streaming (Twitch)",
   "video-streaming-platform": "🔴 Video Streaming Platform",

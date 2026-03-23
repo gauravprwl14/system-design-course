@@ -1,5 +1,4 @@
 export default {
-  index: "Overview",
   "api-metrics": "API Metrics",
   "cache-strategies": "Cache Strategies",
   "cdn-usage": "CDN Usage",
