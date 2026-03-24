@@ -2,6 +2,20 @@
 
 You cannot improve what you cannot measure. This section covers the three pillars of observability (metrics, logs, traces), SLOs, alerting, performance tuning, and FinOps.
 
+```mermaid
+graph TD
+    subgraph "Three Pillars of Observability"
+        M[Metrics\nPrometheus + Grafana\nSLOs and error budgets]
+        L[Logs\nStructured event records\nCentralised log aggregation]
+        T[Traces\nDistributed spans\nOpenTelemetry + Jaeger]
+    end
+    M --> D[Dashboard & Alerting]
+    L --> D
+    T --> D
+    D --> OC[On-Call Response]
+    D --> EB[Error Budget\nDecision]
+```
+
 ## What You'll Learn
 
 - **Concepts**: Distributed tracing, log aggregation, SLOs & error budgets, performance profiling

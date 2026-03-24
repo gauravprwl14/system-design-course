@@ -543,6 +543,6 @@ AKIA...                (Access Key ID)
 
 ## Related POCs
 
-- [JWT Authentication](/interview-prep/practice-pocs/jwt-authentication)
-- [OAuth 2.0 Flows](/interview-prep/practice-pocs/oauth-flows)
-- [RBAC Implementation](/interview-prep/practice-pocs/rbac-implementation)
+- [JWT Authentication](/12-interview-prep/practice-pocs/jwt-authentication)
+- [OAuth 2.0 Flows](/12-interview-prep/practice-pocs/oauth-flows)
+- [RBAC Implementation](/12-interview-prep/practice-pocs/rbac-implementation)

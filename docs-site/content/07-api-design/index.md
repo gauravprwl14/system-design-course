@@ -2,6 +2,17 @@
 
 Good API design is what separates systems that scale gracefully from systems that become liabilities. This section covers REST, GraphQL, gRPC, idempotency, pagination, versioning, and more.
 
+```mermaid
+graph TD
+    Client --> GW[API Gateway\nAuth, Rate Limit, Routing]
+    GW --> REST[REST API\nResource-oriented]
+    GW --> GQL[GraphQL\nQuery-flexible]
+    GW --> GRPC[gRPC\nService-to-service]
+    REST --> BE[Backend Services]
+    GQL --> BE
+    GRPC --> BE
+```
+
 ## What You'll Learn
 
 - **Concepts**: REST vs GraphQL vs gRPC, idempotency, pagination, API gateways

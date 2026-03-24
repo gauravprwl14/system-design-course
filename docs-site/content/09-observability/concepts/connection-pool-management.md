@@ -653,8 +653,8 @@ Pool Size = (Peak Requests/sec × Avg Query Time ms) / 1000 × 1.5
 ## Related Content
 
 **Practice POCs:**
-- [POC #71: Connection Pool Sizing](/interview-prep/practice-pocs/connection-pool-sizing)
-- [POC #72: Connection Leak Detection](/interview-prep/practice-pocs/connection-leak-detection)
+- [POC #71: Connection Pool Sizing](/12-interview-prep/practice-pocs/connection-pool-sizing)
+- [POC #72: Connection Leak Detection](/12-interview-prep/practice-pocs/connection-leak-detection)
 
 **Problems at Scale:**
 - [Connection Pool Starvation](/problems-at-scale/performance/connection-pool-starvation)

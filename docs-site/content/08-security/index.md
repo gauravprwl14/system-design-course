@@ -2,6 +2,23 @@
 
 Security is not optional — it is a requirement. This section covers authentication at scale, zero-trust networks, secret management, DDoS protection, and encryption patterns used in production systems.
 
+```mermaid
+graph TD
+    subgraph "Authentication"
+        JWT[JWT\nStateless tokens]
+        OAuth[OAuth 2.0\nThird-party auth]
+        RBAC[RBAC\nRole-based access]
+    end
+    subgraph "Data Protection"
+        TLS[TLS 1.3\nEncryption in transit]
+        KMS[KMS\nKey management]
+        HASH[Bcrypt / Argon2\nPassword hashing]
+    end
+    Request --> TLS --> JWT --> RBAC
+    OAuth --> RBAC
+    KMS --> HASH
+```
+
 ## What You'll Learn
 
 - **Concepts**: OAuth2/OIDC, zero-trust, mTLS, secret management, DDoS protection

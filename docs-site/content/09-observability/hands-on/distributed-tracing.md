@@ -416,4 +416,4 @@ Trace Timeline:
 ## Related POCs
 
 - [Observability & SLOs](/system-design/monitoring/observability-slos)
-- [Microservices Communication](/system-design/patterns/microservices-communication)
+- [Microservices Communication](/10-architecture/concepts/microservices-communication)

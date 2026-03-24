@@ -389,6 +389,6 @@ Level 2 (Critical):
 
 ## Related POCs
 
-- [Circuit Breaker](/interview-prep/practice-pocs/circuit-breaker)
-- [Timeout Configuration](/interview-prep/practice-pocs/timeout-configuration)
-- [Backpressure](/interview-prep/practice-pocs/backpressure-queues)
+- [Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
+- [Timeout Configuration](/12-interview-prep/practice-pocs/timeout-configuration)
+- [Backpressure](/12-interview-prep/practice-pocs/backpressure-queues)

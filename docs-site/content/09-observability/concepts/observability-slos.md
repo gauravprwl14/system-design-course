@@ -645,6 +645,6 @@ Action: Alerts when matching algorithm degrades
 
 ## Related Content
 
-- [Circuit Breaker Pattern](/system-design/patterns/circuit-breaker)
+- [Circuit Breaker Pattern](/10-architecture/concepts/circuit-breaker)
 - [Connection Pool Starvation](/problems-at-scale/performance/connection-pool-starvation)
 - [Timeout Domino Effect](/problems-at-scale/availability/timeout-domino-effect)

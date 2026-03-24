@@ -613,8 +613,8 @@ For I/O-heavy workloads, pools can be much larger:
 
 - [Connection Pool Starvation](/problems-at-scale/performance/connection-pool-starvation) - Similar but for DB connections
 - [Timeout Domino Effect](/problems-at-scale/availability/timeout-domino-effect) - How timeouts cascade
-- [Circuit Breaker Pattern](/system-design/patterns/circuit-breaker) - Protect against slow dependencies
-- [Timeouts & Backpressure](/system-design/patterns/timeouts-backpressure) - Prevention guide
+- [Circuit Breaker Pattern](/10-architecture/concepts/circuit-breaker) - Protect against slow dependencies
+- [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure) - Prevention guide
 
 ---
 

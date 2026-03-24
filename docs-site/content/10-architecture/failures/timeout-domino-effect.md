@@ -542,9 +542,9 @@ app.post('/slow-endpoint', requestTimeout(30000), handler);
 
 ## Related Content
 
-- [Timeouts & Backpressure](/system-design/patterns/timeouts-backpressure)
+- [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
 - [Cascading Failures](/problems-at-scale/availability/cascading-failures)
-- [POC #75: Circuit Breaker](/interview-prep/practice-pocs/circuit-breaker)
+- [POC #75: Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
 - [Connection Pool Management](/system-design/performance/connection-pool-management)
 
 ---

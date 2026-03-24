@@ -510,6 +510,6 @@ Cached: false
 
 ## Related POCs
 
-- [POC #74: Deduplication with Redis](/interview-prep/practice-pocs/redis-deduplication)
-- [POC #7: Redis Rate Limiting](/interview-prep/practice-pocs/redis-rate-limiting)
-- [POC #3: Distributed Lock](/interview-prep/practice-pocs/redis-distributed-lock)
+- [POC #74: Deduplication with Redis](/12-interview-prep/practice-pocs/redis-deduplication)
+- [POC #7: Redis Rate Limiting](/12-interview-prep/practice-pocs/redis-rate-limiting)
+- [POC #3: Distributed Lock](/12-interview-prep/practice-pocs/redis-distributed-lock)

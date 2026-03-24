@@ -574,5 +574,5 @@ sum(rate(http_requests_total[30d]))
 ## Related POCs
 
 - [Observability & SLOs](/system-design/monitoring/observability-slos)
-- [Graceful Degradation](/interview-prep/practice-pocs/graceful-degradation)
-- [Distributed Tracing](/interview-prep/practice-pocs/distributed-tracing)
+- [Graceful Degradation](/12-interview-prep/practice-pocs/graceful-degradation)
+- [Distributed Tracing](/12-interview-prep/practice-pocs/distributed-tracing)

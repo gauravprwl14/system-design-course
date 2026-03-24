@@ -2,6 +2,25 @@
 
 Architecture patterns are reusable solutions to recurring problems. This section covers circuit breakers, sagas, microservices communication, service meshes, deployment strategies, and more.
 
+```mermaid
+graph LR
+    subgraph "Resilience"
+        CB[Circuit Breaker\nStop cascading failures]
+        RT[Retry + Backoff\nTransient fault recovery]
+        TO[Timeout\nFail fast, free resources]
+    end
+    subgraph "Deployment"
+        BG[Blue-Green\nZero-downtime swap]
+        CA[Canary Releases\nGradual rollout]
+        FF[Feature Flags\nRuntime control]
+    end
+    subgraph "Data Patterns"
+        CQRS[CQRS\nSeparate read / write]
+        SAGA[Saga\nDistributed transactions]
+        EDA[Event-Driven\nDecoupled services]
+    end
+```
+
 ## What You'll Learn
 
 - **Concepts**: Circuit breaker, saga pattern, bulkhead, strangler fig, CQRS, event-driven architecture

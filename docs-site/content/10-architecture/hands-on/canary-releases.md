@@ -610,6 +610,6 @@ CRITICAL METRICS:
 
 ## Related POCs
 
-- [Blue-Green Deployment](/interview-prep/practice-pocs/blue-green-deployment)
-- [Feature Flags](/interview-prep/practice-pocs/feature-flags)
-- [Health Check Patterns](/interview-prep/practice-pocs/health-check-patterns)
+- [Blue-Green Deployment](/12-interview-prep/practice-pocs/blue-green-deployment)
+- [Feature Flags](/12-interview-prep/practice-pocs/feature-flags)
+- [Health Check Patterns](/12-interview-prep/practice-pocs/health-check-patterns)

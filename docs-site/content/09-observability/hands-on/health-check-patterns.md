@@ -550,6 +550,6 @@ spec:
 
 ## Related POCs
 
-- [Circuit Breaker](/interview-prep/practice-pocs/circuit-breaker)
-- [Graceful Degradation](/interview-prep/practice-pocs/graceful-degradation)
-- [Service Discovery](/interview-prep/practice-pocs/service-discovery)
+- [Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
+- [Graceful Degradation](/12-interview-prep/practice-pocs/graceful-degradation)
+- [Service Discovery](/12-interview-prep/practice-pocs/service-discovery)

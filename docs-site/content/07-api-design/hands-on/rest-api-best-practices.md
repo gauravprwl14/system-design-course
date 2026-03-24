@@ -1052,7 +1052,7 @@ rm -rf rest-api-best-practices-poc
 
 ## What's Next?
 
-**Next POC**: [POC #57: GraphQL Server Implementation](/interview-prep/practice-pocs/graphql-server-implementation)
+**Next POC**: [POC #57: GraphQL Server Implementation](/12-interview-prep/practice-pocs/graphql-server-implementation)
 
 Learn when GraphQL is better than REST and how to build a production-ready GraphQL API!
 
