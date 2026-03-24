@@ -7,6 +7,37 @@ description: "Real production failure scenarios — what breaks, why it breaks, 
 
 > **Learn from production failures before they happen to you.** Every article here starts with a real incident story, shows you exactly what broke and why, then walks through the fix with working code.
 
+```mermaid
+mindmap
+    root((Problems at Scale))
+        Concurrency
+            Double Booking
+            Inventory Overselling
+            Double Charge
+            Lost Counter Updates
+        Availability
+            Cascading Failures
+            Thundering Herd
+            Retry Storm
+            Timeout Domino
+            Split-Brain
+        Performance
+            N+1 Query Problem
+            Connection Pool Starvation
+            Database Hotspots
+        Consistency
+            Stale Read After Write
+            Cache Invalidation Race
+        Scalability
+            Hot Partition
+            Write Amplification
+        Cost & Storage
+            Storage Bloat
+        Data Integrity
+            Silent Data Corruption
+            Partial Writes
+```
+
 ## Why This Section Exists
 
 Textbooks teach you how systems work when everything goes right. Production teaches you what breaks when things go wrong — but that lesson costs you sleep, customers, and revenue.

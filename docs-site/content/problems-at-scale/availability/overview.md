@@ -7,6 +7,15 @@ description: "When one failure becomes many — and how to stop the chain reacti
 
 A single slow service can take down your entire system if there are no circuit breakers, bulkheads, or graceful degradation patterns in place.
 
+```mermaid
+graph TD
+    CASCADE[Cascading Failures] -->|fix| CB[Circuit Breaker\n+ Bulkhead isolation]
+    THUNDER[Thundering Herd\nCache Stampede] -->|fix| JITTER[TTL jitter +\nProbabilistic early refresh]
+    RETRY[Retry Storm] -->|fix| BACKOFF[Exponential backoff\n+ Jitter + Max retries]
+    TIMEOUT[Timeout Domino Effect] -->|fix| BUDGET[Request budget\n+ Per-hop timeouts]
+    SPLITBRAIN[Split-Brain\nDual Primary] -->|fix| FENCE[Fencing tokens\n+ Consensus quorum]
+```
+
 ## Problems in This Section
 
 | Problem | The Pain |
