@@ -7,4 +7,4 @@ import { redirect } from 'next/navigation'
 
 # AI Agents & LLM Systems
 
-See [Overview](./overview) for the full topic map and interview strategy.
+See [Overview](/12-interview-prep/system-design/ai-and-agents/overview) for the full topic map and interview strategy.

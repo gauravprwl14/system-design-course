@@ -76,12 +76,12 @@ Start with what embeddings are, learn how they get indexed efficiently, understa
 
 | Article | Level | What You'll Learn |
 |---------|-------|------------------|
-| [Embeddings](./concepts/embeddings) | 🟢 Beginner | What dense vectors are, how embedding models work |
-| [Vector Index Algorithms](./concepts/vector-index) | 🔴 Advanced | HNSW, IVF, FLAT — the math behind fast ANN search |
-| [Similarity Search](./concepts/similarity-search) | 🟡 Intermediate | Distance metrics, recall@K, ef_search tuning |
-| [Hybrid Search](./concepts/hybrid-search) | 🟡 Intermediate | Dense + sparse (BM25) fusion with RRF |
-| [Reranking](./concepts/reranking) | 🟡 Intermediate | Two-stage retrieval: bi-encoder then cross-encoder |
-| [Vector DB Comparison](./concepts/vector-db-comparison) | 🟡 Intermediate | Pinecone vs Weaviate vs Qdrant vs pgvector vs Chroma |
+| [Embeddings](/15-vector-databases/concepts/embeddings) | 🟢 Beginner | What dense vectors are, how embedding models work |
+| [Vector Index Algorithms](/15-vector-databases/concepts/vector-index) | 🔴 Advanced | HNSW, IVF, FLAT — the math behind fast ANN search |
+| [Similarity Search](/15-vector-databases/concepts/similarity-search) | 🟡 Intermediate | Distance metrics, recall@K, ef_search tuning |
+| [Hybrid Search](/15-vector-databases/concepts/hybrid-search) | 🟡 Intermediate | Dense + sparse (BM25) fusion with RRF |
+| [Reranking](/15-vector-databases/concepts/reranking) | 🟡 Intermediate | Two-stage retrieval: bi-encoder then cross-encoder |
+| [Vector DB Comparison](/15-vector-databases/concepts/vector-db-comparison) | 🟡 Intermediate | Pinecone vs Weaviate vs Qdrant vs pgvector vs Chroma |
 
 ## Key Mental Models
 

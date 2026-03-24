@@ -22,6 +22,6 @@ graph TD
 
 ## Where to Start
 
-1. [Data Structures Deep Dive](./concepts/redis-data-structures-deep-dive) — Strings, Hashes, Lists, Sets, Sorted Sets
-2. [Key-Value Cache](./hands-on/redis-key-value-cache) — Your first Redis program
-3. [Distributed Lock](./hands-on/redis-distributed-lock) — Coordinating across services
+1. [Data Structures Deep Dive](/03-redis/concepts/redis-data-structures-deep-dive) — Strings, Hashes, Lists, Sets, Sorted Sets
+2. [Key-Value Cache](/03-redis/hands-on/redis-key-value-cache) — Your first Redis program
+3. [Distributed Lock](/03-redis/hands-on/redis-distributed-lock) — Coordinating across services
