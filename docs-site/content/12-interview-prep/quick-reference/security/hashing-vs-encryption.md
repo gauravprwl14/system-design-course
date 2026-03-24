@@ -592,8 +592,8 @@ class SecureFileUpload {
 
 ## 🔗 Related Questions
 
-- [RSA vs AES](/interview-prep/security-encryption/rsa-vs-aes)
-- [PDF Converter System Design](/interview-prep/system-design/pdf-converter)
+- [RSA vs AES](/12-interview-prep/security-encryption/rsa-vs-aes)
+- [PDF Converter System Design](/12-interview-prep/system-design/pdf-converter)
 
 ---
 

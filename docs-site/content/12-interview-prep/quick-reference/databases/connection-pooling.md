@@ -638,10 +638,10 @@ A: "Min: Always keep this many connections open (reduce latency for first reques
 
 ## 🔗 Related Questions
 
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies)
-- [Query Optimization](/interview-prep/database-storage/query-optimization)
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api)
-- [Performance Bottleneck Identification](/interview-prep/caching-cdn/performance-bottlenecks)
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies)
+- [Query Optimization](/12-interview-prep/database-storage/query-optimization)
+- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
+- [Performance Bottleneck Identification](/12-interview-prep/caching-cdn/performance-bottlenecks)
 
 ---
 

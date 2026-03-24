@@ -7,6 +7,17 @@ description: "43 real system design interview questions organized into 6 topic c
 
 43 real system design questions asked at FAANG and MNC companies, organized into 6 topic areas. Each question walks through requirements, constraints, component design, and trade-offs.
 
+```mermaid
+graph TD
+    SDQ[System Design Questions\n43 questions total]
+    SDQ --> F[Fundamentals\n7 questions\nAPI, caching, rate limiting]
+    SDQ --> SDB[Storage & Databases\n7 questions\nSharding, search, geo]
+    SDQ --> MSG[Messaging & Streaming\n6 questions\nKafka, feeds, pipelines]
+    SDQ --> SR[Scale & Reliability\n8 questions\nCDN, K8s, observability]
+    SDQ --> RT[Real-Time Systems\n6 questions\nWebSocket, video, gaming]
+    SDQ --> BA[Business & Advanced\n8 questions\nSaga, CQRS, fraud, auction]
+```
+
 ## Categories
 
 ### 🟢 [Fundamentals](fundamentals)

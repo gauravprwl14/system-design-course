@@ -7,6 +7,26 @@ description: "E-commerce, booking systems, fraud detection, ML systems, and adva
 
 These questions combine domain complexity with technical depth. They test whether you can design systems that handle real business constraints — high-stakes transactions, fraud, personalization, and complex distributed workflows.
 
+```mermaid
+graph LR
+    subgraph "Distributed Patterns"
+        SAGA[Saga Pattern\nChoreography / Orchestration]
+        CQRS[CQRS Pattern\nSeparate read / write models]
+    end
+    subgraph "High-Concurrency Commerce"
+        EC[E-Commerce Checkout\nPayment + inventory + idempotency]
+        TK[Ticket Booking\n10M concurrent users, seat locking]
+        FS[Flash Sales\nBlack Friday — extreme traffic spikes]
+    end
+    subgraph "ML-Driven Systems"
+        FD[Fraud Detection\nReal-time ML scoring]
+        REC[Recommendation System\nCollaborative filtering]
+        AD[Ad Auction\nReal-time bidding < 100ms]
+    end
+    SAGA --> EC
+    CQRS --> REC
+```
+
 ## What's Covered
 
 | Topic | Difficulty | Why It Matters |

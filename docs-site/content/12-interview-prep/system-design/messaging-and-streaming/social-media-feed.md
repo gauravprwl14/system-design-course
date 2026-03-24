@@ -952,14 +952,14 @@ curl http://localhost:3000/timeline/1
 
 ## Related Articles
 
-- [WebSocket Architecture](/interview-prep/system-design/real-time-systems/websocket-architecture) - Real-time updates
-- [Redis Pub/Sub](/interview-prep/practice-pocs/redis-pubsub) - Event broadcasting
-- [Kafka Basics](/interview-prep/practice-pocs/kafka-basics-producer-consumer) - Async processing
+- [WebSocket Architecture](/12-interview-prep/system-design/real-time-systems/websocket-architecture) - Real-time updates
+- [Redis Pub/Sub](/12-interview-prep/practice-pocs/redis-pubsub) - Event broadcasting
+- [Kafka Basics](/12-interview-prep/practice-pocs/kafka-basics-producer-consumer) - Async processing
 
 ## Continue Learning
 
-- **Next**: [Search Engine Architecture (Elasticsearch)](/interview-prep/system-design/storage-and-databases/search-engine-architecture)
-- **Practice**: [Build a Mini-Twitter POC](/interview-prep/practice-pocs/social-feed-poc)
+- **Next**: [Search Engine Architecture (Elasticsearch)](/12-interview-prep/system-design/storage-and-databases/search-engine-architecture)
+- **Practice**: [Build a Mini-Twitter POC](/12-interview-prep/practice-pocs/social-feed-poc)
 
 ---
 

@@ -621,10 +621,10 @@ A: "Use consistent hashing (minimal data movement), add virtual shards (logical 
 
 ## 🔗 Related Questions
 
-- [SQL vs NoSQL](/interview-prep/database-storage/sql-vs-nosql)
-- [Query Optimization](/interview-prep/database-storage/query-optimization)
-- [Connection Pooling](/interview-prep/database-storage/connection-pooling)
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api)
+- [SQL vs NoSQL](/12-interview-prep/database-storage/sql-vs-nosql)
+- [Query Optimization](/12-interview-prep/database-storage/query-optimization)
+- [Connection Pooling](/12-interview-prep/database-storage/connection-pooling)
+- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
 
 ---
 

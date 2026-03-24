@@ -1046,7 +1046,7 @@ A: "Partially. DynamoDB Streams can be used as an event log — you process chan
 
 ## Related Questions
 
-- [RDS Databases](/interview-prep/quick-reference/aws-cloud/rds-databases)
-- [ElastiCache Redis](/interview-prep/quick-reference/aws-cloud/elasticache-redis)
-- [Lambda Serverless](/interview-prep/quick-reference/aws-cloud/lambda-serverless)
-- [Auto-Scaling Groups](/interview-prep/quick-reference/aws-cloud/auto-scaling)
+- [RDS Databases](/12-interview-prep/quick-reference/aws-cloud/rds-databases)
+- [ElastiCache Redis](/12-interview-prep/quick-reference/aws-cloud/elasticache-redis)
+- [Lambda Serverless](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)
+- [Auto-Scaling Groups](/12-interview-prep/quick-reference/aws-cloud/auto-scaling)

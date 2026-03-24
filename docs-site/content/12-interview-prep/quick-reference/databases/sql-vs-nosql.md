@@ -592,10 +592,10 @@ A: "When you need complex transactions (multi-table updates must succeed togethe
 
 ## 🔗 Related Questions
 
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies)
-- [Query Optimization](/interview-prep/database-storage/query-optimization)
-- [Indexing Strategies](/interview-prep/database-storage/indexing-strategies)
-- [Redis Caching Fundamentals](/interview-prep/caching-cdn/redis-fundamentals)
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies)
+- [Query Optimization](/12-interview-prep/database-storage/query-optimization)
+- [Indexing Strategies](/12-interview-prep/database-storage/indexing-strategies)
+- [Redis Caching Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals)
 
 ---
 

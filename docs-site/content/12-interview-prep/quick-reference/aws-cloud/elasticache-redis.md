@@ -924,7 +924,7 @@ A: "These are older ElastiCache terms. A cache cluster is a single Redis or Memc
 
 ## Related Questions
 
-- [RDS Databases](/interview-prep/quick-reference/aws-cloud/rds-databases)
-- [DynamoDB NoSQL](/interview-prep/quick-reference/aws-cloud/dynamodb-nosql)
-- [Lambda Serverless](/interview-prep/quick-reference/aws-cloud/lambda-serverless)
-- [Auto-Scaling Groups](/interview-prep/quick-reference/aws-cloud/auto-scaling)
+- [RDS Databases](/12-interview-prep/quick-reference/aws-cloud/rds-databases)
+- [DynamoDB NoSQL](/12-interview-prep/quick-reference/aws-cloud/dynamodb-nosql)
+- [Lambda Serverless](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)
+- [Auto-Scaling Groups](/12-interview-prep/quick-reference/aws-cloud/auto-scaling)

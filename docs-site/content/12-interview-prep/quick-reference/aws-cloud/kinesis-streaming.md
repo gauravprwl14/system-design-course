@@ -815,7 +815,7 @@ Answer: Enable `BisectBatchOnFunctionError = true` in the event source mapping. 
 
 ## Related Questions
 
-- [SQS vs SNS vs EventBridge](/interview-prep/aws-cloud/sqs-sns-eventbridge)
-- [Lambda Serverless Architecture](/interview-prep/aws-cloud/lambda-serverless)
-- [Auto-Scaling Groups](/interview-prep/aws-cloud/auto-scaling)
-- [CloudWatch Monitoring](/interview-prep/aws-cloud/cloudwatch-monitoring)
+- [SQS vs SNS vs EventBridge](/12-interview-prep/aws-cloud/sqs-sns-eventbridge)
+- [Lambda Serverless Architecture](/12-interview-prep/aws-cloud/lambda-serverless)
+- [Auto-Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling)
+- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)

@@ -523,8 +523,8 @@ function doubleSHA256(data) {
 
 ## 🔗 Related Questions
 
-- [Hashing vs Encryption](/interview-prep/security-encryption/hashing-vs-encryption)
-- [RSA vs AES](/interview-prep/security-encryption/rsa-vs-aes)
+- [Hashing vs Encryption](/12-interview-prep/security-encryption/hashing-vs-encryption)
+- [RSA vs AES](/12-interview-prep/security-encryption/rsa-vs-aes)
 
 ---
 

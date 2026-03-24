@@ -730,9 +730,9 @@ class ProductionLoadBalancer {
 
 ## Related Articles
 
-- [API Gateway](/interview-prep/system-design/fundamentals/api-gateway-pattern) - Gateway as LB
-- [Service Discovery](/interview-prep/system-design/scale-and-reliability/service-discovery) - Finding backends
-- [High Availability](/interview-prep/system-design/high-availability) - Redundancy
+- [API Gateway](/12-interview-prep/system-design/fundamentals/api-gateway-pattern) - Gateway as LB
+- [Service Discovery](/12-interview-prep/system-design/scale-and-reliability/service-discovery) - Finding backends
+- [High Availability](/12-interview-prep/system-design/high-availability) - Redundancy
 
 ---
 

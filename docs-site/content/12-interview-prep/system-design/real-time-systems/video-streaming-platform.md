@@ -931,20 +931,20 @@ const benchmark = async () => {
 ## Hands-On Practice
 
 Want to test this locally? Check out:
-- [Local Video Streaming POC](/interview-prep/practice-pocs/video-streaming-poc) - Build a mini-Netflix with Docker
-- [Redis Cluster Setup](/interview-prep/practice-pocs/redis-cluster-setup) - Practice caching metadata
-- [Load Testing Video APIs](/interview-prep/practice-pocs/load-testing) - Benchmark your video API
+- [Local Video Streaming POC](/12-interview-prep/practice-pocs/video-streaming-poc) - Build a mini-Netflix with Docker
+- [Redis Cluster Setup](/12-interview-prep/practice-pocs/redis-cluster-setup) - Practice caching metadata
+- [Load Testing Video APIs](/12-interview-prep/practice-pocs/load-testing) - Benchmark your video API
 
 ---
 
 ## Related Articles
 
-- [CDN Usage & Optimization](/interview-prep/caching-cdn/cdn-usage) - Deep dive into CDN caching
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies) - Sharding and replication
-- [High-Concurrency API Design](/interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
-- [S3 TPS Limits & Optimization](/interview-prep/aws-cloud/s3-tps-limits) - S3 performance tuning
-- [Auto-Scaling Groups](/interview-prep/aws-cloud/auto-scaling) - Auto-scale transcoding workers
+- [CDN Usage & Optimization](/12-interview-prep/caching-cdn/cdn-usage) - Deep dive into CDN caching
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Sharding and replication
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
+- [S3 TPS Limits & Optimization](/12-interview-prep/aws-cloud/s3-tps-limits) - S3 performance tuning
+- [Auto-Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling) - Auto-scale transcoding workers
 
 ---
 
-**Next**: [WebSocket Architecture (Real-Time Chat)](/interview-prep/system-design/real-time-systems/websocket-architecture)
+**Next**: [WebSocket Architecture (Real-Time Chat)](/12-interview-prep/system-design/real-time-systems/websocket-architecture)

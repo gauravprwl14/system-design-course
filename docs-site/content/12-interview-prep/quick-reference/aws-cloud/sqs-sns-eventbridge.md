@@ -791,7 +791,7 @@ Answer: SQS FIFO with batching (300 base TPS × 10 batch size = 3000 msg/s effec
 
 ## Related Questions
 
-- [Kinesis Streaming vs SQS](/interview-prep/aws-cloud/kinesis-streaming)
-- [Lambda Serverless Architecture](/interview-prep/aws-cloud/lambda-serverless)
-- [CloudWatch Monitoring](/interview-prep/aws-cloud/cloudwatch-monitoring)
-- [Auto-Scaling Groups](/interview-prep/aws-cloud/auto-scaling)
+- [Kinesis Streaming vs SQS](/12-interview-prep/aws-cloud/kinesis-streaming)
+- [Lambda Serverless Architecture](/12-interview-prep/aws-cloud/lambda-serverless)
+- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
+- [Auto-Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling)

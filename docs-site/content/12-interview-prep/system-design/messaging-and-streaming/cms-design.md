@@ -691,8 +691,8 @@ ${allContent.map(content => `
 
 ## 🔗 Related Questions
 
-- [High-Concurrency API Design](/interview-prep/system-design/fundamentals/high-concurrency-api)
-- [Rate Limiting Implementation](/interview-prep/system-design/fundamentals/rate-limiting)
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+- [Rate Limiting Implementation](/12-interview-prep/system-design/fundamentals/rate-limiting)
 
 ---
 

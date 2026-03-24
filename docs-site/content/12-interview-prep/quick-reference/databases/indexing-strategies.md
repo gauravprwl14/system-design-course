@@ -552,10 +552,10 @@ A: "When queries filter on specific value frequently (e.g., status = 'active') a
 
 ## 🔗 Related Questions
 
-- [Query Optimization](/interview-prep/database-storage/query-optimization)
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies)
-- [SQL vs NoSQL](/interview-prep/database-storage/sql-vs-nosql)
-- [Performance Bottleneck Identification](/interview-prep/caching-cdn/performance-bottlenecks)
+- [Query Optimization](/12-interview-prep/database-storage/query-optimization)
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies)
+- [SQL vs NoSQL](/12-interview-prep/database-storage/sql-vs-nosql)
+- [Performance Bottleneck Identification](/12-interview-prep/caching-cdn/performance-bottlenecks)
 
 ---
 

@@ -7,6 +7,18 @@ description: "Core system design concepts: API design, caching, rate limiting, l
 
 These questions cover the building blocks that appear in virtually every system design interview. Master these before moving to specialized topics.
 
+```mermaid
+graph TD
+    CLIENT[Client Request]
+    CLIENT --> APIGW[API Gateway\nAuth + rate limiting + routing]
+    APIGW --> RL[Rate Limiter\nToken bucket / sliding window]
+    APIGW --> LB[Load Balancer\nRound-robin / least-conn]
+    LB --> SVC[Backend Services]
+    SVC --> CACHE[Cache Layer\nRedis — dramatically cuts latency]
+    SVC --> CB[Circuit Breaker\nStop cascading failures]
+    CB --> DOWN[Downstream Service]
+```
+
 ## What's Covered
 
 | Topic | Difficulty | Why It Matters |

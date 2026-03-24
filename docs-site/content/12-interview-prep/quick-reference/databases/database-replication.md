@@ -750,20 +750,20 @@ processCDCEvents();
 ## Hands-On Practice
 
 Want to test database replication locally? Check out:
-- [PostgreSQL Replication Setup POC](/interview-prep/practice-pocs/postgres-replication) - Set up master-slave locally
-- [Database Failover Testing](/interview-prep/practice-pocs/db-failover) - Simulate master failure
-- [CDC with Debezium POC](/interview-prep/practice-pocs/debezium-cdc) - Stream changes to Kafka
+- [PostgreSQL Replication Setup POC](/12-interview-prep/practice-pocs/postgres-replication) - Set up master-slave locally
+- [Database Failover Testing](/12-interview-prep/practice-pocs/db-failover) - Simulate master failure
+- [CDC with Debezium POC](/12-interview-prep/practice-pocs/debezium-cdc) - Stream changes to Kafka
 
 ---
 
 ## Related Articles
 
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies) - Sharding and horizontal scaling
-- [Redis Replication](/interview-prep/caching-cdn/redis-replication) - Redis master-slave setup
-- [Connection Pooling](/interview-prep/database-storage/connection-pooling) - Efficient connection management
-- [Query Optimization](/interview-prep/database-storage/query-optimization) - Make replicas faster
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api) - Using read replicas
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Sharding and horizontal scaling
+- [Redis Replication](/12-interview-prep/caching-cdn/redis-replication) - Redis master-slave setup
+- [Connection Pooling](/12-interview-prep/database-storage/connection-pooling) - Efficient connection management
+- [Query Optimization](/12-interview-prep/database-storage/query-optimization) - Make replicas faster
+- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api) - Using read replicas
 
 ---
 
-**Next**: [Redis Replication & Clustering](/interview-prep/caching-cdn/redis-replication)
+**Next**: [Redis Replication & Clustering](/12-interview-prep/caching-cdn/redis-replication)

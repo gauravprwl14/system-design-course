@@ -10,6 +10,36 @@ tags: [aws, interview, saa, solutions-architect, cloud]
 
 > Covers the **80% of AWS knowledge** that shows up in system design interviews and the AWS Solutions Architect Associate (SAA-C03) exam. Each article is built around real interview questions — not textbook definitions.
 
+```mermaid
+graph TD
+    subgraph "Networking & Identity"
+        VPC[VPC & Networking]
+        IAM[IAM Roles & Policies]
+        R53[Route 53 & DNS]
+    end
+    subgraph "Compute"
+        EC2[EC2 Instances]
+        ASG[Auto Scaling]
+        ECS[ECS / EKS / Fargate]
+        LAM[Lambda]
+        APIGW[API Gateway]
+    end
+    subgraph "Data"
+        RDS[RDS & Aurora]
+        DDB[DynamoDB]
+        EC[ElastiCache]
+        S3[S3]
+    end
+    subgraph "Messaging & Observability"
+        SQS[SQS / SNS / EventBridge]
+        KIN[Kinesis]
+        CW[CloudWatch]
+        ALB[ALB / NLB]
+    end
+    VPC --> EC2 --> RDS
+    IAM --> LAM --> DDB
+```
+
 ## How to Use This Section
 
 **For System Design Interviews**: You'll be asked to pick services and justify your choices. Focus on decision frameworks — "when ALB vs NLB", "SQS vs Kinesis vs Kafka", "RDS Multi-AZ vs Read Replicas".

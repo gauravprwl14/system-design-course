@@ -7,6 +7,26 @@ description: "Database scaling, search systems, distributed file storage, and ge
 
 These questions focus on the data layer — how you store, index, search, and retrieve data at massive scale. Database design questions are among the most common in senior engineer interviews.
 
+```mermaid
+graph TD
+    subgraph "Relational Scaling"
+        REP[Database Replication\nRead scaling + high availability]
+        IDX[Indexing Deep Dive\nB-Tree, query performance]
+        SHARD[Database Sharding\nHorizontal write scaling]
+    end
+    subgraph "Specialized Storage"
+        DFS[Distributed File System\nGFS / HDFS — petabyte files]
+        SE[Search Engine Architecture\nElasticsearch-scale]
+    end
+    subgraph "Query Patterns"
+        TYPE[Typeahead Search\nautocomplete millions of queries/s]
+        GEO[Geospatial Service\nUber, Lyft, DoorDash proximity]
+    end
+    REP --> SHARD
+    IDX --> SE
+    SE --> TYPE
+```
+
 ## What's Covered
 
 | Topic | Difficulty | Why It Matters |

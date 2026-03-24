@@ -878,14 +878,14 @@ wait
 
 ## Related Articles
 
-- [Distributed Locks with Redis](/interview-prep/practice-pocs/redis-distributed-lock) - Deep dive into Redis SETNX
-- [Flash Sales Architecture](/interview-prep/system-design/business-and-advanced/flash-sales) - High-traffic e-commerce patterns
-- [Database Transactions](/interview-prep/practice-pocs/database-transactions) - ACID guarantees
+- [Distributed Locks with Redis](/12-interview-prep/practice-pocs/redis-distributed-lock) - Deep dive into Redis SETNX
+- [Flash Sales Architecture](/12-interview-prep/system-design/business-and-advanced/flash-sales) - High-traffic e-commerce patterns
+- [Database Transactions](/12-interview-prep/practice-pocs/database-transactions) - ACID guarantees
 
 ## Continue Learning
 
-- **Next**: [Social Media Feed (Twitter Timeline)](/interview-prep/system-design/messaging-and-streaming/social-media-feed)
-- **Advanced**: [Search Engine Architecture (Elasticsearch)](/interview-prep/system-design/storage-and-databases/search-engine-architecture)
+- **Next**: [Social Media Feed (Twitter Timeline)](/12-interview-prep/system-design/messaging-and-streaming/social-media-feed)
+- **Advanced**: [Search Engine Architecture (Elasticsearch)](/12-interview-prep/system-design/storage-and-databases/search-engine-architecture)
 
 ---
 

@@ -899,20 +899,20 @@ const screenStream = await navigator.mediaDevices.getDisplayMedia({
 ## Hands-On Practice
 
 Want to build your own video conferencing app? Check out:
-- [WebRTC Video Chat POC](/interview-prep/practice-pocs/webrtc-video-chat) - Build a 2-person video call
-- [SFU Server Setup](/interview-prep/practice-pocs/sfu-setup) - Deploy mediasoup SFU
-- [Load Testing WebRTC](/interview-prep/practice-pocs/webrtc-load-testing) - Simulate 100-person meeting
+- [WebRTC Video Chat POC](/12-interview-prep/practice-pocs/webrtc-video-chat) - Build a 2-person video call
+- [SFU Server Setup](/12-interview-prep/practice-pocs/sfu-setup) - Deploy mediasoup SFU
+- [Load Testing WebRTC](/12-interview-prep/practice-pocs/webrtc-load-testing) - Simulate 100-person meeting
 
 ---
 
 ## Related Articles
 
-- [WebSocket Architecture](/interview-prep/system-design/real-time-systems/websocket-architecture) - Signaling server patterns
-- [Video Streaming Platform](/interview-prep/system-design/real-time-systems/video-streaming-platform) - Video encoding/delivery
-- [Redis Fundamentals](/interview-prep/caching-cdn/redis-fundamentals) - Room state caching
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies) - Meeting metadata storage
-- [Load Balancer (ALB/NLB)](/interview-prep/aws-cloud/load-balancer) - Routing SFU traffic
+- [WebSocket Architecture](/12-interview-prep/system-design/real-time-systems/websocket-architecture) - Signaling server patterns
+- [Video Streaming Platform](/12-interview-prep/system-design/real-time-systems/video-streaming-platform) - Video encoding/delivery
+- [Redis Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals) - Room state caching
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Meeting metadata storage
+- [Load Balancer (ALB/NLB)](/12-interview-prep/aws-cloud/load-balancer) - Routing SFU traffic
 
 ---
 
-**Next**: [Database Replication (Master-Slave & Multi-Master)](/interview-prep/database-storage/database-replication)
+**Next**: [Database Replication (Master-Slave & Multi-Master)](/12-interview-prep/database-storage/database-replication)

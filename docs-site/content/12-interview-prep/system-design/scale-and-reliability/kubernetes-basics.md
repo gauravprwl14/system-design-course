@@ -704,9 +704,9 @@ Key learnings:
 
 ## Related Articles
 
-- [Service Discovery](/interview-prep/system-design/scale-and-reliability/service-discovery) - K8s DNS
-- [API Gateway](/interview-prep/system-design/fundamentals/api-gateway-pattern) - Ingress controller
-- [Distributed Tracing](/interview-prep/system-design/scale-and-reliability/distributed-tracing) - Observability
+- [Service Discovery](/12-interview-prep/system-design/scale-and-reliability/service-discovery) - K8s DNS
+- [API Gateway](/12-interview-prep/system-design/fundamentals/api-gateway-pattern) - Ingress controller
+- [Distributed Tracing](/12-interview-prep/system-design/scale-and-reliability/distributed-tracing) - Observability
 
 ---
 

@@ -835,10 +835,10 @@ A: "Load testing with tools like k6, Apache JMeter, or Artillery. Test with 2x e
 
 ## 🔗 Related Questions
 
-- [Rate Limiting Implementation](/interview-prep/system-design/fundamentals/rate-limiting)
-- [Flash Sales System Design](/interview-prep/system-design/business-and-advanced/flash-sales)
-- [Redis Caching Strategies](/interview-prep/caching/redis-fundamentals)
-- [Database Scaling](/interview-prep/database/scaling-strategies)
+- [Rate Limiting Implementation](/12-interview-prep/system-design/fundamentals/rate-limiting)
+- [Flash Sales System Design](/12-interview-prep/system-design/business-and-advanced/flash-sales)
+- [Redis Caching Strategies](/12-interview-prep/caching/redis-fundamentals)
+- [Database Scaling](/12-interview-prep/database/scaling-strategies)
 
 ---
 

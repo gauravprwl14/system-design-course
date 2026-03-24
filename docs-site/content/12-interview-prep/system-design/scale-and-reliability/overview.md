@@ -7,6 +7,25 @@ description: "CDN, Kubernetes, microservices migration, observability, and build
 
 These questions cover infrastructure and operational concerns — how to build systems that stay up, scale horizontally, and give you visibility into what's happening in production.
 
+```mermaid
+graph TD
+    subgraph "Observability"
+        OBS[Observability & Monitoring\nMetrics, logs, traces]
+        DT[Distributed Tracing\nDebug across 50+ services]
+    end
+    subgraph "Infrastructure"
+        CDN[CDN from Scratch\nGlobal content delivery]
+        K8S[Kubernetes Basics\nContainer orchestration]
+        SD[Service Discovery\nHow microservices find each other]
+    end
+    subgraph "Migration"
+        M2M[Monolith to Microservices\nStrangler fig + domain decomposition]
+        MT[Multi-Tenant SaaS\nIsolation strategies]
+    end
+    OBS --> DT
+    K8S --> SD --> M2M
+```
+
 ## What's Covered
 
 | Topic | Difficulty | Why It Matters |

@@ -733,7 +733,7 @@ A: "Automated backups are retained 0-35 days and allow point-in-time recovery to
 
 ## Related Questions
 
-- [DynamoDB NoSQL Design](/interview-prep/quick-reference/aws-cloud/dynamodb-nosql)
-- [ElastiCache Redis Caching](/interview-prep/quick-reference/aws-cloud/elasticache-redis)
-- [Auto-Scaling Groups](/interview-prep/quick-reference/aws-cloud/auto-scaling)
-- [Lambda Serverless](/interview-prep/quick-reference/aws-cloud/lambda-serverless)
+- [DynamoDB NoSQL Design](/12-interview-prep/quick-reference/aws-cloud/dynamodb-nosql)
+- [ElastiCache Redis Caching](/12-interview-prep/quick-reference/aws-cloud/elasticache-redis)
+- [Auto-Scaling Groups](/12-interview-prep/quick-reference/aws-cloud/auto-scaling)
+- [Lambda Serverless](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)

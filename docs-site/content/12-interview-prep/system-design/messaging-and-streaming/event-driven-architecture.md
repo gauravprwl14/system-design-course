@@ -675,9 +675,9 @@ Benefits:
 
 ## Related Articles
 
-- [Message Queues (Kafka vs RabbitMQ)](/interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) - Event transport
-- [Saga Pattern](/interview-prep/system-design/business-and-advanced/saga-pattern) - Distributed transactions
-- [Event Sourcing & CQRS](/interview-prep/system-design/event-sourcing-cqrs) - Events as truth
+- [Message Queues (Kafka vs RabbitMQ)](/12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) - Event transport
+- [Saga Pattern](/12-interview-prep/system-design/business-and-advanced/saga-pattern) - Distributed transactions
+- [Event Sourcing & CQRS](/12-interview-prep/system-design/event-sourcing-cqrs) - Events as truth
 
 ---
 

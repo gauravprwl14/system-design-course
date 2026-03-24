@@ -2,6 +2,23 @@
 
 Structured preparation for system design interviews at top tech companies. This section contains 33+ real interview questions with detailed answers and quick-reference sheets.
 
+```mermaid
+graph TD
+    IP[Interview Prep]
+    IP --> SD[System Design Questions\n43 real FAANG questions]
+    IP --> QR[Quick Reference Cheat Sheets]
+    SD --> FUND[Fundamentals\nAPI, caching, rate limiting, circuit breaker]
+    SD --> STOR[Storage & Databases\nReplication, sharding, search]
+    SD --> MSG[Messaging & Streaming\nKafka, feeds, async pipelines]
+    SD --> RT[Real-Time Systems\nWebSocket, video, gaming]
+    SD --> SCALE[Scale & Reliability\nCDN, K8s, observability, microservices]
+    SD --> BIZ[Business & Advanced\nSaga, CQRS, fraud, ad auction]
+    QR --> AWS[AWS Cloud]
+    QR --> DB[Databases]
+    QR --> CACHE[Caching]
+    QR --> SEC[Security]
+```
+
 ## Sections
 
 ### System Design Questions

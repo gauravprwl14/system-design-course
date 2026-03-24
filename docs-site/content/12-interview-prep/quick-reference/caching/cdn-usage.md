@@ -693,10 +693,10 @@ A: "Use appropriate cache TTLs, compress assets, use reserved capacity, choose c
 
 ## 🔗 Related Questions
 
-- [Redis Caching Fundamentals](/interview-prep/caching-cdn/redis-fundamentals)
-- [Cache Strategies](/interview-prep/caching-cdn/cache-strategies)
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api)
-- [Performance Bottleneck Identification](/interview-prep/caching-cdn/performance-bottlenecks)
+- [Redis Caching Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals)
+- [Cache Strategies](/12-interview-prep/caching-cdn/cache-strategies)
+- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
+- [Performance Bottleneck Identification](/12-interview-prep/caching-cdn/performance-bottlenecks)
 
 ---
 

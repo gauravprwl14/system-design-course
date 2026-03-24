@@ -956,20 +956,20 @@ WHERE room_id = ? AND message_id = ?
 ## Hands-On Practice
 
 Want to build this yourself? Check out:
-- [WebSocket Server POC](/interview-prep/practice-pocs/websocket-server-poc) - Build a scalable chat app
-- [Redis Pub/Sub Setup](/interview-prep/practice-pocs/redis-pubsub) - Test cross-server messaging
-- [Load Testing WebSockets](/interview-prep/practice-pocs/websocket-load-testing) - Simulate 100K connections
+- [WebSocket Server POC](/12-interview-prep/practice-pocs/websocket-server-poc) - Build a scalable chat app
+- [Redis Pub/Sub Setup](/12-interview-prep/practice-pocs/redis-pubsub) - Test cross-server messaging
+- [Load Testing WebSockets](/12-interview-prep/practice-pocs/websocket-load-testing) - Simulate 100K connections
 
 ---
 
 ## Related Articles
 
-- [Redis Fundamentals](/interview-prep/caching-cdn/redis-fundamentals) - Redis Pub/Sub deep dive
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies) - Cassandra for chat history
-- [High-Concurrency API Design](/interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
-- [Video Streaming Platform](/interview-prep/system-design/real-time-systems/video-streaming-platform) - Real-time video delivery
-- [Connection Pooling](/interview-prep/database-storage/connection-pooling) - Database connection management
+- [Redis Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals) - Redis Pub/Sub deep dive
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Cassandra for chat history
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
+- [Video Streaming Platform](/12-interview-prep/system-design/real-time-systems/video-streaming-platform) - Real-time video delivery
+- [Connection Pooling](/12-interview-prep/database-storage/connection-pooling) - Database connection management
 
 ---
 
-**Next**: [Video Conferencing Architecture (Zoom/Google Meet)](/interview-prep/system-design/real-time-systems/video-conferencing)
+**Next**: [Video Conferencing Architecture (Zoom/Google Meet)](/12-interview-prep/system-design/real-time-systems/video-conferencing)

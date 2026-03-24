@@ -589,10 +589,10 @@ A: "Automatic. Concurrent executions = number of requests being processed. Scale
 
 ## 🔗 Related Questions
 
-- [S3 TPS Limits & Optimization](/interview-prep/aws-cloud/s3-tps-limits)
-- [Load Balancer (ELB/ALB)](/interview-prep/aws-cloud/load-balancer)
-- [CloudWatch Monitoring](/interview-prep/aws-cloud/cloudwatch-monitoring)
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api)
+- [S3 TPS Limits & Optimization](/12-interview-prep/aws-cloud/s3-tps-limits)
+- [Load Balancer (ELB/ALB)](/12-interview-prep/aws-cloud/load-balancer)
+- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
+- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
 
 ---
 

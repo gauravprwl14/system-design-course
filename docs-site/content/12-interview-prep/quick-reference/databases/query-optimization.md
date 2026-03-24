@@ -635,10 +635,10 @@ A: "1) Use covering index (INCLUDE columns), 2) Reduce result set (LIMIT, WHERE)
 
 ## 🔗 Related Questions
 
-- [Indexing Strategies](/interview-prep/database-storage/indexing-strategies)
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies)
-- [Performance Bottleneck Identification](/interview-prep/caching-cdn/performance-bottlenecks)
-- [API Metrics (P95/P99)](/interview-prep/caching-cdn/api-metrics)
+- [Indexing Strategies](/12-interview-prep/database-storage/indexing-strategies)
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies)
+- [Performance Bottleneck Identification](/12-interview-prep/caching-cdn/performance-bottlenecks)
+- [API Metrics (P95/P99)](/12-interview-prep/caching-cdn/api-metrics)
 
 ---
 

@@ -7,6 +7,16 @@ description: "Live streaming, video conferencing, collaborative editing, gaming 
 
 These are some of the hardest system design questions — they require low latency, high throughput, and stateful connections at massive scale. Common in senior and staff-level interviews at companies like Google, Twitch, and Zoom.
 
+```mermaid
+graph TD
+    WS[WebSocket Architecture\nStateful persistent connections]
+    WS --> LS[Live Streaming\nTwitch 15M concurrent viewers\nsub-second latency]
+    WS --> VS[Video Streaming\nNetflix / YouTube VoD\nhigh throughput]
+    WS --> VC[Video Conferencing\nZoom / Meet WebRTC + media servers]
+    WS --> CE[Collaborative Editing\nGoogle Docs OT / CRDT]
+    WS --> OG[Online Gaming Backend\nFortnite 350M players\ntick-rate servers]
+```
+
 ## What's Covered
 
 | Topic | Difficulty | Why It Matters |

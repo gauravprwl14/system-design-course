@@ -7,6 +7,23 @@ description: "Async processing, event-driven systems, social feeds, content deli
 
 These questions cover asynchronous communication patterns — from event queues to news feeds to content delivery pipelines. Async design is a core skill for building scalable, decoupled systems.
 
+```mermaid
+graph LR
+    subgraph "Message Infrastructure"
+        MQ[Message Queues\nKafka vs RabbitMQ\nordering + throughput]
+        EDA[Event-Driven Architecture\ndecoupled scaling]
+    end
+    subgraph "Content Delivery"
+        FEED[Social Media Feed\nfan-out on write vs read]
+        AUDIO[Audio Streaming\nSpotify 574M users]
+        PDF[PDF Converter\nasync document pipeline]
+        CMS[CMS Design\nversioning + delivery]
+    end
+    MQ --> EDA
+    EDA --> FEED
+    MQ --> PDF
+```
+
 ## What's Covered
 
 | Topic | Difficulty | Why It Matters |

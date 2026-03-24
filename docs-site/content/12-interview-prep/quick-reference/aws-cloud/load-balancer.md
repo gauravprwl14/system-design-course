@@ -590,10 +590,10 @@ A: "No, ALB/NLB are regional. Use Route 53 (DNS) for global load balancing acros
 
 ## 🔗 Related Questions
 
-- [Auto-Scaling Groups](/interview-prep/aws-cloud/auto-scaling)
-- [CloudWatch Monitoring](/interview-prep/aws-cloud/cloudwatch-monitoring)
-- [High-Concurrency API Design](/interview-prep/system-design/high-concurrency-api)
-- [Database Scaling Strategies](/interview-prep/database-storage/scaling-strategies)
+- [Auto-Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling)
+- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
+- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
+- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies)
 
 ---
 
