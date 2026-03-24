@@ -9,6 +9,16 @@ How leading technology companies design and scale their systems at production sc
 
 > **Note**: All case studies have moved to [Real-World Systems](/11-real-world). The content below lists available case studies with direct links.
 
+```mermaid
+graph LR
+    NOTE[All case studies have moved\nto Real-World Systems]
+    NOTE --> MEDIA[Media & Storage\nYouTube, Netflix, Google Drive, Spotify]
+    NOTE --> COMM[Communication\nChat System, Notification System]
+    NOTE --> INFRA[Infrastructure\nURL Shortener, Rate Limiter, Unique ID Generator]
+    NOTE --> COMMERCE[Commerce & Marketplace\nUber, Ticket Booking, Payment System]
+    NOTE --> CONTENT[Content\nPastebin, News Feed]
+```
+
 ## Available Case Studies
 
 | System | Key Challenge | Link |

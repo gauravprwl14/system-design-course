@@ -9,6 +9,17 @@ Detailed walkthroughs of common system design interview questions, covering arch
 
 > **Note**: All interview questions are now in [12-interview-prep/system-design](/12-interview-prep/system-design). The questions below link directly to the active content.
 
+```mermaid
+graph TD
+    NOTE[All content has moved to\n12-interview-prep/system-design]
+    NOTE --> FUND[Fundamentals\nAPI Gateway, Rate Limiting, Circuit Breaker]
+    NOTE --> STOR[Storage & Databases\nReplication, Sharding, Search]
+    NOTE --> RT[Real-Time Systems\nWebSocket, Video, Collaborative Editing]
+    NOTE --> MSG[Messaging & Streaming\nKafka, Feeds, Async Pipelines]
+    NOTE --> SR[Scale & Reliability\nCDN, Kubernetes, Observability]
+    NOTE --> BA[Business & Advanced\nCQRS, Saga, Fraud, Ad Auction]
+```
+
 ## Questions by Category
 
 ### Fundamentals

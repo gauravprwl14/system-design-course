@@ -9,6 +9,18 @@ description: "Scannable one-page references for system design interviews and AWS
 
 ---
 
+```mermaid
+graph LR
+    Interview[Interview Round]
+    Interview --> AWS[AWS Services\nKey limits + decision rules]
+    Interview --> SD[System Design Patterns\nScalability + trade-offs]
+    Interview --> DB[Databases\nSQL vs NoSQL + indexing]
+    Interview --> CACHE[Caching & Redis\nStrategies + eviction]
+    Interview --> NET[Networking & DNS\nLoad balancing + TLS]
+    Interview --> MSG[Messaging & Streaming\nSQS / Kafka / Kinesis]
+    Interview --> SEC[Security & Auth\nJWT + encryption + attacks]
+```
+
 ## How to Use
 
 | Goal | Action |

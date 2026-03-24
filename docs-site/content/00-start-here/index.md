@@ -2,6 +2,19 @@
 
 Welcome to the System Design Knowledge Base — a practical, implementation-focused resource for software engineers preparing for system design interviews or leveling up their distributed systems knowledge.
 
+```mermaid
+graph TD
+    Start([Where are you?])
+    Start --> NEW[New to System Design\nStart at 01-databases]
+    Start --> INT[Interview Tomorrow\nGo to Cheat Sheets + Interview Prep]
+    Start --> PROD[Building Production Systems\nJump to the relevant topic]
+    Start --> PREP[Long-term Prep\nFollow the full course 01-12]
+    NEW --> DB[01-databases → 02-caching\n→ 03-redis → 04-messaging]
+    INT --> CS[Cheat Sheets\n7 scannable reference sheets]
+    INT --> IP[12-interview-prep\n43 real FAANG questions]
+    PREP --> ALL[Complete 12-section path\nConcepts + Hands-On + Failures]
+```
+
 ## What's Inside
 
 This site contains **250+ articles** organized into 12 sections:
