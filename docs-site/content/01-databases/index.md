@@ -2,6 +2,23 @@
 
 Databases are the foundation of nearly every system. This section covers everything from replication basics to advanced topics like MVCC, write-ahead logging, and zero-downtime migrations.
 
+```mermaid
+graph TD
+    DB[🗄️ Databases]
+    DB --> C[📖 Concepts]
+    DB --> H[🔬 Hands-On]
+    DB --> F[⚠️ Failure Modes]
+    C --> C1[Indexing Deep Dive]
+    C --> C2[Data Archival Strategies]
+    H --> H1[CRUD Operations]
+    H --> H2[Database Indexes]
+    H --> H3[Connection Pooling + Replication]
+    H --> H4[Partitioning Strategies]
+    F --> F1[Connection Pool Starvation]
+    F --> F2[Hot Partition]
+    F --> F3[Memory Leak - Long Running]
+```
+
 ## What You'll Learn
 
 - **Concepts**: Core database design theory — replication, sharding, indexing, transactions

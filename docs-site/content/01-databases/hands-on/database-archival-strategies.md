@@ -1388,6 +1388,6 @@ orders_archive   | 876544  | 280 MB     | 35 MB
 
 ## Further Reading
 
-- [Data Archival Strategies](/system-design/databases/data-archival-strategies)
+- [Data Archival Strategies](/01-databases/concepts/data-archival-strategies)
 - [Storage Bloat Solutions](/problems-at-scale/cost-optimization/storage-bloat)
-- [Table Partitioning POC](/interview-prep/practice-pocs/database-partitioning)
+- [Table Partitioning POC](/12-interview-prep/practice-pocs/database-partitioning)

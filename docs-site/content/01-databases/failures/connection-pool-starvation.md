@@ -523,8 +523,8 @@ Starved: Request → Wait for connection (30s) → Timeout → Error
 ## Related Content
 
 - [Connection Pool Management](/system-design/performance/connection-pool-management) - Prevention guide
-- [POC #71: Connection Pool Sizing](/interview-prep/practice-pocs/connection-pool-sizing) - Find optimal size
-- [POC #72: Connection Leak Detection](/interview-prep/practice-pocs/connection-leak-detection) - Find leaks
+- [POC #71: Connection Pool Sizing](/12-interview-prep/practice-pocs/connection-pool-sizing) - Find optimal size
+- [POC #72: Connection Leak Detection](/12-interview-prep/practice-pocs/connection-leak-detection) - Find leaks
 
 ---
 

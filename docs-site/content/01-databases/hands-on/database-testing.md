@@ -610,6 +610,6 @@ demonstrate().catch(console.error);
 
 ## Related POCs
 
-- [Integration Testing](/interview-prep/practice-pocs/integration-testing)
-- [Connection Pooling](/interview-prep/practice-pocs/database-connection-pooling)
-- [Database Transactions](/interview-prep/practice-pocs/database-transactions)
+- [Integration Testing](/12-interview-prep/practice-pocs/integration-testing)
+- [Connection Pooling](/12-interview-prep/practice-pocs/database-connection-pooling)
+- [Database Transactions](/12-interview-prep/practice-pocs/database-transactions)

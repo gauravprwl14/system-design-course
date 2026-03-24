@@ -2,6 +2,17 @@
 
 A complete, runnable proof-of-concept for implementing data archival strategies.
 
+```mermaid
+graph TD
+    APP[Application] --> QR[Query Router]
+    QR -->|recent data| HOT[(Hot DB\nPostgreSQL :5432\n< 90 days)]
+    QR -->|old data| ARCH[(Archive DB\nPostgreSQL :5433\n90d - 2yr)]
+    QR -->|cache hit| CACHE[Redis Cache\n:6379]
+    WORKER[Archive Worker\nBackground Job] -->|reads old records| HOT
+    WORKER -->|writes| ARCH
+    WORKER -->|deletes archived| HOT
+```
+
 ## Architecture
 
 ```
@@ -232,6 +243,6 @@ docker-compose down -v
 
 ## Related Documentation
 
-- [Data Archival Strategies](/system-design/databases/data-archival-strategies)
+- [Data Archival Strategies](/01-databases/concepts/data-archival-strategies)
 - [Storage Bloat Solutions](/problems-at-scale/cost-optimization/storage-bloat)
-- [Table Partitioning POC](/interview-prep/practice-pocs/database-partitioning)
+- [Table Partitioning POC](/12-interview-prep/practice-pocs/database-partitioning)

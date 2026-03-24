@@ -513,8 +513,8 @@ setInterval(() => {
 
 ## Related Content
 
-- [Database Sharding](/system-design/databases/sharding) - Sharding strategies
-- [POC #18: Sharding Implementation](/interview-prep/practice-pocs/database-sharding)
+- [Database Sharding](/01-databases/concepts/sharding) - Sharding strategies
+- [POC #18: Sharding Implementation](/12-interview-prep/practice-pocs/database-sharding)
 - [Database Hotspots](/problems-at-scale/scalability/database-hotspots) - Related pattern
 
 ---

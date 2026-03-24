@@ -1250,7 +1250,7 @@ rm -rf database-crud-poc
 
 ## What's Next?
 
-**Next POC**: [POC #12: B-Tree Indexes for Query Performance](/interview-prep/practice-pocs/database-indexes)
+**Next POC**: [POC #12: B-Tree Indexes for Query Performance](/12-interview-prep/practice-pocs/database-indexes)
 
 Learn how to use indexes to make queries 1000x faster, when to add them, and how to avoid index pitfalls!
 
