@@ -87,7 +87,7 @@ export default async function RootLayout({ children }) {
       </Head>
       <body>
         <Banner storageKey="launch-banner">
-          <a href="/get-started" style={{ textDecoration: 'none' }}>
+          <a href="/system-design/12-interview-prep" style={{ textDecoration: 'none', color: 'inherit' }}>
             🎉 New: Interview Preparation section with 149+ real questions! Start here →
           </a>
         </Banner>

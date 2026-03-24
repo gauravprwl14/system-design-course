@@ -16,9 +16,6 @@ const withNextra = nextra({
 
 export default withNextra({
   reactStrictMode: true,
-  output: 'standalone',
-  // Silence "multiple lockfiles" workspace root warning from Next.js 16
-  outputFileTracingRoot: path.join(__dirname, '../../'),
   basePath: '/system-design',
   assetPrefix: '/system-design',
 
