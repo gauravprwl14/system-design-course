@@ -1,4 +1,5 @@
 export default {
+  index: "🏢 Real-World Systems",
   netflix: "Netflix",
   youtube: "YouTube",
   spotify: "Spotify",

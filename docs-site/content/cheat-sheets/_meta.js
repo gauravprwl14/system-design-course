@@ -1,4 +1,5 @@
 export default {
+  index: "⚡ Cheat Sheets",
 
   // --- AWS ---
   aws: "☁️ AWS Services",
