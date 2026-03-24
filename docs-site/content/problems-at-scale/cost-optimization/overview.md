@@ -1,6 +1,6 @@
 ---
 title: "Cost & Storage Optimization"
-description: "When technical debt becomes a $18K/month storage bill"
+description: "When technical debt becomes a 18 dollarsK/month storage bill"
 ---
 
 # Cost & Storage Optimization

@@ -5,7 +5,7 @@ category: "problems-at-scale"
 subcategories: ["cost-optimization", "database", "data-management"]
 personas: ["Senior Engineer", "Tech Lead"]
 tags: ["storage-bloat", "soft-delete", "archival", "table-partitioning", "vacuum", "dead-tuples", "postgresql", "s3", "athena", "cost-optimization", "audit-logs"]
-description: "Your database was 50GB three years ago. It's 2.4TB today. User count grew 10x. Storage grew 48x. You're paying $18,000/month for storage that's 70% garbage: soft-deleted records, orphaned rows, uncompressed logs, old event streams nobody queries."
+description: "Your database was 50GB three years ago. It's 2.4TB today. User count grew 10x. Storage grew 48x. You're paying 18,000 dollars/month for storage that's 70% garbage: soft-deleted records, orphaned rows, uncompressed logs, old event streams nobody queries."
 reading_time: "19 min"
 difficulty: "senior"
 status: "published"

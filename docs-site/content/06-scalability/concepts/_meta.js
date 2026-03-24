@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "scaling-basics": "Scaling Basics",
   "high-availability": "High Availability",
   "auto-scaling": "Auto Scaling",

@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "counter-race": "Counter Race Condition",
   "double-booking": "Double Booking",
   "double-charge-payment": "Double Charge in Payments",

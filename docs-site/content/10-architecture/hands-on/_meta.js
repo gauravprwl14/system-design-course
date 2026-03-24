@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "circuit-breaker": "Circuit Breaker",
   "saga-pattern": "Saga Pattern",
   "blue-green-deployment": "Blue-Green Deployment",

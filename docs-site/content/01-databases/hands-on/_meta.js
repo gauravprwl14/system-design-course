@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "database-crud": "CRUD Operations",
   "database-indexes": "Indexes",
   "database-transactions": "Transactions",

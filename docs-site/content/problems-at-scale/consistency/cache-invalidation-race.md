@@ -5,7 +5,7 @@ category: "problems-at-scale"
 subcategories: ["consistency", "caching", "race-conditions"]
 personas: ["Senior Engineer", "Tech Lead"]
 tags: ["cache-invalidation", "race-condition", "write-through", "cache-versioning", "redis", "stale-cache", "cache-aside", "TTL", "optimistic-locking"]
-description: "A price changes from $99 to $79. The cache is cleared. A slow request that started before the clear finishes and writes the old $99 price back to cache. Users see wrong prices for 5 minutes. Your cache invalidation logic is correct — and that's the problem."
+description: "A price changes from 99 dollars to 79 dollars. The cache is cleared. A slow request that started before the clear finishes and writes the old 99 dollars price back to cache. Users see wrong prices for 5 minutes. Your cache invalidation logic is correct — and that's the problem."
 reading_time: "17 min"
 difficulty: "senior"
 status: "published"

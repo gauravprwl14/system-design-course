@@ -118,7 +118,6 @@ export default async function RootLayout({ children }) {
           }}
           navigation={{ prev: true, next: true }}
           darkMode={true}
-          search={{ placeholder: 'Search documentation...' }}
         >
           {children}
         </Layout>

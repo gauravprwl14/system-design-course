@@ -4,12 +4,13 @@ import { generateStaticParamsFor, importPage } from 'nextra/pages'
 export const generateStaticParams = generateStaticParamsFor('mdxPath')
 
 // Generate per-page metadata from MDX frontmatter
-export { generateMetadata } from 'nextra/pages'
+export async function generateMetadata(props) {
+  const params = await props.params
+  const { metadata } = await importPage(params.mdxPath)
+  return metadata
+}
 
 // Catch-all page — renders any MDX file routed through [[...mdxPath]]
-// NOTE: useMDXComponents() must NOT be called inside an async Server Component
-// (React 19 disallows hooks in async functions). The Nextra theme Layout in
-// app/layout.jsx handles wrapping automatically — MDXContent is rendered directly.
 export default async function Page(props) {
   const params = await props.params
   const { default: MDXContent } = await importPage(params.mdxPath)

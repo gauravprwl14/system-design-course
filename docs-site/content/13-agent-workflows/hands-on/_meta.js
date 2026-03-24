@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "basic-agent-loop": "POC: Basic Agent Loop 🟢",
   "rag-pipeline": "POC: RAG Pipeline 🟡",
   "mcp-server": "POC: MCP Server 🔴",

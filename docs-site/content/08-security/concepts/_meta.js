@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "authentication-at-scale": "Authentication at Scale",
   "zero-trust-architecture": "Zero-Trust Architecture",
   "oauth2-oidc-deep-dive": "OAuth2 & OIDC Deep Dive",

@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "load-balancer-round-robin": "Load Balancer: Round Robin",
   "load-balancer-least-connections": "Load Balancer: Least Connections",
   "load-balancer-consistent-hashing": "Load Balancer: Consistent Hashing",

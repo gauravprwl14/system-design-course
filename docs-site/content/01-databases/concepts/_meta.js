@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "replication-basics": "Replication Basics",
   "read-replicas": "Read Replicas",
   "sharding-strategies": "Sharding Strategies",

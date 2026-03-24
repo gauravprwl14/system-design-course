@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "redis-data-structures-deep-dive": "Data Structures Deep Dive",
   "redis-persistence-rdb-aof": "Persistence: RDB vs AOF",
   "redis-cluster-vs-sentinel": "Cluster vs Sentinel",

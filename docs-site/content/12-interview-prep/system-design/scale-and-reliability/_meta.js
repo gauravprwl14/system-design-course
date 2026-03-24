@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "cdn-from-scratch": "🔴 Design a CDN from Scratch",
   "cdn-edge-computing-media": "🟡 CDN & Edge Computing for Media",
   "kubernetes-basics": "🟡 Kubernetes Basics",

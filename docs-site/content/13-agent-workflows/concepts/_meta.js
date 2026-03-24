@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "from-zero-to-production-agent": "🟢 From Zero to Production Agent",
   "enterprise-agent-deployment": "🔴 Enterprise Agent Deployment",
   "what-is-an-agent": "🟢 What is an AI Agent?",

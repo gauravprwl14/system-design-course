@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "prometheus-nodejs-poc": "Prometheus Node.js POC",
   "otel-distributed-tracing-poc": "OTel Distributed Tracing POC",
   "distributed-tracing": "Distributed Tracing",

@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "message-queues-kafka-rabbitmq": "🟡 Message Queues: Kafka vs RabbitMQ",
   "event-driven-architecture": "🔴 Event-Driven Architecture",
   "social-media-feed": "🔴 Social Media Feed",

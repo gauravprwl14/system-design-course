@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "gossip-protocol": "🟡 Gossip Protocol",
   "phi-accrual-failure-detector": "🔴 Phi Accrual Failure Detector",
   "vector-clocks": "🔴 Vector Clocks",

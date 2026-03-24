@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "message-queue-basics": "Message Queue Basics",
   "kafka-vs-rabbitmq": "Kafka vs RabbitMQ",
   "kafka-partitioning-design": "Kafka Partitioning Design",

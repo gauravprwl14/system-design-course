@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "rest-graphql-grpc": "REST vs GraphQL vs gRPC",
   idempotency: "Idempotency",
   "rate-limiting": "Rate Limiting",

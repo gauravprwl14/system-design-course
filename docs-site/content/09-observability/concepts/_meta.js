@@ -1,4 +1,5 @@
 export default {
+  "overview": "Overview",
   "prometheus-grafana-stack": "Prometheus & Grafana Stack",
   "opentelemetry-instrumentation": "OpenTelemetry Instrumentation",
   "slo-burn-rate-alerts": "SLO Burn Rate Alerts",

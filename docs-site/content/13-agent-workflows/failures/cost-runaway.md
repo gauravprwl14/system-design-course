@@ -5,7 +5,7 @@ category: "agent-workflows"
 subcategories: ["failures", "cost"]
 personas: ["Senior Engineer", "AI Engineer", "Tech Lead", "Engineering Manager"]
 tags: ["agents", "cost", "token-budget", "rate-limits", "fan-out", "caching", "monitoring"]
-description: "Unbounded agent loops and wide parallel fan-out have generated $10,000+ bills overnight. Token cost compounds at every step — a 20-step agent with a 50k-token context costs 100× more than a single LLM call. Learn to cap, monitor, and optimize before it happens to you."
+description: "Unbounded agent loops and wide parallel fan-out have generated 10,000+ dollar bills overnight. Token cost compounds at every step - a 20-step agent with a 50k-token context costs 100x more than a single LLM call. Learn to cap, monitor, and optimize before it happens to you."
 reading_time: "17 min"
 difficulty: "intermediate"
 status: "published"
@@ -25,9 +25,9 @@ level: intermediate
 
 ```mermaid
 flowchart TD
-    TRIGGER[Unbound loop / wide fan-out] --> STEP[Each step pays\nfor full accumulated context]
-    STEP --> GROW[Context grows per step\ncost is superlinear]
-    GROW --> BILL[Unexpected bill\n$10k+ overnight]
+    TRIGGER[Unbound loop / wide fan-out] --> STEP[Each step pays for full accumulated context]
+    STEP --> GROW[Context grows per step - cost is superlinear]
+    GROW --> BILL[Unexpected bill - 10k+ overnight]
 
     FIX1[Step limit cap] --> GUARD[Guards]
     FIX2[Token budget per run] --> GUARD
@@ -52,22 +52,22 @@ Unlike most infrastructure costs that scale linearly, agent costs have a superli
 
 ```mermaid
 graph LR
-    S1["Step 1\n1k tokens\n→ $0.003"]
-    S2["Step 2\n3k tokens\n(+2k results)\n→ $0.009"]
-    S3["Step 3\n8k tokens\n(+5k results)\n→ $0.024"]
-    S4["Step 4\n15k tokens\n(+7k results)\n→ $0.045"]
-    SN["Step N\nContext grows with each step"]
+    S1["Step 1: 1k tokens"]
+    S2["Step 2: 3k tokens (+2k results)"]
+    S3["Step 3: 8k tokens (+5k results)"]
+    S4["Step 4: 15k tokens (+7k results)"]
+    SN["Step N: context grows with each step"]
 
     S1 --> S2 --> S3 --> S4 --> SN
 
-    TOTAL["Without limit:\nStep 1: $0.003\nStep 2: $0.009\nStep 3: $0.024\nStep 4: $0.045\nStep 10: $0.30\nStep 20: $1.20\n1 user × 50 steps: ~$15\n100 users × 50 steps: $1,500\nOvernight loop × 10 users: $36,000+"]
+    TOTAL["Cost compounds: 10 users x 50 steps = 36,000+ per overnight run"]
 
     SN --> TOTAL
 
     style TOTAL fill:#e74c3c,stroke:#c0392b,color:#fff
 ```
 
-At GPT-4o pricing (~$2.50/1M input tokens), a 50-step loop with a 100k accumulated context costs approximately $12.50 per agent run. That's manageable for 10 runs per day. It's $12,500/day for 1,000 runs.
+At GPT-4o pricing (~\$2.50/1M input tokens), a 50-step loop with a 100k accumulated context costs approximately \$12.50 per agent run. That's manageable for 10 runs per day. It's \$12,500/day for 1,000 runs.
 
 ---
 
@@ -325,7 +325,7 @@ See: [Context Window Overflow](./context-overflow) for full compression strategi
 
 **Notion AI (2023)**: Internal reports of teams accidentally running batch AI jobs against their full document corpus with no per-run limits. A single misconfigured job processed 50,000 documents at 5 LLM calls each — 250,000 API calls overnight.
 
-**AutoGPT open-source deployments**: Many early AutoGPT users reported accidentally generating $50–$500 bills overnight when the agent encountered an ambiguous task and looped trying to resolve it. The framework had no default cost cap.
+**AutoGPT open-source deployments**: Many early AutoGPT users reported accidentally generating \$50–\$500 bills overnight when the agent encountered an ambiguous task and looped trying to resolve it. The framework had no default cost cap.
 
 **GPT-4-based coding agents**: Several companies building coding agents reported that agents instructed to "make all tests pass" would loop attempting increasingly complex fixes — each attempt re-reading large codebases. Without a step limit, a single failed test could trigger hours of looping.
 
