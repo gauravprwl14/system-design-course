@@ -13,6 +13,7 @@ graph TD
     SD --> RT[Real-Time Systems\nWebSocket, video, gaming]
     SD --> SCALE[Scale & Reliability\nCDN, K8s, observability, microservices]
     SD --> BIZ[Business & Advanced\nSaga, CQRS, fraud, ad auction]
+    SD --> AI[AI Agents & LLM Systems\nRAG, agent loop, tool calling, evals]
     QR --> AWS[AWS Cloud]
     QR --> DB[Databases]
     QR --> CACHE[Caching]
@@ -23,11 +24,13 @@ graph TD
 
 ### System Design Questions
 
-33+ real questions from FAANG interviews, each with:
+40+ real questions from FAANG interviews, each with:
 - Problem statement and clarifying questions
 - High-level architecture
 - Deep-dive into key components
 - Trade-offs and alternatives
+
+Includes an **[AI Agents & LLM Systems](./system-design/ai-and-agents/)** section covering agent loop design, RAG architecture, tool calling, multi-agent coordination, observability, and prompt injection defense.
 
 [Browse all questions](./system-design)
 
@@ -53,6 +56,7 @@ Concise reference sheets organized by topic:
 | Real-time system questions | [Real-time questions](./system-design/real-time-systems/) | [10-architecture](/10-architecture) |
 | Distributed system questions | [Scale & reliability](./system-design/scale-and-reliability/) | [05-distributed-systems](/05-distributed-systems) |
 | System case studies | [Real-World Systems](/11-real-world) | — |
+| AI/LLM agent questions | [AI Agents & LLM Systems](./system-design/ai-and-agents/) | [13-agent-workflows](/13-agent-workflows) |
 
 ## Interview Strategy
 
