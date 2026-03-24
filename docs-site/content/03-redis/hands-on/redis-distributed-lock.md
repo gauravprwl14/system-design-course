@@ -835,10 +835,10 @@ await lock.withLock(`property:${propertyId}:${date}`, async () => {
 
 ## Related POCs
 
-- [POC: Redis Key-Value Cache](/interview-prep/practice-pocs/redis-key-value-cache) - Basic Redis usage
-- [POC: Redis Counter](/interview-prep/practice-pocs/redis-counter) - Atomic increments
-- [POC: Job Queue with Redis](/interview-prep/practice-pocs/redis-job-queue) - Task distribution
-- [POC: Redlock Multi-Redis](/interview-prep/practice-pocs/redlock-algorithm) - Fault-tolerant locks
+- [POC: Redis Key-Value Cache](/12-interview-prep/practice-pocs/redis-key-value-cache) - Basic Redis usage
+- [POC: Redis Counter](/12-interview-prep/practice-pocs/redis-counter) - Atomic increments
+- [POC: Job Queue with Redis](/12-interview-prep/practice-pocs/redis-job-queue) - Task distribution
+- [POC: Redlock Multi-Redis](/12-interview-prep/practice-pocs/redlock-algorithm) - Fault-tolerant locks
 
 ---
 

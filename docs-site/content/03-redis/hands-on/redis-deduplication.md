@@ -522,6 +522,6 @@ Deduplicated: 99
 
 ## Related POCs
 
-- [POC #73: Idempotency Keys](/interview-prep/practice-pocs/idempotency-keys)
-- [POC #49: Kafka Exactly-Once](/interview-prep/practice-pocs/kafka-exactly-once-semantics)
-- [POC #3: Distributed Lock](/interview-prep/practice-pocs/redis-distributed-lock)
+- [POC #73: Idempotency Keys](/12-interview-prep/practice-pocs/idempotency-keys)
+- [POC #49: Kafka Exactly-Once](/12-interview-prep/practice-pocs/kafka-exactly-once-semantics)
+- [POC #3: Distributed Lock](/12-interview-prep/practice-pocs/redis-distributed-lock)

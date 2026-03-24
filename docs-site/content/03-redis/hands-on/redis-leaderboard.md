@@ -860,10 +860,10 @@ const trending = await weeklyLeaderboard.getTopPlayers(20);
 
 ## Related POCs
 
-- [POC: Redis Counter](/interview-prep/practice-pocs/redis-counter) - Atomic score tracking
-- [POC: Real-Time Pub/Sub](/interview-prep/practice-pocs/redis-pubsub) - Live rank updates
-- [POC: Time-Series Data](/interview-prep/practice-pocs/redis-timeseries) - Historical rankings
-- [POC: Geo Leaderboard](/interview-prep/practice-pocs/redis-geo-leaderboard) - Location-based rankings
+- [POC: Redis Counter](/12-interview-prep/practice-pocs/redis-counter) - Atomic score tracking
+- [POC: Real-Time Pub/Sub](/12-interview-prep/practice-pocs/redis-pubsub) - Live rank updates
+- [POC: Time-Series Data](/12-interview-prep/practice-pocs/redis-timeseries) - Historical rankings
+- [POC: Geo Leaderboard](/12-interview-prep/practice-pocs/redis-geo-leaderboard) - Location-based rankings
 
 ---
 

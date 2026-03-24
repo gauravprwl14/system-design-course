@@ -747,8 +747,8 @@ if (balance >= 100) {
 
 ## Continue Learning
 
-- **Next**: [POC #32: Redis WATCH](/interview-prep/practice-pocs/redis-watch-optimistic-locking) - Prevent race conditions with optimistic locking
-- **Advanced**: [POC #40: Redis Lua Scripting](/interview-prep/practice-pocs/redis-lua-scripts) - Complex atomic logic
+- **Next**: [POC #32: Redis WATCH](/12-interview-prep/practice-pocs/redis-watch-optimistic-locking) - Prevent race conditions with optimistic locking
+- **Advanced**: [POC #40: Redis Lua Scripting](/12-interview-prep/practice-pocs/redis-lua-scripts) - Complex atomic logic
 
 ---
 
