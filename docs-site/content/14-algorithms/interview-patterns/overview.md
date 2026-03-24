@@ -14,6 +14,23 @@ tags: [algorithms, interview, patterns, data-structures]
 
 > Most coding interview problems are variations of ~10 fundamental patterns. Learn the pattern, recognize it in new problems, apply the template — and you'll handle 80% of what interviewers throw at you.
 
+```mermaid
+graph TD
+    PROBLEM[Coding Interview Problem]
+    PROBLEM --> SW{Subarray /\nsubstring of size K?}
+    PROBLEM --> TP{Sorted array\nfind pair?}
+    PROBLEM --> BS{Minimum X\nsuch that Y?}
+    PROBLEM --> HK{K largest /\nsmallest?}
+    PROBLEM --> GR{Nodes and\nedges?}
+    PROBLEM --> DP{Count ways /\nmaximize?}
+    SW --> SWP[Sliding Window]
+    TP --> TPP[Two Pointers]
+    BS --> BSP[Binary Search on Answer]
+    HK --> HKP[Heap / Top-K]
+    GR --> GRP[BFS / DFS]
+    DP --> DPP[Dynamic Programming]
+```
+
 ## Why Patterns Beat Problem Memorization
 
 There are thousands of coding problems. Memorizing solutions doesn't scale. But these 10 patterns cover the vast majority of array, string, graph, and DP problems you'll encounter at FAANG and equivalent companies.

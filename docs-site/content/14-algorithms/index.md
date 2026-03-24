@@ -7,6 +7,21 @@ description: "Algorithm patterns for system design interviews and production eng
 
 Algorithm knowledge that matters for system design interviews and real distributed systems — from interview patterns to algorithms that power production infrastructure.
 
+```mermaid
+graph TD
+    subgraph "Interview Patterns"
+        IP[Sliding Window\nTwo Pointers\nHeap / Top-K\nBinary Search\nDP\nGraph BFS/DFS]
+    end
+    subgraph "Distributed Algorithms"
+        DA[Consensus\nRaft / Paxos\nGossip Protocol\nConsistent Hashing\nVector Clocks\nCRDTs]
+    end
+    subgraph "Hands-On POCs"
+        HO[LRU Cache\nBloom Filter\nTrie\nMerkle Tree\nExternal Sort\nDijkstra]
+    end
+    IP --> HO
+    DA --> HO
+```
+
 ## Sections
 
 ### [🎯 Interview Patterns](interview-patterns)

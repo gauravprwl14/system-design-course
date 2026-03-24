@@ -6,6 +6,17 @@ title: Vector Databases
 
 Traditional databases answer exact questions: "give me all users where id = 42." Vector databases answer approximate questions: "give me the 10 documents most semantically similar to this query." That shift — from exact lookup to nearest-neighbor search in high-dimensional space — is what makes vector databases the backbone of modern AI-powered search, RAG pipelines, recommendation engines, and anomaly detection.
 
+```mermaid
+graph LR
+    Doc[Documents\ntext / image / code] -->|embed| EMB[Embedding Model\nOpenAI / Cohere\nsentence-transformers]
+    EMB -->|store| VDB[(Vector DB\nPinecone / Weaviate\nQdrant / pgvector)]
+    Query[Query] -->|embed| SE[Similarity Search\nANN / HNSW / IVF]
+    VDB --> SE
+    SE --> TOP[Top-K Candidates]
+    TOP --> RR[Reranker\ncross-encoder]
+    RR --> LLM[LLM Context\nRAG answer]
+```
+
 ## What Is a Vector Database?
 
 A vector database stores, indexes, and queries **dense float vectors** (embeddings). Each embedding is a fixed-length array of floats — typically 768 to 3072 dimensions — that encodes the semantic meaning of a piece of data (text, image, audio, code).

@@ -9,6 +9,24 @@ section: agent-workflows/hands-on
 
 Practical, runnable implementations for building agent workflows. Each POC is standalone: you can run it in under an hour with a single API key and a standard Python or Node.js install.
 
+```mermaid
+graph LR
+    subgraph "Beginner"
+        BAL[Basic Agent Loop\nReAct from scratch\n30 min]
+    end
+    subgraph "Intermediate"
+        RAG[RAG Pipeline\nchunk → embed → retrieve\n45 min]
+        TCA[Production Tool-Calling Agent\nparallel tools + retry\n45 min]
+    end
+    subgraph "Advanced"
+        MCP[MCP Server\nJSON-RPC tool protocol\n60 min]
+        MAP[Multi-Agent Pipeline\nResearcher × 3 → Analyst → Writer\n60 min]
+    end
+    BAL --> TCA --> MAP
+    RAG --> MAP
+    MCP -.-> TCA
+```
+
 ## POCs in This Section
 
 | # | Article | Level | Time | Language |

@@ -6,6 +6,26 @@ title: Vector Database Concepts
 
 This section covers the foundational concepts behind vector databases and semantic search — from how text becomes a float vector all the way to choosing the right database for production.
 
+```mermaid
+graph LR
+    subgraph "Foundations"
+        EM[Embeddings\ndense float vectors\nsemantics as coordinates]
+    end
+    subgraph "Indexing"
+        VI[Vector Index Algorithms\nHNSW → fast, high recall\nIVF → compressed clusters\nFLAT → exact, small datasets]
+    end
+    subgraph "Search"
+        SS[Similarity Search\ncosine / dot / euclidean\nrecall@K tuning]
+        HS[Hybrid Search\ndense + BM25 sparse\nRRF fusion]
+        RR[Reranking\nbi-encoder then\ncross-encoder]
+    end
+    subgraph "Database Selection"
+        DB[Vector DB Comparison\nPinecone / Weaviate\nQdrant / pgvector / Chroma]
+    end
+    EM --> VI --> SS --> HS --> RR
+    RR --> DB
+```
+
 ## Articles in This Section
 
 ### Foundations (Beginner)

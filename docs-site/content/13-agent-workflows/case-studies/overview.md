@@ -8,6 +8,18 @@ Theory tells you how agents *should* work. Production systems show you how they 
 
 This section analyses OpenClaw, a self-hosted multi-channel AI gateway written in TypeScript, as a complete worked example of a production-grade agentic system. It is MIT-licensed and publicly available, which makes it unusually transparent for a production system of its complexity.
 
+```mermaid
+graph TD
+    OC[OpenClaw\nMulti-channel AI gateway]
+    OC --> GW[Gateway Layer\n20+ messaging platforms]
+    OC --> AR[Agent Runtime\nReAct loop + tool dispatch]
+    OC --> CM[Context Management\nCompress → Summarize → Truncate]
+    OC --> AUTH[Auth Rotation\nCooldown-aware profile rotation]
+    OC --> MR[Message Routing\nPriority binding rules]
+    AR --> TP[Tool Permissions\nPer-agent allow/deny]
+    CM --> VS[Vector Store\nLong-term memory]
+```
+
 ## Why Study Real Production Systems
 
 Most agent tutorials show you a 50-line loop that calls a weather API. That's useful for understanding the basics. But when you're designing an agent system that needs to:

@@ -2,6 +2,29 @@
 
 Learn by studying how top companies actually built their systems. Each case study covers the problem, requirements, architecture, trade-offs, and what you'd say in an interview.
 
+```mermaid
+graph TD
+    subgraph "Media & Streaming"
+        NF[Netflix\n230M subscribers]
+        YT[YouTube\n500h video/min]
+        SP[Spotify\n600M users]
+    end
+    subgraph "Marketplace & Real-Time"
+        UB[Uber\nGeo-matching at scale]
+        TK[Ticket Booking\nHigh-concurrency inventory]
+    end
+    subgraph "Messaging & Feeds"
+        CH[Chat System\n100B msgs/day]
+        NW[News Feed\nFan-out on write vs read]
+        NT[Notification System\nMulti-channel delivery]
+    end
+    subgraph "Storage & Infrastructure"
+        GD[Google Drive\nExabytes of data]
+        PS[Payment System\nExactly-once money movement]
+        URL[URL Shortener\nBillions of redirects/day]
+    end
+```
+
 ## Case Studies
 
 | System | Key Challenge | Scale |

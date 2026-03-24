@@ -14,6 +14,26 @@ tags: [algorithms, hands-on, implementation, data-structures]
 
 > Theory without practice doesn't stick. These proof-of-concepts let you implement — or trace through — the core algorithms yourself. Each POC focuses on one concept, gives you pseudocode to work through, and connects the implementation to real production systems.
 
+```mermaid
+graph LR
+    subgraph "Caching & Lookup"
+        LRU[LRU Cache\nHashmap + doubly-linked list]
+        BF[Bloom Filter\nProbabilistic membership]
+        TRIE[Trie Autocomplete\nPrefix tree]
+    end
+    subgraph "Distributed"
+        CH[Consistent Hashing Ring\nVirtual nodes]
+        GS[Gossip Simulator\nEpidemic spread]
+        MK[Merkle Tree Sync\nReplica diff detection]
+    end
+    subgraph "Streaming & Graphs"
+        TK[Top-K Streams\nMin-heap]
+        RL[Rate Limiter Algorithms\nToken bucket + sliding window]
+        DJ[Dijkstra Network Routing\nShortest path]
+        XS[External Sort\nDisk-aware merge sort]
+    end
+```
+
 ## What's In This Section
 
 | POC | Difficulty | Concept | Real System Link |

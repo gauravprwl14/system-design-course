@@ -52,6 +52,17 @@ The naive judge has length bias: longer-sounding "complete" answers score higher
 
 **Align eval** calibrates the judge by comparing its scores to human-labeled examples:
 
+```mermaid
+graph TD
+    PT[Production Traces\n50-200 real examples] --> HL[Human Labeling\nscore 1-10 + reason]
+    HL --> COMP[Compare\nJudge score vs Human score]
+    COMP --> AGREE{Agreement\nhigh enough?\nCohen kappa > 0.65}
+    AGREE -->|No| FEWSHOT[Add disagreements\nas few-shot examples\nto judge prompt]
+    FEWSHOT --> COMP
+    AGREE -->|Yes| DEPLOY[Deploy judge\nin CI/CD pipeline]
+    DEPLOY --> GATE[Quality gate\nPR fails if score drops]
+```
+
 ```
 Aligned eval process:
 1. Collect 50-200 real traces from production

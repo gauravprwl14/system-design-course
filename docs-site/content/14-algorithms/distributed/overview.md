@@ -14,6 +14,28 @@ tags: [distributed-systems, algorithms, consensus, clocks, hashing]
 
 > The algorithms that make distributed systems possible — from gossip protocols that spread information across clusters to consensus algorithms that ensure agreement despite failures.
 
+```mermaid
+graph LR
+    subgraph "High Availability"
+        G[Gossip Protocol\nCassandra, Consul]
+        CH[Consistent Hashing\nCassandra, DynamoDB]
+    end
+    subgraph "Consistency"
+        VC[Vector Clocks\nDynamoDB, Riak]
+        CRDT[CRDTs\nFigma, Redis Enterprise]
+        TPC[Two-Phase Commit\nXA transactions]
+        RAFT[Raft\netcd, CockroachDB]
+        PAXOS[Paxos\nGoogle Chubby]
+    end
+    subgraph "Data"
+        ES[External Sorting\nPostgreSQL, Hadoop]
+        TS[Topological Sort\nBuild systems, Airflow]
+    end
+    G --> CH
+    TPC --> RAFT --> PAXOS
+    VC --> CRDT
+```
+
 ## Why Distributed Algorithms Matter
 
 A single-machine algorithm optimizes for time and space. A distributed algorithm must also handle:

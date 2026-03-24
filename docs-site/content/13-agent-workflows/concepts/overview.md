@@ -6,6 +6,30 @@ title: Agent Concepts
 
 This subsection covers the core concepts you need to understand AI agent systems — from the simplest "what is an agent" all the way to expert-level patterns like the Model Context Protocol and stateful graph-based orchestration.
 
+```mermaid
+graph TD
+    subgraph "Foundations"
+        W[What is an Agent]
+        R[ReAct Pattern\nThought → Action → Observation]
+        TU[Tool Use / Function Calling]
+        AM[Agent Memory Types]
+    end
+    subgraph "Architecture"
+        SA[Single-Agent]
+        MA[Multi-Agent Systems\nOrchestrator / Peer / Pipeline]
+        RAG[RAG Deep Dive]
+    end
+    subgraph "Production"
+        LR[Long-Running Agents\nCheckpoints + async]
+        AE[Evaluation & Testing]
+        CC[Cost Control]
+        SG[Safety & Guardrails]
+    end
+    W --> R --> TU --> AM --> SA --> MA
+    MA --> LR
+    RAG --> AE
+```
+
 ## Structure
 
 Articles are ordered by level. Start from the top if you're new to agents. Jump in wherever matches your current knowledge.

@@ -6,6 +6,26 @@ title: AI Agent Workflows
 
 AI agents are the next evolution beyond plain LLM calls. Instead of a single prompt → response, an agent runs a loop: it reasons, picks a tool, executes it, sees the result, and keeps going until the task is done. This section teaches you how to design, build, evaluate, and operate agents in production.
 
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant L as LLM API
+    participant T as Tools
+
+    U->>O: Task request
+    loop Agent Loop
+        O->>L: Messages + tools
+        L-->>O: Tool call OR answer
+        alt Tool call
+            O->>T: Execute tool
+            T-->>O: Result
+        else Final answer
+            O-->>U: Response
+        end
+    end
+```
+
 ## Who This Is For
 
 - **Backend engineers** adding AI capabilities to existing systems

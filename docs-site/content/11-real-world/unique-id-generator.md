@@ -746,5 +746,5 @@ When to use:
 
 ## Practice POCs
 
-- [POC #29: Database Sequences](/interview-prep/practice-pocs/database-sequences)
-- [POC #65: Idempotency Keys](/interview-prep/practice-pocs/idempotency-keys)
+- [POC #29: Database Sequences](/12-interview-prep/practice-pocs/database-sequences)
+- [POC #65: Idempotency Keys](/12-interview-prep/practice-pocs/idempotency-keys)
