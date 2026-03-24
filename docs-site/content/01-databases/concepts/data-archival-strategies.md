@@ -1190,4 +1190,4 @@ class ArchivalMetrics:
 
 - [Storage Bloat Solutions](/problems-at-scale/cost-optimization/storage-bloat)
 - [Table Partitioning](/01-databases/hands-on/database-partitioning)
-- [Storage Cost Optimization](/12-interview-prep/system-design/instagram-assets-series/07-storage-cost-optimization)
+- [Storage Cost Optimization](/01-databases/concepts/data-archival-strategies)

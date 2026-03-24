@@ -883,6 +883,6 @@ async function chaosTest() {
 
 ---
 
-**Next Problem**: [High-Frequency Trading Timestamp Race](/problems-at-scale/concurrency/hft-timestamp-race)
+**Next Problem**: [High-Frequency Trading Timestamp Race](/problems-at-scale/concurrency/race-condition-inventory)
 **Category Index**: [All Concurrency Problems](/problems-at-scale/concurrency)
 **Main Index**: [Problems at Scale](/problems-at-scale)

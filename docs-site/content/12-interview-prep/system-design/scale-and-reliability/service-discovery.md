@@ -651,7 +651,7 @@ Scale:
 
 - [Circuit Breaker Pattern](/12-interview-prep/system-design/fundamentals/circuit-breaker-pattern) - Handle discovery failures
 - [API Gateway](/12-interview-prep/system-design/fundamentals/api-gateway-pattern) - External-facing discovery
-- [Load Balancing](/12-interview-prep/10-architecture/concepts-strategies) - Distribute traffic
+- [Load Balancing](/10-architecture/concepts/load-balancing-strategies) - Distribute traffic
 
 ---
 

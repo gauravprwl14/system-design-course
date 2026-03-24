@@ -702,10 +702,10 @@ A: "1) Check if it's a spike in traffic (scale horizontally), 2) Look for slow q
 
 ## 🔗 Related Questions
 
-- [API Metrics (P95/P99)](/12-interview-prep/caching-cdn/api-metrics)
-- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
-- [Database Query Optimization](/12-interview-prep/database/query-optimization)
-- [Redis Caching Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals)
+- [API Metrics (P95/P99)](/12-interview-prep/quick-reference/caching/api-metrics)
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+- [Database Query Optimization](/12-interview-prep/quick-reference/databases/query-optimization)
+- [Redis Caching Fundamentals](/12-interview-prep/quick-reference/caching/redis-fundamentals)
 
 ---
 

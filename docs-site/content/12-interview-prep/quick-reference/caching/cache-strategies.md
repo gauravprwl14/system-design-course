@@ -781,10 +781,10 @@ A: "Use write-through for strong consistency, or periodic reconciliation jobs fo
 
 ## 🔗 Related Questions
 
-- [Redis Caching Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals)
-- [CDN Usage and Optimization](/12-interview-prep/caching-cdn/cdn-usage)
-- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
-- [Database Scaling Strategies](/12-interview-prep/database/scaling-strategies)
+- [Redis Caching Fundamentals](/12-interview-prep/quick-reference/caching/redis-fundamentals)
+- [CDN Usage and Optimization](/12-interview-prep/quick-reference/caching/cdn-usage)
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+- [Database Scaling Strategies](/12-interview-prep/quick-reference/databases/scaling-strategies)
 
 ---
 

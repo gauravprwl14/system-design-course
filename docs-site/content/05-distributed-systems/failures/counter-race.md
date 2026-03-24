@@ -854,19 +854,19 @@ process.on('SIGTERM', async () => {
 ## Similar Problems
 
 ### Same Pattern (Counter Race Conditions)
-1. [Inventory Count Sync](/problems-at-scale/consistency/inventory-count-sync) - Product stock count
-2. [Wallet Balance Race](/problems-at-scale/concurrency/wallet-balance-race) - User balance updates
-3. [Rate Limiter Counter](/problems-at-scale/performance/rate-limit-counter) - API rate limiting
+1. [Inventory Count Sync](/problems-at-scale/consistency/stale-read-after-write) - Product stock count
+2. [Wallet Balance Race](/problems-at-scale/concurrency/race-condition-inventory) - User balance updates
+3. [Rate Limiter Counter](/07-api-design/concepts/rate-limiting) - API rate limiting
 
 ### Same Domain (Social Media)
-1. [Follower Count Inconsistency](/problems-at-scale/consistency/follower-count) - Follower/following counts
-2. [Comment Count Lag](/problems-at-scale/consistency/comment-count-lag) - Comment counters
-3. [Trending Algorithm Broken](/problems-at-scale/consistency/trending-algorithm) - Trending based on counts
+1. [Follower Count Inconsistency](/problems-at-scale/consistency/stale-read-after-write) - Follower/following counts
+2. [Comment Count Lag](/problems-at-scale/consistency/stale-read-after-write) - Comment counters
+3. [Trending Algorithm Broken](/problems-at-scale/consistency/stale-read-after-write) - Trending based on counts
 
 ### Same Impact (Analytics Accuracy)
-1. [Page View Inflation](/problems-at-scale/consistency/pageview-inflation) - Inflated view counts
-2. [Revenue Tracking Inaccuracy](/problems-at-scale/consistency/revenue-tracking) - Billing based on counts
-3. [A/B Test Results Skewed](/problems-at-scale/consistency/ab-test-skew) - Experiment metrics wrong
+1. [Page View Inflation](/problems-at-scale/consistency/stale-read-after-write) - Inflated view counts
+2. [Revenue Tracking Inaccuracy](/problems-at-scale/consistency/stale-read-after-write) - Billing based on counts
+3. [A/B Test Results Skewed](/problems-at-scale/consistency/stale-read-after-write) - Experiment metrics wrong
 
 ---
 

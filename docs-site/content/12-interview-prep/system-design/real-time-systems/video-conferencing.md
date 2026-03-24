@@ -906,10 +906,10 @@ Want to build your own video conferencing app? Check out:
 
 - [WebSocket Architecture](/12-interview-prep/system-design/real-time-systems/websocket-architecture) - Signaling server patterns
 - [Video Streaming Platform](/12-interview-prep/system-design/real-time-systems/video-streaming-platform) - Video encoding/delivery
-- [Redis Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals) - Room state caching
-- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Meeting metadata storage
-- [Load Balancer (ALB/NLB)](/12-interview-prep/aws-cloud/load-balancer) - Routing SFU traffic
+- [Redis Fundamentals](/12-interview-prep/quick-reference/caching/redis-fundamentals) - Room state caching
+- [Database Scaling Strategies](/12-interview-prep/quick-reference/databases/scaling-strategies) - Meeting metadata storage
+- [Load Balancer (ALB/NLB)](/12-interview-prep/quick-reference/aws-cloud/load-balancer) - Routing SFU traffic
 
 ---
 
-**Next**: [Database Replication (Master-Slave & Multi-Master)](/12-interview-prep/database-storage/database-replication)
+**Next**: [Database Replication (Master-Slave & Multi-Master)](/12-interview-prep/quick-reference/databases/database-replication)

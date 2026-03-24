@@ -755,12 +755,12 @@ Want to test database replication locally? Check out:
 
 ## Related Articles
 
-- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Sharding and horizontal scaling
-- [Redis Replication](/12-interview-prep/caching-cdn/redis-replication) - Redis master-slave setup
-- [Connection Pooling](/12-interview-prep/database-storage/connection-pooling) - Efficient connection management
-- [Query Optimization](/12-interview-prep/database-storage/query-optimization) - Make replicas faster
-- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api) - Using read replicas
+- [Database Scaling Strategies](/12-interview-prep/quick-reference/databases/scaling-strategies) - Sharding and horizontal scaling
+- [Redis Replication](/12-interview-prep/quick-reference/caching/redis-fundamentals) - Redis master-slave setup
+- [Connection Pooling](/12-interview-prep/quick-reference/databases/connection-pooling) - Efficient connection management
+- [Query Optimization](/12-interview-prep/quick-reference/databases/query-optimization) - Make replicas faster
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api) - Using read replicas
 
 ---
 
-**Next**: [Redis Replication & Clustering](/12-interview-prep/caching-cdn/redis-replication)
+**Next**: [Redis Replication & Clustering](/12-interview-prep/quick-reference/caching/redis-fundamentals)

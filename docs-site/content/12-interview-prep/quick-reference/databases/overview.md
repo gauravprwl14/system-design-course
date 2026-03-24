@@ -13,21 +13,21 @@ graph TD
 
 ## 📋 Questions Covered
 
-1. [SQL vs NoSQL: When to Use Each](/12-interview-prep/database-storage/sql-vs-nosql)
-2. [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies)
-3. [Query Optimization with EXPLAIN ANALYZE](/12-interview-prep/database-storage/query-optimization)
-4. [Indexing Strategies (B-Tree, Hash, GIN, etc.)](/12-interview-prep/database-storage/indexing-strategies)
-5. [Connection Pooling Best Practices](/12-interview-prep/database-storage/connection-pooling)
+1. [SQL vs NoSQL: When to Use Each](/12-interview-prep/quick-reference/databases/sql-vs-nosql)
+2. [Database Scaling Strategies](/12-interview-prep/quick-reference/databases/scaling-strategies)
+3. [Query Optimization with EXPLAIN ANALYZE](/12-interview-prep/quick-reference/databases/query-optimization)
+4. [Indexing Strategies (B-Tree, Hash, GIN, etc.)](/12-interview-prep/quick-reference/databases/indexing-strategies)
+5. [Connection Pooling Best Practices](/12-interview-prep/quick-reference/databases/connection-pooling)
 
 ## 🎯 Quick Reference
 
 | Question | Quick Answer | Article |
 |----------|--------------|---------|
-| SQL vs NoSQL? | SQL: structured, ACID. NoSQL: flexible, scalable | [View Article](/12-interview-prep/database-storage/sql-vs-nosql) |
-| How to scale DB? | Vertical scaling → Read replicas → Sharding | [View Article](/12-interview-prep/database-storage/scaling-strategies) |
-| Slow query? | EXPLAIN ANALYZE → Add index → Optimize query | [View Article](/12-interview-prep/database-storage/query-optimization) |
-| When to index? | Columns in WHERE, JOIN, ORDER BY (high cardinality) | [View Article](/12-interview-prep/database-storage/indexing-strategies) |
-| Pool size? | CPU cores × 2 + 1, monitor utilization | [View Article](/12-interview-prep/database-storage/connection-pooling) |
+| SQL vs NoSQL? | SQL: structured, ACID. NoSQL: flexible, scalable | [View Article](/12-interview-prep/quick-reference/databases/sql-vs-nosql) |
+| How to scale DB? | Vertical scaling → Read replicas → Sharding | [View Article](/12-interview-prep/quick-reference/databases/scaling-strategies) |
+| Slow query? | EXPLAIN ANALYZE → Add index → Optimize query | [View Article](/12-interview-prep/quick-reference/databases/query-optimization) |
+| When to index? | Columns in WHERE, JOIN, ORDER BY (high cardinality) | [View Article](/12-interview-prep/quick-reference/databases/indexing-strategies) |
+| Pool size? | CPU cores × 2 + 1, monitor utilization | [View Article](/12-interview-prep/quick-reference/databases/connection-pooling) |
 
 ## 💡 Interview Tips
 
@@ -145,4 +145,4 @@ app.get('/api/products', async (req, res) => {
 
 ---
 
-Start with: [SQL vs NoSQL](/12-interview-prep/database-storage/sql-vs-nosql)
+Start with: [SQL vs NoSQL](/12-interview-prep/quick-reference/databases/sql-vs-nosql)

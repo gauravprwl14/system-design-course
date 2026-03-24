@@ -24,21 +24,21 @@ graph LR
 
 ## 📋 Questions Covered
 
-1. [Redis Caching Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals)
-2. [CDN Usage and Optimization](/12-interview-prep/caching-cdn/cdn-usage)
-3. [Cache Strategies (cache-aside, write-through, write-behind)](/12-interview-prep/caching-cdn/cache-strategies)
-4. [API Metrics: P50, P95, P99 Response Times](/12-interview-prep/caching-cdn/api-metrics)
-5. [Performance Bottleneck Identification](/12-interview-prep/caching-cdn/performance-bottlenecks)
+1. [Redis Caching Fundamentals](/12-interview-prep/quick-reference/caching/redis-fundamentals)
+2. [CDN Usage and Optimization](/12-interview-prep/quick-reference/caching/cdn-usage)
+3. [Cache Strategies (cache-aside, write-through, write-behind)](/12-interview-prep/quick-reference/caching/cache-strategies)
+4. [API Metrics: P50, P95, P99 Response Times](/12-interview-prep/quick-reference/caching/api-metrics)
+5. [Performance Bottleneck Identification](/12-interview-prep/quick-reference/caching/performance-bottlenecks)
 
 ## 🎯 Quick Reference
 
 | Question | Quick Answer | Article |
 |----------|--------------|---------|
-| Redis use cases? | Caching, sessions, rate limiting, leaderboards, pub/sub | [View Article](/12-interview-prep/caching-cdn/redis-fundamentals) |
-| When to use CDN? | Static assets, videos, global distribution, reduce latency | [View Article](/12-interview-prep/caching-cdn/cdn-usage) |
-| Cache-aside vs Write-through? | Cache-aside: app manages cache, Write-through: sync writes | [View Article](/12-interview-prep/caching-cdn/cache-strategies) |
-| P95 vs Average? | P95 shows 95% experience, average hides outliers | [View Article](/12-interview-prep/caching-cdn/api-metrics) |
-| Find bottlenecks? | APM tools, DB profiling, distributed tracing, heap snapshots | [View Article](/12-interview-prep/caching-cdn/performance-bottlenecks) |
+| Redis use cases? | Caching, sessions, rate limiting, leaderboards, pub/sub | [View Article](/12-interview-prep/quick-reference/caching/redis-fundamentals) |
+| When to use CDN? | Static assets, videos, global distribution, reduce latency | [View Article](/12-interview-prep/quick-reference/caching/cdn-usage) |
+| Cache-aside vs Write-through? | Cache-aside: app manages cache, Write-through: sync writes | [View Article](/12-interview-prep/quick-reference/caching/cache-strategies) |
+| P95 vs Average? | P95 shows 95% experience, average hides outliers | [View Article](/12-interview-prep/quick-reference/caching/api-metrics) |
+| Find bottlenecks? | APM tools, DB profiling, distributed tracing, heap snapshots | [View Article](/12-interview-prep/quick-reference/caching/performance-bottlenecks) |
 
 ## 💡 Interview Tips
 
@@ -93,4 +93,4 @@ With Redis (80% hit rate):
 
 ---
 
-Start with: [Redis Caching Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals)
+Start with: [Redis Caching Fundamentals](/12-interview-prep/quick-reference/caching/redis-fundamentals)

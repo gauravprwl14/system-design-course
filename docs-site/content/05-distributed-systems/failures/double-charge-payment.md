@@ -1108,14 +1108,14 @@ WHERE created_at > NOW() - INTERVAL '5 minutes';
 3. [Seat Double-Booking](/problems-at-scale/concurrency/double-booking) - Same seat sold twice
 
 ### Same Domain (Fintech)
-1. [Account Balance Race Condition](/problems-at-scale/concurrency/account-balance-race) - Concurrent withdrawals
-2. [Coupon Over-Redemption](/problems-at-scale/concurrency/coupon-overuse) - Limited coupon used beyond limit
-3. [Refund Duplicate Processing](/problems-at-scale/concurrency/duplicate-refunds) - User refunded twice
+1. [Account Balance Race Condition](/problems-at-scale/concurrency/double-charge-payment) - Concurrent withdrawals
+2. [Coupon Over-Redemption](/problems-at-scale/concurrency/race-condition-inventory) - Limited coupon used beyond limit
+3. [Refund Duplicate Processing](/problems-at-scale/concurrency/double-charge-payment) - User refunded twice
 
 ### Same Impact (Customer Trust)
-1. [Price Inconsistency](/problems-at-scale/consistency/price-inconsistency) - Different prices shown
-2. [Out-of-Stock After Checkout](/problems-at-scale/consistency/stock-inconsistency) - Order confirmed but no stock
-3. [Failed Payment but Order Created](/problems-at-scale/consistency/payment-order-mismatch) - Inconsistent state
+1. [Price Inconsistency](/problems-at-scale/consistency/cache-invalidation-race) - Different prices shown
+2. [Out-of-Stock After Checkout](/problems-at-scale/concurrency/race-condition-inventory) - Order confirmed but no stock
+3. [Failed Payment but Order Created](/problems-at-scale/concurrency/double-charge-payment) - Inconsistent state
 
 ---
 

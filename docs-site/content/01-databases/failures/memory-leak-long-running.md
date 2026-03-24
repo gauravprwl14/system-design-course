@@ -616,7 +616,7 @@ The insidious part: No single event, no sudden change, no obvious error
 ## Related Content
 
 - [Connection Pool Starvation](/problems-at-scale/performance/connection-pool-starvation) - Another resource exhaustion pattern
-- [Thread Pool Exhaustion](/problems-at-scale/performance/thread-pool-exhaustion) - Similar but for threads
+- [Thread Pool Exhaustion](/09-observability/failures/thread-pool-exhaustion) - Similar but for threads
 - [POC #72: Connection Leak Detection](/01-databases/hands-on/connection-leak-detection) - Detection techniques
 
 ---

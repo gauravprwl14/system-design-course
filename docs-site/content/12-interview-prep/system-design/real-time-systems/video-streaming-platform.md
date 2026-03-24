@@ -937,11 +937,11 @@ Want to test this locally? Check out:
 
 ## Related Articles
 
-- [CDN Usage & Optimization](/12-interview-prep/caching-cdn/cdn-usage) - Deep dive into CDN caching
-- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Sharding and replication
+- [CDN Usage & Optimization](/12-interview-prep/quick-reference/caching/cdn-usage) - Deep dive into CDN caching
+- [Database Scaling Strategies](/12-interview-prep/quick-reference/databases/scaling-strategies) - Sharding and replication
 - [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
-- [S3 TPS Limits & Optimization](/12-interview-prep/aws-cloud/s3-tps-limits) - S3 performance tuning
-- [Auto-Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling) - Auto-scale transcoding workers
+- [S3 TPS Limits & Optimization](/12-interview-prep/quick-reference/aws-cloud/s3-tps-limits) - S3 performance tuning
+- [Auto-Scaling Groups](/12-interview-prep/quick-reference/aws-cloud/auto-scaling) - Auto-scale transcoding workers
 
 ---
 

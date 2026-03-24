@@ -787,8 +787,8 @@ SAA-C03 Hot Topics:
 
 ## Related Questions
 
-- [AWS Lambda for Serverless Architecture](/12-interview-prep/aws-cloud/lambda-serverless)
-- [AWS Load Balancers: ELB, ALB, NLB](/12-interview-prep/aws-cloud/load-balancer)
-- [AWS ECS, EKS & Fargate](/12-interview-prep/aws-cloud/ecs-eks-fargate)
-- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
-- [Auto Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling)
+- [AWS Lambda for Serverless Architecture](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)
+- [AWS Load Balancers: ELB, ALB, NLB](/12-interview-prep/quick-reference/aws-cloud/load-balancer)
+- [AWS ECS, EKS & Fargate](/12-interview-prep/quick-reference/aws-cloud/ecs-eks-fargate)
+- [CloudWatch Monitoring](/12-interview-prep/quick-reference/aws-cloud/cloudwatch-monitoring)
+- [Auto Scaling Groups](/12-interview-prep/quick-reference/aws-cloud/auto-scaling)

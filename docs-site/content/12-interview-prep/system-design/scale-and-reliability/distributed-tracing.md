@@ -708,7 +708,7 @@ Benefits:
 
 - [Service Discovery](/12-interview-prep/system-design/scale-and-reliability/service-discovery) - Finding services
 - [API Gateway](/12-interview-prep/system-design/fundamentals/api-gateway-pattern) - Entry point tracing
-- [Observability](/12-interview-prep/system-design/observability-metrics-logging) - Full picture
+- [Observability](/12-interview-prep/system-design/scale-and-reliability/observability-monitoring) - Full picture
 
 ---
 

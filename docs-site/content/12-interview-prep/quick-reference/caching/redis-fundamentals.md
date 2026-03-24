@@ -773,10 +773,10 @@ A: "Redis has richer data structures (lists, sets, sorted sets), persistence opt
 
 ## 🔗 Related Questions
 
-- [Cache Strategies (cache-aside, write-through)](/12-interview-prep/caching-cdn/cache-strategies)
-- [CDN Usage and Optimization](/12-interview-prep/caching-cdn/cdn-usage)
-- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
-- [Rate Limiting Implementation](/12-interview-prep/system-design/rate-limiting)
+- [Cache Strategies (cache-aside, write-through)](/12-interview-prep/quick-reference/caching/cache-strategies)
+- [CDN Usage and Optimization](/12-interview-prep/quick-reference/caching/cdn-usage)
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+- [Rate Limiting Implementation](/12-interview-prep/system-design/fundamentals/rate-limiting)
 
 ---
 

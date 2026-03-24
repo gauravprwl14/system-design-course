@@ -697,8 +697,8 @@ SAA-C03 Key Points:
 
 ## Related Questions
 
-- [AWS EC2 Instances, ASG & Placement Groups](/12-interview-prep/aws-cloud/ec2-instances)
-- [AWS Lambda for Serverless Architecture](/12-interview-prep/aws-cloud/lambda-serverless)
-- [AWS API Gateway](/12-interview-prep/aws-cloud/api-gateway)
-- [AWS Load Balancers: ELB, ALB, NLB](/12-interview-prep/aws-cloud/load-balancer)
-- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
+- [AWS EC2 Instances, ASG & Placement Groups](/12-interview-prep/quick-reference/aws-cloud/ec2-instances)
+- [AWS Lambda for Serverless Architecture](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)
+- [AWS API Gateway](/12-interview-prep/quick-reference/aws-cloud/api-gateway)
+- [AWS Load Balancers: ELB, ALB, NLB](/12-interview-prep/quick-reference/aws-cloud/load-balancer)
+- [CloudWatch Monitoring](/12-interview-prep/quick-reference/aws-cloud/cloudwatch-monitoring)

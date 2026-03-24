@@ -632,10 +632,10 @@ A: "No, ASG is regional. For multi-region, use Route 53 for DNS-based load balan
 
 ## 🔗 Related Questions
 
-- [Load Balancer (ALB/NLB)](/12-interview-prep/aws-cloud/load-balancer)
-- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
-- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
-- [Lambda Serverless Architecture](/12-interview-prep/aws-cloud/lambda-serverless)
+- [Load Balancer (ALB/NLB)](/12-interview-prep/quick-reference/aws-cloud/load-balancer)
+- [CloudWatch Monitoring](/12-interview-prep/quick-reference/aws-cloud/cloudwatch-monitoring)
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+- [Lambda Serverless Architecture](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)
 
 ---
 

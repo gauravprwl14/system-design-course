@@ -29,9 +29,9 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 3. Practice explaining in 2-3 minutes
 
 **Most Important**:
-- [RSA vs AES](/12-interview-prep/security-encryption/rsa-vs-aes)
-- [Hashing vs Encryption](/12-interview-prep/security-encryption/hashing-vs-encryption)
-- [PDF Converter System](/12-interview-prep/system-design/pdf-converter)
+- [RSA vs AES](/12-interview-prep/quick-reference/security/rsa-vs-aes)
+- [Hashing vs Encryption](/12-interview-prep/quick-reference/security/hashing-vs-encryption)
+- [PDF Converter System](/12-interview-prep/system-design/messaging-and-streaming/pdf-converter)
 - [URL Shortener](/11-real-world/url-shortener)
 
 ---
@@ -72,8 +72,8 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 ### By Topic
 
 **Security & Encryption**
-- [RSA vs AES](/12-interview-prep/security-encryption/rsa-vs-aes)
-- [Hashing vs Encryption](/12-interview-prep/security-encryption/hashing-vs-encryption)
+- [RSA vs AES](/12-interview-prep/quick-reference/security/rsa-vs-aes)
+- [Hashing vs Encryption](/12-interview-prep/quick-reference/security/hashing-vs-encryption)
 
 **Databases**
 - [Replication Basics](/01-databases/concepts/replication-basics)
@@ -92,7 +92,7 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 
 **Case Studies**
 - [URL Shortener](/11-real-world/url-shortener)
-- [PDF Converter](/12-interview-prep/system-design/pdf-converter)
+- [PDF Converter](/12-interview-prep/system-design/messaging-and-streaming/pdf-converter)
 
 ---
 

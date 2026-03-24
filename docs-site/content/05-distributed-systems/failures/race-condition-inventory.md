@@ -206,7 +206,7 @@ await queue.push({ userId, productId });
 
 ### Same Domain (E-commerce)
 1. [Thundering Herd on Product Page](/problems-at-scale/availability/thundering-herd) - Cache miss crashes database
-2. [Checkout Timeout Under Load](/problems-at-scale/performance/slow-queries) - Checkout takes 30+ seconds
+2. [Checkout Timeout Under Load](/problems-at-scale/performance/n-plus-one-query) - Checkout takes 30+ seconds
 
 ### Same Impact (Revenue Loss)
 1. [Payment Gateway Timeout](/problems-at-scale/availability/cascading-failures) - Lost transactions during peak
@@ -799,7 +799,7 @@ config:
 
 ## References
 
-- [Ticket Booking System](/12-interview-prep/system-design/ticket-booking-system) - Similar concurrency problem
+- [Ticket Booking System](/12-interview-prep/system-design/business-and-advanced/ticket-booking-system) - Similar concurrency problem
 - [Distributed Locks POC](/03-redis/hands-on/redis-distributed-lock) - Redis lock implementation
 - [Database Transactions](/01-databases/hands-on/database-transactions) - Understanding ACID
 

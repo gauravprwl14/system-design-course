@@ -1036,14 +1036,14 @@ function itemsAreIdentical(items1, items2) {
 3. [Seat Double-Booking](/problems-at-scale/concurrency/double-booking) - Same seat booked twice
 
 ### Same Domain (E-commerce/Food Delivery)
-1. [Cart Race Condition](/problems-at-scale/concurrency/cart-race) - Cart modified by concurrent requests
-2. [Coupon Double-Redemption](/problems-at-scale/concurrency/coupon-overuse) - Coupon used multiple times
-3. [Checkout Timeout](/problems-at-scale/performance/slow-checkout) - Checkout takes too long, user retries
+1. [Cart Race Condition](/problems-at-scale/concurrency/race-condition-inventory) - Cart modified by concurrent requests
+2. [Coupon Double-Redemption](/problems-at-scale/concurrency/race-condition-inventory) - Coupon used multiple times
+3. [Checkout Timeout](/problems-at-scale/performance/n-plus-one-query) - Checkout takes too long, user retries
 
 ### Same Impact (Customer Confusion)
-1. [Order Status Inconsistency](/problems-at-scale/consistency/order-status-race) - Order shows different statuses
-2. [Delivery Address Changed After Order](/problems-at-scale/consistency/address-race) - Address mismatch
-3. [Restaurant Receives Multiple Identical Orders](/problems-at-scale/consistency/restaurant-duplicate-orders) - Operational chaos
+1. [Order Status Inconsistency](/problems-at-scale/concurrency/duplicate-orders) - Order shows different statuses
+2. [Delivery Address Changed After Order](/problems-at-scale/concurrency/duplicate-orders) - Address mismatch
+3. [Restaurant Receives Multiple Identical Orders](/problems-at-scale/concurrency/duplicate-orders) - Operational chaos
 
 ---
 

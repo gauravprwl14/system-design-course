@@ -705,8 +705,8 @@ app.listen(3000);
 ## Related Articles
 
 - [Distributed Tracing](/12-interview-prep/system-design/scale-and-reliability/distributed-tracing) - Trace pillar
-- [Logging Best Practices](/12-interview-prep/system-design/logging-best-practices) - Log details
-- [SRE Principles](/12-interview-prep/system-design/sre-principles) - Google SRE
+- [Logging Best Practices](/09-observability/concepts/observability-slos) - Log details
+- [SRE Principles](/09-observability/concepts/observability-slos) - Google SRE
 
 ---
 

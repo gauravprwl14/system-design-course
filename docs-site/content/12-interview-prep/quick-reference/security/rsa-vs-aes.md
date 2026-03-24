@@ -497,8 +497,8 @@ async function verifyPassword(password, storedHash) {
 
 ## 🔗 Related Questions
 
-- [Hashing vs Encryption](/12-interview-prep/security-encryption/hashing-vs-encryption)
-- [PDF Converter System Design](/12-interview-prep/system-design/pdf-converter)
+- [Hashing vs Encryption](/12-interview-prep/quick-reference/security/hashing-vs-encryption)
+- [PDF Converter System Design](/12-interview-prep/system-design/messaging-and-streaming/pdf-converter)
 
 ---
 

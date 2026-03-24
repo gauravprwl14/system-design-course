@@ -1020,17 +1020,17 @@ async function bookSeatsWithRedisLock(userId, seatIds) {
 ### Same Pattern (Race Conditions)
 1. [Inventory Overselling](/problems-at-scale/concurrency/race-condition-inventory) - Last item purchased by two users
 2. [Payment Double-Charge](/problems-at-scale/concurrency/double-charge-payment) - User charged twice
-3. [Coupon Over-Redemption](/problems-at-scale/concurrency/coupon-overuse) - Limited coupon used beyond limit
+3. [Coupon Over-Redemption](/problems-at-scale/concurrency/race-condition-inventory) - Limited coupon used beyond limit
 
 ### Same Domain (Booking Systems)
-1. [Hotel Room Overbooking](/problems-at-scale/concurrency/hotel-overbooking) - Same room booked for overlapping dates
-2. [Calendar Time Slot Conflicts](/problems-at-scale/concurrency/calendar-conflicts) - Double-booked meetings
-3. [Parking Spot Double-Allocation](/problems-at-scale/concurrency/parking-double-booking) - Same spot assigned twice
+1. [Hotel Room Overbooking](/problems-at-scale/concurrency/double-booking) - Same room booked for overlapping dates
+2. [Calendar Time Slot Conflicts](/problems-at-scale/concurrency/double-booking) - Double-booked meetings
+3. [Parking Spot Double-Allocation](/problems-at-scale/concurrency/double-booking) - Same spot assigned twice
 
 ### Same Impact (Customer Satisfaction)
-1. [Order Confirmation but Out of Stock](/problems-at-scale/consistency/stock-inconsistency) - Order confirmed but unfulfillable
-2. [Price Changed After Checkout](/problems-at-scale/consistency/price-change-race) - Different price at payment
-3. [Delivery Slot No Longer Available](/problems-at-scale/concurrency/delivery-slot-race) - Slot gone after selection
+1. [Order Confirmation but Out of Stock](/problems-at-scale/concurrency/race-condition-inventory) - Order confirmed but unfulfillable
+2. [Price Changed After Checkout](/problems-at-scale/consistency/cache-invalidation-race) - Different price at payment
+3. [Delivery Slot No Longer Available](/problems-at-scale/concurrency/double-booking) - Slot gone after selection
 
 ---
 

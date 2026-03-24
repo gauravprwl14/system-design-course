@@ -599,8 +599,8 @@ console.log('Secure server running on https://localhost:443');
 
 ## 🔗 Related Questions
 
-- [RSA vs AES](/12-interview-prep/security-encryption/rsa-vs-aes)
-- [JWT vs Session](/12-interview-prep/security-encryption/jwt-vs-session)
+- [RSA vs AES](/12-interview-prep/quick-reference/security/rsa-vs-aes)
+- [JWT vs Session](/12-interview-prep/quick-reference/security/jwt-vs-session)
 
 ---
 

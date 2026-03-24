@@ -723,8 +723,8 @@ SAA-C03 / SAP-C02 Exam Hot Topics:
 
 ## Related Questions
 
-- [AWS Load Balancers: ELB, ALB, NLB](/12-interview-prep/aws-cloud/load-balancer)
-- [Auto Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling)
-- [AWS Lambda for Serverless Architecture](/12-interview-prep/aws-cloud/lambda-serverless)
-- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
-- [ECS, EKS & Fargate](/12-interview-prep/aws-cloud/ecs-eks-fargate)
+- [AWS Load Balancers: ELB, ALB, NLB](/12-interview-prep/quick-reference/aws-cloud/load-balancer)
+- [Auto Scaling Groups](/12-interview-prep/quick-reference/aws-cloud/auto-scaling)
+- [AWS Lambda for Serverless Architecture](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)
+- [CloudWatch Monitoring](/12-interview-prep/quick-reference/aws-cloud/cloudwatch-monitoring)
+- [ECS, EKS & Fargate](/12-interview-prep/quick-reference/aws-cloud/ecs-eks-fargate)

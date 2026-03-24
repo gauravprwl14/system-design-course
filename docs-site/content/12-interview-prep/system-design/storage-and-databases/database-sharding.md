@@ -700,7 +700,7 @@ Resharding:
 ## Related Articles
 
 - [Database Replication](/12-interview-prep/system-design/storage-and-databases/database-replication) - Read scaling
-- [Consistent Hashing](/12-interview-prep/system-design/consistent-hashing) - Resharding
+- [Consistent Hashing](/06-scalability/concepts/consistent-hashing-deep-dive) - Resharding
 - [CQRS Pattern](/12-interview-prep/system-design/business-and-advanced/cqrs-pattern) - Read/write separation
 
 ---

@@ -1022,7 +1022,7 @@ console.log(results.hits.hits);
 
 ## Continue Learning
 
-- **Advanced**: [Recommendation Systems](/12-interview-prep/system-design/recommendation-engine)
+- **Advanced**: [Recommendation Systems](/12-interview-prep/system-design/business-and-advanced/recommendation-system)
 
 ---
 

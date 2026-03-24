@@ -787,7 +787,7 @@ await pubsub.publish(`server:${serverId}:announcements`, {
 
 ## Related POCs
 
-- [POC: WebSocket Architecture](/12-interview-prep/system-design/websocket-architecture) - WebSocket details
+- [POC: WebSocket Architecture](/12-interview-prep/system-design/real-time-systems/websocket-architecture) - WebSocket details
 - [POC: Redis Streams](/03-redis/hands-on/redis-streams) - Persistent pub/sub
 - [POC: Message Queue](/03-redis/hands-on/redis-job-queue) - Reliable messaging
 

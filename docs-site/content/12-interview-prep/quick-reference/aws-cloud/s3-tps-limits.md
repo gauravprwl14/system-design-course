@@ -687,10 +687,10 @@ A: "1) Use lifecycle policies to move old data to Glacier, 2) Enable Intelligent
 
 ## 🔗 Related Questions
 
-- [CDN Usage and Optimization](/12-interview-prep/caching-cdn/cdn-usage)
-- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
-- [Lambda for Serverless Architecture](/12-interview-prep/aws-cloud/lambda-serverless)
-- [CloudWatch Monitoring](/12-interview-prep/aws-cloud/cloudwatch-monitoring)
+- [CDN Usage and Optimization](/12-interview-prep/quick-reference/caching/cdn-usage)
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+- [Lambda for Serverless Architecture](/12-interview-prep/quick-reference/aws-cloud/lambda-serverless)
+- [CloudWatch Monitoring](/12-interview-prep/quick-reference/aws-cloud/cloudwatch-monitoring)
 
 ---
 

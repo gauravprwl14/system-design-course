@@ -962,11 +962,11 @@ Want to build this yourself? Check out:
 
 ## Related Articles
 
-- [Redis Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals) - Redis Pub/Sub deep dive
-- [Database Scaling Strategies](/12-interview-prep/database-storage/scaling-strategies) - Cassandra for chat history
+- [Redis Fundamentals](/12-interview-prep/quick-reference/caching/redis-fundamentals) - Redis Pub/Sub deep dive
+- [Database Scaling Strategies](/12-interview-prep/quick-reference/databases/scaling-strategies) - Cassandra for chat history
 - [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api) - Handle millions of requests
 - [Video Streaming Platform](/12-interview-prep/system-design/real-time-systems/video-streaming-platform) - Real-time video delivery
-- [Connection Pooling](/12-interview-prep/database-storage/connection-pooling) - Database connection management
+- [Connection Pooling](/12-interview-prep/quick-reference/databases/connection-pooling) - Database connection management
 
 ---
 

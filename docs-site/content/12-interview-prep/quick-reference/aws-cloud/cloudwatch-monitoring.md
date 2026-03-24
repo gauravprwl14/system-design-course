@@ -713,10 +713,10 @@ A: "1) Set appropriate thresholds (80% not 50%), 2) Use evaluation_periods (wait
 
 ## 🔗 Related Questions
 
-- [Auto-Scaling Groups](/12-interview-prep/aws-cloud/auto-scaling)
-- [Load Balancer (ALB/NLB)](/12-interview-prep/aws-cloud/load-balancer)
-- [Performance Bottleneck Identification](/12-interview-prep/caching-cdn/performance-bottlenecks)
-- [API Metrics (P95/P99)](/12-interview-prep/caching-cdn/api-metrics)
+- [Auto-Scaling Groups](/12-interview-prep/quick-reference/aws-cloud/auto-scaling)
+- [Load Balancer (ALB/NLB)](/12-interview-prep/quick-reference/aws-cloud/load-balancer)
+- [Performance Bottleneck Identification](/12-interview-prep/quick-reference/caching/performance-bottlenecks)
+- [API Metrics (P95/P99)](/12-interview-prep/quick-reference/caching/api-metrics)
 
 ---
 

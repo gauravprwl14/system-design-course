@@ -666,10 +666,10 @@ A: "P99 = 99% of requests, P99.9 = 99.9%. P99.9 catches rare but catastrophic is
 
 ## 🔗 Related Questions
 
-- [High-Concurrency API Design](/12-interview-prep/system-design/high-concurrency-api)
-- [Performance Bottleneck Identification](/12-interview-prep/caching-cdn/performance-bottlenecks)
-- [Redis Caching Fundamentals](/12-interview-prep/caching-cdn/redis-fundamentals)
-- [Database Scaling Strategies](/12-interview-prep/database/scaling-strategies)
+- [High-Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+- [Performance Bottleneck Identification](/12-interview-prep/quick-reference/caching/performance-bottlenecks)
+- [Redis Caching Fundamentals](/12-interview-prep/quick-reference/caching/redis-fundamentals)
+- [Database Scaling Strategies](/12-interview-prep/quick-reference/databases/scaling-strategies)
 
 ---
 

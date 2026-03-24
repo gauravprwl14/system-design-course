@@ -750,14 +750,14 @@ async function getPost(postId) {
 ## Similar Problems
 
 ### Same Pattern (Cache Coordination)
-1. [Cache Warming Failures](/problems-at-scale/availability/cache-warming-failure) - Cold cache on startup
-2. [Hot Key Problem](/problems-at-scale/scalability/hot-key) - Single key gets 100K requests/sec
-3. [Cache Penetration](/problems-at-scale/availability/cache-penetration) - Requests for non-existent keys
+1. [Cache Warming Failures](/problems-at-scale/availability/thundering-herd) - Cold cache on startup
+2. [Hot Key Problem](/problems-at-scale/scalability/hot-partition) - Single key gets 100K requests/sec
+3. [Cache Penetration](/problems-at-scale/availability/thundering-herd) - Requests for non-existent keys
 
 ### Same Domain (Content Platforms)
-1. [CDN Origin Shield Failure](/problems-at-scale/availability/cdn-origin-failure) - CDN cache miss storms origin
-2. [Database Connection Pool Exhaustion](/problems-at-scale/scalability/connection-pool-exhausted) - Too many connections
-3. [Read Replica Lag](/problems-at-scale/consistency/replica-lag) - Stale reads from replicas
+1. [CDN Origin Shield Failure](/problems-at-scale/availability/thundering-herd) - CDN cache miss storms origin
+2. [Database Connection Pool Exhaustion](/problems-at-scale/performance/connection-pool-starvation) - Too many connections
+3. [Read Replica Lag](/problems-at-scale/consistency/stale-read-after-write) - Stale reads from replicas
 
 ### Same Impact (Complete Outage)
 1. [Cascading Failures](/problems-at-scale/availability/cascading-failures) - One failure triggers more
