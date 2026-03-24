@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
     "build:clean": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
-    "postbuild": "pagefind --site .next/server/app",
+    "postbuild": "pagefind --site .next/server/app && sudo cp -r .next/server/app/pagefind/. /var/www/html/system-design-pagefind/ && sudo chmod -R 755 /var/www/html/system-design-pagefind/",
     "start": "next start",
     "lint": "eslint ."
   },

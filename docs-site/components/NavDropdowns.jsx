@@ -2,27 +2,34 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
-const BASE = process.env.NEXT_PUBLIC_BASE_PATH || '/system-design'
+// NOTE: Next.js Link component automatically prepends basePath to all hrefs.
+// Do NOT include the basePath prefix here — use paths relative to the content root.
 
 const CORE_TOPICS = [
-  { title: '🗄️ Databases',            href: `${BASE}/01-databases` },
-  { title: '⚡ Caching',               href: `${BASE}/02-caching` },
-  { title: '🔴 Redis',                 href: `${BASE}/03-redis` },
-  { title: '📬 Messaging & Events',    href: `${BASE}/04-messaging` },
-  { title: '⚖️ Distributed Systems',   href: `${BASE}/05-distributed-systems` },
-  { title: '📈 Scalability',           href: `${BASE}/06-scalability` },
-  { title: '🔥 Problems at Scale',     href: `${BASE}/problems-at-scale` },
+  { title: '🗄️ Databases',            href: '/01-databases' },
+  { title: '⚡ Caching',               href: '/02-caching' },
+  { title: '🔴 Redis',                 href: '/03-redis' },
+  { title: '📬 Messaging & Events',    href: '/04-messaging' },
+  { title: '⚖️ Distributed Systems',   href: '/05-distributed-systems' },
+  { title: '📈 Scalability',           href: '/06-scalability' },
+  { title: '🔥 Problems at Scale',     href: '/problems-at-scale' },
 ]
 
 const BUILD_TOPICS = [
-  { title: '🌐 API Design',               href: `${BASE}/07-api-design` },
-  { title: '🔒 Security',                 href: `${BASE}/08-security` },
-  { title: '📡 Observability',            href: `${BASE}/09-observability` },
-  { title: '🏗️ Architecture & Patterns',  href: `${BASE}/10-architecture` },
-  { title: '🏢 Real-World Systems',       href: `${BASE}/11-real-world` },
-  { title: '🤖 Agent Workflows',          href: `${BASE}/13-agent-workflows` },
-  { title: '🧮 Algorithms',               href: `${BASE}/14-algorithms` },
-  { title: '🧠 Vector Databases',         href: `${BASE}/15-vector-databases` },
+  { title: '🌐 API Design',               href: '/07-api-design' },
+  { title: '🔒 Security',                 href: '/08-security' },
+  { title: '📡 Observability',            href: '/09-observability' },
+  { title: '🏗️ Architecture & Patterns',  href: '/10-architecture' },
+  { title: '🏢 Real-World Systems',       href: '/11-real-world' },
+  { title: '🤖 Agent Workflows',          href: '/13-agent-workflows' },
+  { title: '🧮 Algorithms',               href: '/14-algorithms' },
+  { title: '🧠 Vector Databases',         href: '/15-vector-databases' },
+]
+
+const MAIN_NAV = [
+  { title: '🚀 Start Here',      href: '/00-start-here' },
+  { title: '🎯 Interview Prep',  href: '/12-interview-prep' },
+  { title: '⚡ Cheat Sheets',    href: '/cheat-sheets' },
 ]
 
 function Dropdown({ title, items }) {
@@ -84,7 +91,12 @@ function Dropdown({ title, items }) {
 
 export function NavDropdowns() {
   return (
-    <div className="nav-dropdowns-desktop" style={{ display: 'flex', gap: '4px' }}>
+    <div className="nav-dropdowns-desktop" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+      {MAIN_NAV.map(item => (
+        <Link key={item.href} href={item.href} className="nav-plain-link">
+          {item.title}
+        </Link>
+      ))}
       <Dropdown title="Core Topics"    items={CORE_TOPICS} />
       <Dropdown title="Build & Operate" items={BUILD_TOPICS} />
     </div>

@@ -78,6 +78,25 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* plain nav link — same visual weight as the dropdown buttons */
+.nav-plain-link {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap;
+  text-decoration: none !important;
+  transition: opacity 0.15s;
+}
+
+.nav-plain-link:hover {
+  opacity: 0.75;
+}
+
 /* hide custom nav on mobile — the hamburger handles mobile nav */
 @media (max-width: 767px) {
   .nav-dropdowns-desktop {
