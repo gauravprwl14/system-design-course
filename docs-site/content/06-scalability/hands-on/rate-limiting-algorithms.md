@@ -510,6 +510,6 @@ WHY USE LUA SCRIPTS?
 
 ## Related POCs
 
-- [API Key Management](/interview-prep/practice-pocs/api-key-management)
-- [Redis Rate Limiting](/interview-prep/practice-pocs/redis-rate-limiting)
-- [API Gateway](/interview-prep/practice-pocs/api-gateway-rate-limiting)
+- [API Key Management](/12-interview-prep/practice-pocs/api-key-management)
+- [Redis Rate Limiting](/12-interview-prep/practice-pocs/redis-rate-limiting)
+- [API Gateway](/12-interview-prep/practice-pocs/api-gateway-rate-limiting)

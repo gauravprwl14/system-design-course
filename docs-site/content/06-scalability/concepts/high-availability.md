@@ -914,7 +914,7 @@ If the answer is "the pager goes off but service continues":
 
 ## Practice POCs
 
-- [POC #69: Circuit Breaker](/interview-prep/practice-pocs/circuit-breaker)
-- [POC #76: Timeout Configuration](/interview-prep/practice-pocs/timeout-configuration)
-- [POC #78: Graceful Degradation](/interview-prep/practice-pocs/graceful-degradation)
-- [POC #92: Chaos Engineering](/interview-prep/practice-pocs/chaos-engineering)
+- [POC #69: Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
+- [POC #76: Timeout Configuration](/12-interview-prep/practice-pocs/timeout-configuration)
+- [POC #78: Graceful Degradation](/12-interview-prep/practice-pocs/graceful-degradation)
+- [POC #92: Chaos Engineering](/12-interview-prep/practice-pocs/chaos-engineering)

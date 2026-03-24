@@ -768,6 +768,6 @@ This is only possible with stateless architecture.
 
 ## Practice POCs
 
-- [POC #6: Redis Session Management](/interview-prep/practice-pocs/redis-session-management)
-- [POC #3: Redis Distributed Lock](/interview-prep/practice-pocs/redis-distributed-lock)
-- [POC #64: Redis Cluster Caching](/interview-prep/practice-pocs/redis-cluster-caching)
+- [POC #6: Redis Session Management](/12-interview-prep/practice-pocs/redis-session-management)
+- [POC #3: Redis Distributed Lock](/12-interview-prep/practice-pocs/redis-distributed-lock)
+- [POC #64: Redis Cluster Caching](/12-interview-prep/practice-pocs/redis-cluster-caching)

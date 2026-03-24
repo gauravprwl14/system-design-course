@@ -706,6 +706,6 @@ app.use((req, res, next) => {
 
 Test these concepts hands-on:
 
-- [POC #66: Round-Robin Load Balancing](/interview-prep/practice-pocs/load-balancer-round-robin)
-- [POC #68: Consistent Hashing](/interview-prep/practice-pocs/load-balancer-consistent-hashing)
-- [POC #70: NGINX Load Balancer](/interview-prep/practice-pocs/nginx-load-balancer)
+- [POC #66: Round-Robin Load Balancing](/12-interview-prep/practice-pocs/load-balancer-round-robin)
+- [POC #68: Consistent Hashing](/12-interview-prep/practice-pocs/load-balancer-consistent-hashing)
+- [POC #70: NGINX Load Balancer](/12-interview-prep/practice-pocs/nginx-load-balancer)

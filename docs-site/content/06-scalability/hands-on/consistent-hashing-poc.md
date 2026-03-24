@@ -374,7 +374,7 @@ ring.addNode('cache-small', 100);  // 1x virtual nodes = 1x the keys
 ## Next Steps
 
 - **Try:** Implement replication by having `getNode()` return the next N clockwise nodes for fault tolerance
-- **Read:** [Load Balancer Consistent Hashing POC](/interview-prep/practice-pocs/load-balancer-consistent-hashing) for an HTTP-level example
+- **Read:** [Load Balancer Consistent Hashing POC](/12-interview-prep/practice-pocs/load-balancer-consistent-hashing) for an HTTP-level example
 - **Practice:** "Design a distributed cache with automatic rebalancing" — a common system design interview question
 
 ---

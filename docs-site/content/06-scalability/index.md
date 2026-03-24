@@ -2,6 +2,24 @@
 
 Scaling is not just about adding more servers — it requires rethinking how data flows through your system. This section covers the core techniques used at FAANG scale.
 
+```mermaid
+graph TD
+    subgraph "Horizontal"
+        LB[Load Balancer] --> S1[Server 1]
+        LB --> S2[Server 2]
+        LB --> S3[Server N...]
+    end
+    subgraph "Data"
+        SHARD[Sharding]
+        REP[Read Replicas]
+    end
+    subgraph "Traffic"
+        RL[Rate Limiting]
+        CB[Circuit Breaker]
+        CDN[CDN]
+    end
+```
+
 ## What You'll Learn
 
 - **Concepts**: Consistent hashing, rate limiting, leader election, global distribution
