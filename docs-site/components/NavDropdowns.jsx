@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
-const BASE = '/system-design'
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || '/system-design'
 
 const CORE_TOPICS = [
   { title: '🗄️ Databases',            href: `${BASE}/01-databases` },
