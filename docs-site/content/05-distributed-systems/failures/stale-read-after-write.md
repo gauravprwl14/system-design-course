@@ -567,9 +567,9 @@ app.use(readYourWritesMiddleware(replicaPool, primaryPool));
 ## Related Content
 
 - [Cache Invalidation Race Condition](/problems-at-scale/consistency/cache-invalidation-race)
-- [Caching Strategies](/system-design/caching/caching-strategies)
-- [Read Replicas](/system-design/databases/read-replicas)
-- [POC #17: Read Replicas](/interview-prep/practice-pocs/database-read-replicas)
+- [Caching Strategies](/02-caching/concepts/caching-strategies)
+- [Read Replicas](/01-databases/concepts/read-replicas)
+- [POC #17: Read Replicas](/12-interview-prep/practice-pocs/database-read-replicas)
 
 ---
 

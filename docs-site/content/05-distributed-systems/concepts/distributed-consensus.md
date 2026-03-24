@@ -627,5 +627,5 @@ Write path:
 ## Related Content
 
 - [Split-Brain Problem](/problems-at-scale/availability/split-brain)
-- [Database Replication](/system-design/databases/replication-basics)
-- [Microservices Communication](/system-design/patterns/microservices-communication)
+- [Database Replication](/01-databases/concepts/replication-basics)
+- [Microservices Communication](/10-architecture/concepts/microservices-communication)

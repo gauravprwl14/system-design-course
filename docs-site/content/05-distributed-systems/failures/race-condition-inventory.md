@@ -799,9 +799,9 @@ config:
 
 ## References
 
-- [Ticket Booking System](/interview-prep/system-design/ticket-booking-system) - Similar concurrency problem
-- [Distributed Locks POC](/interview-prep/practice-pocs/redis-distributed-lock) - Redis lock implementation
-- [Database Transactions](/interview-prep/practice-pocs/database-transactions) - Understanding ACID
+- [Ticket Booking System](/12-interview-prep/system-design/ticket-booking-system) - Similar concurrency problem
+- [Distributed Locks POC](/12-interview-prep/practice-pocs/redis-distributed-lock) - Redis lock implementation
+- [Database Transactions](/12-interview-prep/practice-pocs/database-transactions) - Understanding ACID
 
 ---
 

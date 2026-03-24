@@ -2,6 +2,17 @@
 
 Distributed systems are hard. Partial failures, network partitions, and clock skew create problems that don't exist in single-node systems. This section gives you the mental models to reason about them.
 
+```mermaid
+graph TD
+    CAP{CAP Theorem\nPick 2 of 3}
+    CP[CP Systems\nPostgreSQL, ZooKeeper\nConsistency + Partition Tolerance]
+    AP[AP Systems\nCassandra, DynamoDB\nAvailability + Partition Tolerance]
+    CA[CA Systems\nSingle-node only\nConsistency + Availability]
+    CAP --> CP
+    CAP --> AP
+    CAP --> CA
+```
+
 ## What You'll Learn
 
 - **Concepts**: CAP theorem, consensus algorithms, consistency models, two-phase commit
