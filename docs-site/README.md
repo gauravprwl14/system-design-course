@@ -37,6 +37,89 @@ npm run build
 npm start
 ```
 
+## 🚢 Production Deployment (PM2 + Nginx)
+
+The site runs behind Nginx on `https://rnd.blr0.geekydev.com/system-design/` with PM2 managing the Next.js process.
+
+### First-Time Setup
+
+```bash
+# 1. Install dependencies
+cd docs-site && npm install
+
+# 2. Build the site
+npm run build
+
+# 3. Start with PM2 (from repo root — uses ecosystem.config.js)
+cd ..
+pm2 start ecosystem.config.js
+
+# 4. Save PM2 process list so it survives reboots
+pm2 save
+```
+
+### Deploy After Code Changes
+
+```bash
+# From docs-site/
+cd docs-site
+
+# Rebuild
+npm run build
+
+# Restart the server (picks up new build automatically)
+pm2 restart system-design
+```
+
+### PM2 Management
+
+```bash
+# Check status
+pm2 list
+
+# View live logs
+pm2 logs system-design
+
+# Stop / start
+pm2 stop system-design
+pm2 start ecosystem.config.js
+
+# Monitor CPU/memory
+pm2 monit
+```
+
+### Nginx Config
+
+The app config lives at `/etc/nginx/apps.d/rnd-system-design.conf`:
+
+```nginx
+location /system-design {
+    include /etc/nginx/snippets/security-basic-auth.conf;
+    include /etc/nginx/snippets/proxy-params.conf;
+    proxy_pass http://localhost:3001/system-design;
+}
+```
+
+After editing nginx config:
+```bash
+sudo nginx -t          # validate config
+sudo systemctl reload nginx
+```
+
+### Key Details
+
+| Setting | Value |
+|---------|-------|
+| Public URL | `https://rnd.blr0.geekydev.com/system-design/` |
+| Internal port | `3001` |
+| `basePath` in Next.js | `/system-design` |
+| PM2 process name | `system-design` |
+| Ecosystem config | `ecosystem.config.js` (repo root) |
+| Auth | HTTP Basic Auth (`/etc/nginx/.htpasswd`) |
+
+> **Note**: All internal links and asset URLs are prefixed with `/system-design/` due to `basePath`.
+> Any new navbar links must use absolute paths including the prefix (e.g. `/system-design/03-redis`).
+
 ## 📁 Project Structure
 
 ### Complete Content Tree
