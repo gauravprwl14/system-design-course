@@ -1,5 +1,5 @@
 export default {
-  // ── Direct navbar links ────────────────────────────────────────────────────
+  // ── True standalone pages (single .mdx file, no sub-pages) ────────────────
   index: {
     title: 'Home',
     type: 'page',
@@ -8,102 +8,84 @@ export default {
     title: '🚀 Get Started',
     type: 'page',
   },
+
+  // ── Folder sections visible in navbar — docs mode (NO type:'page') gives sidebar ──
   '00-start-here': {
     title: '🚀 Start Here',
-    type: 'page',
   },
   '12-interview-prep': {
     title: '🎯 Interview Prep',
-    type: 'page',
   },
   'cheat-sheets': {
     title: '⚡ Cheat Sheets',
-    type: 'page',
   },
   'problems-at-scale': {
     title: '🔥 Problems at Scale',
-    type: 'page',
   },
 
-  // ── Hidden from navbar — each keeps its own full sidebar when navigated ───
+  // ── Hidden folder sections — accessible via NavDropdowns, have full sidebar ──
   '01-databases': {
     title: '🗄️ Databases',
-    type: 'page',
     display: 'hidden',
   },
   '02-caching': {
     title: '⚡ Caching',
-    type: 'page',
     display: 'hidden',
   },
   '03-redis': {
     title: '🔴 Redis',
-    type: 'page',
     display: 'hidden',
   },
   '04-messaging': {
     title: '📬 Messaging & Events',
-    type: 'page',
     display: 'hidden',
   },
   '05-distributed-systems': {
     title: '⚖️ Distributed Systems',
-    type: 'page',
     display: 'hidden',
   },
   '06-scalability': {
     title: '📈 Scalability',
-    type: 'page',
     display: 'hidden',
   },
   '07-api-design': {
     title: '🌐 API Design',
-    type: 'page',
     display: 'hidden',
   },
   '08-security': {
     title: '🔒 Security',
-    type: 'page',
     display: 'hidden',
   },
   '09-observability': {
     title: '📡 Observability',
-    type: 'page',
     display: 'hidden',
   },
   '10-architecture': {
     title: '🏗️ Architecture & Patterns',
-    type: 'page',
     display: 'hidden',
   },
   '11-real-world': {
     title: '🏢 Real-World Systems',
-    type: 'page',
     display: 'hidden',
   },
   '13-agent-workflows': {
     title: '🤖 Agent Workflows',
-    type: 'page',
     display: 'hidden',
   },
   '14-algorithms': {
     title: '🧮 Algorithms',
-    type: 'page',
     display: 'hidden',
   },
   '15-vector-databases': {
     title: '🧠 Vector Databases',
-    type: 'page',
     display: 'hidden',
   },
   'interview-prep': {
-    title: '🎯 Interview Prep (alt)',
-    type: 'page',
+    title: '🎯 Interview Prep (legacy)',
     display: 'hidden',
   },
   'system-design': {
-    title: '🏗️ System Design',
-    type: 'page',
+    title: '🏗️ System Design (legacy)',
     display: 'hidden',
   },
 }

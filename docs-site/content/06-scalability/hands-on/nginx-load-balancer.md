@@ -486,4 +486,4 @@ app2  # Same server for same IP
 
 - [POC #66: Round-Robin](/12-interview-prep/practice-pocs/load-balancer-round-robin)
 - [POC #67: Least Connections](/12-interview-prep/practice-pocs/load-balancer-least-connections)
-- [Load Balancing Strategies](/system-design/load-balancing/load-balancing-strategies)
+- [Load Balancing Strategies](/10-architecture/concepts/load-balancing-strategies)

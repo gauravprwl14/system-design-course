@@ -436,4 +436,4 @@ Actual distribution:
 
 - [POC #67: Least Connections](/12-interview-prep/practice-pocs/load-balancer-least-connections)
 - [POC #68: Consistent Hashing](/12-interview-prep/practice-pocs/load-balancer-consistent-hashing)
-- [Load Balancing Strategies](/system-design/load-balancing/load-balancing-strategies)
+- [Load Balancing Strategies](/10-architecture/concepts/load-balancing-strategies)

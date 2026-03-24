@@ -789,8 +789,8 @@ server {
 
 - [Thundering Herd Problem](/problems-at-scale/availability/thundering-herd)
 - [Cascading Failures](/problems-at-scale/availability/cascading-failures)
-- [Rate Limiting Strategies](/system-design/api-design/rate-limiting)
-- [Connection Pool Management](/system-design/performance/connection-pool-management)
+- [Rate Limiting Strategies](/07-api-design/concepts/rate-limiting)
+- [Connection Pool Management](/09-observability/concepts/connection-pool-management)
 
 ---
 

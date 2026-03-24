@@ -716,7 +716,7 @@ npm install @grpc/grpc-js @grpc/proto-loader
 - [POC #56: REST API Best Practices](/12-interview-prep/practice-pocs/rest-api-best-practices)
 - [POC #57: GraphQL Server](/12-interview-prep/practice-pocs/graphql-server-implementation)
 - [POC #58: gRPC Service](/12-interview-prep/practice-pocs/grpc-protocol-buffers)
-- [Rate Limiting Strategies](/system-design/api-design/rate-limiting)
+- [Rate Limiting Strategies](/07-api-design/concepts/rate-limiting)
 
 ---
 

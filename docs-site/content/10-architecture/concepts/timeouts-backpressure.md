@@ -771,7 +771,7 @@ const data = await client.request('/users/123');
 - [POC #75: Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
 - [POC #76: Retry with Backoff](/12-interview-prep/practice-pocs/retry-backoff)
 - [Cascading Failures](/problems-at-scale/availability/cascading-failures)
-- [Connection Pool Management](/system-design/performance/connection-pool-management)
+- [Connection Pool Management](/09-observability/concepts/connection-pool-management)
 
 ---
 

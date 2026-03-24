@@ -650,7 +650,7 @@ app.use('/api/payments', idempotencyMiddleware({ redis }));
 - [POC #73: Idempotency Keys Implementation](/12-interview-prep/practice-pocs/idempotency-keys)
 - [POC #74: Deduplication with Redis](/12-interview-prep/practice-pocs/redis-deduplication)
 - [Duplicate Event Processing](/problems-at-scale/data-integrity/duplicate-event-processing)
-- [Rate Limiting Strategies](/system-design/api-design/rate-limiting)
+- [Rate Limiting Strategies](/07-api-design/concepts/rate-limiting)
 
 ---
 

@@ -637,7 +637,7 @@ Before deploying your pool configuration:
 
 ## Related Content
 
-- [Connection Pool Management](/system-design/performance/connection-pool-management) - Theory and best practices
+- [Connection Pool Management](/09-observability/concepts/connection-pool-management) - Theory and best practices
 - [POC #72: Connection Leak Detection](/12-interview-prep/practice-pocs/connection-leak-detection) - Find and fix leaks
 - [Connection Pool Starvation](/problems-at-scale/performance/connection-pool-starvation) - Real incident patterns
 

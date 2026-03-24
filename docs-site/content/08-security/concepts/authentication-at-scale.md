@@ -655,6 +655,6 @@ Rate Limiting:
 
 ## Related Content
 
-- [Rate Limiting](/system-design/api-design/rate-limiting)
-- [API Design Patterns](/system-design/api-design/rest-graphql-grpc)
-- [Idempotency](/system-design/api-design/idempotency)
+- [Rate Limiting](/07-api-design/concepts/rate-limiting)
+- [API Design Patterns](/07-api-design/concepts/rest-graphql-grpc)
+- [Idempotency](/07-api-design/concepts/idempotency)

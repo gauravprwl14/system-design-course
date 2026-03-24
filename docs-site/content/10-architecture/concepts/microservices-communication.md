@@ -631,4 +631,4 @@ Don't start with events everywhere!
 - [Kafka vs RabbitMQ](/04-messaging/concepts/kafka-vs-rabbitmq)
 - [Circuit Breaker Pattern](/10-architecture/concepts/circuit-breaker)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
-- [Idempotency](/system-design/api-design/idempotency)
+- [Idempotency](/07-api-design/concepts/idempotency)

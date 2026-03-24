@@ -9,11 +9,11 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 **Start Here**: [Get Started](/get-started) → System Design Fundamentals
 
 **Recommended Order**:
-1. [Database Replication Basics](/system-design/databases/replication-basics)
-2. [Caching Fundamentals](/system-design/caching/caching-fundamentals)
-3. [Message Queue Basics](/system-design/queues/message-queue-basics)
-4. [Circuit Breaker Pattern](/system-design/patterns/circuit-breaker)
-5. [URL Shortener Case Study](/system-design/case-studies/url-shortener)
+1. [Database Replication Basics](/01-databases/concepts/replication-basics)
+2. [Caching Fundamentals](/02-caching/concepts/caching-fundamentals)
+3. [Message Queue Basics](/04-messaging/concepts/message-queue-basics)
+4. [Circuit Breaker Pattern](/10-architecture/concepts/circuit-breaker)
+5. [URL Shortener Case Study](/11-real-world/url-shortener)
 
 **Time Needed**: 30 days for comprehensive understanding
 
@@ -21,7 +21,7 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 
 ### 2️⃣ I Have an Interview Tomorrow
 
-**Start Here**: [Interview Prep Section](/interview-prep)
+**Start Here**: [Interview Prep Section](/12-interview-prep)
 
 **Quick Prep (2-3 hours)**:
 1. Read **Quick Answer** sections for your interview topics
@@ -29,10 +29,10 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 3. Practice explaining in 2-3 minutes
 
 **Most Important**:
-- [RSA vs AES](/interview-prep/security-encryption/rsa-vs-aes)
-- [Hashing vs Encryption](/interview-prep/security-encryption/hashing-vs-encryption)
-- [PDF Converter System](/interview-prep/system-design/pdf-converter)
-- [URL Shortener](/system-design/case-studies/url-shortener)
+- [RSA vs AES](/12-interview-prep/security-encryption/rsa-vs-aes)
+- [Hashing vs Encryption](/12-interview-prep/security-encryption/hashing-vs-encryption)
+- [PDF Converter System](/12-interview-prep/system-design/pdf-converter)
+- [URL Shortener](/11-real-world/url-shortener)
 
 ---
 
@@ -41,18 +41,18 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 **Jump Directly to What You Need**:
 
 **Database Scaling?**
-- [Read Replicas](/system-design/databases/read-replicas)
-- [Sharding Strategies](/system-design/databases/sharding-strategies)
-- [Indexing](/system-design/databases/indexing-strategies)
+- [Read Replicas](/01-databases/concepts/read-replicas)
+- [Sharding Strategies](/01-databases/concepts/sharding-strategies)
+- [Indexing](/01-databases/concepts/indexing-strategies)
 
 **Need Caching?**
-- [Caching Fundamentals](/system-design/caching/caching-fundamentals)
+- [Caching Fundamentals](/02-caching/concepts/caching-fundamentals)
 
 **Need Async Processing?**
-- [Message Queues](/system-design/queues/message-queue-basics)
+- [Message Queues](/04-messaging/concepts/message-queue-basics)
 
 **Need Reliability?**
-- [Circuit Breaker](/system-design/patterns/circuit-breaker)
+- [Circuit Breaker](/10-architecture/concepts/circuit-breaker)
 
 ---
 
@@ -60,10 +60,10 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 
 **Study Real-World Examples**:
 
-- **Instagram**: [Database Sharding](/system-design/databases/sharding-strategies#real-world-example-instagram)
-- **Netflix**: [Circuit Breaker](/system-design/patterns/circuit-breaker#real-world-examples)
-- **Pinterest**: [Caching Strategy](/system-design/caching/caching-fundamentals#real-world-context)
-- **Uber**: [Geographic Sharding](/system-design/databases/sharding-strategies#geographic-sharding)
+- **Instagram**: [Database Sharding](/01-databases/concepts/sharding-strategies#real-world-example-instagram)
+- **Netflix**: [Circuit Breaker](/10-architecture/concepts/circuit-breaker#real-world-examples)
+- **Pinterest**: [Caching Strategy](/02-caching/concepts/caching-fundamentals#real-world-context)
+- **Uber**: [Geographic Sharding](/01-databases/concepts/sharding-strategies#geographic-sharding)
 
 ---
 
@@ -72,27 +72,27 @@ This guide helps you navigate the System Design Knowledge Base based on your goa
 ### By Topic
 
 **Security & Encryption**
-- [RSA vs AES](/interview-prep/security-encryption/rsa-vs-aes)
-- [Hashing vs Encryption](/interview-prep/security-encryption/hashing-vs-encryption)
+- [RSA vs AES](/12-interview-prep/security-encryption/rsa-vs-aes)
+- [Hashing vs Encryption](/12-interview-prep/security-encryption/hashing-vs-encryption)
 
 **Databases**
-- [Replication Basics](/system-design/databases/replication-basics)
-- [Read Replicas](/system-design/databases/read-replicas)
-- [Sharding](/system-design/databases/sharding-strategies)
-- [Indexing](/system-design/databases/indexing-strategies)
+- [Replication Basics](/01-databases/concepts/replication-basics)
+- [Read Replicas](/01-databases/concepts/read-replicas)
+- [Sharding](/01-databases/concepts/sharding-strategies)
+- [Indexing](/01-databases/concepts/indexing-strategies)
 
 **Caching**
-- [Fundamentals](/system-design/caching/caching-fundamentals)
+- [Fundamentals](/02-caching/concepts/caching-fundamentals)
 
 **Message Queues**
-- [Basics](/system-design/queues/message-queue-basics)
+- [Basics](/04-messaging/concepts/message-queue-basics)
 
 **Patterns**
-- [Circuit Breaker](/system-design/patterns/circuit-breaker)
+- [Circuit Breaker](/10-architecture/concepts/circuit-breaker)
 
 **Case Studies**
-- [URL Shortener](/system-design/case-studies/url-shortener)
-- [PDF Converter](/interview-prep/system-design/pdf-converter)
+- [URL Shortener](/11-real-world/url-shortener)
+- [PDF Converter](/12-interview-prep/system-design/pdf-converter)
 
 ---
 
@@ -134,5 +134,5 @@ See [Getting Started](/get-started#study-plans) for detailed study plans:
 Choose your path above and begin learning!
 
 - [Get Started Guide](/get-started)
-- [System Design Section](/system-design/databases/replication-basics)
-- [Interview Prep Section](/interview-prep)
+- [System Design Section](/01-databases/concepts/replication-basics)
+- [Interview Prep Section](/12-interview-prep)
