@@ -2,6 +2,16 @@
 
 Caching is the most impactful performance optimization you can make. Done right, it reduces database load by 90%+ and cuts response times from seconds to milliseconds.
 
+```mermaid
+graph LR
+    Client --> CDN[CDN\nStatic assets]
+    Client --> API[API Server]
+    API --> CACHE[Redis Cache\nApp-level cache]
+    API --> DB[(Database)]
+    CACHE -->|miss| DB
+    DB -->|populate| CACHE
+```
+
 ## What You'll Learn
 
 - **Concepts**: Cache strategies, invalidation, CDN design, stampede prevention

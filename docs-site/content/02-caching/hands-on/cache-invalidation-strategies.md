@@ -541,6 +541,6 @@ class HybridCache {
 
 ## Related POCs
 
-- [POC #61: Cache-Aside Pattern](/interview-prep/practice-pocs/cache-aside-pattern)
-- [POC #62: Write-Through Caching](/interview-prep/practice-pocs/write-through-caching)
+- [POC #61: Cache-Aside Pattern](/12-interview-prep/practice-pocs/cache-aside-pattern)
+- [POC #62: Write-Through Caching](/12-interview-prep/practice-pocs/write-through-caching)
 - [Stale Read After Write Problem](/problems-at-scale/consistency/stale-read-after-write)

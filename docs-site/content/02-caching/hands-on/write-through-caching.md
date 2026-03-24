@@ -551,6 +551,6 @@ class DurableWriteBehind {
 
 ## Related POCs
 
-- [POC #61: Cache-Aside Pattern](/interview-prep/practice-pocs/cache-aside-pattern)
-- [POC #63: Cache Invalidation](/interview-prep/practice-pocs/cache-invalidation-strategies)
-- [Caching Strategies Article](/system-design/caching/caching-strategies)
+- [POC #61: Cache-Aside Pattern](/12-interview-prep/practice-pocs/cache-aside-pattern)
+- [POC #63: Cache Invalidation](/12-interview-prep/practice-pocs/cache-invalidation-strategies)
+- [Caching Strategies Article](/02-caching/concepts/caching-strategies)
