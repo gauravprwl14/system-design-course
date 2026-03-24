@@ -2,6 +2,15 @@
 
 Async messaging decouples services, enables event-driven architectures, and is essential for scaling beyond a single process. This section covers Kafka, event sourcing, the outbox pattern, and more.
 
+```mermaid
+graph LR
+    P1[Service A\nProducer] --> B[Message Broker\nKafka / SQS / RabbitMQ]
+    P2[Service B\nProducer] --> B
+    B --> C1[Service C\nConsumer]
+    B --> C2[Service D\nConsumer]
+    B --> C3[Service E\nConsumer]
+```
+
 ## What You'll Learn
 
 - **Concepts**: Message queues, Kafka internals, event sourcing, exactly-once semantics

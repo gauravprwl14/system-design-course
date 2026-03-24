@@ -588,6 +588,6 @@ demonstrate().catch(console.error);
 
 ## Related POCs
 
-- [Event Sourcing Basics](/interview-prep/practice-pocs/event-sourcing-basics)
-- [Saga Pattern](/interview-prep/practice-pocs/saga-pattern)
-- [Idempotency Keys](/interview-prep/practice-pocs/idempotency-keys)
+- [Event Sourcing Basics](/12-interview-prep/practice-pocs/event-sourcing-basics)
+- [Saga Pattern](/12-interview-prep/practice-pocs/saga-pattern)
+- [Idempotency Keys](/12-interview-prep/practice-pocs/idempotency-keys)

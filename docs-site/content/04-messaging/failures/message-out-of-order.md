@@ -561,8 +561,8 @@ app.get('/metrics/ordering', (req, res) => {
 
 ## Related Content
 
-- [POC #49: Kafka Exactly-Once Semantics](/interview-prep/practice-pocs/kafka-exactly-once-semantics)
-- [Kafka vs RabbitMQ](/system-design/queues/kafka-vs-rabbitmq) - Message ordering guarantees
+- [POC #49: Kafka Exactly-Once Semantics](/12-interview-prep/practice-pocs/kafka-exactly-once-semantics)
+- [Kafka vs RabbitMQ](/04-messaging/concepts/kafka-vs-rabbitmq) - Message ordering guarantees
 - [Double Charge Prevention](/problems-at-scale/concurrency/double-charge-payments)
 
 ---

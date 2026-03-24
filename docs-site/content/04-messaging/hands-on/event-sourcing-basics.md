@@ -540,6 +540,6 @@ demonstrate().catch(console.error);
 
 ## Related POCs
 
-- [CQRS Pattern](/interview-prep/practice-pocs/cqrs-pattern)
-- [Saga Pattern](/interview-prep/practice-pocs/saga-pattern)
-- [Outbox Pattern](/interview-prep/practice-pocs/outbox-pattern)
+- [CQRS Pattern](/12-interview-prep/practice-pocs/cqrs-pattern)
+- [Saga Pattern](/12-interview-prep/practice-pocs/saga-pattern)
+- [Outbox Pattern](/12-interview-prep/practice-pocs/outbox-pattern)

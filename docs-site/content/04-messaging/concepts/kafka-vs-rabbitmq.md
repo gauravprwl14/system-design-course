@@ -578,11 +578,11 @@ User clicks "Buy"
 ## Related Content
 
 **POCs to try:**
-- [POC #46: Kafka Basics](/interview-prep/practice-pocs/kafka-basics-producer-consumer) - Build a producer/consumer
-- [POC #47: Kafka Consumer Groups](/interview-prep/practice-pocs/kafka-consumer-groups-load-balancing) - Load balancing
+- [POC #46: Kafka Basics](/12-interview-prep/practice-pocs/kafka-basics-producer-consumer) - Build a producer/consumer
+- [POC #47: Kafka Consumer Groups](/12-interview-prep/practice-pocs/kafka-consumer-groups-load-balancing) - Load balancing
 
 **Further reading:**
-- [Message Queue Basics](/system-design/queues/message-queue-basics) - Foundational concepts
+- [Message Queue Basics](/04-messaging/concepts/message-queue-basics) - Foundational concepts
 
 ---
 
