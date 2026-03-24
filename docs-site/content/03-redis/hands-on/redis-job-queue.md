@@ -848,10 +848,6 @@ await queue.enqueue({
 
 ## Related POCs
 
-- [POC: Redis Lists Operations](/12-interview-prep/practice-pocs/redis-lists) - List data structure
-- [POC: Bull Queue](/12-interview-prep/practice-pocs/bull-queue) - Production queue library
-- [POC: Kafka Message Queue](/12-interview-prep/practice-pocs/kafka-queue) - Distributed queuing
-- [POC: Worker Auto-Scaling](/12-interview-prep/practice-pocs/worker-autoscaling) - Scale workers dynamically
 
 ---
 

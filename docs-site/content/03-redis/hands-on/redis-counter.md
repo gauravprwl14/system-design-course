@@ -817,10 +817,9 @@ await redis.incr(`article:${articleId}:highlights`);
 
 ## Related POCs
 
-- [POC: Redis Key-Value Cache](/12-interview-prep/practice-pocs/redis-key-value-cache) - Basic Redis usage
-- [POC: Rate Limiting with Sliding Window](/12-interview-prep/practice-pocs/rate-limiting-sliding-window) - Using counters for rate limits
-- [POC: Real-Time Analytics Dashboard](/12-interview-prep/practice-pocs/realtime-analytics) - Live counter updates
-- [POC: HyperLogLog Unique Visitors](/12-interview-prep/practice-pocs/hyperloglog-unique) - Unique counter estimation
+- [POC: Redis Key-Value Cache](/03-redis/hands-on/redis-key-value-cache) - Basic Redis usage
+- [POC: Rate Limiting with Sliding Window](/06-scalability/hands-on/rate-limiting-algorithms) - Using counters for rate limits
+- [POC: HyperLogLog Unique Visitors](/03-redis/hands-on/redis-hyperloglog) - Unique counter estimation
 
 ---
 

@@ -770,10 +770,10 @@ await rateLimiter.checkLimit(`openai:tokens:${userId}`, 1000000, 86400);
 
 ## Related POCs
 
-- [POC: Redis Counter](/12-interview-prep/practice-pocs/redis-counter) - Atomic counters
-- [POC: Distributed Lock](/12-interview-prep/practice-pocs/redis-distributed-lock) - Prevent race conditions
-- [POC: API Gateway](/12-interview-prep/practice-pocs/api-gateway) - Centralized rate limiting
-- [POC: Token Bucket](/12-interview-prep/practice-pocs/token-bucket) - Alternative algorithm
+- [POC: Redis Counter](/03-redis/hands-on/redis-counter) - Atomic counters
+- [POC: Distributed Lock](/03-redis/hands-on/redis-distributed-lock) - Prevent race conditions
+- [POC: API Gateway](/07-api-design/hands-on/api-gateway-rate-limiting) - Centralized rate limiting
+- [POC: Token Bucket](/06-scalability/hands-on/rate-limiting-algorithms) - Alternative algorithm
 
 ---
 

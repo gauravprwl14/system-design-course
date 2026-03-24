@@ -494,6 +494,6 @@ demonstrate().catch(console.error);
 
 ## Related POCs
 
-- [Graceful Degradation](/12-interview-prep/practice-pocs/graceful-degradation)
-- [Blue-Green Deployment](/12-interview-prep/practice-pocs/blue-green-deployment)
-- [Canary Releases](/12-interview-prep/practice-pocs/canary-releases)
+- [Graceful Degradation](/10-architecture/hands-on/graceful-degradation)
+- [Blue-Green Deployment](/10-architecture/hands-on/blue-green-deployment)
+- [Canary Releases](/10-architecture/hands-on/canary-releases)

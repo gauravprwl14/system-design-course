@@ -557,6 +557,6 @@ await cluster.pipeline()
 
 ## Related POCs
 
-- [POC #43: Redis Cluster & Sharding](/12-interview-prep/practice-pocs/redis-cluster-sharding)
-- [POC #61: Cache-Aside Pattern](/12-interview-prep/practice-pocs/cache-aside-pattern)
+- [POC #43: Redis Cluster & Sharding](/03-redis/hands-on/redis-cluster-sharding)
+- [POC #61: Cache-Aside Pattern](/02-caching/hands-on/cache-aside-pattern)
 - [Database Sharding](/01-databases/concepts/sharding-strategies)

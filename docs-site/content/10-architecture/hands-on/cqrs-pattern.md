@@ -565,6 +565,6 @@ NETFLIX:
 
 ## Related POCs
 
-- [Event Sourcing Basics](/12-interview-prep/practice-pocs/event-sourcing-basics)
-- [Saga Pattern](/12-interview-prep/practice-pocs/saga-pattern)
-- [Outbox Pattern](/12-interview-prep/practice-pocs/outbox-pattern)
+- [Event Sourcing Basics](/04-messaging/hands-on/event-sourcing-basics)
+- [Saga Pattern](/10-architecture/hands-on/saga-pattern)
+- [Outbox Pattern](/04-messaging/hands-on/outbox-pattern)

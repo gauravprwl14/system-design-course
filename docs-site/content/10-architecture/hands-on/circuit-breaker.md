@@ -507,6 +507,6 @@ Metrics: {
 
 ## Related POCs
 
-- [POC #76: Retry with Backoff](/12-interview-prep/practice-pocs/retry-backoff)
-- [POC #71: Connection Pool Sizing](/12-interview-prep/practice-pocs/connection-pool-sizing)
+- [POC #76: Retry with Backoff](/10-architecture/hands-on/retry-backoff)
+- [POC #71: Connection Pool Sizing](/01-databases/hands-on/connection-pool-sizing)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)

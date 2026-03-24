@@ -720,6 +720,6 @@ Cost Drivers:
 
 ## Practice POCs
 
-- [POC #1: Redis Key-Value Cache](/12-interview-prep/practice-pocs/redis-key-value-cache)
-- [POC #7: Redis Rate Limiting](/12-interview-prep/practice-pocs/redis-rate-limiting)
-- [POC #61: Cache-Aside Pattern](/12-interview-prep/practice-pocs/cache-aside-pattern)
+- [POC #1: Redis Key-Value Cache](/03-redis/hands-on/redis-key-value-cache)
+- [POC #7: Redis Rate Limiting](/03-redis/hands-on/redis-rate-limiting)
+- [POC #61: Cache-Aside Pattern](/02-caching/hands-on/cache-aside-pattern)

@@ -308,6 +308,6 @@ Queue: [████                ] 20/100 | In: 150 | Out: 130 | Rejected: 0
 
 ## Related POCs
 
-- [Timeout Configuration](/12-interview-prep/practice-pocs/timeout-configuration)
-- [Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
-- [Kafka Consumer Groups](/12-interview-prep/practice-pocs/kafka-consumer-groups-load-balancing)
+- [Timeout Configuration](/10-architecture/hands-on/timeout-configuration)
+- [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
+- [Kafka Consumer Groups](/04-messaging/hands-on/kafka-consumer-groups-load-balancing)

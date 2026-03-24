@@ -836,7 +836,7 @@ app.get('/api/products/:id',
 ## Related Content
 
 - [Caching Fundamentals](/02-caching/concepts/caching-fundamentals)
-- [POC #1: Redis Cache](/12-interview-prep/practice-pocs/redis-key-value-cache)
+- [POC #1: Redis Cache](/03-redis/hands-on/redis-key-value-cache)
 - [Thundering Herd Problem](/problems-at-scale/availability/thundering-herd)
 - [Stale Read After Write](/problems-at-scale/consistency/stale-read-after-write)
 

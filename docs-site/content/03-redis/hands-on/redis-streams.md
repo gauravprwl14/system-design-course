@@ -1389,7 +1389,7 @@ rm -rf redis-streams-poc
 
 You now understand **event sourcing**, the foundation of modern distributed systems!
 
-**Next POC**: [POC #10: HyperLogLog for Unique Counting](/12-interview-prep/practice-pocs/redis-hyperloglog)
+**Next POC**: [POC #10: HyperLogLog for Unique Counting](/03-redis/hands-on/redis-hyperloglog)
 
 Learn how to count unique visitors with 99.9% accuracy using only 12KB of memory (vs 100MB with sets)!
 

@@ -392,6 +392,6 @@ Adding 1 server to 3-server cluster (1000 keys):
 
 ## Related POCs
 
-- [POC #66: Round-Robin](/12-interview-prep/practice-pocs/load-balancer-round-robin)
-- [POC #67: Least Connections](/12-interview-prep/practice-pocs/load-balancer-least-connections)
+- [POC #66: Round-Robin](/06-scalability/hands-on/load-balancer-round-robin)
+- [POC #67: Least Connections](/06-scalability/hands-on/load-balancer-least-connections)
 - [Database Sharding](/01-databases/concepts/sharding-strategies)

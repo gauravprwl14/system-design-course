@@ -931,9 +931,7 @@ const benchmark = async () => {
 ## Hands-On Practice
 
 Want to test this locally? Check out:
-- [Local Video Streaming POC](/12-interview-prep/practice-pocs/video-streaming-poc) - Build a mini-Netflix with Docker
-- [Redis Cluster Setup](/12-interview-prep/practice-pocs/redis-cluster-setup) - Practice caching metadata
-- [Load Testing Video APIs](/12-interview-prep/practice-pocs/load-testing) - Benchmark your video API
+- [Load Testing Video APIs](/09-observability/hands-on/load-testing-k6) - Benchmark your video API
 
 ---
 

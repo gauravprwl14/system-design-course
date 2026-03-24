@@ -899,9 +899,6 @@ const screenStream = await navigator.mediaDevices.getDisplayMedia({
 ## Hands-On Practice
 
 Want to build your own video conferencing app? Check out:
-- [WebRTC Video Chat POC](/12-interview-prep/practice-pocs/webrtc-video-chat) - Build a 2-person video call
-- [SFU Server Setup](/12-interview-prep/practice-pocs/sfu-setup) - Deploy mediasoup SFU
-- [Load Testing WebRTC](/12-interview-prep/practice-pocs/webrtc-load-testing) - Simulate 100-person meeting
 
 ---
 

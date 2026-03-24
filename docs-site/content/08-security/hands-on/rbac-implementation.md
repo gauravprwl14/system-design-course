@@ -538,6 +538,6 @@ CREATE TABLE role_inheritance (
 
 ## Related POCs
 
-- [JWT Authentication](/12-interview-prep/practice-pocs/jwt-authentication)
-- [OAuth 2.0 Flows](/12-interview-prep/practice-pocs/oauth-flows)
-- [API Key Management](/12-interview-prep/practice-pocs/api-key-management)
+- [JWT Authentication](/08-security/hands-on/jwt-authentication)
+- [OAuth 2.0 Flows](/08-security/hands-on/oauth-flows)
+- [API Key Management](/07-api-design/hands-on/api-key-management)

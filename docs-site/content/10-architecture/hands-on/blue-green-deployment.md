@@ -451,6 +451,6 @@ OPTION 3: Feature Flags
 
 ## Related POCs
 
-- [Canary Releases](/12-interview-prep/practice-pocs/canary-releases)
-- [Feature Flags](/12-interview-prep/practice-pocs/feature-flags)
-- [Health Check Patterns](/12-interview-prep/practice-pocs/health-check-patterns)
+- [Canary Releases](/10-architecture/hands-on/canary-releases)
+- [Feature Flags](/10-architecture/hands-on/feature-flags)
+- [Health Check Patterns](/09-observability/hands-on/health-check-patterns)

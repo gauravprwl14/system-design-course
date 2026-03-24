@@ -1016,13 +1016,12 @@ console.log(results.hits.hits);
 
 ## Related Articles
 
-- [Full-Text Search POC](/12-interview-prep/practice-pocs/database-full-text-search) - PostgreSQL tsvector
-- [Database Indexes](/12-interview-prep/practice-pocs/database-indexes) - B-tree vs inverted
+- [Full-Text Search POC](/01-databases/hands-on/database-full-text-search) - PostgreSQL tsvector
+- [Database Indexes](/01-databases/hands-on/database-indexes) - B-tree vs inverted
 - [Message Queues](/12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) - Indexing pipeline
 
 ## Continue Learning
 
-- **Practice**: [Elasticsearch POC](/12-interview-prep/practice-pocs/elasticsearch-basics)
 - **Advanced**: [Recommendation Systems](/12-interview-prep/system-design/recommendation-engine)
 
 ---

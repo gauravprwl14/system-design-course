@@ -737,10 +737,7 @@ await cache.set(`feed:${userId}`, posts, 60);
 
 ## Related POCs
 
-- [POC: Redis Counter with INCR](/12-interview-prep/practice-pocs/redis-counter) - Track page views
-- [POC: Redis Hash for Sessions](/12-interview-prep/practice-pocs/redis-hash-sessions) - User sessions
-- [POC: Cache Stampede Prevention](/12-interview-prep/practice-pocs/cache-stampede) - Handle traffic spikes
-- [POC: Multi-layer Cache](/12-interview-prep/practice-pocs/multi-layer-cache) - L1 + L2 caching
+- [POC: Redis Counter with INCR](/03-redis/hands-on/redis-counter) - Track page views
 
 ---
 

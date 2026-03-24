@@ -841,10 +841,9 @@ await redis.expire(`session:${sessionId}`, 30 * 24 * 3600);
 
 ## Related POCs
 
-- [POC: Redis Key-Value Cache](/12-interview-prep/practice-pocs/redis-key-value-cache) - Basic Redis operations
-- [POC: Distributed Lock](/12-interview-prep/practice-pocs/redis-distributed-lock) - Prevent concurrent logins
-- [POC: JWT Authentication](/12-interview-prep/practice-pocs/jwt-auth) - Stateless auth alternative
-- [POC: WebSocket Sessions](/12-interview-prep/practice-pocs/websocket-sessions) - Real-time session updates
+- [POC: Redis Key-Value Cache](/03-redis/hands-on/redis-key-value-cache) - Basic Redis operations
+- [POC: Distributed Lock](/03-redis/hands-on/redis-distributed-lock) - Prevent concurrent logins
+- [POC: JWT Authentication](/08-security/hands-on/jwt-authentication) - Stateless auth alternative
 
 ---
 

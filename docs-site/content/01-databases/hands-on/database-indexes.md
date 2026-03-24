@@ -864,7 +864,6 @@ cd .. && rm -rf database-indexes-poc
 
 ## What's Next?
 
-**Next POC**: [POC #13: Query Optimization with EXPLAIN](/12-interview-prep/practice-pocs/database-query-optimization)
 
 Learn how to read EXPLAIN output, identify bottlenecks, and optimize queries for production!
 

@@ -788,9 +788,8 @@ await pubsub.publish(`server:${serverId}:announcements`, {
 ## Related POCs
 
 - [POC: WebSocket Architecture](/12-interview-prep/system-design/websocket-architecture) - WebSocket details
-- [POC: Redis Streams](/12-interview-prep/practice-pocs/redis-streams) - Persistent pub/sub
-- [POC: Message Queue](/12-interview-prep/practice-pocs/redis-job-queue) - Reliable messaging
-- [POC: Real-Time Chat](/12-interview-prep/practice-pocs/realtime-chat) - Complete chat system
+- [POC: Redis Streams](/03-redis/hands-on/redis-streams) - Persistent pub/sub
+- [POC: Message Queue](/03-redis/hands-on/redis-job-queue) - Reliable messaging
 
 ---
 

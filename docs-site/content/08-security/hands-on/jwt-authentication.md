@@ -488,6 +488,6 @@ ID TOKEN (OpenID Connect):
 
 ## Related POCs
 
-- [OAuth 2.0 Flows](/12-interview-prep/practice-pocs/oauth-flows)
-- [API Key Management](/12-interview-prep/practice-pocs/api-key-management)
-- [RBAC Implementation](/12-interview-prep/practice-pocs/rbac-implementation)
+- [OAuth 2.0 Flows](/08-security/hands-on/oauth-flows)
+- [API Key Management](/07-api-design/hands-on/api-key-management)
+- [RBAC Implementation](/08-security/hands-on/rbac-implementation)

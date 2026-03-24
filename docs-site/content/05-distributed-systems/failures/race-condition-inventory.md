@@ -800,8 +800,8 @@ config:
 ## References
 
 - [Ticket Booking System](/12-interview-prep/system-design/ticket-booking-system) - Similar concurrency problem
-- [Distributed Locks POC](/12-interview-prep/practice-pocs/redis-distributed-lock) - Redis lock implementation
-- [Database Transactions](/12-interview-prep/practice-pocs/database-transactions) - Understanding ACID
+- [Distributed Locks POC](/03-redis/hands-on/redis-distributed-lock) - Redis lock implementation
+- [Database Transactions](/01-databases/hands-on/database-transactions) - Understanding ACID
 
 ---
 

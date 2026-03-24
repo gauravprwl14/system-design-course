@@ -610,6 +610,6 @@ describe('User Service Contract', () => {
 
 ## Related POCs
 
-- [Integration Testing](/12-interview-prep/practice-pocs/integration-testing)
-- [API Versioning](/12-interview-prep/practice-pocs/api-versioning-strategies)
-- [gRPC Protocol Buffers](/12-interview-prep/practice-pocs/grpc-protocol-buffers)
+- [Integration Testing](/10-architecture/hands-on/integration-testing)
+- [API Versioning](/07-api-design/hands-on/api-versioning-strategies)
+- [gRPC Protocol Buffers](/07-api-design/hands-on/grpc-protocol-buffers)

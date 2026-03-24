@@ -700,7 +700,7 @@ app.use('/api/search', rateLimit({ windowMs: 60000, max: 30 }));
 
 - [Idempotency in Distributed Systems](/07-api-design/concepts/idempotency)
 - [REST vs GraphQL vs gRPC](/07-api-design/concepts/rest-graphql-grpc)
-- [POC #60: API Gateway & Rate Limiting](/12-interview-prep/practice-pocs/api-gateway-rate-limiting)
+- [POC #60: API Gateway & Rate Limiting](/07-api-design/hands-on/api-gateway-rate-limiting)
 - [Thundering Herd Problem](/problems-at-scale/availability/thundering-herd)
 
 ---

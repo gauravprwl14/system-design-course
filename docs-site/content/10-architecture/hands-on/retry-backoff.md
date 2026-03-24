@@ -474,6 +474,6 @@ Attempt   Delay (base: 1s, factor: 2)   With Jitter (±20%)
 
 ## Related POCs
 
-- [POC #75: Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
-- [POC #73: Idempotency Keys](/12-interview-prep/practice-pocs/idempotency-keys)
+- [POC #75: Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
+- [POC #73: Idempotency Keys](/07-api-design/hands-on/idempotency-keys)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)

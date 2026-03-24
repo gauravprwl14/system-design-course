@@ -487,6 +487,6 @@ await redis.setex(cacheKey, CACHE_TTL + jitter, data);
 
 ## Related POCs
 
-- [POC #62: Write-Through Caching](/12-interview-prep/practice-pocs/write-through-caching)
-- [POC #63: Cache Invalidation](/12-interview-prep/practice-pocs/cache-invalidation-strategies)
+- [POC #62: Write-Through Caching](/02-caching/hands-on/write-through-caching)
+- [POC #63: Cache Invalidation](/02-caching/hands-on/cache-invalidation-strategies)
 - [Caching Strategies Article](/02-caching/concepts/caching-strategies)

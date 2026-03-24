@@ -878,9 +878,9 @@ wait
 
 ## Related Articles
 
-- [Distributed Locks with Redis](/12-interview-prep/practice-pocs/redis-distributed-lock) - Deep dive into Redis SETNX
+- [Distributed Locks with Redis](/03-redis/hands-on/redis-distributed-lock) - Deep dive into Redis SETNX
 - [Flash Sales Architecture](/12-interview-prep/system-design/business-and-advanced/flash-sales) - High-traffic e-commerce patterns
-- [Database Transactions](/12-interview-prep/practice-pocs/database-transactions) - ACID guarantees
+- [Database Transactions](/01-databases/hands-on/database-transactions) - ACID guarantees
 
 ## Continue Learning
 

@@ -89,7 +89,7 @@ graph LR
 
 ## 3. Load Balancing
 
-[Deep dive →](../12-interview-prep/system-design/load-balancing-strategies)
+[Deep dive →](../12-interview-prep/system-design/fundamentals/load-balancing-strategies)
 
 | | **L4 (Transport)** | **L7 (Application)** |
 |-|-------------------|----------------------|
@@ -128,7 +128,7 @@ flowchart LR
 
 ## 4. Caching Strategy
 
-[Deep dive →](../12-interview-prep/system-design/caching-strategies)
+[Deep dive →](../12-interview-prep/system-design/fundamentals/caching-strategies)
 
 **When to cache:**
 - Read-heavy workload (>80% reads)
@@ -190,7 +190,7 @@ sequenceDiagram
 
 ## 5. Database Selection
 
-[SQL deep dive →](../12-interview-prep/system-design/database-replication) | [NoSQL deep dive →](../12-interview-prep/system-design/database-sharding)
+[SQL deep dive →](../12-interview-prep/system-design/storage-and-databases/database-replication) | [NoSQL deep dive →](../12-interview-prep/system-design/storage-and-databases/database-sharding)
 
 | Dimension | **SQL (Relational)** | **NoSQL** |
 |-----------|---------------------|-----------|
@@ -237,7 +237,7 @@ flowchart TD
 
 ## 6. Message Queue Patterns
 
-[Deep dive →](../12-interview-prep/system-design/message-queues-kafka-rabbitmq) | [Event-driven →](../12-interview-prep/system-design/event-driven-architecture)
+[Deep dive →](../12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) | [Event-driven →](../12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture)
 
 **When to use async (queue/event):**
 - Decouple producer from consumer

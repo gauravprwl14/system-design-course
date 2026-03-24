@@ -1095,7 +1095,7 @@ rm -rf postgresql-pooling-replication-poc
 
 ## What's Next?
 
-**Next POC**: [POC #56: RESTful API Best Practices](/12-interview-prep/practice-pocs/rest-api-best-practices)
+**Next POC**: [POC #56: RESTful API Best Practices](/07-api-design/hands-on/rest-api-best-practices)
 
 Learn how Stripe designs REST APIs that achieve 99.999% uptime and handle billions of requests!
 

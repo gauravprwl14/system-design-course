@@ -548,8 +548,8 @@ EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 123 AND status = 'pending';
 
 ## Related Content
 
-- [POC #12: Database Indexes](/12-interview-prep/practice-pocs/database-indexes) - Hands-on practice
-- [POC #14: EXPLAIN Analysis](/12-interview-prep/practice-pocs/database-explain) - Query plan mastery
+- [POC #12: Database Indexes](/01-databases/hands-on/database-indexes) - Hands-on practice
+- [POC #14: EXPLAIN Analysis](/01-databases/hands-on/database-explain) - Query plan mastery
 - [N+1 Query Problem](/problems-at-scale/performance/n-plus-one-query) - Common performance killer
 
 ---

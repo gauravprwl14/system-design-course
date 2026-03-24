@@ -459,6 +459,6 @@ Cache-Control: no-store, no-cache, must-revalidate
 
 ## Related Content
 
-- [POC #61: Cache-Aside Pattern](/12-interview-prep/practice-pocs/cache-aside-pattern)
-- [POC #63: Cache Invalidation Strategies](/12-interview-prep/practice-pocs/cache-invalidation-strategies)
+- [POC #61: Cache-Aside Pattern](/02-caching/hands-on/cache-aside-pattern)
+- [POC #63: Cache Invalidation Strategies](/02-caching/hands-on/cache-invalidation-strategies)
 - [Caching Strategies Article](/02-caching/concepts/caching-strategies)

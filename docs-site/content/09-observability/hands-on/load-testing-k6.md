@@ -403,6 +403,6 @@ k6 cloud load-test.js
 
 ## Related POCs
 
-- [Chaos Engineering](/12-interview-prep/practice-pocs/chaos-engineering)
-- [SLO Dashboard](/12-interview-prep/practice-pocs/slo-dashboard)
-- [Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
+- [Chaos Engineering](/10-architecture/hands-on/chaos-engineering)
+- [SLO Dashboard](/09-observability/hands-on/slo-dashboard)
+- [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)

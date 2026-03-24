@@ -1107,7 +1107,6 @@ You now understand the core Redis patterns used in production at Twitter, Reddit
 - **Advanced Redis**: Continue with POCs #11-100 (Transactions, Lua, Cluster, Sentinel)
 - **Database POCs**: Start learning database optimization patterns
 
-**Continue learning**: [Database POCs](/12-interview-prep/practice-pocs/database-patterns)
 
 ---
 

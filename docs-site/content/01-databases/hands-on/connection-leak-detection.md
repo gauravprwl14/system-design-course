@@ -713,7 +713,7 @@ pool.connect((err, client) => {
 
 ## Related Content
 
-- [POC #71: Connection Pool Sizing](/12-interview-prep/practice-pocs/connection-pool-sizing) - Find optimal size
+- [POC #71: Connection Pool Sizing](/01-databases/hands-on/connection-pool-sizing) - Find optimal size
 - [Connection Pool Management](/09-observability/concepts/connection-pool-management) - Full guide
 - [Connection Pool Starvation](/problems-at-scale/performance/connection-pool-starvation) - Real incidents
 

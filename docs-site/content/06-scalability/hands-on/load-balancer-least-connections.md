@@ -320,5 +320,5 @@ Slow server: ~1 request (stays busy longest)
 
 ## Related POCs
 
-- [POC #66: Round-Robin](/12-interview-prep/practice-pocs/load-balancer-round-robin)
-- [POC #68: Consistent Hashing](/12-interview-prep/practice-pocs/load-balancer-consistent-hashing)
+- [POC #66: Round-Robin](/06-scalability/hands-on/load-balancer-round-robin)
+- [POC #68: Consistent Hashing](/06-scalability/hands-on/load-balancer-consistent-hashing)

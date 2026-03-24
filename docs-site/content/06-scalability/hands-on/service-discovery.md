@@ -613,6 +613,6 @@ REGISTRY OPTIONS:
 
 ## Related POCs
 
-- [Health Check Patterns](/12-interview-prep/practice-pocs/health-check-patterns)
-- [Load Balancer Consistent Hashing](/12-interview-prep/practice-pocs/load-balancer-consistent-hashing)
-- [Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
+- [Health Check Patterns](/09-observability/hands-on/health-check-patterns)
+- [Load Balancer Consistent Hashing](/06-scalability/hands-on/load-balancer-consistent-hashing)
+- [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)

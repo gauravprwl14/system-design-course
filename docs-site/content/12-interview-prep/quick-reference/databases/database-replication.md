@@ -750,9 +750,6 @@ processCDCEvents();
 ## Hands-On Practice
 
 Want to test database replication locally? Check out:
-- [PostgreSQL Replication Setup POC](/12-interview-prep/practice-pocs/postgres-replication) - Set up master-slave locally
-- [Database Failover Testing](/12-interview-prep/practice-pocs/db-failover) - Simulate master failure
-- [CDC with Debezium POC](/12-interview-prep/practice-pocs/debezium-cdc) - Stream changes to Kafka
 
 ---
 

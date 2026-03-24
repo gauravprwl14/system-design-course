@@ -631,8 +631,8 @@ const handler = deduplicateEvents(async (event) => {
 
 ## Related Content
 
-- [POC #73: Idempotency Keys](/12-interview-prep/practice-pocs/idempotency-keys)
-- [POC #74: Redis Deduplication](/12-interview-prep/practice-pocs/redis-deduplication)
+- [POC #73: Idempotency Keys](/07-api-design/hands-on/idempotency-keys)
+- [POC #74: Redis Deduplication](/03-redis/hands-on/redis-deduplication)
 - [Idempotency in Distributed Systems](/07-api-design/concepts/idempotency)
 - [Message Ordering Problem](/problems-at-scale/consistency/message-out-of-order)
 

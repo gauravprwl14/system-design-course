@@ -600,6 +600,6 @@ EXAMPLE: EventStoreDB
 
 ## Related POCs
 
-- [Event Sourcing Basics](/12-interview-prep/practice-pocs/event-sourcing-basics)
-- [CQRS Pattern](/12-interview-prep/practice-pocs/cqrs-pattern)
-- [Saga Pattern](/12-interview-prep/practice-pocs/saga-pattern)
+- [Event Sourcing Basics](/04-messaging/hands-on/event-sourcing-basics)
+- [CQRS Pattern](/10-architecture/hands-on/cqrs-pattern)
+- [Saga Pattern](/10-architecture/hands-on/saga-pattern)

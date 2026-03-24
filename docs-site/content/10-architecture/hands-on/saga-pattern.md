@@ -550,6 +550,6 @@ AMAZON ORDER SAGA:
 
 ## Related POCs
 
-- [Event Sourcing Basics](/12-interview-prep/practice-pocs/event-sourcing-basics)
-- [CQRS Pattern](/12-interview-prep/practice-pocs/cqrs-pattern)
-- [Outbox Pattern](/12-interview-prep/practice-pocs/outbox-pattern)
+- [Event Sourcing Basics](/04-messaging/hands-on/event-sourcing-basics)
+- [CQRS Pattern](/10-architecture/hands-on/cqrs-pattern)
+- [Outbox Pattern](/04-messaging/hands-on/outbox-pattern)

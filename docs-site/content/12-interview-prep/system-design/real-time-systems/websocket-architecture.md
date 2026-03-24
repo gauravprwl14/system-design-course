@@ -956,9 +956,7 @@ WHERE room_id = ? AND message_id = ?
 ## Hands-On Practice
 
 Want to build this yourself? Check out:
-- [WebSocket Server POC](/12-interview-prep/practice-pocs/websocket-server-poc) - Build a scalable chat app
-- [Redis Pub/Sub Setup](/12-interview-prep/practice-pocs/redis-pubsub) - Test cross-server messaging
-- [Load Testing WebSockets](/12-interview-prep/practice-pocs/websocket-load-testing) - Simulate 100K connections
+- [Redis Pub/Sub Setup](/03-redis/hands-on/redis-pubsub) - Test cross-server messaging
 
 ---
 

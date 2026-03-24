@@ -398,6 +398,6 @@ const response = await fetch(url);  // Can hang forever
 
 ## Related POCs
 
-- [Retry with Backoff](/12-interview-prep/practice-pocs/retry-backoff)
-- [Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
+- [Retry with Backoff](/10-architecture/hands-on/retry-backoff)
+- [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)

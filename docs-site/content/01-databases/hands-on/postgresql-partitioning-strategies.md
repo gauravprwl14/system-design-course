@@ -1017,7 +1017,7 @@ rm -rf postgresql-partitioning-poc
 
 ## What's Next?
 
-**Next POC**: [POC #55: Connection Pooling & Replication](/12-interview-prep/practice-pocs/postgresql-connection-pooling-replication)
+**Next POC**: [POC #55: Connection Pooling & Replication](/01-databases/hands-on/postgresql-connection-pooling-replication)
 
 Learn how Shopify handles 100K concurrent connections with connection pooling and read replicas!
 

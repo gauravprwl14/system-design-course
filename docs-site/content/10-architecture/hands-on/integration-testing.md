@@ -625,6 +625,6 @@ services:
 
 ## Related POCs
 
-- [Contract Testing](/12-interview-prep/practice-pocs/contract-testing)
-- [Database Testing](/12-interview-prep/practice-pocs/database-testing)
-- [Load Testing](/12-interview-prep/practice-pocs/load-testing-k6)
+- [Contract Testing](/10-architecture/hands-on/contract-testing)
+- [Database Testing](/01-databases/hands-on/database-testing)
+- [Load Testing](/09-observability/hands-on/load-testing-k6)

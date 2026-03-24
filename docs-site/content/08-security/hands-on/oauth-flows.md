@@ -566,6 +566,6 @@ demonstrate().catch(console.error);
 
 ## Related POCs
 
-- [JWT Authentication](/12-interview-prep/practice-pocs/jwt-authentication)
-- [API Key Management](/12-interview-prep/practice-pocs/api-key-management)
-- [RBAC Implementation](/12-interview-prep/practice-pocs/rbac-implementation)
+- [JWT Authentication](/08-security/hands-on/jwt-authentication)
+- [API Key Management](/07-api-design/hands-on/api-key-management)
+- [RBAC Implementation](/08-security/hands-on/rbac-implementation)

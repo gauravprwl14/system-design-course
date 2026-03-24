@@ -590,6 +590,6 @@ Chaos Kong        - Simulates entire region failure
 
 ## Related POCs
 
-- [Circuit Breaker](/12-interview-prep/practice-pocs/circuit-breaker)
-- [Load Testing](/12-interview-prep/practice-pocs/load-testing-k6)
-- [Graceful Degradation](/12-interview-prep/practice-pocs/graceful-degradation)
+- [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
+- [Load Testing](/09-observability/hands-on/load-testing-k6)
+- [Graceful Degradation](/10-architecture/hands-on/graceful-degradation)
