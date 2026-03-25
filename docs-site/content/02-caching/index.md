@@ -12,6 +12,15 @@ graph LR
     DB -->|populate| CACHE
 ```
 
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [Caching Fundamentals](./concepts/caching-fundamentals) | Understand why and when to cache |
+| 🟡 Mid-level | [Caching Strategies](./concepts/caching-strategies) | Choose the right cache strategy |
+| 🔴 Senior / TL | [Cache Invalidation Strategies](./concepts/cache-invalidation-strategies) + [Failures](./failures) | Master invalidation and production failure modes |
+| 🏆 Interview prepping | [Quick Reference](../../12-interview-prep/quick-reference/caching) | Ace caching questions in system design rounds |
+
 ## What You'll Learn
 
 - **Concepts**: Cache strategies, invalidation, CDN design, stampede prevention
@@ -26,10 +35,15 @@ graph LR
 
 ## Topic Map
 
-| Topic | Concepts | Hands-On | Problems at Scale | Interview Prep |
-|-------|----------|----------|-------------------|----------------|
-| Cache fundamentals | [caching-fundamentals](/02-caching/concepts/caching-fundamentals) | [cache-aside-pattern](/02-caching/hands-on/cache-aside-pattern) | [thundering-herd](/problems-at-scale/availability/thundering-herd) | [caching-strategies](/12-interview-prep/system-design/fundamentals/caching-strategies) |
-| Cache strategies | [caching-strategies](/02-caching/concepts/caching-strategies) | [write-through-caching](/02-caching/hands-on/write-through-caching), [cache-aside-pattern](/02-caching/hands-on/cache-aside-pattern) | [cache-invalidation-race](/problems-at-scale/consistency/cache-invalidation-race) | [caching-strategies](/12-interview-prep/system-design/fundamentals/caching-strategies) |
-| Cache invalidation | [cache-invalidation-strategies](/02-caching/concepts/cache-invalidation-strategies) | [cache-invalidation-strategies](/02-caching/hands-on/cache-invalidation-strategies) | [cache-invalidation-race](/problems-at-scale/consistency/cache-invalidation-race) | — |
-| CDN & edge caching | [cdn-cache-deep-dive](/02-caching/concepts/cdn-cache-deep-dive) | — | — | [cdn-usage](/12-interview-prep/quick-reference/caching/cdn-usage) |
-| Hot key problem | [hot-key-problem](/02-caching/concepts/hot-key-problem) | — | [thundering-herd](/problems-at-scale/availability/thundering-herd) | — |
+| Topic | 📖 Concept | 🔬 Hands-On | ⚠️ Failures |
+|-------|-----------|------------|------------|
+| Cache fundamentals | [caching-fundamentals](./concepts/caching-fundamentals) | [cache-aside-pattern](./hands-on/cache-aside-pattern) | — |
+| Cache strategies | [caching-strategies](./concepts/caching-strategies) | [write-through-caching](./hands-on/write-through-caching), [cache-aside-pattern](./hands-on/cache-aside-pattern) | — |
+| Cache invalidation | [cache-invalidation-strategies](./concepts/cache-invalidation-strategies) | [cache-invalidation-strategies](./hands-on/cache-invalidation-strategies) | [cache-invalidation-race](./failures/cache-invalidation-race) |
+| Distributed caching | [distributed-cache-design](./concepts/distributed-cache-design) | — | — |
+| CDN & edge caching | [cdn-cache-deep-dive](./concepts/cdn-cache-deep-dive) | — | — |
+| Cache stampede | [cache-stampede-prevention](./concepts/cache-stampede-prevention) | — | — |
+| Hot key problem | [hot-key-problem](./concepts/hot-key-problem) | — | — |
+| Write-behind caching | [write-behind-caching](./concepts/write-behind-caching) | — | — |
+| Multi-layer caching | [multi-layer-caching](./concepts/multi-layer-caching) | — | — |
+| HTTP caching | — | [http-caching-headers](./hands-on/http-caching-headers) | — |
