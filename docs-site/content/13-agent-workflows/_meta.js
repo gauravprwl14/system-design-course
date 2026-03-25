@@ -1,8 +1,9 @@
 export default {
-  index: "🤖 Agent Workflows",
+  index: "🤖 AI Agents",
   concepts: "📖 Concepts",
   "hands-on": "🔬 Hands-On",
+  interview: "🎯 Interview Q&A",
   platforms: "🛠️ Platforms",
   failures: "⚠️ Failure Modes",
-  "case-studies": "📋 Case Studies"
+  "case-studies": "📋 Case Studies",
 }
