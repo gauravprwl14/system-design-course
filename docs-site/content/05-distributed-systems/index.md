@@ -25,12 +25,27 @@ graph TD
 3. [Double Booking](/05-distributed-systems/failures/double-booking) — The classic distributed system failure
 4. [Raft Consensus](/05-distributed-systems/concepts/raft-consensus) — How distributed agreement works
 
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [cap-theorem-practical](./concepts/cap-theorem-practical) | Understand the fundamental distributed systems trade-offs |
+| 🟡 Mid-level | [acid-vs-base](./concepts/acid-vs-base) | Reason about consistency in real systems |
+| 🔴 Senior / TL | [raft-consensus](./concepts/raft-consensus) + [failures](./failures) | Deep dive: consensus, clocks, production failures |
+| 🏆 Interview prepping | [scale-and-reliability questions](../../12-interview-prep/system-design/scale-and-reliability) | Distributed systems interview patterns |
+
 ## Topic Map
 
-| Topic | Concepts | Hands-On | Problems at Scale | Interview Prep |
-|-------|----------|----------|-------------------|----------------|
-| Distributed consensus | [distributed-consensus](/05-distributed-systems/concepts/distributed-consensus), [raft-consensus](/05-distributed-systems/concepts/raft-consensus) | [redis-distributed-lock](/03-redis/hands-on/redis-distributed-lock) | [split-brain](/problems-at-scale/availability/split-brain) | — |
-| Stale reads | [read-your-writes-consistency](/05-distributed-systems/concepts/read-your-writes-consistency) | — | [stale-read-after-write](/problems-at-scale/consistency/stale-read-after-write) | — |
-| Cache consistency | [eventual-consistency-patterns](/05-distributed-systems/concepts/eventual-consistency-patterns) | — | [cache-invalidation-race](/problems-at-scale/consistency/cache-invalidation-race) | — |
-| Distributed transactions | [two-phase-commit](/05-distributed-systems/concepts/two-phase-commit) | — | — | [saga-pattern](/12-interview-prep/system-design/business-and-advanced/saga-pattern) |
-| CAP & consistency | [cap-theorem-practical](/05-distributed-systems/concepts/cap-theorem-practical), [linearizability-vs-serializability](/05-distributed-systems/concepts/linearizability-vs-serializability) | — | — | — |
+| Topic | 📖 Concept | ⚠️ Failures | 🎯 Interview |
+|-------|-----------|------------|-------------|
+| Distributed consensus | [distributed-consensus](./concepts/distributed-consensus), [raft-consensus](./concepts/raft-consensus) | — | [service-discovery](../../12-interview-prep/system-design/scale-and-reliability/service-discovery) |
+| Consistency models | [cap-theorem-practical](./concepts/cap-theorem-practical), [linearizability-vs-serializability](./concepts/linearizability-vs-serializability) | — | [cdn-from-scratch](../../12-interview-prep/system-design/scale-and-reliability/cdn-from-scratch) |
+| ACID vs BASE | [acid-vs-base](./concepts/acid-vs-base) | — | — |
+| Distributed transactions | [two-phase-commit](./concepts/two-phase-commit) | [double-charge-payment](./failures/double-charge-payment), [duplicate-orders](./failures/duplicate-orders) | — |
+| Stale reads | [read-your-writes-consistency](./concepts/read-your-writes-consistency) | [stale-read-after-write](./failures/stale-read-after-write) | — |
+| Eventual consistency | [eventual-consistency-patterns](./concepts/eventual-consistency-patterns) | — | — |
+| Race conditions | — | [counter-race](./failures/counter-race), [race-condition-inventory](./failures/race-condition-inventory), [stock-order-matching-race](./failures/stock-order-matching-race) | — |
+| Double booking | — | [double-booking](./failures/double-booking) | — |
+| Orphaned records | — | [orphaned-records](./failures/orphaned-records) | — |
+| Vector clocks | [vector-clocks-logical-time](./concepts/vector-clocks-logical-time) | — | — |
+| Disaster recovery | [disaster-recovery-design](./concepts/disaster-recovery-design) | — | [monolith-to-microservices](../../12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices) |
