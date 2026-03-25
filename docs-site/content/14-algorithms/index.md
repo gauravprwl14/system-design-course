@@ -1,0 +1,34 @@
+---
+title: "Algorithms & Data Structures"
+description: "Algorithm patterns for system design interviews and production engineering"
+---
+
+# Algorithms & Data Structures
+
+Algorithm knowledge that matters for system design interviews and real distributed systems — from interview patterns to algorithms that power production infrastructure.
+
+```mermaid
+graph TD
+    subgraph "Interview Patterns"
+        IP[Sliding Window\nTwo Pointers\nHeap / Top-K\nBinary Search\nDP\nGraph BFS/DFS]
+    end
+    subgraph "Distributed Algorithms"
+        DA[Consensus\nRaft / Paxos\nGossip Protocol\nConsistent Hashing\nVector Clocks\nCRDTs]
+    end
+    subgraph "Hands-On POCs"
+        HO[LRU Cache\nBloom Filter\nTrie\nMerkle Tree\nExternal Sort\nDijkstra]
+    end
+    IP --> HO
+    DA --> HO
+```
+
+## Sections
+
+### [🎯 Interview Patterns](interview-patterns)
+Data structure and algorithm patterns for coding interviews at FAANG companies. Sliding window, two pointers, dynamic programming, graph traversal, and more.
+
+### [⚙️ Distributed Algorithms](distributed)
+Algorithms used inside real distributed systems: consensus (Raft, Paxos), consistent hashing, vector clocks, CRDTs, gossip protocols, and more.
+
+### [🔬 Hands-On POCs](hands-on)
+Runnable implementations to build intuition: LRU cache, bloom filter, trie, segment tree, and more.

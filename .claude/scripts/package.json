@@ -1,0 +1,15 @@
+{
+  "name": "knowledge-graph-scripts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test __tests__/sync-links.test.mjs __tests__/lint-graph.test.mjs",
+    "sync": "node sync-links.mjs",
+    "lint": "node lint-graph.mjs",
+    "scaffold": "node scaffold-article.mjs"
+  },
+  "dependencies": {
+    "glob": "^11.0.0",
+    "gray-matter": "^4.0.3"
+  }
+}

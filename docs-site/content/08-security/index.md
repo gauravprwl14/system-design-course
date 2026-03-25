@@ -1,0 +1,43 @@
+# Security
+
+Security is not optional — it is a requirement. This section covers authentication at scale, zero-trust networks, secret management, DDoS protection, and encryption patterns used in production systems.
+
+```mermaid
+graph TD
+    subgraph "Authentication"
+        JWT[JWT\nStateless tokens]
+        OAuth[OAuth 2.0\nThird-party auth]
+        RBAC[RBAC\nRole-based access]
+    end
+    subgraph "Data Protection"
+        TLS[TLS 1.3\nEncryption in transit]
+        KMS[KMS\nKey management]
+        HASH[Bcrypt / Argon2\nPassword hashing]
+    end
+    Request --> TLS --> JWT --> RBAC
+    OAuth --> RBAC
+    KMS --> HASH
+```
+
+## What You'll Learn
+
+- **Concepts**: OAuth2/OIDC, zero-trust, mTLS, secret management, DDoS protection
+- **Hands-On**: Implement JWT auth, OAuth flows, and RBAC
+
+## Where to Start
+
+1. [Authentication at Scale](/08-security/concepts/authentication-at-scale) — Sessions, tokens, and SSO
+2. [OAuth2 & OIDC Deep Dive](/08-security/concepts/oauth2-oidc-deep-dive) — The industry standard
+3. [JWT Authentication](/08-security/hands-on/jwt-authentication) — Implement JWT from scratch
+4. [Zero-Trust Architecture](/08-security/concepts/zero-trust-architecture) — Never trust, always verify
+
+## Topic Map
+
+| Topic | Concepts | Hands-On | Interview Prep |
+|-------|----------|----------|----------------|
+| Auth at scale | [authentication-at-scale](/08-security/concepts/authentication-at-scale), [oauth2-oidc-deep-dive](/08-security/concepts/oauth2-oidc-deep-dive) | [jwt-authentication](/08-security/hands-on/jwt-authentication), [oauth-flows](/08-security/hands-on/oauth-flows) | [jwt-vs-session](/12-interview-prep/quick-reference/security/jwt-vs-session) |
+| RBAC | — | [rbac-implementation](/08-security/hands-on/rbac-implementation) | — |
+| Session management | — | [redis-session-management](/03-redis/hands-on/redis-session-management) | [jwt-vs-session](/12-interview-prep/quick-reference/security/jwt-vs-session) |
+| API key management | [secret-management](/08-security/concepts/secret-management) | [api-key-management](/07-api-design/hands-on/api-key-management) | — |
+| Hashing vs encryption | [encryption-at-rest](/08-security/concepts/encryption-at-rest) | — | [hashing-vs-encryption](/12-interview-prep/quick-reference/security/hashing-vs-encryption) |
+| TLS/certificates | [mtls-certificate-management](/08-security/concepts/mtls-certificate-management) | — | [mitm-prevention](/12-interview-prep/quick-reference/security/mitm-prevention), [rsa-vs-aes](/12-interview-prep/quick-reference/security/rsa-vs-aes) |

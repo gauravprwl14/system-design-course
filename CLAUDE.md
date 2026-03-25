@@ -120,6 +120,64 @@ The `docs-site/pages/interview-prep/practice-pocs/` directory contains hands-on 
 
 6. **Update navigation**: Add entry to appropriate `_meta.json` file
 
+7. **Update cheat sheet**: Run `/generate-cheat-sheet <article-path>` — this skill reads the article, extracts key numbers/decisions/traps, and adds a dense entry to the correct `cheat-sheets/<domain>.md` automatically
+
+### When Adding New Articles — Cheat Sheet Update Rule
+
+**Every new concept article must also update its corresponding cheat sheet.**
+POCs and index pages are exempt. Only articles that teach a concept need a cheat sheet entry.
+
+#### 1. Article → Cheat Sheet Mapping
+
+| Article location | Update this cheat sheet |
+|-----------------|------------------------|
+| `12-interview-prep/quick-reference/aws-cloud/` | `cheat-sheets/aws.md` |
+| `12-interview-prep/quick-reference/databases/` | `cheat-sheets/databases.md` |
+| `12-interview-prep/quick-reference/caching/` | `cheat-sheets/caching.md` |
+| `12-interview-prep/quick-reference/security/` | `cheat-sheets/security.md` |
+| `12-interview-prep/system-design/` | `cheat-sheets/system-design.md` |
+| `01-databases/`, `02-caching/`, `03-redis/` | corresponding domain cheat sheet |
+| `04-messaging/`, `05-distributed-systems/` | `cheat-sheets/messaging.md` |
+| `06-scalability/`, `10-architecture/` | `cheat-sheets/system-design.md` |
+| `07-api-design/`, `09-observability/` | `cheat-sheets/networking.md` |
+| `08-security/` | `cheat-sheets/security.md` |
+| `problems-at-scale/` | `cheat-sheets/system-design.md` |
+| New domain (no existing cheat sheet) | Create `cheat-sheets/<domain>.md` + add to `cheat-sheets/_meta.js` |
+
+#### 2. Cheat Sheet Entry Template
+
+Add a new subsection to the relevant cheat sheet section. Each entry must be dense — no paragraphs:
+
+```markdown
+**[Topic Name]** — [one-line description]
+| | [Option A] | [Option B] |
+|-|-----------|-----------|
+| [dimension] | [value] | [value] |
+
+- Key number: [value] (memorize this)
+- Decision: Use [A] when [condition] / [B] when [condition]
+- Trap: [the #1 mistake candidates make]
+- [Article link](../path/to/article)
+```
+
+Minimum required per entry:
+- At least one key number or fact
+- One decision rule (when to use X vs Y) if applicable
+- One trap or pitfall
+- Link to the full article
+
+#### 3. Cheat Sheet Section Organization
+
+Each cheat sheet is divided into numbered sections. Add new entries to the most relevant existing section. If the topic doesn't fit any existing section, add a new `## N. [Topic Name]` section at the end before any "Common Mistakes" or "Key Numbers" sections.
+
+#### 4. Keeping Cheat Sheets Scannable
+
+- Tables over paragraphs
+- Bullet points over sentences
+- Bold key numbers, not full sentences
+- Max 5-8 lines per entry (quick scan, not full read)
+- Link to deep article for anything needing more explanation
+
 ### When Adding Practice POCs
 
 POCs should be:

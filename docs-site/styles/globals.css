@@ -1,0 +1,105 @@
+/* ── Custom nav dropdown ─────────────────────────────────────────────────── */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+  font-family: inherit;
+}
+
+.nav-dropdown-btn:hover {
+  opacity: 0.75;
+}
+
+.nav-dropdown-arrow {
+  font-size: 10px;
+  transition: transform 0.15s ease;
+  display: inline-block;
+  opacity: 0.6;
+}
+
+.nav-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 210px;
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 50;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* light mode */
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* dark mode — Nextra adds .dark to <html> */
+.dark .nav-dropdown-panel {
+  background: rgba(17, 17, 17, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-dropdown-item {
+  display: block;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  border-radius: 5px;
+  text-decoration: none !important;
+  color: inherit;
+  transition: background 0.1s, color 0.1s;
+  cursor: pointer;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.dark .nav-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* plain nav link — same visual weight as the dropdown buttons */
+.nav-plain-link {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap;
+  text-decoration: none !important;
+  transition: opacity 0.15s;
+}
+
+.nav-plain-link:hover {
+  opacity: 0.75;
+}
+
+/* hide custom nav on mobile — the hamburger handles mobile nav */
+@media (max-width: 767px) {
+  .nav-dropdowns-desktop {
+    display: none;
+  }
+}
