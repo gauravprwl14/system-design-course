@@ -6,7 +6,6 @@ Advanced system design interview questions for AI and LLM-powered systems — ag
 
 | File | Description |
 |------|-------------|
-| overview | Introduction to AI and agent system design questions and key concepts |
 | agent-loop-design | Interview question: design the core reasoning-action loop for an AI agent |
 | tool-calling-patterns | Interview question: design a tool calling and function schema system for LLM agents |
 | multi-agent-coordination | Interview question: design a system where multiple AI agents coordinate on complex tasks |

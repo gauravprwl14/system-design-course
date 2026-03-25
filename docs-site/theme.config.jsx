@@ -113,7 +113,7 @@ export default {
     key: 'launch-banner',
     // Nextra 3.x: banner uses `content` not `text`
     content: (
-      <a href="/get-started" style={{ textDecoration: 'none' }}>
+      <a href="/system-design/get-started" style={{ textDecoration: 'none' }}>
         🎉 New: Interview Preparation section with 149+ real questions! Start here →
       </a>
     )
