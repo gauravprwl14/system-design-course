@@ -139,3 +139,24 @@ Each article follows the same structure:
 
 **Storage costs exploding with no traffic growth?**
 → [Storage Bloat](cost-optimization/storage-bloat)
+
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [concurrency section](./concurrency) | Understand race conditions and how to prevent them |
+| 🟡 Mid-level | [availability section](./availability) | Design systems that survive cascading failures |
+| 🔴 Senior / TL | [consistency](./consistency) + [performance](./performance) | Master distributed system failure modes |
+| 🏆 Interview prepping | Browse all categories below | Real production failures asked in system design interviews |
+
+## Problem Map
+
+| Category | Problems |
+|----------|---------|
+| ⚡ [Concurrency](./concurrency) | Race conditions, double booking, payment issues |
+| 🔴 [Availability](./availability) | Thundering herd, cascading failures |
+| 🐢 [Performance](./performance) | Database hotspots, slow queries |
+| 🔄 [Consistency](./consistency) | Stale data, split brain |
+| 📈 [Scalability](./scalability) | Hot partitions, viral events |
+| 💰 [Cost Optimization](./cost-optimization) | Storage bloat, runaway costs |
+| 🛡️ [Data Integrity](./data-integrity) | Silent corruption, partial writes |
