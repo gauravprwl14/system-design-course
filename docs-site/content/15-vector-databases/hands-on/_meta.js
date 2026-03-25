@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "pgvector-setup": "pgvector Setup",
   "similarity-search-poc": "Similarity Search from Scratch",
   "embedding-pipeline": "Embedding Ingestion Pipeline",

@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "distributed-consensus": "Distributed Consensus",
   "cap-theorem-practical": "CAP Theorem (Practical)",
   "acid-vs-base": "ACID vs BASE",

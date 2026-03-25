@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "caching-fundamentals": "Caching Fundamentals",
   "caching-strategies": "Caching Strategies",
   "cache-invalidation-strategies": "Cache Invalidation Strategies",

@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "circuit-breaker": "Circuit Breaker",
   "microservices-communication": "Microservices Communication",
   "timeouts-backpressure": "Timeouts & Backpressure",

@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "hashing-vs-encryption": "Hashing vs Encryption",
   "jwt-vs-session": "JWT vs Session",
   "mitm-prevention": "MITM Prevention",

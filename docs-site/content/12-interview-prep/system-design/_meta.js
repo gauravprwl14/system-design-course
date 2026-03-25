@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   fundamentals: "🟢 Fundamentals",
   "storage-and-databases": "🟡 Storage & Databases",
   "messaging-and-streaming": "🟡 Messaging & Streaming",

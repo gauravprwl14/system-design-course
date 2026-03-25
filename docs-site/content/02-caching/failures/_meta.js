@@ -1,4 +1,4 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "cache-invalidation-race": "Cache Invalidation Race Condition"
 }

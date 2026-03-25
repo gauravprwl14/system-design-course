@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
 
   // --- SA Interview Master Guide ---
   "aws-sa-interview-scenarios": "SA Interview Master Guide (50 Qs)",

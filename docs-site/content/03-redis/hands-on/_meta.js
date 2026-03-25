@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "redis-key-value-cache": "Key-Value Cache",
   "redis-counter": "Atomic Counter",
   "redis-distributed-lock": "Distributed Lock",

@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "aws-cloud": "☁️ AWS & Cloud",
   security: "🔒 Security & Encryption",
   databases: "🗄️ Databases",

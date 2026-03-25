@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "cascading-failures": "Cascading Failures",
   "circuit-breaker-failure": "Circuit Breaker Failure",
   "retry-storm": "Retry Storm",
