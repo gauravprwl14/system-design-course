@@ -23,13 +23,26 @@ graph LR
 2. [Kafka vs RabbitMQ](/04-messaging/concepts/kafka-vs-rabbitmq) — When to use each
 3. [Kafka Basics: Producer & Consumer](/04-messaging/hands-on/kafka-basics-producer-consumer) — Your first Kafka program
 
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [Message Queue Basics](./concepts/message-queue-basics) | Understand why message queues exist |
+| 🟡 Mid-level | [Kafka vs RabbitMQ](./concepts/kafka-vs-rabbitmq) | Choose the right queue technology |
+| 🔴 Senior / TL | [Event Sourcing Design](./concepts/event-sourcing-design) + [Failures](./failures) | Design event-driven systems at scale |
+| 🏆 Interview prepping | [Messaging & Streaming questions](../../12-interview-prep/system-design/messaging-and-streaming) | Messaging & streaming interview patterns |
+
 ## Topic Map
 
-| Topic | Concepts | Hands-On | Problems at Scale | Interview Prep |
-|-------|----------|----------|-------------------|----------------|
-| Queue fundamentals | [message-queue-basics](/04-messaging/concepts/message-queue-basics) | [redis-job-queue](/03-redis/hands-on/redis-job-queue) | [retry-storm](/problems-at-scale/availability/retry-storm) | [message-queues-kafka-rabbitmq](/12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) |
-| Kafka vs RabbitMQ | [kafka-vs-rabbitmq](/04-messaging/concepts/kafka-vs-rabbitmq) | [kafka-basics-producer-consumer](/04-messaging/hands-on/kafka-basics-producer-consumer) | — | [message-queues-kafka-rabbitmq](/12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) |
-| Exactly-once | [kafka-exactly-once-semantics](/04-messaging/concepts/kafka-exactly-once-semantics) | [kafka-exactly-once-semantics](/04-messaging/hands-on/kafka-exactly-once-semantics) | — | — |
-| Message ordering | [message-ordering-guarantees](/04-messaging/concepts/message-ordering-guarantees) | — | [message-out-of-order](/04-messaging/failures/message-out-of-order) | — |
-| Backpressure | [outbox-pattern](/04-messaging/concepts/outbox-pattern) | [backpressure-queues](/04-messaging/hands-on/backpressure-queues) | [retry-storm](/problems-at-scale/availability/retry-storm) | — |
-| Async processing | [stream-processing-patterns](/04-messaging/concepts/stream-processing-patterns) | [kafka-streams-real-time-processing](/04-messaging/hands-on/kafka-streams-real-time-processing) | — | [event-driven-architecture](/12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture) |
+| Topic | 📖 Concept | 🔬 Hands-On | ⚠️ Failures | 🎯 Interview |
+|-------|-----------|------------|------------|-------------|
+| Queue fundamentals | [message-queue-basics](./concepts/message-queue-basics) | [kafka-basics-producer-consumer](./hands-on/kafka-basics-producer-consumer) | — | [message-queues-kafka-rabbitmq](../../12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) |
+| Kafka vs RabbitMQ | [kafka-vs-rabbitmq](./concepts/kafka-vs-rabbitmq) | [kafka-consumer-groups-load-balancing](./hands-on/kafka-consumer-groups-load-balancing) | — | [message-queues-kafka-rabbitmq](../../12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq) |
+| Kafka partitioning | [kafka-partitioning-design](./concepts/kafka-partitioning-design) | [kafka-performance-tuning-monitoring](./hands-on/kafka-performance-tuning-monitoring) | — | — |
+| Exactly-once semantics | [kafka-exactly-once-semantics](./concepts/kafka-exactly-once-semantics) | [kafka-exactly-once-semantics](./hands-on/kafka-exactly-once-semantics) | [duplicate-event-processing](./failures/duplicate-event-processing) | — |
+| Message ordering | [message-ordering-guarantees](./concepts/message-ordering-guarantees) | — | [message-out-of-order](./failures/message-out-of-order) | — |
+| Event sourcing | [event-sourcing-design](./concepts/event-sourcing-design) | [event-sourcing-basics](./hands-on/event-sourcing-basics) | — | [event-driven-architecture](../../12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture) |
+| Outbox pattern | [outbox-pattern](./concepts/outbox-pattern) | [outbox-pattern](./hands-on/outbox-pattern) | — | — |
+| Dead letter queues | [dead-letter-queue-design](./concepts/dead-letter-queue-design) | — | [duplicate-event-processing](./failures/duplicate-event-processing) | — |
+| Backpressure | — | [backpressure-queues](./hands-on/backpressure-queues) | — | — |
+| Stream processing | [stream-processing-patterns](./concepts/stream-processing-patterns) | [kafka-streams-real-time-processing](./hands-on/kafka-streams-real-time-processing) | — | [event-driven-architecture](../../12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture) |
