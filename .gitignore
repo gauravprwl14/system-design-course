@@ -1,6 +1,11 @@
 # Archived content (old root-level folders)
 _archive/
 
+# Node modules (anywhere in the repo)
+node_modules/
+.claude/scripts/node_modules/
+.claude/worktrees/
+
 # OS files
 .DS_Store
 .DS_Store?
