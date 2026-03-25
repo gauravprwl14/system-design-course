@@ -101,12 +101,69 @@ The `docs-site/pages/interview-prep/practice-pocs/` directory contains hands-on 
 
 ### When Adding New Articles
 
-1. **Choose appropriate difficulty level**: Add emoji to title or meta
-   - 🟢 Beginner - Fundamental concepts
-   - 🟡 Intermediate - Requires basic knowledge
-   - 🔴 Advanced - Complex distributed systems
+**Every concept article must follow the two-depth structure.** The platform serves Junior through Solution Architect engineers — a single article must work for both. Use `/new-article` to scaffold, and follow `.claude/commands/new-article-template.md` as the canonical specification.
 
-2. **Include Mermaid diagrams**: Visual architecture helps understanding
+**Gold-standard example**: `docs-site/content/01-databases/concepts/write-ahead-log.md` — read this before writing any new article.
+
+#### Two-Depth Structure (mandatory)
+
+Every concept article has two explicitly labeled sections:
+
+**Level 1 — Surface (2-minute read)**
+- One-line plain-English definition
+- Concrete trigger for when you need this (with numbers)
+- 3-5 bullet-point core concept
+- One Mermaid diagram (happy path, 5-8 nodes)
+- Quick "use this when / don't use this when" table
+
+**Level 2 — Deep Dive**
+- Problem statement with failure scenario and traffic numbers
+- 2-3 named approaches (Approach A/B/C) each with diagram, trade-off table, and code
+- Comparison table across all approaches
+- Production numbers (P50/P99/P99.9, throughput ceilings, scale thresholds)
+- Real company examples (minimum 3, with source reference)
+- Common mistakes (minimum 3, with root cause and fix)
+- Key Takeaways / TL;DR (3-5 bullets, at least one number per bullet)
+
+#### Mandatory Frontmatter Fields
+
+```yaml
+---
+title: "..."
+layer: concept|poc|problem|case-study|interview-q
+section: "path/from/content/root"
+difficulty: beginner|intermediate|advanced|senior
+tags: [...]
+category: databases|caching|messaging|scalability|security|observability|architecture|algorithms
+prerequisites: []
+see_poc: []
+related_problems: []
+case_studies: []
+linked_from: []   # populated by /sync-graph — do not fill manually
+references:
+  - title: "..."
+    url: "https://..."
+    type: article|video|docs
+---
+```
+
+#### References Section (mandatory)
+
+Every article ends with a References section. Minimum 3 links. Use icons:
+- `📺` for videos (conference talks, YouTube lectures)
+- `📖` for blog posts (engineering blogs, post-mortems)
+- `📚` for official documentation
+
+#### Difficulty levels
+
+- 🟢 `beginner` — Fundamental concepts, no assumed knowledge
+- 🟡 `intermediate` — Requires basic knowledge (2-5 years experience)
+- 🔴 `advanced` — Complex distributed systems (5-8 years experience)
+- ⚫ `senior` — Staff/Principal/Solution Architect level (8+ years)
+
+1. **Every claim needs a number**: "handles 100k RPS" not "handles lots of traffic"
+
+2. **Include Mermaid diagrams**: At least one per depth level
    ```mermaid
    graph TD
      A[Component] --> B[Component]
@@ -114,11 +171,11 @@ The `docs-site/pages/interview-prep/practice-pocs/` directory contains hands-on 
 
 3. **Provide real-world context**: Include traffic numbers, scale, when you actually need this
 
-4. **Add code examples**: Use language-agnostic pseudocode or JavaScript/Node.js
+4. **Failure modes are mandatory**: Every production pattern breaks. Name the failure, describe the operational impact, give the fix.
 
-5. **Reference real companies**: How Netflix, Instagram, Uber, etc. solve the problem
+5. **Reference real companies**: How Netflix, Instagram, Uber, etc. solve the problem (cite engineering blogs)
 
-6. **Update navigation**: Add entry to appropriate `_meta.json` file
+6. **Update navigation**: Add entry to appropriate `_meta.js` file
 
 7. **Update cheat sheet**: Run `/generate-cheat-sheet <article-path>` — this skill reads the article, extracts key numbers/decisions/traps, and adds a dense entry to the correct `cheat-sheets/<domain>.md` automatically
 
