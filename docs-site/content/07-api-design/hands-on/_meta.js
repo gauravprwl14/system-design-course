@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "rest-api-best-practices": "REST API Best Practices",
   "graphql-server-implementation": "GraphQL Server Implementation",
   "grpc-protocol-buffers": "gRPC & Protocol Buffers",

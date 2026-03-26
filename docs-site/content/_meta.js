@@ -1,5 +1,5 @@
 export default {
-  // ── True standalone pages (single .mdx file, no sub-pages) ────────────────
+  // ── Standalone pages ─────────────────────────────────────────────────────
   index: {
     title: 'Home',
     type: 'page',
@@ -9,77 +9,85 @@ export default {
     type: 'page',
   },
 
-  // ── Folder sections visible in navbar — docs mode (NO type:'page') gives sidebar ──
-  '00-start-here': {
-    title: '🚀 Start Here',
+  // ── Pillar 1: Foundations ─────────────────────────────────────────────────
+  '_sep_foundations': {
+    type: 'separator',
+    title: '🏗️ Foundations',
   },
-  '12-interview-prep': {
-    title: '🎯 Interview Prep',
+  '01-databases': {
+    title: '🗄️ Databases',
   },
-  'cheat-sheets': {
-    title: '⚡ Cheat Sheets',
+  '02-caching': {
+    title: '⚡ Caching',
+  },
+  '03-redis': {
+    title: '🔴 Redis',
+  },
+  '04-messaging': {
+    title: '📬 Messaging & Events',
+  },
+  '05-distributed-systems': {
+    title: '⚖️ Distributed Systems',
+  },
+
+  // ── Pillar 2: Production Systems ──────────────────────────────────────────
+  '_sep_production': {
+    type: 'separator',
+    title: '🚀 Production Systems',
+  },
+  '06-scalability': {
+    title: '📈 Scalability',
+  },
+  '07-api-design': {
+    title: '🌐 API Design',
+  },
+  '08-security': {
+    title: '🔒 Security',
+  },
+  '09-observability': {
+    title: '📡 Observability',
+  },
+  '10-architecture': {
+    title: '🏗️ Architecture & Patterns',
+  },
+
+  // ── Pillar 3: AI & Modern Systems ─────────────────────────────────────────
+  '_sep_ai': {
+    type: 'separator',
+    title: '🤖 AI & Modern Systems',
+  },
+  '13-agent-workflows': {
+    title: '🤖 AI Agents',
+  },
+  '15-vector-databases': {
+    title: '🧠 Vector Databases',
+  },
+  '14-algorithms': {
+    title: '🧮 Algorithms',
+  },
+
+  // ── Pillar 4: Prep & Reference ────────────────────────────────────────────
+  '_sep_prep': {
+    type: 'separator',
+    title: '🎯 Prep & Reference',
   },
   'problems-at-scale': {
     title: '🔥 Problems at Scale',
   },
-
-  // ── Hidden folder sections — accessible via NavDropdowns, have full sidebar ──
-  '01-databases': {
-    title: '🗄️ Databases',
-    display: 'hidden',
-  },
-  '02-caching': {
-    title: '⚡ Caching',
-    display: 'hidden',
-  },
-  '03-redis': {
-    title: '🔴 Redis',
-    display: 'hidden',
-  },
-  '04-messaging': {
-    title: '📬 Messaging & Events',
-    display: 'hidden',
-  },
-  '05-distributed-systems': {
-    title: '⚖️ Distributed Systems',
-    display: 'hidden',
-  },
-  '06-scalability': {
-    title: '📈 Scalability',
-    display: 'hidden',
-  },
-  '07-api-design': {
-    title: '🌐 API Design',
-    display: 'hidden',
-  },
-  '08-security': {
-    title: '🔒 Security',
-    display: 'hidden',
-  },
-  '09-observability': {
-    title: '📡 Observability',
-    display: 'hidden',
-  },
-  '10-architecture': {
-    title: '🏗️ Architecture & Patterns',
-    display: 'hidden',
+  '12-interview-prep': {
+    title: '🎯 Interview Questions',
   },
   '11-real-world': {
-    title: '🏢 Real-World Systems',
-    display: 'hidden',
+    title: '🏢 Real-World Case Studies',
   },
-  '13-agent-workflows': {
-    title: '🤖 Agent Workflows',
-    display: 'hidden',
+  'cheat-sheets': {
+    title: '⚡ Cheat Sheets',
   },
-  '14-algorithms': {
-    title: '🧮 Algorithms',
-    display: 'hidden',
-  },
-  '15-vector-databases': {
-    title: '🧠 Vector Databases',
-    display: 'hidden',
-  },
+
+  // ── Hidden legacy sections ────────────────────────────────────────────────
+  // NOTE: '00-start-here' is intentionally omitted from the sidebar.
+  // Its content (learning-paths.md) is linked from the home page.
+  // The route /00-start-here/learning-paths still works — it just has no sidebar entry.
   'interview-prep': {
     title: '🎯 Interview Prep (legacy)',
     display: 'hidden',

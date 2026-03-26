@@ -1,6 +1,5 @@
 export default {
   index: "🤖 AI Agents & LLM Systems",
-  overview: "Overview",
   "agent-loop-design": "Agent Loop Design",
   "tool-calling-patterns": "Tool Calling & Function Schemas",
   "multi-agent-coordination": "Multi-Agent Coordination",

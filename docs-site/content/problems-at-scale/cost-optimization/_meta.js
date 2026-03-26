@@ -1,4 +1,4 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "storage-bloat": "Storage Bloat",
 }

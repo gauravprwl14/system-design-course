@@ -19,6 +19,15 @@ graph TD
     KMS --> HASH
 ```
 
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [Authentication at Scale](concepts/authentication-at-scale) | Understand authentication and basic encryption |
+| 🟡 Mid-level | [OAuth2 & OIDC Deep Dive](concepts/oauth2-oidc-deep-dive) | Implement secure auth patterns |
+| 🔴 Senior / TL | [Zero-Trust Architecture](concepts/zero-trust-architecture) | Design security architecture at scale |
+| 🏆 Interview prepping | [Security Quick Reference](../../12-interview-prep/quick-reference/security) | Security & encryption interview patterns |
+
 ## What You'll Learn
 
 - **Concepts**: OAuth2/OIDC, zero-trust, mTLS, secret management, DDoS protection
@@ -33,11 +42,14 @@ graph TD
 
 ## Topic Map
 
-| Topic | Concepts | Hands-On | Interview Prep |
-|-------|----------|----------|----------------|
-| Auth at scale | [authentication-at-scale](/08-security/concepts/authentication-at-scale), [oauth2-oidc-deep-dive](/08-security/concepts/oauth2-oidc-deep-dive) | [jwt-authentication](/08-security/hands-on/jwt-authentication), [oauth-flows](/08-security/hands-on/oauth-flows) | [jwt-vs-session](/12-interview-prep/quick-reference/security/jwt-vs-session) |
-| RBAC | — | [rbac-implementation](/08-security/hands-on/rbac-implementation) | — |
-| Session management | — | [redis-session-management](/03-redis/hands-on/redis-session-management) | [jwt-vs-session](/12-interview-prep/quick-reference/security/jwt-vs-session) |
-| API key management | [secret-management](/08-security/concepts/secret-management) | [api-key-management](/07-api-design/hands-on/api-key-management) | — |
-| Hashing vs encryption | [encryption-at-rest](/08-security/concepts/encryption-at-rest) | — | [hashing-vs-encryption](/12-interview-prep/quick-reference/security/hashing-vs-encryption) |
-| TLS/certificates | [mtls-certificate-management](/08-security/concepts/mtls-certificate-management) | — | [mitm-prevention](/12-interview-prep/quick-reference/security/mitm-prevention), [rsa-vs-aes](/12-interview-prep/quick-reference/security/rsa-vs-aes) |
+| Topic | 📖 Concept | 🔬 Hands-On | 🎯 Interview |
+|-------|-----------|------------|-------------|
+| Authentication at scale | [authentication-at-scale](concepts/authentication-at-scale) | [jwt-authentication](hands-on/jwt-authentication), [oauth-flows](hands-on/oauth-flows) | [jwt-vs-session](../../12-interview-prep/quick-reference/security/jwt-vs-session) |
+| OAuth2 & OIDC | [oauth2-oidc-deep-dive](concepts/oauth2-oidc-deep-dive) | [oauth-flows](hands-on/oauth-flows) | [jwt-vs-session](../../12-interview-prep/quick-reference/security/jwt-vs-session) |
+| Zero-trust architecture | [zero-trust-architecture](concepts/zero-trust-architecture) | — | — |
+| RBAC | — | [rbac-implementation](hands-on/rbac-implementation) | — |
+| Secret management | [secret-management](concepts/secret-management) | — | — |
+| DDoS protection | [ddos-protection](concepts/ddos-protection) | — | — |
+| mTLS & certificates | [mtls-certificate-management](concepts/mtls-certificate-management) | — | [mitm-prevention](../../12-interview-prep/quick-reference/security/mitm-prevention), [rsa-vs-aes](../../12-interview-prep/quick-reference/security/rsa-vs-aes) |
+| Encryption at rest | [encryption-at-rest](concepts/encryption-at-rest) | — | [hashing-vs-encryption](../../12-interview-prep/quick-reference/security/hashing-vs-encryption) |
+| Compliance architecture | [compliance-architecture](concepts/compliance-architecture) | — | — |

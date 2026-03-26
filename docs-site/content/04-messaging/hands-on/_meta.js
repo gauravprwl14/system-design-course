@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "kafka-basics-producer-consumer": "Kafka Basics: Producer & Consumer",
   "kafka-consumer-groups-load-balancing": "Kafka Consumer Groups & Load Balancing",
   "kafka-exactly-once-semantics": "Kafka Exactly-Once Semantics",

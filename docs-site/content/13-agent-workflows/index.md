@@ -4,6 +4,18 @@ title: AI Agent Workflows
 
 # AI Agent Workflows
 
+## Your Learning Path
+
+Start at Stage 1 and work forward. Each stage builds on the previous.
+
+| Stage | What You'll Build | Key Articles | Est. Time |
+|-------|------------------|--------------|-----------|
+| 🟢 Stage 1 — Build Your First Agent | A working tool-calling agent with memory | [From Zero to Production Agent](./concepts/from-zero-to-production-agent), [What is an AI Agent?](./concepts/what-is-an-agent), [ReAct Pattern](./concepts/react-pattern), [Tool Use](./concepts/tool-use-function-calling) + [Hands-On basics](./hands-on) | 2–3 hrs |
+| 🟡 Stage 2 — Scale It | Multi-agent system with observability and cost control | [Multi-Agent Systems](./concepts/multi-agent-systems), [RAG Deep Dive](./concepts/rag-deep-dive), [Agent Observability](./concepts/agent-observability), [Cost Control](./concepts/cost-control-agents) + [Platforms](./platforms) | 8–10 hrs |
+| 🔴 Stage 3 — Interview Ready | Answer any LLM system design question with confidence | [Interview Q&A](./interview) + [Case Studies](./case-studies) | 3–4 hrs |
+
+---
+
 AI agents are the next evolution beyond plain LLM calls. Instead of a single prompt → response, an agent runs a loop: it reasons, picks a tool, executes it, sees the result, and keeps going until the task is done. This section teaches you how to design, build, evaluate, and operate agents in production.
 
 ```mermaid
@@ -53,6 +65,7 @@ Concepts → Hands-On → Platforms → Failure Modes
 | [🛠️ Platforms](/13-agent-workflows/platforms) | LangChain, LangGraph, AutoGen, CrewAI, Claude API deep-dives | 🟡 → ⚫ |
 | [⚠️ Failure Modes](/13-agent-workflows/failures) | What breaks in production agents and how to fix it | 🔴 → ⚫ |
 | [📋 Case Studies](/13-agent-workflows/case-studies) | OpenClaw production architecture analysed end-to-end; domain adaptation guide | 🔴 → ⚫ |
+| [🎯 Interview Q&A](./interview) | AI agent system design interview questions: agent loop, RAG, multi-agent, prompt injection | 🟡 → 🔴 |
 
 ## Concepts at a Glance
 

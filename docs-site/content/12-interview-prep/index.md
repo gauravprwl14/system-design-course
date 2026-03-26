@@ -2,6 +2,25 @@
 
 Structured preparation for system design interviews at top tech companies. This section contains 33+ real interview questions with detailed answers and quick-reference sheets.
 
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [Fundamentals](./system-design/fundamentals) | Core concepts: API, caching, rate limiting |
+| 🟡 Mid-level | [Storage & DBs](./system-design/storage-and-databases), [Messaging](./system-design/messaging-and-streaming) | Medium-scale systems |
+| 🔴 Senior / TL | [Scale & Reliability](./system-design/scale-and-reliability), [Business & Advanced](./system-design/business-and-advanced) | High-scale, multi-region |
+| 🤖 Building AI | [AI Agents & LLM Systems](./system-design/ai-and-agents) | Agent loop, RAG, multi-agent coordination |
+| 🏆 Staff/Architect | [Real-Time Systems](./system-design/real-time-systems) | Full system mastery |
+
+## Quick Navigation by Level
+
+| Level | Start Here | Goal |
+|-------|-----------|------|
+| 🟢 Junior | [Fundamentals](/12-interview-prep/system-design/fundamentals) | Understand core concepts: API design, caching, rate limiting |
+| 🟡 Mid-level | [Storage & Databases](/12-interview-prep/system-design/storage-and-databases), [Messaging](/12-interview-prep/system-design/messaging-and-streaming) | Design medium-scale systems with queues and databases |
+| 🔴 Senior | [Scale & Reliability](/12-interview-prep/system-design/scale-and-reliability), [Real-Time](/12-interview-prep/system-design/real-time-systems) | Design high-scale, multi-region systems |
+| 🏆 Staff/Architect | [Senior Engineer Questions](/12-interview-prep/senior-questions) | Full system design mastery: distributed transactions, SLA design, architectural trade-offs |
+
 ```mermaid
 graph TD
     IP[Interview Prep]

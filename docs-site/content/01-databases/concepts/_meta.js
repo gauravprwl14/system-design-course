@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "replication-basics": "Replication Basics",
   "read-replicas": "Read Replicas",
   "sharding-strategies": "Sharding Strategies",
@@ -7,7 +7,8 @@ export default {
   "indexing-deep-dive": "Indexing Deep Dive",
   "data-archival-strategies": "Data Archival Strategies",
   "mvcc-concurrency-control": "MVCC & Concurrency Control",
-  "write-ahead-logging": "Write-Ahead Logging",
+  "write-ahead-log": "Write-Ahead Log (WAL) ★",
+  "write-ahead-logging": "Write-Ahead Logging (Staff+)",
   "connection-pooling-deep-dive": "Connection Pooling Deep Dive",
   "distributed-transactions": "Distributed Transactions",
   "zero-downtime-migrations": "Zero-Downtime Migrations",

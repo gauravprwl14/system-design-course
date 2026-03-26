@@ -13,6 +13,15 @@ graph TD
     GRPC --> BE
 ```
 
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [rest-graphql-grpc](./concepts/rest-graphql-grpc) | Understand API paradigm trade-offs |
+| 🟡 Mid-level | [idempotency](./concepts/idempotency) + [api-versioning-strategies](./concepts/api-versioning-strategies) | Build reliable, evolvable APIs |
+| 🔴 Senior / TL | [api-gateway-deep-dive](./concepts/api-gateway-deep-dive) + [failures](./failures) | API design at scale: gateways, failures, security |
+| 🏆 Interview prepping | [fundamentals questions](../../12-interview-prep/system-design/fundamentals) | API design interview patterns |
+
 ## What You'll Learn
 
 - **Concepts**: REST vs GraphQL vs gRPC, idempotency, pagination, API gateways
@@ -28,10 +37,16 @@ graph TD
 
 ## Topic Map
 
-| Topic | Concepts | Hands-On | Problems at Scale | Interview Prep |
-|-------|----------|----------|-------------------|----------------|
-| Protocol selection | [rest-graphql-grpc](/07-api-design/concepts/rest-graphql-grpc) | [rest-api-best-practices](/07-api-design/hands-on/rest-api-best-practices), [graphql-server-implementation](/07-api-design/hands-on/graphql-server-implementation), [grpc-protocol-buffers](/07-api-design/hands-on/grpc-protocol-buffers) | — | [api-design-rest-graphql-grpc](/12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc) |
-| Rate limiting | [rate-limiting](/07-api-design/concepts/rate-limiting) | [rate-limiting-algorithms](/07-api-design/hands-on/rate-limiting-algorithms), [api-gateway-rate-limiting](/07-api-design/hands-on/api-gateway-rate-limiting) | — | [rate-limiting](/12-interview-prep/system-design/fundamentals/rate-limiting) |
-| Idempotency | [idempotency](/07-api-design/concepts/idempotency) | [idempotency-keys](/07-api-design/hands-on/idempotency-keys) | — | — |
-| API gateway | [api-gateway-deep-dive](/07-api-design/concepts/api-gateway-deep-dive) | [api-gateway-rate-limiting](/07-api-design/hands-on/api-gateway-rate-limiting), [api-key-management](/07-api-design/hands-on/api-key-management) | — | [api-gateway-pattern](/12-interview-prep/system-design/fundamentals/api-gateway-pattern) |
-| Versioning | [api-versioning-strategies](/07-api-design/concepts/api-versioning-strategies) | [api-versioning-strategies](/07-api-design/hands-on/api-versioning-strategies) | — | — |
+| Topic | 📖 Concept | 🔬 Hands-On | ⚠️ Failures | 🎯 Interview |
+|-------|-----------|------------|------------|-------------|
+| Protocol selection | [rest-graphql-grpc](./concepts/rest-graphql-grpc) | [rest-api-best-practices](./hands-on/rest-api-best-practices), [graphql-server-implementation](./hands-on/graphql-server-implementation), [grpc-protocol-buffers](./hands-on/grpc-protocol-buffers) | — | [api-design-rest-graphql-grpc](../../12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc) |
+| Rate limiting | [rate-limiting](./concepts/rate-limiting) | [api-gateway-rate-limiting](./hands-on/api-gateway-rate-limiting) | — | [rate-limiting](../../12-interview-prep/system-design/fundamentals/rate-limiting) |
+| Idempotency | [idempotency](./concepts/idempotency) | [idempotency-keys](./hands-on/idempotency-keys) | — | — |
+| API gateway | [api-gateway-deep-dive](./concepts/api-gateway-deep-dive) | [api-gateway-rate-limiting](./hands-on/api-gateway-rate-limiting), [api-key-management](./hands-on/api-key-management) | — | [api-gateway-pattern](../../12-interview-prep/system-design/fundamentals/api-gateway-pattern) |
+| Versioning | [api-versioning-strategies](./concepts/api-versioning-strategies) | [api-versioning-strategies](./hands-on/api-versioning-strategies) | — | — |
+| Pagination | [pagination-strategies](./concepts/pagination-strategies) | — | — | — |
+| Webhooks | [webhook-design](./concepts/webhook-design) | — | — | — |
+| Realtime APIs | [realtime-api-patterns](./concepts/realtime-api-patterns) | — | — | — |
+| gRPC patterns | [grpc-design-patterns](./concepts/grpc-design-patterns) | [grpc-protocol-buffers](./hands-on/grpc-protocol-buffers) | — | — |
+| GraphQL at scale | [graphql-production-patterns](./concepts/graphql-production-patterns) | [graphql-server-implementation](./hands-on/graphql-server-implementation) | — | — |
+| API key management | — | [api-key-management](./hands-on/api-key-management) | — | — |

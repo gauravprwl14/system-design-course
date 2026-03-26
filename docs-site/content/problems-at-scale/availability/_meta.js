@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "cascading-failures": "Cascading Failures",
   "thundering-herd": "Thundering Herd / Cache Stampede",
   "retry-storm": "Retry Storm",

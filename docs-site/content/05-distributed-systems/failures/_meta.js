@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "counter-race": "Counter Race Condition",
   "double-booking": "Double Booking",
   "double-charge-payment": "Double Charge in Payments",

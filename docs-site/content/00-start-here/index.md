@@ -1,19 +1,13 @@
 # Start Here
 
-Welcome to the System Design Knowledge Base — a practical, implementation-focused resource for software engineers preparing for system design interviews or leveling up their distributed systems knowledge.
+New to the knowledge base? The **[home page](../)** routes you to the right place based on your role and goal.
 
-```mermaid
-graph TD
-    Start([Where are you?])
-    Start --> NEW[New to System Design\nStart at 01-databases]
-    Start --> INT[Interview Tomorrow\nGo to Cheat Sheets + Interview Prep]
-    Start --> PROD[Building Production Systems\nJump to the relevant topic]
-    Start --> PREP[Long-term Prep\nFollow the full course 01-12]
-    NEW --> DB[01-databases → 02-caching\n→ 03-redis → 04-messaging]
-    INT --> CS[Cheat Sheets\n7 scannable reference sheets]
-    INT --> IP[12-interview-prep\n43 real FAANG questions]
-    PREP --> ALL[Complete 12-section path\nConcepts + Hands-On + Failures]
-```
+If you want a structured week-by-week study plan, see **[Learning Paths](./learning-paths)**.
+
+## Quick Links
+
+- [Learning Paths](./learning-paths) — 3 structured paths: Beginner (4-6 weeks), Interview Prep (2-3 weeks), Deep Diver
+- [Back-of-Envelope Estimation](./back-of-envelope) — Key numbers every engineer should memorize
 
 ## What's Inside
 
@@ -41,10 +35,3 @@ Each section has three sub-sections:
 - **Hands-On** — working code you can run
 - **Failures** — real production disasters and how to prevent them
 
-## Choose Your Path
-
-See [Learning Paths](/00-start-here/learning-paths) for structured study plans based on your goal.
-
-## Key Numbers to Memorize
-
-See [Back-of-Envelope Estimation](/00-start-here/back-of-envelope) for the numbers every engineer should know.

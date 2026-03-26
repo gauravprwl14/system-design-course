@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "database-replication": "🟡 Database Replication",
   "database-sharding": "🔴 Database Sharding",
   "database-indexing-deep-dive": "🔴 Database Indexing Deep Dive",

@@ -17,6 +17,26 @@ graph LR
     RR --> LLM[LLM Context\nRAG answer]
 ```
 
+## Navigate by Role
+
+| I am... | Start here | Goal |
+|---------|-----------|------|
+| 🟢 Junior | [Embeddings](./concepts/embeddings) | Understand what vector databases are and why they matter |
+| 🟡 Mid-level | [Hybrid Search](./concepts/hybrid-search) | Build RAG pipelines with vector search |
+| 🔴 Senior / TL | [Vector DB Comparison](./concepts/vector-db-comparison) + [failures](./failures) | Design vector DB systems at scale |
+| 🏆 Interview prepping | [AI Agents Interview Q&A](../../13-agent-workflows/interview) | RAG architecture is the most common AI interview question |
+
+## Topic Map
+
+| Topic | 📖 Concept | 🔬 Hands-On | ⚠️ Failures |
+|-------|-----------|------------|------------|
+| Embeddings | [Embeddings](./concepts/embeddings) | [Embedding Ingestion Pipeline](./hands-on/embedding-pipeline) | [Embedding Model Drift](./failures/embedding-drift) |
+| Vector Indexing | [Vector Index Algorithms](./concepts/vector-index) | [Similarity Search from Scratch](./hands-on/similarity-search-poc) | [Index Staleness & Write Amplification](./failures/index-staleness) |
+| Similarity Search | [Similarity Search](./concepts/similarity-search) | [Similarity Search from Scratch](./hands-on/similarity-search-poc) | [Silent Retrieval Quality Degradation](./failures/retrieval-quality-degradation) |
+| Hybrid Search | [Hybrid Search](./concepts/hybrid-search) | [Hybrid Search (BM25 + Vector)](./hands-on/hybrid-search-poc) | — |
+| Reranking | [Reranking](./concepts/reranking) | — | — |
+| DB Choice | [Vector DB Comparison](./concepts/vector-db-comparison) | [pgvector Setup](./hands-on/pgvector-setup) | [Vector DB Scaling Failures](./failures/vector-db-scaling-failures) |
+
 ## What Is a Vector Database?
 
 A vector database stores, indexes, and queries **dense float vectors** (embeddings). Each embedding is a fixed-length array of floats — typically 768 to 3072 dimensions — that encodes the semantic meaning of a piece of data (text, image, audio, code).

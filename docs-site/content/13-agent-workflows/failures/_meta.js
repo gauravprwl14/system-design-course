@@ -1,5 +1,5 @@
 export default {
-  "overview": "Overview",
+  index: "Overview",
   "tool-call-failures": "Tool Call Failures",
   "hallucination-in-agents": "Hallucination in Agents",
   "context-overflow": "Context Window Overflow",
