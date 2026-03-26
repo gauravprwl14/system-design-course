@@ -1,0 +1,14 @@
+export default {
+  "cap-theorem-real-world": "CAP Theorem",
+  "consensus-algorithms": "Consensus Algorithms",
+  "distributed-transactions": "Distributed Transactions",
+  "event-sourcing-cqrs": "Event Sourcing & CQRS",
+  "saga-pattern": "Saga Pattern",
+  "leader-election": "Leader Election",
+  "clock-synchronization": "Clock Synchronization",
+  "partition-tolerance": "Partition Tolerance",
+  "gossip-protocol": "Gossip Protocol",
+  "vector-clocks": "Vector Clocks",
+  "two-phase-commit": "Two-Phase Commit",
+  "idempotency-at-scale": "Idempotency at Scale",
+}
