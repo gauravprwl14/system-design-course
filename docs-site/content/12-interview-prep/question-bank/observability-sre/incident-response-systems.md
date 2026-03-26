@@ -3,400 +3,479 @@ title: "Incident Response Systems"
 layer: interview-q
 section: interview-prep/question-bank/observability-sre
 difficulty: advanced
-tags: [sre, incident-response, postmortem, chaos-engineering, reliability]
+tags: [sre, incident-response, on-call, postmortem, chaos-engineering, pagerduty]
 ---
 
 # Incident Response Systems
 
-6 questions covering incident response from severity definitions to PagerDuty's intelligent noise reduction at 10M alerts/month.
+6 questions covering incident response from P0-P4 severity definitions to PagerDuty's ML-based alert routing at 10M alerts/month.
 
 ---
 
-## Q1: What are incident severity levels P0–P4 and what defines each?
+## Q1: What are incident severity levels P0–P4 and what are the response time SLAs for each?
 
 **Role:** Junior, Mid | **Difficulty:** 🟢 | **Priority:** P0 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you have a framework for severity classification and can articulate what factors determine severity — user impact, scope, revenue loss, and reversibility.
+> **What the interviewer is testing:** Whether you understand the incident classification framework and can apply it to determine appropriate response urgency.
 
 ### Answer in 60 seconds
-- **P0 — Critical / All Hands:** Complete service outage or data loss in progress. Revenue directly impacted. Affects 100% of users or all paying customers. Requires immediate response (<5 minutes). Examples: payment processing down, data breach in progress, complete website outage. Response: all senior engineers + management notified, war room opened immediately.
-- **P1 — High:** Major functionality broken. Significant user impact (>10% of users). Core user flow degraded (checkout slow, not broken). Revenue at risk. Response time: <15 minutes. Examples: checkout p99 > 10s, search returning no results, login rate failing 5%.
-- **P2 — Medium:** Partial impact, significant degradation but workaround exists. <10% of users affected. Non-core functionality. Response time: <1 hour. Examples: push notifications delayed by 30 minutes, image uploads failing, recommendation engine down (manual fallback available).
-- **P3 — Low:** Minor issue, minimal user impact. Cosmetic bug, single-user report, non-critical degradation. Response time: next business day. Examples: incorrect text on error page, one user's export failing, analytics dashboard delayed.
-- **P4 — Informational:** No user impact. Operational concern or technical debt. Scheduled maintenance, performance trend to investigate. Response time: next sprint planning.
+- **P0 — Critical:** Complete service outage or data breach. All users affected. Revenue loss actively occurring. Example: payment service down, authentication broken for all users, production database corruption.
+  - Response time: Page on-call immediately, acknowledge in < 5 minutes, start mitigation within 15 minutes
+  - Communication: Status page update within 10 minutes, stakeholder notification within 15 minutes
+- **P1 — Major:** Significant degradation affecting a majority of users or a critical feature. Example: checkout 50% error rate, login works but is 30 seconds slow, a major region down.
+  - Response time: Page on-call, acknowledge in < 15 minutes, start mitigation within 30 minutes
+- **P2 — Minor:** Partial feature degradation affecting a subset of users or non-critical path. Example: search slow but functional, a non-core feature returning errors.
+  - Response time: Notify team via Slack, next business hours response acceptable
+- **P3 — Low:** Cosmetic or minor issues. Example: dashboard chart wrong, non-critical API returning deprecated field.
+  - Response time: Ticket created, addressed in next sprint
+- **P4 — Informational:** Monitoring anomaly worth tracking but no user impact. Example: unusually high GC pause, disk at 70% (threshold is 85%).
+  - Response time: Logged, reviewed in weekly reliability meeting
 
 ### Diagram
 
 ```mermaid
 graph TD
-  Classification["Severity Classification Matrix"]
+  subgraph Severity["Incident Severity Framework"]
+    P0["P0 — CRITICAL\nComplete outage / data breach\nAll users affected\nResponse: page immediately\nAcknowledge < 5 min\nMitigate < 15 min"]
+    P1["P1 — MAJOR\nMajority of users affected\nCritical feature broken\nResponse: page on-call\nAcknowledge < 15 min"]
+    P2["P2 — MINOR\nSubset of users affected\nNon-critical path\nResponse: Slack notification\nAddress in business hours"]
+    P3["P3 — LOW\nCosmetic issue\nNo functional impact\nResponse: ticket\nNext sprint"]
+    P4["P4 — INFO\nAnomaly, no user impact\nResponse: log it\nWeekly review"]
+  end
 
-  P0["P0 — Critical\nTrigger: 100% service down OR data loss\nUser impact: All users\nRevenue: Direct loss\nResponse: <5 minutes, wake anyone up\nExamples: Database corruption, full outage"]
-
-  P1["P1 — High\nTrigger: Core flow degraded >10% users\nRevenue: At risk\nResponse: <15 minutes\nExamples: Checkout slow, login failures 5%"]
-
-  P2["P2 — Medium\nTrigger: <10% users, workaround exists\nRevenue: Indirect\nResponse: <1 hour\nExamples: Push notifications delayed"]
-
-  P3["P3 — Low\nTrigger: <1% users, cosmetic or single-user\nRevenue: None\nResponse: Next business day"]
-
-  P4["P4 — Info\nNo user impact\nResponse: Next sprint"]
-
-  Classification --> P0 & P1 & P2 & P3 & P4
+  P0 --> P1 --> P2 --> P3 --> P4
 
   style P0 fill:#f88,stroke:#900
-  style P1 fill:#f44,stroke:#c00
-  style P2 fill:#ff8,stroke:#990
-  style P3 fill:#88f,stroke:#009
-  style P4 fill:#8f8,stroke:#090
+  style P1 fill:#fa8,stroke:#a60
+  style P2 fill:#ff8,stroke:#880
+  style P3 fill:#8f8,stroke:#090
+  style P4 fill:#aaf,stroke:#009
+```
+
+### Severity Decision Tree
+
+```mermaid
+graph TD
+  Q1{"Is there user-visible impact?"}
+  Q1 -->|No| P4["P4 — Monitor"]
+  Q1 -->|Yes| Q2{"What fraction of users?"}
+  Q2 -->|"< 5%"| Q3{"Is it a critical path?"}
+  Q2 -->|"5-50%"| P2["P2 — Minor"]
+  Q2 -->|"> 50%"| Q4{"Revenue impact?"}
+  Q3 -->|No| P3["P3 — Low"]
+  Q3 -->|Yes| P2
+  Q4 -->|No| P1["P1 — Major"]
+  Q4 -->|Yes| P0["P0 — Critical"]
 ```
 
 ### Pitfalls
-- ❌ **Severity set by gut feeling rather than criteria:** Without documented criteria, severity is politically determined ("whoever shouts loudest makes it P0"). Define criteria per service: specific error rate thresholds, latency thresholds, user impact percentages.
-- ❌ **P0 for every customer complaint:** A single VIP customer reporting an issue is not P0 unless they represent all paying customers. Severity is based on scope and user impact, not customer tier (customer tier affects *response priority*, not *severity*).
-- ❌ **Not down-grading severity as situation improves:** An incident declared P0 (complete outage) that is partially mitigated (50% of traffic restored) should be down-graded to P1. Not updating severity creates alert fatigue when the same P0 alert rings for 6 hours after partial recovery.
+- ❌ **Everything is P1:** If teams over-escalate every issue to P1, on-call responders treat all alerts equally — including genuine P0s. Calibrate severity classifications with real examples documented in the runbook.
+- ❌ **Not having a P4/informational tier:** Without a low-urgency tier, engineers either ignore genuinely important signals (high GC pauses) or escalate them inappropriately. P4 provides a formal channel for "watch this" items.
+- ❌ **Severity set by the reporter not the impact:** "The CEO's dashboard is broken" is not automatically P0. Apply the severity criteria consistently. If the CEO's dashboard is non-critical and cosmetic, it's P3.
 
 ### Concept Reference
-→ [Incident Response](../../../09-observability/concepts/incident-response)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
-## Q2: What is the incident commander role and why does a single person coordinate?
+## Q2: What is the incident commander role and why does one person need to coordinate?
 
 **Role:** Mid | **Difficulty:** 🟡 | **Priority:** P0 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you understand the ICS (Incident Command System) coordination principle and why single-commander structure prevents the chaos of multiple people trying to fix the same thing simultaneously.
+> **What the interviewer is testing:** Whether you understand the organizational dynamics of P0 incident response and why a single coordinator is essential.
 
 ### Answer in 60 seconds
-- **Incident commander (IC) role:** A single person who owns the incident response process — not necessarily the most technical person. The IC: (1) declares incident severity, (2) establishes communication channel (Slack war room, Zoom bridge), (3) assigns roles (lead engineer, communications lead, scribe), (4) tracks action items and owners, (5) makes decisions when there's disagreement, (6) controls the communication cadence to stakeholders.
-- **Why single coordinator:** Without an IC, every engineer works independently — two people make the same change simultaneously, causing worse degradation. Someone is applying a hotfix while another is rolling back. Communication is fragmented (5 Slack threads, no single status update). Stakeholders email 10 different people asking for status. The IC prevents this fragmentation.
-- **Separation of duties:** IC does NOT fix the incident — that's the lead engineer's job. IC manages the process while the technical team focuses entirely on resolution. This prevents the "I'm trying to fix the DB AND update the CEO at the same time" cognitive overload.
-- **ICS origin:** Borrowed from firefighting incident command structure. Proven at scale (NASA, military). Google adapted it for software incidents. Atlassian, PagerDuty, and most SRE-mature organisations use IC structure formally.
-- **On-call rotation:** The IC role rotates separately from the technical on-call rotation. Any senior engineer can be IC — they don't need deep expertise in the failing system.
+- **Incident Commander (IC):** A single person who takes command of a P0 incident response. Owns coordination, not technical fixing. The IC does NOT debug the system — they ensure the right people are working on the right things.
+- **Responsibilities:**
+  - Maintain the incident timeline and status updates
+  - Assign roles: technical lead (debugging), comms lead (status page, stakeholders), scribe (notes)
+  - Make decisions when the team is stuck or disagrees
+  - Time-box actions: "We have 10 minutes to diagnose, then we roll back regardless"
+  - Declare incident resolved and trigger postmortem
+- **Why one person coordinates:** In a crisis, multiple engineers will independently pull in different directions — one debugging DB, another restarting services, a third deploying a fix. Without a coordinator, these actions conflict (restarting services while someone is taking a DB dump invalidates the dump). The IC serializes decision-making.
+- **IC is not the most senior engineer:** The IC should be someone trained in incident coordination, not necessarily the domain expert. The domain expert should be debugging, not coordinating.
+- **Rotation:** IC role rotates monthly among senior engineers. Requires specific training (incident command system, ICS).
 
 ### Diagram
 
 ```mermaid
 graph TD
-  IC["INCIDENT COMMANDER\nOwns the process\nNOT the technical fix\nSingle point of coordination"]
+  subgraph IncidentRoom["P0 War Room — Roles"]
+    IC["Incident Commander\nCoordinates, makes decisions\nDoes NOT debug\nOwns: timeline, status, next actions"]
+    TL["Technical Lead\nDebugs the system\nReports findings to IC\nProposes mitigation options"]
+    Comms["Comms Lead\nUpdates status page every 15min\nNotifies affected customers\nBriefs leadership"]
+    Scribe["Scribe\nLogs all actions in incident doc\nTimestamps every decision\nBuilds postmortem timeline"]
 
-  IC --> LE["Lead Engineer\n(most expert in failing system)\nFocuses 100% on technical diagnosis + fix\nNo stakeholder communication"]
+    IC --> TL
+    IC --> Comms
+    IC --> Scribe
+  end
 
-  IC --> CL["Communications Lead\nUpdates status page\nUpdates management every 15 minutes\nAnswers Slack questions so engineers aren't interrupted"]
+  subgraph Without["Without IC — Chaos"]
+    Eng1["Engineer 1: restarting pods"]
+    Eng2["Engineer 2: taking DB dump for analysis"]
+    Eng3["Engineer 3: deploying hotfix"]
+    Conflict["All three conflict:\nhotfix hits restarting pods\nDB dump invalidated by restart\nNo one knows current state"]
+    Eng1 --> Conflict
+    Eng2 --> Conflict
+    Eng3 --> Conflict
+  end
 
-  IC --> SC["Scribe\nLogs all actions + timestamps in incident doc\n'10:15 - restarted pod X, no effect'\n'10:22 - rolled back to v1.2.3'"]
-
-  IC --> SM["Subject Matter Experts\nCalled in as needed for specific systems\n(DB admin, network, security)\nDismissed when their part is done"]
-
-  IC --> Status["Stakeholder Updates\nEvery 15 minutes: 'Still investigating, next update at XX:XX'\nPrevents stakeholders emailing engineers directly"]
+  style IC fill:#8f8,stroke:#090
+  style Conflict fill:#f88,stroke:#900
 ```
 
 ### Pitfalls
-- ❌ **IC trying to fix the incident:** An IC who is also hands-on-keyboard cannot simultaneously track the full situation. The IC must maintain situational awareness — they should not be typing commands.
-- ❌ **No IC declared for P0/P1 incidents:** "Everyone just join the Zoom and figure it out" leads to 45 minutes of confusion before anyone realises two engineers are making conflicting changes. Declare an IC within the first 5 minutes of a P0.
-- ❌ **IC with insufficient authority:** If the IC suggests rolling back a deploy and the engineer says "I need VP approval first," the IC is ineffective. IC must have delegated authority to make time-critical decisions during the incident. Document this authority in the incident response playbook.
+- ❌ **IC also debugging:** An IC debugging the system stops coordinating — no one tracks the timeline, no status page updates, handoffs are missed. IC must focus exclusively on coordination.
+- ❌ **No IC role in small teams:** "We're a 5-person team, we don't need an IC" — you do. Even with 2 engineers on call, one coordinates (IC) and one debugs. Coordination overhead is worth it for P0s.
+- ❌ **IC making technical decisions unilaterally:** IC is not a dictator. For significant decisions (rollback vs hotfix), IC seeks technical lead input, time-boxes the discussion (5 minutes), then makes the call. Unilateral decisions without technical input cause wrong choices.
 
 ### Concept Reference
-→ [Incident Response](../../../09-observability/concepts/incident-response)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
-## Q3: What is a blameless postmortem and how do you run one effectively?
+## Q3: What makes a blameless postmortem effective — 5-whys, timeline, and action items?
 
 **Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Deep Dive
 
-> **What the interviewer is testing:** Whether you understand the psychological safety principles behind blameless postmortems and can describe a structured process that leads to systemic improvements.
+> **What the interviewer is testing:** Whether you understand how to run postmortems that improve systems rather than assign blame, and the specific techniques (5-whys, timeline reconstruction) that make them effective.
 
 ### Problem Constraints
 | Dimension | Value |
 |-----------|-------|
-| Incident | P0: Payment service down 47 minutes |
-| Impact | 100% of checkouts failed, ~$500K revenue loss |
-| Root cause | Engineer deployed a misconfigured feature flag |
-| Context | Engineer was under pressure to ship, review was rushed |
+| Incident | Payment service P0 — 45 minutes downtime during Black Friday |
+| Impact | $2M revenue loss, 180,000 failed transactions |
+| Postmortem goal | Identify root cause, prevent recurrence — not find who to blame |
+| Postmortem deadline | Must complete within 72 hours while memory is fresh |
 
-### Wrong Approach — Blame-Based
-
-```mermaid
-graph TD
-  Wrong["Blame-based postmortem"]
-  Wrong -->|"Focus"| F1["Who made the mistake?"]
-  Wrong -->|"Outcome"| O1["Engineer disciplined\nFear of making mistakes grows\nEngineers hide mistakes\nTrue root causes hidden"]
-  Wrong -->|"Result"| R1["Same incident type recurs in 6 months\nNo systemic fix"]
-
-  style Wrong fill:#f88,stroke:#900
-```
-
-### Correct Approach — Blameless
+### Blameless Postmortem Structure
 
 ```mermaid
 graph TD
-  Right["Blameless postmortem"]
-  Right -->|"Focus"| F2["Why did the system allow this?"]
-  Right -->|"Questions"| Q1["Why was misconfiguration not caught?\nWhy could one deploy cause 100% outage?\nWhy was there pressure to rush review?\nWhat could have detected this sooner?"]
-  Right -->|"Outcome"| O2["Systemic improvements:\n- Add config validation CI check\n- Require staged rollout (1% → 10% → 100%)\n- Add feature flag monitoring alert\n- Reduce review pressure via process change"]
-  Right -->|"Result"| R2["Same incident class prevented for all engineers\nPsychological safety maintained"]
+  subgraph PM["Postmortem Document Structure"]
+    Summary["Summary\n3-5 bullet points: what happened, when, impact\nWrite last — summarizes everything below"]
+    Impact["Impact Section\nDuration: start to mitigation\nUsers affected: N%\nRevenue impact: $X\nRequests failed: N"]
+    Timeline["Timeline\nChronological: every action taken with exact timestamps\nData from: logs, metrics, Slack, PagerDuty\nWhat was happening, what was tried, what worked"]
+    Root["Root Cause Analysis\n5-Whys drill-down\nDo not stop at the first technical cause\nFind the systemic reason it was possible"]
+    Contributing["Contributing Factors\nSecondary factors that made it worse or harder to detect\nExample: monitoring gap, runbook out of date"]
+    Actions["Action Items\nEach: description, owner (single person), due date\nMUST be specific and verifiable\nNO: improve monitoring\nYES: Add p99 latency alert for payment-svc by 2026-02-15 — @alice"]
+  end
 
-  style Right fill:#8f8,stroke:#090
+  Summary --> Impact --> Timeline --> Root --> Contributing --> Actions
 ```
 
-### Postmortem Document Structure
+### 5-Whys Example
 
 ```mermaid
 graph TD
-  Doc["Postmortem Document Template"]
+  Symptom["Symptom:\nPayment service returning 500 errors\n45 minutes, 180K transactions failed"]
 
-  S1["1. Incident Summary (2 paragraphs)\nWhat happened, impact numbers, duration"]
-  S2["2. Timeline (chronological, timestamped)\n10:15 - Alert fired\n10:17 - IC declared\n10:23 - Root cause identified\n10:45 - Mitigation applied\n11:02 - Fully recovered"]
-  S3["3. Root Cause Analysis (5-Whys)\nWhy failed? → Because config invalid\nWhy not caught? → No validation in CI\nWhy? → Never added to pipeline\nWhy? → No requirement existed\nWhy? → No postmortem from prior incident"]
-  S4["4. Contributing Factors\nTime pressure, insufficient test coverage,\nmonitoring gap, missing alert"]
-  S5["5. Action Items (with owners + deadlines)\n- [Alice] Add config validation to CI pipeline — 2 weeks\n- [Bob] Implement staged rollout for feature flags — 1 month\n- [Carol] Add feature flag error rate alert — 1 week"]
-  S6["6. Lessons Learned\nWhat did the system teach us?\n(not what individual did wrong)"]
+  W1["Why #1: Why were payment requests failing?\nPostgres connection pool exhausted\n— max_connections=100, needed 150 during peak"]
 
-  Doc --> S1 & S2 & S3 & S4 & S5 & S6
+  W2["Why #2: Why was max_connections=100 insufficient?\nBlack Friday traffic 2x normal\n— connection pool sized for normal load, not peak"]
+
+  W3["Why #3: Why wasn't connection pool sized for peak?\nCapacity planning used average traffic\n— no Black Friday load model existed"]
+
+  W4["Why #4: Why was there no Black Friday load model?\nNo process to create pre-event capacity plans\n— capacity review was ad-hoc, not scheduled"]
+
+  W5["Why #5: Why was capacity review ad-hoc?\nNo SRE ownership of pre-event readiness\n— responsibility was unclear between SRE and product"]
+
+  RootCause["Root Cause:\nNo process for pre-event capacity planning\nand unclear ownership between SRE and product\n(NOT: engineer forgot to increase connection pool)"]
+
+  Symptom --> W1 --> W2 --> W3 --> W4 --> W5 --> RootCause
+
+  style RootCause fill:#8f8,stroke:#090
 ```
+
+### Action Items That Are Effective vs Ineffective
+
+| Ineffective | Effective |
+|-------------|-----------|
+| "Improve monitoring" | "Add PagerDuty alert for connection pool > 80% capacity by 2026-02-15 — @alice" |
+| "Better capacity planning" | "Create pre-event load model template and schedule capacity review 2 weeks before any major event by 2026-03-01 — @bob" |
+| "Fix the connection pool" | "Increase max_connections to 500 and enable PgBouncer connection pooling by 2026-01-30 — @charlie" |
+| "Train the team" | "Add Black Friday runbook to on-call guide by 2026-02-01 — @dave" |
+
+### What a great answer includes
+- [ ] Blameless means: root cause is systemic, not personal — "the system allowed this to happen" not "alice misconfigured this"
+- [ ] 5-whys: drill past first technical cause to find systemic process failure
+- [ ] Timeline: exact timestamps, every action taken, built from logs and Slack — not from memory
+- [ ] Action items: specific, assigned to one person, have due dates, are verifiable
+- [ ] 72-hour deadline: postmortem while memory is fresh; key detail is forgotten after 1 week
 
 ### Pitfalls
-- ❌ **Blameless postmortem without real accountability:** "Blameless" does not mean "no action items." Action items should have owners, deadlines, and must be tracked to completion. Blameless = no personal blame; accountability = systemic improvements must happen.
-- ❌ **5-Whys stopping at the first "why":** "Why did the outage happen? Because the engineer deployed bad config." Stop there = blame. Continue to "Why was bad config deployable? Because CI had no validation. Why? Because nobody required it. Why? Because no postmortem from the last similar incident defined this action item." The full 5-whys reveals the systemic gap.
-- ❌ **Action items with no owner or no deadline:** "We should add better monitoring" → never happens. Every action item must have: exactly one owner (not "the team"), a specific deadline (not "soon"), and a defined completion criterion ("alert created and tested" not "look into alerting").
+- ❌ **Stopping 5-whys at the first technical cause:** "Root cause: connection pool too small." This leads to action "increase connection pool size" — which fixes this incident but not the underlying process failure. Keep asking why until you reach a systemic or organizational cause.
+- ❌ **Assigning action items to teams not people:** "Platform team will add monitoring" — teams have no individual accountability. Every action item needs one owner who is responsible.
+- ❌ **No follow-up on action items:** Postmortem with 10 action items, 0 completed — worse than no postmortem (false sense of learning). Assign a postmortem reviewer who checks completion at the due date.
 
 ### Concept Reference
-→ [Incident Response](../../../09-observability/concepts/incident-response)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
-## Q4: How do you respond to a P0 payment outage in the first 15 minutes?
+## Q4: Walk through a P0 payment outage — first 15 minutes step by step
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Deep Dive
+
+> **What the interviewer is testing:** Whether you know the operational playbook for a P0 incident — not just the tools, but the sequence of actions under pressure.
+
+### Problem Constraints
+| Dimension | Value |
+|-----------|-------|
+| Incident | Payment service: 100% of checkout requests returning HTTP 500 |
+| Detection | PagerDuty alert at T+0, on-call engineer paged |
+| Impact | $50K revenue/minute lost, 10K failed transactions/minute |
+| Goal | Restore service within 15 minutes |
+
+### First 15 Minutes Playbook
+
+```mermaid
+sequenceDiagram
+  participant Alert as PagerDuty Alert
+  participant OC as On-Call Engineer (IC)
+  participant Slack as #incidents Channel
+  participant Metrics as Grafana / Datadog
+  participant Logs as Kibana
+  participant Deploy as Deploy System
+  participant Status as Status Page
+
+  Note over Alert: T=0 — Alert fires: payment_error_rate = 100%
+  Alert->>OC: Page via SMS + app
+  OC->>OC: T=2m — Acknowledge alert
+  OC->>Slack: T=2m — Declare P0: payment checkout down\nI am IC — joining war room
+  OC->>Status: T=3m — Post: Investigating payment issues (no detail yet)
+
+  OC->>Metrics: T=3m — Check 4 Golden Signals
+  Metrics-->>OC: Errors: 100% | Latency: timeout | Traffic: normal | Saturation: normal CPU
+  Note over OC: Traffic normal — not a traffic spike. Error only. Suspect code or infra.
+
+  OC->>Logs: T=5m — Check payment-svc error logs last 5 minutes
+  Logs-->>OC: ERROR: connection timeout to postgres:5432
+  Note over OC: DB connectivity issue — not a code bug
+
+  OC->>Metrics: T=6m — Check DB metrics: connections, replication lag
+  Metrics-->>OC: DB connection pool: 100/100 used — POOL EXHAUSTED
+
+  OC->>Slack: T=7m — Root cause hypothesis: DB connection pool exhausted\nChecking recent deploys
+  OC->>Deploy: T=7m — Check deploys in last 2 hours
+  Deploy-->>OC: Deployment at T-35min: increased worker thread count from 50 to 200
+
+  Note over OC: T=8m — Root cause confirmed: 200 workers x 1 connection each = 200 connections needed, pool max=100
+  OC->>Slack: T=8m — Root cause: deploy at T-35min increased workers beyond connection pool capacity\nMitigation: rollback deploy
+
+  OC->>Deploy: T=9m — Initiate rollback to previous version
+  Deploy-->>OC: T=12m — Rollback complete — rolling restart done
+
+  OC->>Metrics: T=13m — Monitor error rate
+  Metrics-->>OC: T=14m — Error rate dropping: 80% → 20% → 2% → 0%
+
+  OC->>Status: T=15m — Update: payment service recovered, monitoring
+  OC->>Slack: T=15m — Incident resolved in 15 minutes. Scheduling postmortem within 48h.
+```
+
+### Decision Tree During Diagnosis
+
+```mermaid
+graph TD
+  Start["T=3m: Check 4 Golden Signals"]
+
+  TrafficSpike{"Traffic 10x normal?"}
+  Start --> TrafficSpike
+  TrafficSpike -->|Yes| ScaleOut["Scale out immediately\n(known issue — DDOS or viral)"]
+  TrafficSpike -->|No| ErrorType{"What kind of errors?"}
+
+  ErrorType -->|"Timeout to DB"| DBIssue["Check DB: connections, disk, replication lag"]
+  ErrorType -->|"OOM / crash"| MemIssue["Check pod memory, heap dumps"]
+  ErrorType -->|"503 from LB"| PodIssue["Check pod count — are pods healthy?"]
+
+  DBIssue --> RecentDeploy{"Deploy in last 2h?"}
+  RecentDeploy -->|Yes| Rollback["Rollback is fastest mitigation\nDo NOT wait for full root cause"]
+  RecentDeploy -->|No| DBFix["Scale DB connections\nor restart stuck connections"]
+```
+
+### What a great answer includes
+- [ ] Acknowledge in under 5 minutes and declare in Slack immediately
+- [ ] Status page update within 3 minutes (vague is fine — "investigating" reduces inbound support tickets)
+- [ ] Check 4 Golden Signals first to narrow the problem space quickly
+- [ ] Look at recent deploys early — most P0s are deploy-related, rollback is fastest fix
+- [ ] Prioritize mitigation over root cause: restore service first, understand why later
+
+### Pitfalls
+- ❌ **Debugging root cause before mitigating:** A 20-minute deep investigation while service is down = $1M lost. Mitigate first (rollback, scale out, circuit break), then do the postmortem.
+- ❌ **Not updating the status page for 30 minutes:** Support team gets 1,000 tickets in the first 10 minutes. A 3-minute status page update ("investigating payment issues") cuts inbound tickets by 60%.
+- ❌ **Multiple engineers debugging independently:** Without an IC declaring "we are rolling back" at T=8m, one engineer rolls back while another is deploying a hotfix — conflict causes longer outage.
+
+### Concept Reference
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
+
+---
+
+## Q5: Chaos engineering — Netflix Chaos Monkey, Gameday, blast radius control
 
 **Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you have a mental model of P0 incident response sequencing — the difference between panic-driven and structured response.
+> **What the interviewer is testing:** Whether you understand how to proactively find reliability weaknesses and the safety controls required to do it without causing customer incidents.
 
 ### Answer in 60 seconds
-- **Minute 0–2 — Declare and coordinate:**
-  - Alert fires: IC role activates (on-call engineer or first responder)
-  - Declare incident: create incident channel (#incident-payment-2026-01-01), declare severity P0
-  - Open Zoom bridge: "Payment Incident War Room"
-  - Broadcast: "P0 incident declared — payment processing impacted. IC: Alice. Please join #incident-payment-2026-01-01."
-- **Minute 2–5 — Assess impact:**
-  - Check dashboard: error rate, latency, traffic. Is it 100% outage or partial? Which regions?
-  - Check recent deployments: any deploy in last 30 minutes? (most common cause)
-  - Check dependencies: is the payment processor up? DB connections healthy?
-- **Minute 5–10 — Immediate mitigation:**
-  - If recent deploy: rollback immediately. Don't investigate — rollback first, diagnose later. A 5-minute rollback prevents 45 more minutes of investigation.
-  - Enable maintenance mode / fallback UI: "Payment temporarily unavailable, please try again shortly."
-  - Scale up if resource saturation: if DB connections exhausted, add replicas or restart connection pool.
-- **Minute 10–15 — Communication:**
-  - Update status page: "Investigating payment processing issues" — within first 10 minutes.
-  - Update executive stakeholders (CEO, CTO, VP Engineering): brief factual update.
-  - Internal Slack: "Payment P0 — impacting all checkouts. IC: Alice. Rollback in progress. Next update at T+30 minutes."
-- **Continue:** Full diagnosis after mitigation. Postmortem scheduled within 48 hours.
+- **Chaos engineering:** Intentionally injecting failures into production (or staging) to discover weaknesses before they cause real incidents. The hypothesis: if we inject failure X, the system should handle it gracefully with behavior Y.
+- **Netflix Chaos Monkey:** Randomly terminates EC2 instances in production during business hours (not nights/weekends). Forces teams to build services that tolerate instance failure automatically. If Chaos Monkey causes an incident, the team's reliability posture is exposed — they must fix it.
+- **Gameday:** A planned, controlled chaos experiment. Team chooses a failure scenario (e.g., "what happens if our primary DB fails?"), runs it in a controlled environment, observes behavior, and identifies gaps. Run quarterly or before major events.
+- **Blast radius control:** Limiting the impact of chaos experiments. Techniques: (1) traffic splitting — inject failures into 1% of traffic, monitor, expand if safe; (2) feature flags — inject failure only for internal users first; (3) time-boxing — run experiment for 5 minutes max, auto-stop on p99 spike.
+- **What to inject:** Network latency (+200ms), packet loss (5%), CPU spike (90%), disk full (95%), process kill, dependency timeout, memory leak.
 
 ### Diagram
 
 ```mermaid
-sequenceDiagram
-  participant Alert
-  participant IC as Incident Commander (Alice)
-  participant Eng as Lead Engineer (Bob)
-  participant Comm as Communications Lead (Carol)
-  participant Ext as Status Page + Executives
-
-  Alert->>IC: PagerDuty alert fires T=0
-  IC->>IC: T+1m: Declare P0, open war room
-  IC->>Eng: T+2m: Bob, assess impact — dashboard + deployments
-  IC->>Comm: T+2m: Carol, post status page: "Investigating payment issues"
-  Comm->>Ext: T+4m: Status page updated
-
-  Eng->>IC: T+5m: Recent deploy 8 min ago by Dave — likely cause
-  IC->>Eng: T+5m: Rollback now. Don't investigate first.
-  Eng->>Eng: T+6m: Initiating rollback to v2.3.1
-
-  IC->>Ext: T+10m: Executive update: "P0 payment outage. Rollback in progress. ETA 15 min."
-
-  Eng->>IC: T+12m: Rollback complete. Error rate dropping.
-  IC->>Ext: T+13m: Status page: "Payment service recovering. Monitoring."
-  IC->>Ext: T+20m: Status page: "Resolved. Payment processing restored."
-  IC->>IC: T+20m: Downgrade to P1 (monitoring phase)
-  IC->>IC: T+48h: Schedule blameless postmortem
-```
-
-### Pitfalls
-- ❌ **Investigating before mitigating:** Spending 20 minutes finding the root cause while the outage continues. If a recent deploy is likely the cause, rollback in 5 minutes — investigation can happen after recovery. "Rollback first, investigate later" is the mantra.
-- ❌ **Not updating the status page within 10 minutes:** Customers and sales teams see the outage before you do. If the status page shows "All Systems Operational" while checkout is down for 10 minutes, trust is damaged. Update immediately: "Investigating" is sufficient — you don't need the root cause to post a status update.
-- ❌ **No communication rhythm:** Without structured updates (every 15 minutes during P0), stakeholders assume the worst and interrupt engineers with questions. Pre-announce the next update time: "Next update at T+30 minutes."
-
-### Concept Reference
-→ [Incident Response](../../../09-observability/concepts/incident-response)
-
----
-
-## Q5: What is chaos engineering — Netflix GameDay, Chaos Monkey, blast radius control?
-
-**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Deep Dive
-
-> **What the interviewer is testing:** Whether you understand proactive reliability testing as a discipline, not just reactive incident response, and the safety practices that make chaos engineering safe.
-
-### Problem Constraints
-| Dimension | Value |
-|-----------|-------|
-| Netflix context | 2011 — migrating from monolith to cloud microservices |
-| Challenge | How to ensure resilience without waiting for production failures |
-| Insight | Systems fail in unexpected ways — proactive testing finds unknown unknowns |
-| Principle | Inject failures in production (controlled) before production surprises you |
-
-### Chaos Monkey and the Simian Army
-
-```mermaid
 graph TD
-  SimianArmy["Netflix Simian Army (2011+)\nA family of chaos tools"]
+  subgraph Netflix["Netflix Chaos Architecture"]
+    CM["Chaos Monkey\nRuns during business hours only\nRandomly terminates EC2 instances\nFails if service cannot recover automatically"]
 
-  CM["Chaos Monkey\n'Randomly terminates EC2 instances'\nForces teams to build auto-recovery\nRuns in production business hours\n(so teams are awake to fix it)"]
+    CM2["Chaos Kong\nTerminates entire AWS region\nTests cross-region failover\nRun quarterly — high blast radius"]
 
-  CG["Chaos Gorilla\n'Terminates entire AWS availability zones'\nTests AZ-level resilience\nRuns quarterly"]
-
-  CK["Chaos Kong\n'Simulates entire AWS region failure'\nTests cross-region failover\nRuns annually"]
-
-  LM["Latency Monkey\n'Injects random latency into service calls'\nTests timeout handling and circuit breakers"]
-
-  SimianArmy --> CM & CG & CK & LM
-```
-
-### Blast Radius Control
-
-```mermaid
-graph TD
-  Safety["Blast Radius Control Principles"]
-
-  S1["1. Start small\nRun chaos on 1% of instances first\nExpand only if no user impact detected"]
-
-  S2["2. Run during business hours\n(for most experiments)\nEngineers awake and ready to abort\nException: DR tests require off-hours for realism"]
-
-  S3["3. Have a kill switch\nAbort experiment instantly if user metrics degrade\n'SLO protection': stop chaos if error_rate > 0.5%"]
-
-  S4["4. Hypothesis first\n'We believe the service will recover within 30s\nbecause our health check triggers restart'\nMeasure: time to recovery, user impact"]
-
-  S5["5. Gradual escalation\nLevel 1: kill one instance\nLevel 2: kill one AZ\nLevel 3: kill one region\n(only after passing lower levels)"]
-
-  Safety --> S1 & S2 & S3 & S4 & S5
-```
-
-### Netflix GameDay
-
-```mermaid
-sequenceDiagram
-  participant PM as Game Day Planner
-  participant Team as Engineering Team
-  participant Chaos as Chaos Tool
-  participant Monitor as Monitoring Dashboard
-
-  PM->>Team: T-1 week: "GameDay: We will fail the recommendations service at T=14:00"
-  PM->>Team: Hypothesis: "Users will still see fallback recommendations (popular items)"
-
-  Note over Team: Teams prepare: review fallback logic, alerting, playbooks
-
-  PM->>Chaos: T=14:00: Inject failure: recommendations-svc → 100% error responses
-  Chaos->>Monitor: Error rate spike observed
-  Team->>Monitor: Observe: did fallback activate? How fast? User impact?
-
-  alt Successful (fallback worked)
-    Monitor->>PM: Fallback: 3s. User impact: 0.01% (SLO held)
-    PM->>Team: GameDay PASS — resilience verified
-  else Failed (no fallback)
-    Monitor->>PM: Users see errors. SLO violated.
-    PM->>Chaos: ABORT: kill switch triggered
-    PM->>Team: GameDay FAIL — prioritise resilience fix before next GameDay
+    Latency["Latency Injection\n+200ms to dependency calls\nTests timeout and retry behavior\nRun on 1% of requests — minimal blast radius"]
   end
+
+  subgraph Controls["Blast Radius Controls"]
+    BR1["Time-based:\nRun only 9am-5pm business hours\nTeam present to respond immediately"]
+    BR2["Traffic-based:\nInject into 1% of requests first\nExpand to 10% if metrics stay healthy"]
+    BR3["Auto-stop:\nIf p99 > 2x baseline: auto-halt experiment\nPrometheus alert triggers Chaos framework kill switch"]
+  end
+
+  Netflix --> Controls
+```
+
+```mermaid
+sequenceDiagram
+  participant Team as Engineering Team
+  participant CF as Chaos Framework
+  participant Prod as Production
+  participant Prom as Prometheus
+
+  Team->>CF: Gameday: inject DB latency +500ms to 1% of checkout traffic
+  CF->>Prod: Apply latency injection (1% traffic split)
+  Prom->>Prom: Monitoring: checkout p99 latency, error rate, DB connection pool
+  Prom-->>Team: T=2m: p99 checkout latency: 800ms (normally 200ms) — elevated but functional
+  Prom-->>Team: T=5m: error rate: 0.5% (above 0.1% threshold)
+  Team->>CF: Stop experiment — found weakness: no circuit breaker on DB calls
+  CF->>Prod: Remove latency injection
+  Team->>Team: Action: add circuit breaker with 200ms timeout to DB calls by 2026-02-01
 ```
 
 ### Pitfalls
-- ❌ **Chaos engineering without observability:** If you can't observe the impact (latency, error rate, user impact), you don't know if the chaos test succeeded. Observability must come before chaos.
-- ❌ **Running chaos in staging only:** Staging environments have different traffic patterns, data, and dependencies. Chaos results in staging don't reflect production resilience. Netflix ran Chaos Monkey in production from day one (with blast radius controls).
-- ❌ **No hypothesis:** "Let's see what breaks" is not chaos engineering — it's chaos. A hypothesis-driven experiment ("We believe X will happen; measuring Y will confirm/deny") is what distinguishes GameDay from random destruction.
+- ❌ **Running chaos without safety controls:** "Let's randomly kill services and see what happens" without auto-stop, blast radius limits, or rollback plans will cause real customer incidents. Chaos engineering requires as much engineering discipline as the system itself.
+- ❌ **Only testing in staging:** Netflix runs Chaos Monkey in production for a reason — staging rarely replicates production traffic patterns, data distributions, and load. Staging chaos provides false confidence. Start with 1% production traffic.
+- ❌ **No hypothesis before the experiment:** Random chaos without a hypothesis is just breaking things. Define: "We expect X to happen when we inject Y. If we observe Z instead, here is what we will fix." The hypothesis makes it an experiment, not sabotage.
 
 ### Concept Reference
-→ [Incident Response](../../../09-observability/concepts/incident-response)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
-## Q6: How does PagerDuty route 10M alerts/month with intelligent noise reduction?
+## Q6: PagerDuty routes 10M alerts/month with ML-based noise reduction — alert grouping and inhibition
 
 **Role:** Staff | **Difficulty:** ⚫ | **Priority:** P2 | **Format:** Deep Dive
 
-> **What the interviewer is testing:** Whether you understand alert management at scale — deduplication, correlation, intelligent routing, and suppression — which are real operational challenges in large organisations.
+> **What the interviewer is testing:** Whether you understand alert routing at scale, intelligent deduplication, and the ML techniques PagerDuty uses to reduce on-call fatigue.
 
 ### Problem Constraints
 | Dimension | Value |
 |-----------|-------|
-| Alert volume | 10M alerts/month = 333K/day = 3,858/sec peak |
-| Actionable incidents | ~5,000 distinct incidents/month |
-| Noise ratio | 2,000:1 (10M alerts → 5K incidents) |
-| Goal | Route each incident to right person within 5 minutes |
-| Requirement | Never miss a P0 alert (false negative = unacceptable) |
+| PagerDuty scale | 10M alert events/month across all customers |
+| Average on-call engineer | 500 alerts/month (16/day), 30% are actionable |
+| Problem | 70% of alerts are noise — duplicates, auto-resolved, correlated |
+| Goal | Route only actionable, deduplicated alerts to on-call |
 
-### Alert → Incident Pipeline
+### Alert Pipeline Architecture
+
+```mermaid
+graph LR
+  subgraph Sources["Alert Sources"]
+    Prom["Prometheus AlertManager\n(most common source)"]
+    DD["Datadog Monitors"]
+    CloudWatch["AWS CloudWatch Alarms"]
+    Custom["Custom webhooks"]
+  end
+
+  subgraph PD["PagerDuty Routing Pipeline"]
+    Ingest["Ingest API\n10M events/month\n~4 events/sec average\nSpikes to 100K/sec during large incidents"]
+
+    Dedup["Deduplication Engine\nMatch incoming event to open incident\nby: service + alert fingerprint\nIf match: update incident, no new page\nDedup rate: ~40% of events"]
+
+    Group["Event Intelligence — ML Grouping\nCluster correlated alerts\n'DB disk full' + 'DB connection refused' + '5xx from all DB-dependent services'\n→ grouped into 1 incident: DB outage\nGroup rate: ~30% further reduction"]
+
+    Route["Routing Engine\nPolicy: escalation schedule, team, urgency\nP0: page immediately\nP1: page after 5 min no ack\nP2: Slack only, no page"]
+
+    Page["Page on-call\nSMS + App + Phone call for P0\nOnly ~30% of original events reach this stage"]
+  end
+
+  Sources --> Ingest
+  Ingest --> Dedup
+  Dedup --> Group
+  Group --> Route
+  Route --> Page
+```
+
+### ML-Based Alert Grouping
 
 ```mermaid
 graph TD
-  Alerts["10M alerts/month from:\nPrometheus, Nagios, Datadog, CloudWatch, Zabbix"]
+  subgraph Incident["Real Incident: Database Cluster Failure"]
+    A1["Alert 1: MySQL replication lag > 60s\n(T=0)"]
+    A2["Alert 2: 5xx rate > 5% on payment-svc\n(T=15s)"]
+    A3["Alert 3: 5xx rate > 5% on cart-svc\n(T=20s)"]
+    A4["Alert 4: 5xx rate > 5% on user-svc\n(T=25s)"]
+    A5["Alert 5: MySQL connection refused\n(T=30s)"]
+    A6["Alert 6: DB connection pool exhausted on payment-svc\n(T=35s)"]
+  end
 
-  Dedup["1. Deduplication\nGroup alerts by fingerprint\n(same host + alert_name = same alert)\n10M alerts → 500K unique alert fingerprints"]
+  ML["ML Grouping Engine\nInput: alert text, service dependency graph, timing\nModel: trained on historical incident patterns\nDecision: A1 is root cause event\nA2-A6 are correlated downstream effects\nGroup into 1 incident: MySQL cluster failure"]
 
-  Correlation["2. Correlation (Event Intelligence)\nML model groups related alerts into incidents\n'DB connection pool exhausted + API 5xx + slow queries\n→ 1 incident: DB overload'\nReduces 500K fingerprints → 5K incidents (100:1)"]
+  Result["Single PagerDuty incident created\n1 page to on-call with context:\n'MySQL cluster failure — 5 downstream services affected'\nInstead of: 6 separate pages for each alert"]
 
-  Routing["3. Smart Routing\nRoute by: service, team, time zone, on-call schedule\n'payment-svc error → route to payment-team on-call'\n'DB alert → route to DBA, CC VP Engineering'"]
+  A1 --> ML
+  A2 --> ML
+  A3 --> ML
+  A4 --> ML
+  A5 --> ML
+  A6 --> ML
+  ML --> Result
 
-  Suppression["4. Suppression\nMaintenance windows: suppress alerts during planned downtime\nAcknowledged alerts: suppress duplicates for 30 min\nInhibition: if parent alert active, suppress child alerts"]
-
-  Escalation["5. Escalation Policy\nT+0: Notify primary on-call (SMS + push)\nT+5m: No acknowledgement → notify secondary\nT+10m: No acknowledgement → call VP Engineering"]
-
-  Alerts --> Dedup --> Correlation --> Routing --> Suppression --> Escalation
+  style Result fill:#8f8,stroke:#090
 ```
 
-### ML-Based Noise Reduction (Event Intelligence)
+### Alert Inhibition
 
 ```mermaid
 graph TD
-  Raw["Raw alerts:\n'CPU high on db-01'\n'DB connections exhausted on db-01'\n'Query latency high: payment-svc'\n'HTTP 500 rate 15%: payment-api'\n'Checkout conversion drop 40%'"]
+  Inhibit["Alert Inhibition:\nWhen a high-severity alert fires, suppress correlated lower-severity alerts\nPrevent symptom alerts from creating noise alongside the cause alert"]
 
-  ML["Event Intelligence (ML model)\nClusters alerts by:\n- Temporal proximity (all in last 2 minutes)\n- Service dependency graph (db-01 → payment-svc → payment-api → checkout)\n- Historical co-occurrence (these alerts appeared together 94% of past DB incidents)"]
+  Example["Example:\nIF alert: DB primary node down (P0) is FIRING\nTHEN suppress: all 'DB connection failed' alerts (P2)\nRationale: connection failures are expected symptom of primary down\nSuppressing them reduces noise by 10-20 alerts during a DB outage"]
 
-  Incident["One incident: 'DB Overload → Payment Cascade'\nSeverity: P0 (checkout conversion drop = business impact)\nOwners: DBA (primary), Payment Team (secondary)\nSuppress: all 5 individual alerts\nNotify: once, with context"]
+  Config["AlertManager inhibition config:\ninhibit_rules:\n  - source_match:\n      alertname: DBPrimaryDown\n    target_match_re:\n      alertname: DB.*ConnectionFailed\n    equal: [cluster]"]
 
-  Raw --> ML --> Incident
+  Inhibit --> Example --> Config
 ```
 
-| Dimension | Naive (all alerts) | PagerDuty Event Intelligence |
-|-----------|-------------------|------------------------------|
-| Alerts per incident | 2,000 alerts | 1 grouped incident |
-| On-call interruptions | 2,000 notifications | 1 notification |
-| Context provided | None | Service dependency graph, likely cause |
-| Time to acknowledge | After alert flood | Immediate (context provided) |
-| False negative risk | Low | Near zero (ML tuned for high recall) |
-
-### Recommended Answer
-PagerDuty's Event Intelligence (ML-based grouping) reduces 10M alerts/month to 5K actionable incidents through three mechanisms:
-
-**1. Deduplication:** Identical alerts (same host + same check) within a 30-minute window are collapsed into one. At 10M alerts, many are repeated Prometheus scrapes for the same threshold breach.
-
-**2. Correlation (ML grouping):** PagerDuty's ML model (trained on historical incident data) groups related alerts into a single incident. Features: temporal proximity, service dependency topology, historical co-occurrence, shared labels. A single DB failure causing alerts across 50 dependent services becomes 1 incident.
-
-**3. Alert suppression:** Maintenance windows suppress alerts during planned changes. Acknowledged alerts suppress duplicates. Parent-child inhibition: if `DB_Down` is acknowledged, suppress `PaymentService_5xx`, `CartService_5xx`, `CheckoutConversion_Drop` — they're all symptoms of the same root cause.
-
-**Routing precision:** PagerDuty routes by on-call schedule, escalation policy, and service ownership. "Payment incidents at 3 AM" routes to the payment team primary on-call, not to the entire engineering org.
-
-**False negative prevention:** ML grouping is tuned for high recall — it's better to create an extra incident than to miss one. False positive groupings (grouping unrelated alerts) are handled by the on-call engineer splitting the incident if needed. A missed P0 is far worse than an extra notification.
+| Noise Reduction Technique | Reduction | Mechanism |
+|--------------------------|-----------|-----------|
+| Deduplication | 40% fewer pages | Match events to existing open incidents |
+| ML grouping | 30% further reduction | Cluster correlated alerts from same root cause |
+| Inhibition | 10-20% further reduction | Suppress symptoms when cause is known |
+| `for` clause in alert rules | 20-30% at source | Only fire after sustained condition |
+| Combined | 70-80% noise reduction | 10M events → ~30% actionable pages |
 
 ### What a great answer includes
-- [ ] Deduplication: collapse repeated alerts from same check (10M → 500K)
-- [ ] ML correlation: group related alerts into single incidents (500K → 5K)
-- [ ] Suppression: maintenance windows, acknowledged-alert dedup, parent-child inhibition
-- [ ] Smart routing: on-call schedule + service ownership + escalation policy
-- [ ] High recall preference: false positive groupings are acceptable; false negatives (missed P0) are not
+- [ ] State the scale: 10M events/month, pipeline must handle 100K/sec burst during major incidents
+- [ ] Deduplication: fingerprint-based match prevents duplicate pages for same issue
+- [ ] ML grouping: service dependency graph + timing clustering identifies root cause vs symptoms
+- [ ] Inhibition: source alert suppresses correlated target alerts (cause suppresses symptoms)
+- [ ] Outcome: 70% noise reduction — on-call receives actionable alerts, not raw event volume
 
 ### Pitfalls
-- ❌ **Deduplication as the only noise reduction:** Deduplication reduces repeated identical alerts but does nothing for correlation (a DB failure causing 50 unique downstream alerts). Event Intelligence (ML grouping) is needed for the 2,000:1 reduction.
-- ❌ **Manual on-call rotation without software:** At 10M alerts/month, manual rotation management creates gaps (who covers this timezone? who is on leave?). PagerDuty/Opsgenie automate on-call schedules, handoffs, and override management.
-- ❌ **Not training the ML model on historical incidents:** PagerDuty's Event Intelligence improves over time by learning from closed incidents. A new installation with no historical data has poor correlation quality. Feed historical incident data on setup to accelerate model quality.
+- ❌ **Only deduplicating exact duplicate alerts:** Two different alert names for the same root cause ("DB disk 90%" and "DB connection refused") are not exact duplicates but are highly correlated. ML grouping handles this; exact deduplication does not.
+- ❌ **Inhibition without time bounds:** If the "DB primary down" inhibition rule is configured without a maximum TTL, and the DB recovers but the alert fails to resolve, all DB connection alerts are suppressed indefinitely. Always set inhibition TTL (maximum 2 hours).
+- ❌ **Routing all alerts with equal urgency:** Not all alerts need immediate phone calls. Configure urgency policies: P0 = phone + SMS, P1 = SMS only, P2 = Slack + mobile push. Waking someone at 3am for a P2 issue destroys on-call morale.
 
 ### Concept Reference
-→ [Incident Response](../../../09-observability/concepts/incident-response)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)

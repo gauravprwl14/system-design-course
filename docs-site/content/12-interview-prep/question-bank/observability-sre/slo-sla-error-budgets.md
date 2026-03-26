@@ -1,315 +1,442 @@
 ---
-title: "SLOs, SLAs & Error Budgets"
+title: "SLO, SLA, and Error Budgets"
 layer: interview-q
 section: interview-prep/question-bank/observability-sre
 difficulty: advanced
-tags: [sre, slo, sla, error-budget, reliability, alerting]
+tags: [sre, slo, sla, error-budgets, reliability, alerting]
 ---
 
-# SLOs, SLAs & Error Budgets
+# SLO, SLA, and Error Budgets
 
-6 questions covering reliability engineering from SLI/SLO/SLA definitions to Google's error budget policy.
+6 questions covering reliability metrics from SLI/SLO/SLA definitions to Google SRE's error budget policy.
 
 ---
 
-## Q1: What are SLI, SLO, and SLA, and how do they relate?
+## Q1: What is the difference between SLI, SLO, and SLA?
 
 **Role:** Junior, Mid | **Difficulty:** 🟢 | **Priority:** P0 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you know the three-layer reliability hierarchy from Google's SRE Book and can explain each with a concrete example.
+> **What the interviewer is testing:** Whether you can define the three reliability concepts precisely and explain who owns each.
 
 ### Answer in 60 seconds
-- **SLI (Service Level Indicator):** A measurable property of a service's behaviour. A specific metric that captures user-perceived reliability. Examples: request success rate, p99 latency, availability percentage.
-- **SLO (Service Level Objective):** A target value or range for an SLI. The internal reliability goal the team commits to maintaining. Example: "99.9% of requests to the payment API succeed" or "p99 latency < 500ms." SLOs are internal — failure disappoints the team and depletes error budget.
-- **SLA (Service Level Agreement):** A contract with customers (external) that includes remedies if SLOs are not met. Typically less strict than the internal SLO (buffer between promise and target). Example: "We guarantee 99.5% uptime. If we fall below, customers receive a 10% service credit." SLAs are external — failure has legal and financial consequences.
-- **Relationship:** SLI is measured → compared to SLO target → if SLO missed, SLA may be violated. The hierarchy: SLA is the promise (loose), SLO is the target (tight), SLI is the measurement (objective).
-- **Buffer strategy:** If your SLO is 99.9%, set your SLA at 99.5%. The 0.4% buffer gives you room to miss the SLO without immediately violating the SLA. This is why AWS guarantees 99.95% on services they operate at 99.99% internally.
+- **SLI (Service Level Indicator):** A quantitative measure of service behavior. The *raw metric*. Example: "99.2% of requests returned success in the last 30 days." SLIs are computed from telemetry — metrics, logs, synthetic probes.
+- **SLO (Service Level Objective):** An internal target for an SLI. The *goal*. Example: "The SLI for availability must be ≥ 99.9% over any 30-day rolling window." SLOs are owned by engineering teams. Breaching an SLO triggers internal action (freeze deploys, escalate).
+- **SLA (Service Level Agreement):** A contractual commitment to an *external customer* with financial consequences for breach. Example: "If monthly availability falls below 99.5%, customers receive a 10% credit." SLAs are owned by product/legal. SLAs are always looser than SLOs (leave buffer between internal goal and contract).
+- **Relationship:** SLI ≤ SLO ≤ SLA in strictness. SLI is what you measure. SLO is what you target internally. SLA is what you promise externally.
+- **Error budget:** The gap between 100% and the SLO. `Error budget = 1 - SLO`. For 99.9% SLO: error budget = 0.1% of time = 43.8 minutes/month.
 
 ### Diagram
 
 ```mermaid
 graph TD
-  SLI["SLI: Measurement\nhttp_success_rate = successful_req / total_req\nCurrently: 99.95%"]
+  subgraph Hierarchy["SLI to SLA Hierarchy"]
+    SLI["SLI — Service Level Indicator\nRaw measurement from telemetry\nExample: 99.2% success rate last 30 days\nOwner: SRE / Monitoring team"]
+    SLO["SLO — Service Level Objective\nInternal target for SLI\nExample: SLI must be >= 99.9%\nOwner: Engineering team\nConsequence: Error budget consumed"]
+    SLA["SLA — Service Level Agreement\nExternal contract with customers\nExample: >= 99.5% or 10% credit\nOwner: Product / Legal\nConsequence: Financial penalty"]
+  end
 
-  SLO["SLO: Internal target\n'99.9% of requests must succeed'\nError budget: 0.1% can fail\nFailure: team misses goal, error budget depleted"]
+  SLI -->|"Measured against"| SLO
+  SLO -->|"Looser version of"| SLA
 
-  SLA["SLA: External contract\n'99.5% guaranteed in contract'\nBuffer: 0.4% above SLO\nFailure: customer credit, legal consequences"]
-
-  SLI -->|"Is measured against"| SLO
-  SLO -->|"Informs (with buffer)"| SLA
-
-  Example["Example numbers:\nSLI: 99.95% (measured this month)\nSLO: 99.9% (internal target) ← SLI exceeds, healthy\nSLA: 99.5% (contractual guarantee) ← 99.95% far exceeds, no violation"]
-
-  SLA --> Example
-
-  style SLO fill:#88f,stroke:#009
-  style SLA fill:#f88,stroke:#900
+  Buffer["Buffer between SLO and SLA:\nSLO: 99.9% — internal target\nSLA: 99.5% — external promise\nBuffer: 0.4% = headroom for incidents\nWithout buffer: SLO breach = automatic SLA breach"]
+  SLO --> Buffer
 ```
 
+### SLI Types by Service
+
+| Service Type | Latency SLI | Availability SLI | Throughput SLI |
+|--------------|-------------|-----------------|----------------|
+| HTTP API | p99 < 200ms | 200 responses / total responses > 99.9% | N/A (capacity planning) |
+| Database | p99 query < 50ms | queries completed / queries attempted > 99.95% | N/A |
+| Message queue | consumer lag < 5s | messages delivered / messages published > 99.99% | N/A |
+| Storage | p99 read < 10ms | read success rate > 99.999% | N/A |
+
 ### Pitfalls
-- ❌ **Setting SLO = SLA:** No buffer means any SLO miss immediately violates the SLA. You need a buffer to have time to fix issues before contractual consequences. Never equate SLO to SLA.
-- ❌ **SLO that isn't measurable:** "Good user experience" is not an SLI. "p99 latency < 500ms for GET /checkout, measured over 1-minute windows" is an SLI. SLIs must be precise and automatically measurable.
-- ❌ **Too many SLOs:** One critical service may have 2–3 SLOs (availability, latency, correctness). Having 50 SLOs per service creates metric overload — no one knows which matters. Prioritise the 2–3 most user-impactful SLIs per service.
+- ❌ **Setting SLO = SLA:** If your SLO equals your SLA, the first SLO breach immediately violates the contract. Always set SLO 0.3–0.5% stricter than SLA to create a buffer.
+- ❌ **SLI over too short a window:** "99.9% in the last 1 minute" is meaningless — a single failed request in 1 minute = 0% SLI. Use 30-day rolling windows for meaningful SLIs.
+- ❌ **Only measuring availability, not latency:** A service that returns 200 in 10 seconds is "available" but not useful. SLI must include latency. Standard: "requests returning 2xx in < 500ms / total requests."
 
 ### Concept Reference
-→ [SRE Practices](../../../09-observability/concepts/slo-sla-fundamentals)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
-## Q2: How do you calculate an error budget — 99.9% SLO = how many minutes?
+## Q2: Error budget calculation — what do different SLO tiers give you in downtime per month?
 
 **Role:** Mid | **Difficulty:** 🟡 | **Priority:** P0 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you can perform the error budget calculation and understand what error budget enables — the balance between reliability and velocity.
+> **What the interviewer is testing:** Whether you have the SLO/error budget numbers memorized and can translate percentages into real downtime that business stakeholders understand.
 
 ### Answer in 60 seconds
-- **Error budget definition:** The allowable amount of unreliability within the SLO target. If SLO = 99.9%, the error budget = 1 - 0.999 = 0.001 = 0.1% of the time/requests can be "bad."
-- **Calculating downtime budget (availability SLO):**
-  - 99% SLO: 1% of year = 3.65 days, 1% of month = 7.3 hours, 1% of week = 1.68 hours
-  - 99.9% SLO: 0.1% of year = 8.77 hours, 0.1% of month = 43.8 minutes, 0.1% of week = 10.1 minutes
-  - 99.95% SLO: 0.05% of year = 4.38 hours, 0.05% of month = 21.9 minutes
-  - 99.99% SLO: 0.01% of month = 4.38 minutes
-- **Calculating request budget (latency/error rate SLO):** At 1M requests/day with 99.9% SLO: 0.1% × 1M = 1,000 requests/day can fail (or be slow). At 100K req/sec: 0.1% = 100 errors/sec allowed.
-- **What the error budget enables:** When error budget is healthy (>50% remaining), teams can deploy frequently, run experiments, and move fast. When error budget is low (<10% remaining), freeze features, focus on reliability. The budget *quantifies* how much risk is acceptable.
+- **Error budget formula:** `Error budget per month = (1 - SLO) × 30 days × 24 hours × 3600 seconds`
+- **Key numbers to memorize:**
+  - 99% SLO → 7.31 hours/month downtime budget
+  - 99.9% SLO → 43.8 minutes/month downtime budget
+  - 99.95% SLO → 21.9 minutes/month downtime budget
+  - 99.99% SLO → 4.38 minutes/month downtime budget
+  - 99.999% SLO → 26.3 seconds/month downtime budget
+- **How to spend the budget:** The error budget is a policy tool. While budget remains, new features can deploy (risk accepted). When budget is exhausted, freeze non-critical deploys until budget refreshes.
+- **Partial request failure:** If 100K req/sec and 0.1% fail, the budget is consumed at 100 failed requests/sec. Budget = 0.1% of total requests, not just time.
 
 ### Diagram
 
 ```mermaid
 graph TD
-  Budget["Error Budget Availability Reference"]
+  subgraph SLOTiers["SLO Tiers and Downtime Budget"]
+    T1["99% SLO\n7.31 hours/month\nSuitable for: internal tools, dev environments\nCost: lowest infrastructure investment"]
+    T2["99.9% SLO — three nines\n43.8 minutes/month\nSuitable for: most production APIs\nCost: reasonable with LB + multi-AZ"]
+    T3["99.99% SLO — four nines\n4.38 minutes/month\nSuitable for: payment, auth, critical path\nCost: requires automated failover < 1 min"]
+    T4["99.999% SLO — five nines\n26.3 seconds/month\nSuitable for: telecom, life-safety systems\nCost: extreme — active-active multi-region"]
+  end
 
-  B1["99.0% SLO\nBudget/month: 7.3 hours\nBudget/week: 1.68 hours"]
-  B2["99.9% SLO\nBudget/month: 43.8 minutes\nBudget/week: 10.1 minutes"]
-  B3["99.95% SLO\nBudget/month: 21.9 minutes\nBudget/week: 5 minutes"]
-  B4["99.99% SLO\nBudget/month: 4.38 minutes\n(1 deploy risk)"]
-  B5["99.999% SLO\nBudget/month: 26 seconds\n(requires chaos engineering + extensive automation)"]
-
-  Budget --> B1 & B2 & B3 & B4 & B5
-
-  UseCase["99.9% budget: 43.8 min/month\nA single 1-hour incident exhausts it entirely\nTeam must freeze deployments for rest of month"]
-  B2 --> UseCase
+  style T1 fill:#8f8
+  style T2 fill:#ff8
+  style T3 fill:#fa8
+  style T4 fill:#f88
 ```
-
-### Pitfalls
-- ❌ **Treating error budget as a per-incident allowance:** "We had one outage and that consumed our budget — we're done for the month" is correct, but the *response* (freeze deployments) is what matters. Error budget is not a free pass for 43.8 minutes of downtime.
-- ❌ **Not tracking error budget in real-time:** Budget must be tracked continuously, not checked monthly. If you've consumed 80% in day 3 of a 30-day month, alert immediately — don't discover it at month-end.
-- ❌ **Confusing availability budget with request budget:** 43.8 minutes of downtime (availability) vs 0.1% of requests failing are different budget types. A service can be "up" (responding) but failing 1% of requests — that exhausts the request error budget without downtime.
-
-### Concept Reference
-→ [SRE Practices](../../../09-observability/concepts/slo-sla-fundamentals)
-
----
-
-## Q3: What is burn rate alerting — fast burn vs slow burn?
-
-**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Quick Answer
-
-> **What the interviewer is testing:** Whether you understand the Google SRE Workbook's burn rate alerting framework — the best practice for SLO-aligned alerting.
-
-### Answer in 60 seconds
-- **Burn rate:** How quickly you're consuming your error budget. Burn rate 1 = consuming at exactly the rate that would exhaust the budget over the SLO window (typically 30 days). Burn rate 10 = consuming 10× faster, exhausting in 3 days.
-- **Simple threshold problem:** `error_rate > 0.1%` fires immediately on any breach, including 30-second transient spikes that consume 0.001% of budget. High false positive rate. And it won't catch a sustained 0.05% error rate (2× the SLO baseline) draining budget over a week.
-- **Fast burn alert:** Target: catch incidents that will exhaust the budget in <1 hour.
-  - Window: 1 hour
-  - Condition: budget_consumed_in_1h > 2% (burn rate = 14.4× for 30-day SLO)
-  - Action: page immediately, P0 response
-  - Scenario: 15% error rate for 30 minutes = consuming 2.8% of monthly budget in 1 hour
-- **Slow burn alert:** Target: catch sustained degradation that will exhaust budget in <3 days.
-  - Window: 6 hours
-  - Condition: budget_consumed_in_6h > 5% (burn rate = 6× for 30-day SLO)
-  - Action: page, P1 response (30-minute SLA)
-  - Scenario: 0.5% error rate (5× baseline) for 6 hours = consuming 1% of monthly budget
-- **Combined:** Fast burn catches sudden failures; slow burn catches slow leaks. Together they detect 99% of budget-significant incidents.
-
-### Diagram
 
 ```mermaid
-graph TD
-  Budget["Monthly error budget: 43.8 minutes (99.9% SLO)"]
-
-  Fast["Fast Burn Alert\nWindow: 1 hour\nBurn rate threshold: 14.4×\n(= 2% budget in 1 hour)\nTriggering scenario:\n15% error rate → 43.8min × 14.4 / 30 × 24 = page in minutes\nAction: PagerDuty P0"]
-
-  Slow["Slow Burn Alert\nWindow: 6 hours\nBurn rate threshold: 6×\n(= 5% budget in 6 hours)\nTriggering scenario:\n0.5% error rate (5× SLO baseline)\nfor 6 consecutive hours\nAction: PagerDuty P1 (30-min response)"]
-
-  Neither["No alert (safe zone)\nLow error rate, budget healthy\nError rate ≤ 0.1% baseline\n(at SLO, not burning budget)"]
-
-  Budget --> Fast & Slow & Neither
-
-  Coverage["Combined: catches 99% of budget-consuming incidents\nFast: sudden failures (outages, deployments)\nSlow: creeping degradations (memory leak, slow DB)"]
-  Fast & Slow --> Coverage
+graph LR
+  subgraph BudgetConsumption["Error Budget Consumption — 99.9% SLO"]
+    Start["Month start:\n43.8 min budget available"]
+    Deploy1["Deploy v2.1 → 3 min outage\nBudget remaining: 40.8 min"]
+    Incident["DB failover → 15 min degraded\nBudget remaining: 25.8 min"]
+    Deploy2["Deploy v2.2 → 2 min rollback\nBudget remaining: 23.8 min"]
+    End["Month end: 23.8 min unused\nPolicy: features can ship next month"]
+    Start --> Deploy1 --> Incident --> Deploy2 --> End
+  end
 ```
 
 ### Pitfalls
-- ❌ **Single-window alert only:** Using only a 1-hour window misses sustained low-rate incidents (0.2% error rate for 5 days). Using only a 6-hour window is too slow to catch sudden outages (100% error rate for 5 minutes). You need both.
-- ❌ **Burning entire budget before alerting:** If you alert only when 100% of budget is consumed, you have no capacity to degrade gracefully or implement mitigations. Alert at 2% consumed in 1 hour (fast) and 5% in 6 hours (slow).
-- ❌ **Burn rate alerting without a defined SLO:** Burn rate requires a budget to burn against. If there's no SLO, there's no budget, and burn rate alerting is impossible. Define the SLO first.
+- ❌ **Targeting 100% SLO:** Zero error budget means no deploys (every deploy risks an outage). 100% SLO is unachievable and paralyzes engineering. Even Google targets 99.99%, not 100%.
+- ❌ **Measuring error budget in minutes only:** For high-traffic APIs, budget in minutes understates impact. 4 minutes of outage at 10K req/sec = 2.4M failed requests. Measure both time and request count.
+- ❌ **Resetting error budget on a fixed calendar:** A 30-day rolling window prevents "spend all budget on the first day then be perfect for 29 days." Rolling windows provide continuous accountability.
 
 ### Concept Reference
-→ [SRE Practices](../../../09-observability/concepts/slo-sla-fundamentals)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
-## Q4: How do you choose the right SLI for a latency-sensitive API?
+## Q3: Multi-window burn rate alerting for SLOs — fast burn vs slow burn
 
-**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Quick Answer
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Deep Dive
 
-> **What the interviewer is testing:** Whether you know why p50 latency is insufficient as an SLI for user experience and can articulate the percentile selection trade-offs.
-
-### Answer in 60 seconds
-- **p50 lies:** p50 (median) reflects the experience of the "average" user. If 49% of requests are 1ms and 51% are 1ms, p50=1ms. But if 10% of requests are 5,000ms, p50 still looks fine at 1ms. The 10% with 5,000ms response are having a terrible experience — p50 doesn't reflect this.
-- **p99 is the gold standard for latency SLIs:** The 99th percentile means 1% of users experience this latency or worse. For a service with 1M requests/day, 1% = 10,000 users/day experiencing ≥p99 latency. p99 captures the tail experience and is what high-volume services must optimise.
-- **p999 for extreme tail sensitivity:** Some systems need p99.9 (1 in 1,000 experiences bad latency). Payment systems, trading platforms. Very hard to optimise — p999 is sensitive to garbage collection pauses, network jitter, lock contention.
-- **Why not p100 (max)?** Maximum is the worst single request ever seen. Outliers (JVM warmup, OS scheduling jitter, one-time DNS lookup) cause p100 spikes that aren't reproducible. p100 alerts create false positives. Use p99 or p99.9 for actionable SLIs.
-- **Choosing the right percentile:**
-  - B2C (consumer) service: p99 (1% bad = real user impact at scale)
-  - Payment / financial: p99.9 (1 in 1000 unacceptable)
-  - Internal service: p95 (5% acceptable for internal use cases)
-  - Real-time / gaming: p99 or p99.9 (latency variance directly impacts experience)
-
-### Diagram
-
-```mermaid
-graph TD
-  Service["API: 1M requests/day\nLatency distribution"]
-
-  Dist["P50: 50ms ← most requests fast\nP95: 200ms\nP99: 800ms ← 10,000 users/day affected\nP99.9: 5,000ms ← 1,000 users/day affected\nP100: 30,000ms ← 1 request ever (GC pause)"]
-
-  SLI_Bad["BAD SLI: average latency\nAverage: 55ms (looks great!)\nMisses: 10,000 users experiencing 800ms+"]
-
-  SLI_Good["GOOD SLI: p99 latency\nSLO: p99 < 500ms\nCurrent: 800ms → SLO violated\nAction: investigate tail latency causes"]
-
-  Dist --> SLI_Bad & SLI_Good
-
-  style SLI_Bad fill:#f88,stroke:#900
-  style SLI_Good fill:#8f8,stroke:#090
-```
-
-### Pitfalls
-- ❌ **SLO on p99 across all endpoints equally:** A p99 SLO for `GET /health` (returns 200 instantly) mixed with `POST /checkout` (complex operation) averages them together. `/health` at 1ms pulls down the average p99. Set separate SLOs per critical endpoint.
-- ❌ **Not separating read vs write latency SLOs:** Write paths (DB inserts, external API calls) are inherently slower than read paths. A single p99 SLO covering both will either be too strict for writes or too lenient for reads.
-- ❌ **Setting p99 SLO without knowing the distribution:** If you've never measured p99 latency, you don't know if 500ms is achievable. Measure first, set baseline, then set SLO at 2× the current p99 (provides buffer for growth). Tighten quarterly.
-
-### Concept Reference
-→ [SRE Practices](../../../09-observability/concepts/slo-sla-fundamentals)
-
----
-
-## Q5: What happens when the error budget is exhausted?
-
-**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Quick Answer
-
-> **What the interviewer is testing:** Whether you understand the error budget as an operational policy tool — what specific actions trigger when the budget is depleted.
-
-### Answer in 60 seconds
-- **Step 1 — Stop all feature deployments:** Freeze the release pipeline. No new code goes to production until the budget is replenished (next month reset, or reliability work is completed). This is the fundamental error budget policy — it converts reliability into a shared incentive between dev and SRE.
-- **Step 2 — Prioritise reliability work:** Engineering capacity immediately shifts to postmortem actions, root cause fixes, reliability improvements. Product roadmap features are deprioritised. The team knows the cost of reliability failures in concrete terms (budget depleted, velocity frozen).
-- **Step 3 — Escalate to management:** If budget exhaustion is due to persistent issues rather than a single incident, escalate to leadership with budget burn rate data. "We've consumed 100% of our monthly error budget by day 10" is a concrete, understandable signal.
-- **Step 4 — Incident review:** Mandatory blameless postmortem for any incident that consumed >20% of monthly budget. Action items with owners and deadlines.
-- **Step 5 — Consider SLO revision:** If budget is consistently exhausted (3 months in a row), the SLO may be unrealistic for the current system maturity. Either invest in reliability or revise the SLO with stakeholder agreement.
-- **Recovery:** Error budget resets at the start of each SLO window (typically monthly). If you replenish the budget by fixing reliability issues early, deployments resume.
-
-### Diagram
-
-```mermaid
-graph TD
-  Exhausted["Error Budget: 0% remaining\n(100% consumed before month-end)"]
-
-  A1["ACTION 1: Freeze deployment pipeline\nNo feature releases until next budget period\n(or SRE signs off reliability sufficient)"]
-
-  A2["ACTION 2: Reliability sprint\n100% engineering bandwidth → reliability\nPostmortem action items: owners + deadlines"]
-
-  A3["ACTION 3: Escalation\nManagement briefing: 'We've exhausted reliability budget'\nData: burn rate chart, incident timeline"]
-
-  A4["ACTION 4: Postmortem\nBlameless — focused on system, not people\n5-whys root cause\nAction items with 30-day completion deadline"]
-
-  A5["ACTION 5: SLO review (if chronic)\nIf 3 consecutive months exhausted:\nEither: invest to improve (preferred)\nOr: negotiate looser SLO with stakeholders"]
-
-  Exhausted --> A1 & A2 & A3 & A4 & A5
-
-  Resume["Resume deployments when:\nNew month begins (budget reset)\nOR reliability fixes complete + SRE approves"]
-  A1 & A2 --> Resume
-```
-
-### Pitfalls
-- ❌ **No policy written down:** "We'll figure it out when budget depletes" leads to political arguments. Document the error budget policy before the first exhaustion event. The policy should specify exactly what freezes, who decides to unfreeze, and what work is required.
-- ❌ **SRE team unilaterally freezing deployments without dev team buy-in:** Error budget policy works only when both dev and SRE teams agreed to it in advance. Surprising the product team with a deployment freeze during a feature launch creates conflict. Establish the policy as a shared agreement at team formation.
-- ❌ **Resuming deployments automatically at month start without postmortem:** If you exhausted the budget due to a recurring issue and deploy again without fixing it, you'll exhaust next month's budget too. Month start should reset the budget counter but not clear the requirement for reliability work.
-
-### Concept Reference
-→ [SRE Practices](../../../09-observability/concepts/slo-sla-fundamentals)
-
----
-
-## Q6: How does Google balance reliability vs feature velocity with error budget policy?
-
-**Role:** Staff | **Difficulty:** ⚫ | **Priority:** P2 | **Format:** Deep Dive
-
-> **What the interviewer is testing:** Whether you understand the cultural and organisational dimension of SRE error budget policy — how Google uses the budget to create shared incentives between product and SRE teams.
+> **What the interviewer is testing:** Whether you can design alerting that catches both acute incidents (fast burn) and chronic degradation (slow burn) without false positives.
 
 ### Problem Constraints
 | Dimension | Value |
 |-----------|-------|
-| Core tension | Product wants to ship fast; SRE wants reliability |
-| Traditional approach | SRE as gatekeeper → adversarial relationship |
-| Google's insight | Use error budget as a shared currency, not a gate |
-| Outcome | Dev teams self-regulate deployments based on budget health |
+| SLO | 99.9% availability (error rate < 0.1%) |
+| Error budget | 43.8 minutes/month |
+| Fast burn scenario | 2% error rate — budget exhausted in 3.6 hours |
+| Slow burn scenario | 0.15% error rate — budget exhausted in 29 days |
+| Alert requirement | Catch both; minimize false positives |
 
-### Error Budget as Shared Incentive
-
-```mermaid
-graph TD
-  Problem["Traditional SRE model (adversarial):\nProduct team: 'We need to deploy NOW'\nSRE team: 'It's not safe to deploy'\n→ Political conflict, delayed launches, blame"]
-
-  Solution["Google SRE model (budget-based):\nShared error budget = shared incentive\nProduct team: 'We want to deploy'\nQuestion: 'How much budget do we have?'\nBudget > 50%: Deploy freely\nBudget 10–50%: Deploy with extra caution\nBudget < 10%: Pause and fix"]
-
-  Problem -->|"Error budget policy"| Solution
-
-  Dev["Dev Team incentive:\nFast iteration → Ship features → Revenue\nBUT: reliability incidents burn budget → freeze velocity\n→ Dev team NOW cares about reliability"]
-
-  SRE["SRE Team incentive:\nToo-strict reliability → Dev team hostile\nBUT: SRE must be realistic — if SLO too strict, always frozen\n→ SRE now negotiates SLOs dev teams can actually meet"]
-
-  Solution --> Dev & SRE
-```
-
-### Google's Published Error Budget Policy
+### Burn Rate Calculation
 
 ```mermaid
 graph TD
-  Policy["Google SRE Error Budget Policy (SRE Book)"]
+  Budget["Error budget: 43.8 min/month\n= 2628 seconds per 30-day period"]
 
-  P1["Budget healthy (>90% remaining):\nDev team: self-manage deployments\nSRE: advisory role only\nRelease cadence: as fast as desired"]
+  BurnRate["Burn rate = actual error rate / budget error rate\n= actual error rate / 0.001"]
 
-  P2["Budget moderate (50–90% remaining):\nDev team: consults SRE before large changes\nExtra testing: load tests, staged rollouts\nRelease cadence: slightly reduced"]
+  Fast["2% error rate:\nBurn rate = 0.02 / 0.001 = 20x\nTime to exhaustion = 43.8 min / 20 = 2.2 hours\nACTION: Page immediately"]
 
-  P3["Budget low (10–50% remaining):\nSRE reviews all production changes\nNew features require reliability sign-off\nRelease cadence: significantly reduced"]
+  Slow["0.15% error rate:\nBurn rate = 0.0015 / 0.001 = 1.5x\nTime to exhaustion = 43.8 min / 1.5 = 29 hours\nACTION: Ticket — investigate today"]
 
-  P4["Budget exhausted (<10%):\nDeploy freeze: no new features\nAll bandwidth: reliability work\nUnfreeze criteria: specific reliability improvements + SRE approval\nEscalation: VP level if disagreement"]
+  Normal["0.05% error rate:\nBurn rate = 0.5x — BELOW budget rate\nBudget ACCUMULATING — no action needed"]
 
-  Policy --> P1 & P2 & P3 & P4
+  Budget --> BurnRate
+  BurnRate --> Fast
+  BurnRate --> Slow
+  BurnRate --> Normal
+
+  style Fast fill:#f88
+  style Slow fill:#fa8
+  style Normal fill:#8f8
 ```
 
-### Recommended Answer
-Google's error budget policy converts reliability from a gatekeeper mechanism into a self-regulating incentive system. The core insight from the SRE Book (Chapter 3): "If product development wants to move faster, they need to invest in reliability — because it's reliability incidents that burn their error budget and slow their releases."
+### Two-Window Alert Rules
 
-**Alignment mechanism:** Dev and SRE teams co-own the SLO and the error budget. Dev teams have strong motivation to write reliable code: unreliable code burns the budget, and a depleted budget freezes their own feature velocity. SRE teams have motivation to set realistic SLOs: if SLOs are impossible to meet, the budget is always zero and nobody can deploy anything.
+```mermaid
+graph TD
+  subgraph FastAlert["Fast Burn Alert — Page"]
+    F1["Long window (1h): error rate > 2% sustained\nVerifies trend is real, not a 30s spike"]
+    F2["Short window (5m): error rate > 2% right now\nVerifies problem is current, not resolved"]
+    F1 -- "AND" --> FPage["FIRE page — P0\nBudget gone in 2.2 hours"]
+    F2 -- "AND" --> FPage
+  end
 
-**Quarterly SLO review:** Teams meet quarterly to review the SLO against actual performance. If the SLO was met with >50% budget remaining every month, tighten it (better reliability). If budget was exhausted multiple months, either invest in reliability or loosen the SLO with stakeholder agreement.
+  subgraph SlowAlert["Slow Burn Alert — Ticket"]
+    S1["Long window (6h): error rate > 0.15% sustained\nVerifies chronic degradation not a blip"]
+    S2["Short window (30m): error rate > 0.15% now\nVerifies current state"]
+    S1 -- "AND" --> STicket["FIRE ticket — P2\nBudget gone in 29 hours"]
+    S2 -- "AND" --> STicket
+  end
+```
 
-**The "toil reduction" mechanism:** SRE teams are budgeted 50% of their time on engineering (automation, tooling) and 50% on operational work. If operational (toil) work exceeds 50%, SRE escalates — this signals that the service needs more automation investment. The error budget converts this abstract principle into concrete data.
+### Why Two Windows?
 
-**Result:** Google reports that this model dramatically reduced tension between product and SRE organisations. Dev teams became proactive about reliability (they have financial incentive: reliability = deployment velocity). SRE became more product-aligned (they understand the velocity cost of strict SLOs).
+```mermaid
+sequenceDiagram
+  participant Prom as Prometheus
+  participant Short as Short Window (5m)
+  participant Long as Long Window (1h)
+  participant Alert as Alert Decision
+
+  Note over Prom: Spike: error rate 5% for 10 minutes then recovers
+  Prom->>Short: 5m avg = 5% during spike — high
+  Prom->>Long: 1h avg = 0.8% (spike small vs hour) — low
+  Short->>Alert: Would fire (above threshold)
+  Long->>Alert: Would NOT fire (below threshold)
+  Alert->>Alert: AND logic: Long AND Short — NO FIRE
+  Note over Alert: Spike correctly ignored — false positive avoided
+
+  Note over Prom: Sustained: error rate 2% for 2 hours
+  Prom->>Short: 5m avg = 2% — high
+  Prom->>Long: 1h avg = 2% — high
+  Short->>Alert: FIRE
+  Long->>Alert: FIRE
+  Alert->>Alert: AND logic — FIRE confirmed
+  Note over Alert: Real incident correctly detected
+```
 
 ### What a great answer includes
-- [ ] Error budget as shared currency: dev teams self-regulate based on budget health
-- [ ] Four budget zones: healthy (self-manage) → moderate (consult) → low (SRE review) → exhausted (freeze)
-- [ ] Alignment: dev teams gain reliability incentive; SRE teams gain realism incentive
-- [ ] Quarterly SLO review: tighten when budget is surplus, loosen when chronically exhausted
-- [ ] Cultural shift: error budget ends the SRE-as-gatekeeper adversarial dynamic
+- [ ] Define burn rate: actual error rate / budget error rate (e.g., 2% / 0.1% = 20x)
+- [ ] Calculate time to exhaustion: budget minutes / burn rate multiplier
+- [ ] Two-window AND logic: long window confirms trend, short window confirms current state
+- [ ] Two alert tiers: fast burn (page, budget exhausted in hours) vs slow burn (ticket, days)
+- [ ] State the two-window benefit: eliminates false positives from short spikes
 
 ### Pitfalls
-- ❌ **Error budget without a public policy document:** The policy only works if everyone knows the rules in advance. "We freeze deployments when budget is exhausted" must be written down and agreed by product, engineering, and leadership — not invented during the crisis.
-- ❌ **SRE team owning the budget unilaterally:** If SRE can invoke the budget freeze without dev team agreement, it becomes a political weapon. Budget policy should be agreed jointly, with VP-level escalation path for disputes — not unilateral SRE authority.
-- ❌ **Resetting budget mid-month after an incident:** "That outage wasn't our fault (third-party dependency), so we shouldn't burn budget." This undermines the policy. Budget represents user impact, regardless of root cause. Reserve vendor credit or SLA violations as separate tracks.
+- ❌ **Single-window alert:** A 5-minute window catches spikes but misses slow burns. A 6-hour window catches slow burns but is stale. Two windows together catch both.
+- ❌ **Paging on slow burn (1.5x rate):** 1.5x burn = budget exhausted in ~29 hours. Time to investigate and fix, not wake someone at 3am. Reserve pages for fast burns threatening imminent SLO breach.
+- ❌ **Not adjusting burn rate thresholds for your SLO:** These calculations depend on your specific error budget. For 99.99% SLO (budget = 4.38 min/month), a 2% error rate is 20x faster — budget exhausted in 13 minutes. Must recalculate alert thresholds per SLO tier.
 
 ### Concept Reference
-→ [SRE Practices](../../../09-observability/concepts/slo-sla-fundamentals)
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
+
+---
+
+## Q4: Why is p99 the right SLI for latency APIs — not p50?
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Quick Answer
+
+> **What the interviewer is testing:** Whether you understand percentile semantics, the long tail problem, and why p50 (median) hides user-impacting latency.
+
+### Answer in 60 seconds
+- **p50 (median) is a lie:** If p50 latency = 50ms, it means 50% of requests are faster. But it says nothing about the other 50%. Your slowest requests could be 10 seconds — users are suffering while p50 looks fine.
+- **p99 SLI:** 99% of requests complete in under X milliseconds. Only 1% are slower. This directly corresponds to user experience: for a service handling 1K req/sec, p99=500ms means 10 users/sec wait over 500ms.
+- **p99.9 for tail:** At 10K req/sec, p99.9 = 1 user/sec experiencing tail latency. For payment flows, this matters.
+- **Why p50 is actively harmful as an SLI:** p50 can improve as you add caching for common cases while the slowest requests (cold cache, DB queries, heavy users) get worse. p50 goes down, p99 goes up — your SLI looks better while user experience degrades.
+- **Relationship:** A well-designed system has p99 < 3-5x p50. If p99 = 10x p50, investigate the long tail — often a specific slow query, GC pause, or lock contention.
+
+### Diagram
+
+```mermaid
+graph TD
+  subgraph Distribution["Latency Distribution — 10K req/sec checkout service"]
+    P50["p50: 45ms — median request\n5000 users/sec faster than this\nLooks fine in alerts based on p50"]
+    P90["p90: 120ms — 10% slower\n1000 users/sec wait 120ms+"]
+    P99["p99: 850ms — 1% slower\n100 users/sec wait 850ms+\nThis is the SLI that matters"]
+    P999["p99.9: 4200ms — 0.1% slower\n10 users/sec wait 4.2 seconds\nUse for payment, critical paths"]
+  end
+
+  style P99 fill:#fa8,stroke:#a60
+  style P999 fill:#f88,stroke:#900
+```
+
+```mermaid
+graph LR
+  subgraph P50Trap["p50 SLI Trap"]
+    Before["Before optimization:\np50=60ms, p99=600ms\nCache hit ratio: 70%"]
+    After["After adding cache layer:\np50=20ms — p50 improves!!\np99=900ms — p99 WORSENS\nCache miss path slower (cold DB)"]
+    Before --> After
+    Alert["p50-based alert: GREEN — no alert fires\nUser-visible impact: WORSE for 1% of users\nSLI p50 improved while experience degraded"]
+    After --> Alert
+  end
+  style Alert fill:#f88
+```
+
+| Percentile | Users affected at 10K req/sec | When to use as SLI |
+|------------|-------------------------------|--------------------|
+| p50 | 5,000/sec (below this are faster) | Never as primary SLI |
+| p90 | 1,000/sec experience worse | Leading indicator |
+| p99 | 100/sec experience worse | Primary SLI for APIs |
+| p99.9 | 10/sec experience worse | SLI for financial transactions |
+
+### Pitfalls
+- ❌ **Setting SLO on p50:** p50 SLO will always look fine while your users suffer. Never use p50 as an SLI for user-facing services.
+- ❌ **Using averages instead of percentiles:** Average latency = (sum of all latencies) / count. A 10-second outlier is diluted by thousands of 50ms requests. Average hides the tail entirely. Use histograms and `histogram_quantile()`.
+- ❌ **Ignoring the p99.9 for critical paths:** Payment APIs where a 4-second experience causes a user to abandon their cart — that 0.1% (10 users/sec at 10K req/sec) is 864K users/day. Calculate impact in absolute users, not percentages.
+
+### Concept Reference
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
+
+---
+
+## Q5: Error budget exhausted — what is the policy and process?
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Quick Answer
+
+> **What the interviewer is testing:** Whether you understand the operational and organizational process when the error budget runs out, not just the math.
+
+### Answer in 60 seconds
+- **Error budget exhausted means:** The SLO was breached for the current 30-day window. Every additional failure goes against the SLA buffer. The team is now burning customer trust, not internal budget.
+- **Immediate actions (within 24 hours):**
+  1. Freeze all non-critical production deployments until budget resets
+  2. Escalate to product/engineering leadership — SLO breach is a business risk signal
+  3. Identify root cause of the consumption (incident postmortem if applicable)
+  4. Define and prioritize reliability work for the next sprint
+- **Deployment freeze policy:** Only P0 security patches and critical bug fixes can be deployed. Feature work halts. This makes reliability debt visible to product management — features compete with reliability.
+- **Negotiation:** If the product team believes a feature is more valuable than reliability, they can formally override the freeze and accept the reliability risk. This makes the trade-off explicit.
+- **Budget recovery:** Budget refreshes on the rolling 30-day window. Each day without failures restores budget. Track remaining budget real-time on dashboards visible to all engineers.
+
+### Diagram
+
+```mermaid
+graph TD
+  subgraph Budget["Error Budget Status"]
+    Full["Budget Full\n43.8 min available\nNormal operations\nDeploy freely"]
+
+    Half["Budget 50%\n21.9 min remaining\nYellow alert\nSlower deploy cadence"]
+
+    Low["Budget Low — 10%\n4.38 min remaining\nOrange alert\nOnly critical deploys"]
+
+    Zero["Budget Exhausted\n0 min remaining\nRED — SLO BREACHED\nDeployment FREEZE"]
+
+    Full --> Half --> Low --> Zero
+  end
+
+  subgraph Policy["Policy at Budget Exhausted"]
+    P1["1. Freeze non-critical deploys immediately"]
+    P2["2. Escalate to engineering leadership in 24h"]
+    P3["3. Reliability sprint: fix top reliability issues"]
+    P4["4. Product override process: explicit risk acceptance required"]
+    Zero --> P1 --> P2 --> P3 --> P4
+  end
+
+  style Zero fill:#f88,stroke:#900
+```
+
+```mermaid
+sequenceDiagram
+  participant SRE as SRE Team
+  participant Eng as Engineering Manager
+  participant PM as Product Manager
+  participant Deploy as Deployment Pipeline
+
+  SRE->>SRE: Budget exhausted — error rate exceeded SLO
+  SRE->>Deploy: Block: deploy pipeline frozen for non-critical changes
+  SRE->>Eng: Alert: error budget exhausted, SLO breached
+  Eng->>PM: Feature deploys paused — reliability work takes priority
+  PM->>Eng: Feature X is critical for Q1 revenue
+  Eng->>SRE: Override request: deploy feature X accepting reliability risk
+  SRE->>SRE: Document override — explicit risk acceptance recorded
+  SRE->>Deploy: Allow feature X deploy with enhanced monitoring
+  Note over SRE: Budget refreshes as 30-day window rolls forward
+```
+
+### What a great answer includes
+- [ ] Immediate policy: freeze non-critical deploys when budget is zero
+- [ ] Escalation: notify leadership within 24 hours — SLO breach is a business risk
+- [ ] Root cause: postmortem to understand what consumed the budget
+- [ ] Override process: product can override freeze with explicit risk acceptance (documented)
+- [ ] Recovery: rolling 30-day window auto-restores budget as past incidents age out
+
+### Pitfalls
+- ❌ **No deployment freeze policy:** "We'll be more careful" is not a policy. Without a formal freeze, the next deployment breach goes unnoticed and the SLO continues to worsen.
+- ❌ **Not communicating SLO status to product:** If product does not see error budget status, they will schedule deployments without understanding reliability risk. Make the budget dashboard visible to all stakeholders.
+- ❌ **Resetting the error budget manually:** Budget resets only via the rolling time window. If a single major incident consumed all budget, the team must improve reliability — not petition for a reset to avoid accountability.
+
+### Concept Reference
+→ [Incident Response](./incident-response-systems)
+
+---
+
+## Q6: Google SRE error budget policy — how it balances reliability vs feature velocity
+
+**Role:** Staff | **Difficulty:** ⚫ | **Priority:** P2 | **Format:** Deep Dive
+
+> **What the interviewer is testing:** Whether you understand how Google operationalized the error budget concept to create a self-regulating system between SRE reliability goals and product velocity.
+
+### Problem Constraints
+| Dimension | Value |
+|-----------|-------|
+| Context | Google SRE teams each own SLOs for services they support |
+| Conflict | Product teams want to ship faster; SREs want fewer incidents |
+| Solution | Error budget as shared currency between both teams |
+| Book reference | Google SRE Book (2016), Chapter 3: Embracing Risk |
+
+### The Core Policy
+
+```mermaid
+graph TD
+  subgraph Policy["Google Error Budget Policy"]
+    Ample["Budget ample > 50%:\nProduct team decides deploy cadence\nSRE team approves deployments\nVelocity maximized"]
+
+    Low["Budget low 10-50%:\nJoint review of planned deployments\nRisk assessment required for each\nBalance between velocity and reliability"]
+
+    Exhaust["Budget exhausted:\nSRE team has veto on non-emergency deploys\nProduct team must fix reliability issues to restore budget\nSRE does NOT take on new features until SLO met"]
+
+    Ample --> Low --> Exhaust
+  end
+
+  Incentive["Key insight:\nBoth teams share the same budget\nProduct: wants to ship fast = must maintain reliability\nSRE: wants high reliability = must accept some risk to enable features\nNeither team can be unreasonable without hurting their own goals"]
+  Exhaust --> Incentive
+```
+
+### Budget as Negotiation Tool
+
+```mermaid
+graph LR
+  subgraph Scenario1["Scenario: Product wants risky migration"]
+    Prod1["Product: We want to migrate to new DB\nEstimated: 2h planned downtime"]
+    SRE1["SRE: Current budget: 40 min remaining\nMigration will exhaust budget 3x over"]
+    Decision1["Negotiation:\nDelay migration to start of new month\nOR do phased migration — 15 min per phase\nOR accept SLA breach risk explicitly"]
+    Prod1 --> SRE1 --> Decision1
+  end
+
+  subgraph Scenario2["Scenario: SRE wants to over-engineer"]
+    SRE2["SRE: We should build geo-redundant DB\n6 months of engineering time"]
+    Prod2["Product: Budget is healthy — 38/43 min remaining\n6 months is excessive for current risk level"]
+    Decision2["Result:\nBudget health = no justification for 6-month project\nSRE must justify reliability work against actual budget consumption\nData-driven decision: spend reliability effort proportional to risk"]
+    SRE2 --> Prod2 --> Decision2
+  end
+```
+
+### Toil Budget as Sister Concept
+
+```mermaid
+graph TD
+  Toil["Toil: Manual, repetitive operational work\nExamples: manual deployments, handcrafted on-call runbooks\nUser-visible value: zero\nScales with traffic: yes"]
+
+  Policy2["Google SRE Toil Budget Policy:\nSREs spend at most 50% time on toil\nAt least 50% on engineering (automation, reliability improvements)\nIf toil exceeds 50%: escalate to management immediately\nMeasure and report toil hours quarterly"]
+
+  Result2["Why it matters:\nToil > 50% = SREs become reactive ops staff\nNo time to improve reliability\nBurnout — SRE team shrinks\nService reliability stagnates"]
+
+  Toil --> Policy2 --> Result2
+```
+
+| Metric | Google SRE Target | Why |
+|--------|-------------------|-----|
+| Toil fraction | < 50% of SRE time | Preserve engineering time for reliability improvements |
+| SLO achievement | 99.9–99.99% depending on service | Budget headroom to ship features |
+| On-call burden | < 2 incidents per 12-hour shift | Prevent burnout; allow proper investigation |
+| Postmortem completion | 100% of P0/P1 incidents | Learning culture; prevent recurrence |
+| Error budget consumption | < 100% over 30 days | SLO is met; velocity can continue |
+
+### What a great answer includes
+- [ ] Describe error budget as shared currency: product wants velocity, SRE wants reliability
+- [ ] Three-tier policy: ample budget (velocity), low budget (joint review), exhausted (SRE veto)
+- [ ] Toil budget: SREs spend < 50% time on manual work or escalate
+- [ ] Data-driven reliability: reliability investment justified by actual budget consumption — not intuition
+- [ ] Organizational dynamic: error budget makes the reliability/velocity trade-off explicit and measurable
+
+### Pitfalls
+- ❌ **SRE team acting as gatekeeper without shared accountability:** If SRE can block deploys without sharing in the business consequences, they become obstacles. Error budget gives SRE the authority AND the accountability — they must also accept risk to enable velocity.
+- ❌ **Setting SLOs that are too strict:** If the SLO is 99.99% but the service has never achieved it historically, the budget is always exhausted. Start with achievable SLOs based on historical performance, then tighten gradually.
+- ❌ **Ignoring toil:** A team spending 80% on toil (manual deployments, handcrafted runbooks) has no capacity to improve reliability. Toil measurement is as important as SLO measurement in Google's framework.
+
+### Concept Reference
+→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
