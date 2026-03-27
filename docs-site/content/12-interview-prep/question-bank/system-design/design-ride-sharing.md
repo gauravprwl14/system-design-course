@@ -87,8 +87,6 @@ sequenceDiagram
 | No drivers in radius | Rider waits indefinitely | Expand search radius every 10s; cap at 15km; notify rider |
 
 ### Concept References
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
 
 ---
 
@@ -119,7 +117,6 @@ graph LR
 - ❌ **Not removing offline drivers from GEO index:** If driver closes app, their location stays in index forever — match service offers rides to offline drivers; use heartbeat TTL to auto-remove
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -184,7 +181,6 @@ Uber uses batch matching (Approach B) at scale. Every 2 seconds, a batch window 
 - ❌ **GEORADIUS returning many drivers for scoring:** Fetching 100 drivers per request × 11.6 requests/sec = 1160 driver records/sec to score — cap at 20 candidates
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -217,7 +213,6 @@ graph LR
 - ❌ **Not updating ETA during trip:** Initial ETA can drift by 5+ min; push ETA updates every 30s during trip as route and traffic evolve
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
 
 ---
 
@@ -277,7 +272,6 @@ Zone-based surge (Approach B) using geohash zones (~500m radius hexagons via Ube
 - ❌ **Not showing surge before ride confirmation:** Surprise surge after entering destination causes cancellations and complaints — show surge on fare estimate screen
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -311,7 +305,6 @@ graph LR
 - ❌ **Not releasing lock on driver app crash:** 20s TTL auto-releases; without TTL, crashed driver holds lock indefinitely blocking all future matches for that driver
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -345,7 +338,6 @@ graph LR
 - ❌ **Storing all GPS points in Redis:** Redis is in-memory — 1.5M writes × 24h × 50B = 6.5 TB/day; only keep CURRENT location in Redis; archive history to Cassandra
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -406,7 +398,6 @@ Redis GEO (Approach B). `GEORADIUS` uses a sorted set with geohash integer score
 - ❌ **Not handling geohash cell boundaries:** Driver at cell boundary may be in adjacent cell — always query current cell + 8 neighbors; Redis GEORADIUS handles this automatically
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -442,7 +433,6 @@ stateDiagram-v2
 - ❌ **Not storing GPS locally on driver phone:** If backend loses connection, driver continues navigating from cached route; on reconnect, syncs GPS trail for billing accuracy
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
 
 ---
 
@@ -476,4 +466,3 @@ graph LR
 - ❌ **No stop timeout:** Without timeout, a driver could wait indefinitely if rider is at a restaurant — 3 min wait is standard with audible countdown
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)

@@ -94,8 +94,6 @@ stateDiagram-v2
 | Thundering herd at cron boundary | Thousands of `:00` cron jobs fire simultaneously | Splay scheduled time ±30s with jitter; priority queue prevents overload |
 
 ### Concept References
-→ [Message Queues](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
 
 ---
 
@@ -129,7 +127,6 @@ graph LR
 - ❌ **No starvation protection:** P0 jobs arrive continuously → P2 jobs never execute; implement aging or dedicated P2 time windows
 
 ### Concept Reference
-→ [Message Queues](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -170,7 +167,6 @@ sequenceDiagram
 - ❌ **Not limiting requeue attempts:** Crashed worker requeues → same crash → infinite loop; enforce max retries (e.g., 3) before permanent failure
 
 ### Concept Reference
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
 
 ---
 
@@ -233,7 +229,6 @@ Pre-compute `next_run_at` at job creation (Approach B). B-tree index on `next_ru
 - ❌ **Ignoring daylight saving time:** `0 9 * * *` should fire at 9am local time, not 9am UTC; store schedules with timezone and use `pytz`/`date-fns-tz` for correct next-run calculation
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -265,7 +260,6 @@ graph LR
 - ❌ **No dedup on retry path:** Retry enqueue can duplicate if original job re-appears; always check dedup key before enqueue, not just at creation
 
 ### Concept Reference
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
 
 ---
 
@@ -343,5 +337,3 @@ Use a DAG scheduler (Airflow, Prefect, Temporal) when tasks have dependencies or
 - ❌ **Storing task results in scheduler metadata DB:** Metadata DB tracks state, not data; large task outputs belong in S3/GCS, not the Postgres metadata DB — XCom abuse causes DB bloat
 
 ### Concept Reference
-→ [Message Queues](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Saga / CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)

@@ -67,7 +67,6 @@ graph LR
 - ❌ **Long polling without max wait timeout:** Server-held requests without a max 30s timeout can exhaust thread pools.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -126,7 +125,6 @@ sequenceDiagram
 - ❌ **Forgetting load balancer WebSocket support:** Many HTTP load balancers don't proxy the `Connection: Upgrade` header correctly; test WS routing explicitly.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -213,7 +211,6 @@ For production at scale, **Approach C (dedicated connection tier) is best**. For
 - ❌ **Redis as single point of failure:** If Redis goes down with Approach B, no messages are delivered; use Redis Sentinel or Cluster.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -274,7 +271,6 @@ graph LR
 - ❌ **Redis Pub/Sub at 1M subscribers:** Publishing to a channel with 1M subscribers is O(N); use sharded channels or Kafka.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -363,7 +359,6 @@ function reconnect():
 - ❌ **No max attempts:** Clients retry indefinitely after server shuts down permanently; add explicit "give up" state.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -467,7 +462,6 @@ graph TD
 - ❌ **Fan-out without presence check:** Fanning out to offline users wastes resources; presence service filters to only online users' connections.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -547,7 +541,6 @@ For most chat/collaboration applications, **Approach A (sequence numbers)** with
 - ❌ **Sequence per user instead of per channel:** Users need to see all messages in channel order, not just their own messages in order.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -597,7 +590,6 @@ graph LR
 - ❌ **Ignoring kernel tuning:** `net.core.somaxconn` (backlog), `net.ipv4.tcp_tw_reuse`, `vm.swappiness` all affect connection capacity.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -714,6 +706,3 @@ graph LR
 | Kafka partition full | Operations dropped | Alert at 80% retention; ops are lost if not persisted before eviction |
 | Network partition (split brain) | Two board servers for same board | Consistent hash + ZooKeeper/etcd leadership ensures single server per board |
 
-### Concept References
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

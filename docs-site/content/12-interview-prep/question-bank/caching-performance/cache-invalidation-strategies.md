@@ -55,7 +55,6 @@ graph TD
 - ❌ **No TTL as a backstop on event-driven systems:** If the invalidation event is lost (broker outage), the cache entry lives forever. Always set a long-TTL (e.g., 1 hour) as a backstop even with event-driven invalidation.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -98,7 +97,6 @@ sequenceDiagram
 - ❌ **Unbounded dirty queue in write-behind:** If DB is slow, dirty entries accumulate. Set max dirty threshold (e.g., 10K entries) and fall back to synchronous writes when exceeded.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -162,7 +160,6 @@ Use **Redis Pub/Sub for low-latency invalidation** with a **TTL backstop** for r
 - ❌ **Not handling out-of-order invalidations:** Two rapid writes can produce invalidations in reversed order. Include a version/timestamp; skip invalidation if cached version is newer.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -201,7 +198,6 @@ graph TD
 - ❌ **No rate limiting alongside bloom filter:** Bloom filter reduces DB load but doesn't stop the attack at the network level. Pair with IP-based rate limiting (100 req/min/IP).
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -278,7 +274,6 @@ Lease TTL is 10 seconds — if the lease holder crashes, the lease expires and t
 - ❌ **Forgetting the wait strategy for non-lease-holders:** Clients waiting for a lease don't spin — they retry after a short sleep (10–50ms). Without this, you still have a thundering herd on the retry side.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -344,4 +339,3 @@ Netflix's Open Connect CDN (their own CDN) has a cache hit ratio target of 95%+.
 - ❌ **Ignoring propagation time:** CDN purges are not instant. 30–120s propagation means some users see old content during the window — build UIs that handle this gracefully.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

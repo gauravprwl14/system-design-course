@@ -91,8 +91,6 @@ graph TD
 | Manifest not found | Video won't start | Separate metadata API from CDN; metadata DB HA |
 
 ### Concept References
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -127,7 +125,6 @@ graph LR
 - ❌ **Switching quality on every segment:** Network measurement has variance — add hysteresis (stay at current quality unless difference > 20%) to avoid constant quality flipping
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -193,7 +190,6 @@ Netflix uses per-title encoding (Approach B) with AV1 codec (30% better compress
 - ❌ **Encoding only H.264:** H.265 is 40% smaller, AV1 is 50% smaller — modern devices support all three; encode multiple codecs, player picks best supported
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -225,7 +221,6 @@ graph LR
 - ❌ **Not caching manifests separately from segments:** Manifest must be fresh (5s TTL) to reflect quality changes; segments can be cached indefinitely (they never change)
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -291,7 +286,6 @@ Async pipeline (Approach B). Client uploads via S3 multipart (each 100MB part up
 - ❌ **Using large EC2 On-Demand instances:** Transcoding is CPU-intensive burst workload — Spot instances reduce cost by 70%; handle interruption with job checkpointing
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -325,7 +319,6 @@ graph LR
 - ❌ **Not handling device clock skew for last-write-wins:** If device A and B update simultaneously with same timestamp, use server-side timestamp, not client-provided
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -358,7 +351,6 @@ graph LR
 - ❌ **Supporting only Widevine:** Apple devices require FairPlay — need multi-DRM solution (Axinom, PallyCon, or AWS MediaConvert) that handles all DRM types
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -424,7 +416,6 @@ Async pipeline (Approach B). Video upload complete event → Kafka → dedicated
 - ❌ **Storing thumbnails at full resolution:** 1280×720 thumbnail is 200KB; serve smallest size for list views; use responsive images (`srcset`) to serve right size per context
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -460,7 +451,6 @@ graph LR
 - ❌ **Not handling ingest server failure for live:** Single ingest point = SPOF; use redundant ingest with automatic failover; keep 30s buffer to mask 5s switchover
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -501,4 +491,3 @@ sequenceDiagram
 - ❌ **No prefetch on hover:** Without hover prefetch, user waits for manifest fetch after click — adds 100-300ms to startup; prefetch makes it invisible
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)

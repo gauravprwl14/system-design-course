@@ -57,7 +57,6 @@ graph TD
 - ❌ **Only measuring availability, not latency:** A service that returns 200 in 10 seconds is "available" but not useful. SLI must include latency. Standard: "requests returning 2xx in < 500ms / total requests."
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -113,7 +112,6 @@ graph LR
 - ❌ **Resetting error budget on a fixed calendar:** A 30-day rolling window prevents "spend all budget on the first day then be perfect for 29 days." Rolling windows provide continuous accountability.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -214,7 +212,6 @@ sequenceDiagram
 - ❌ **Not adjusting burn rate thresholds for your SLO:** These calculations depend on your specific error budget. For 99.99% SLO (budget = 4.38 min/month), a 2% error rate is 20x faster — budget exhausted in 13 minutes. Must recalculate alert thresholds per SLO tier.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -271,7 +268,6 @@ graph LR
 - ❌ **Ignoring the p99.9 for critical paths:** Payment APIs where a 4-second experience causes a user to abandon their cart — that 0.1% (10 users/sec at 10K req/sec) is 864K users/day. Calculate impact in absolute users, not percentages.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -439,4 +435,3 @@ graph TD
 - ❌ **Ignoring toil:** A team spending 80% on toil (manual deployments, handcrafted runbooks) has no capacity to improve reliability. Toil measurement is as important as SLO measurement in Google's framework.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)

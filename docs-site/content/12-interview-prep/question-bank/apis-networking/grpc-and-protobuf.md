@@ -62,7 +62,6 @@ graph LR
 - ❌ **No schema registry:** Without a schema registry, proto files drift between services and cause silent deserialization failures.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -123,7 +122,6 @@ graph LR
 - ❌ **No schema = unusable binary:** Unlike JSON, protobuf messages without their schema are opaque blobs. Always version and distribute schemas.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -226,7 +224,6 @@ Start with **Unary** for all standard request-response RPCs. Add **Server Stream
 - ❌ **Missing deadline propagation in streaming:** Long-lived streams need explicit timeouts; default is no timeout.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -274,7 +271,6 @@ graph TD
 - ❌ **Not configuring keepalive:** Long-idle connections get killed by network infrastructure; configure `keepalive_time=20s` to keep connections alive.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -354,7 +350,6 @@ Always use **context-based deadline propagation** (Approach C). Pass the deadlin
 - ❌ **Not handling context cancellation in DB queries:** Even if gRPC context is cancelled, the DB query continues holding a connection; pass context to `db.QueryContext(ctx, ...)`.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -408,7 +403,6 @@ graph TD
 - ❌ **No schema registry enforcement:** Without CI checks, engineers break compatibility accidentally. Use Buf CLI to catch compatibility violations.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -452,7 +446,6 @@ graph LR
 - ❌ **Forgetting CORS configuration on Envoy:** gRPC-web from browser requires proper CORS headers on the Envoy proxy.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -523,8 +516,6 @@ Google uses **proxyless gRPC with xDS traffic management** — the gRPC client l
 - ❌ **Missing observability:** At Google scale, every RPC generates metrics and traces. Instrument gRPC with interceptors from day one.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -573,7 +564,6 @@ graph LR
 - ❌ **Not using grpcurl in development:** It's the `curl` of gRPC; essential for debugging without a full client.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -725,6 +715,3 @@ graph TD
 | Duplicate idempotency key different request | Ambiguous state | Return ALREADY_EXISTS; force client to use new key |
 | Schema evolution breaks old merchant | Field type changed | Never change field type; only add new optional fields; reserve deleted numbers |
 
-### Concept References
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)

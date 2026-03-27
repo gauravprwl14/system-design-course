@@ -86,8 +86,6 @@ graph TD
 | OLAP write failure | Aggregation data lost | Write to Kafka `aggregated-clicks` topic first; OLAP consumes from Kafka; Kafka is durable source of truth |
 
 ### Concept References
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -122,7 +120,6 @@ graph LR
 - ❌ **Bloom filter without window reset:** Bloom filter is append-only; if not reset, after 1 day it marks all new clicks as duplicates (100% false positive rate); use sliding window Bloom filter or reset every 10 minutes
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -181,7 +178,6 @@ Always use event-time windowing for billing-critical click aggregation. Flink wa
 - ❌ **Setting allowed lateness too high:** 10-minute lateness = Flink keeps 10 minutes of state per window in memory; at 116K events/sec × 600s = 70M events in memory → OOM; balance accuracy vs memory with 2-minute allowed lateness
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -219,8 +215,6 @@ graph TD
 - ❌ **Only checking IP velocity, not conversion rate:** Sophisticated bots use rotating IPs; zero-conversion clicks from diverse IPs still signal bot traffic — add downstream conversion signal to fraud model
 
 ### Concept Reference
-→ [Fraud Detection](../../../system-design/business-and-advanced/fraud-detection)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -288,5 +282,3 @@ Three-tier pre-aggregation: (1) Flink writes 1-min aggregated buckets to ClickHo
 - ❌ **No tenant isolation:** Large advertiser with 1B clicks/day runs expensive queries that starve small advertisers; use query queues per advertiser or separate ClickHouse cluster for large advertisers
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

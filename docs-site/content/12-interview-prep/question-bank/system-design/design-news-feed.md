@@ -85,8 +85,6 @@ graph TD
 | Hot celebrity post | Fan-out overwhelms Redis | Celebrity post in separate store; merge at read time |
 
 ### Concept References
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -117,7 +115,6 @@ graph LR
 - ❌ **Using read fan-out for users following 10K accounts:** Merging 10K timelines on every feed load = 10K DB reads per user per page view — unacceptable
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -178,7 +175,6 @@ Instagram's actual model: Users with > 1M followers trigger lazy fan-out. When f
 - ❌ **Celebrity post not appearing in pre-built cache at all:** Need merge at read time for celebrity posts; without merge, followers never see celebrity posts
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -210,7 +206,6 @@ graph LR
 - ❌ **Using timestamp as cursor:** Clock skew can produce duplicate or missing posts if two posts have same millisecond timestamp — use post_id (monotonic) as cursor
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -271,7 +266,6 @@ Two-stage ranking: (1) Retrieve 500 candidates from Redis feed cache (pre-built 
 - ❌ **Ranking every post from scratch at request time:** Compute engagement rate and affinity scores async in background; model inference uses pre-computed features
 
 ### Concept Reference
-→ [Recommendation System](../../../system-design/business-and-advanced/recommendation-system)
 
 ---
 
@@ -303,7 +297,6 @@ graph LR
 - ❌ **Celebrity posts not appearing until refresh:** Real-time merge at read time means celebrity posts appear instantly on next feed load — not delayed like fan-out
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -336,7 +329,6 @@ graph LR
 - ❌ **Client polling every 30 seconds:** 30-second polling interval means post appears after up to 30s — use WebSocket push for sub-5s delivery
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -395,8 +387,6 @@ Dynamic check per post (Approach B). Redis ZCARD on `followers:{user_id}` is O(1
 - ❌ **Celebrity posts never in pre-built feed → followers only see them if they explicitly load feed:** Send push notification on celebrity post so followers know to refresh
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -429,7 +419,6 @@ graph LR
 - ❌ **Trending feed same for all users:** Trending by geographic region and language improves relevance for cold-start users significantly
 
 ### Concept Reference
-→ [Recommendation System](../../../system-design/business-and-advanced/recommendation-system)
 
 ---
 
@@ -463,5 +452,3 @@ graph LR
 - ❌ **Bucketing by session not user:** User sees different rankings each session = noisy data; user-level consistent bucketing is required for clean experiment
 
 ### Concept Reference
-→ [Recommendation System](../../../system-design/business-and-advanced/recommendation-system)
-→ [Observability](../../../system-design/scale-and-reliability/observability)

@@ -65,7 +65,6 @@ graph TD
 - ❌ **Confusing recursive resolver with authoritative nameserver:** The recursive resolver (ISP, 8.8.8.8) caches and walks the tree; the authoritative nameserver is the source of truth.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -124,7 +123,6 @@ graph LR
 - ❌ **Changing TTL during the outage:** The old TTL is what's cached; changing TTL now takes effect only for queries after current cache entries expire.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -204,7 +202,6 @@ DNS LB works for **data center / region selection** but not for per-server load 
 - ❌ **Long TTL with health-check failover:** 1-hour TTL + health-check based failover = 1-hour outage window; set TTL to 60s for health-checked records.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -263,7 +260,6 @@ graph TD
 - ❌ **GeoDNS without health checks:** If the nearest region fails, GeoDNS still sends users there. Combine with health-checked failover.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -337,7 +333,6 @@ Anycast uses **BGP to announce the same IP from multiple locations**. Internet r
 - ❌ **Anycast for stateful services:** TCP connections route to nearest PoP; if BGP path changes mid-session, connection resets. Anycast is best for stateless (UDP DNS, HTTP/3) or connection-short protocols.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -391,7 +386,6 @@ graph TD
 - ❌ **Forgetting negative DNS caching:** NXDOMAIN (domain not found) is cached too. If you accidentally delete a DNS record, clients cache the "not found" for the negative TTL (from SOA record).
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -444,7 +438,6 @@ graph LR
 - ❌ **Forgetting to update both zones:** Changing the hostname requires updating both private and public DNS zones; easy to miss one.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -513,7 +506,6 @@ Cloudflare's DNS-layer protection works by: **being the authoritative DNS** (hid
 - ❌ **Ignoring DNS amplification:** Public DNS resolvers can be used for amplification attacks; Cloudflare's resolver implements rate limiting to prevent this.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -572,7 +564,6 @@ graph LR
 - ❌ **Not monitoring propagation:** Use `dig @8.8.8.8 api.example.com` and `dig @1.1.1.1` to verify both major resolvers have updated; use dnschecker.org for global view.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -692,6 +683,3 @@ graph TD
 | EU users routed to US (compliance violation) | GDPR fine | Test EU routing monthly; alert on any EU user hitting US endpoints |
 | Failover capacity | EU cluster cannot handle US+EU load | Pre-scale EU to 150% capacity; auto-scaling triggered on failover event |
 
-### Concept References
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)

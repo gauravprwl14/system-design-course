@@ -50,7 +50,6 @@ graph TD
 - ❌ **Treating feature store as just a Redis cache:** Feature stores also enforce point-in-time correctness for training data — the online serving (Redis) is only half the value
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -96,7 +95,6 @@ graph LR
 - ❌ **No synchronization between stores:** If the offline store has feature=v2 logic but the online store was updated to v3 logic, training and serving diverge → training–serving skew
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -162,7 +160,6 @@ graph LR
 - ❌ **Leakage only at the label, not features:** Even with correct labels, features can leak (e.g., using a "user churn risk score" computed after the churn event as a training feature)
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -203,7 +200,6 @@ graph TD
 - ❌ **No freshness monitoring:** During pipeline failures, online store serves values from days ago silently. Freshness monitoring is required — don't assume the pipeline always runs on time
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -270,7 +266,6 @@ Benefits:
 - ❌ **Forcing all features into the shared store:** Some features are model-specific (e.g., "probability of click on this exact ad-item combination") — these don't benefit from sharing; keep them in the model serving layer
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -308,7 +303,6 @@ graph TD
 - ❌ **No incremental checkpoint:** A 4-hour Spark job that fails at hour 3.5 restarts from scratch — checkpoint monthly batches
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -343,7 +337,6 @@ graph TD
 - ❌ **Vanilla Feast at high scale:** Feast's built-in materialization doesn't handle 500K events/sec — at Uber/TikTok scale, the real-time path uses Flink with Feast only for the offline store and API layer
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -394,7 +387,6 @@ Dasher ETA and demand surge change on the order of minutes — 30-second freshne
 - ❌ **No offline store for 30-second features:** Real-time features must also be materialized to offline store for training — training on historical data needs historical values at exact event timestamps
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -439,7 +431,6 @@ graph TD
 - ❌ **Same drift threshold for all features:** A `fraud_rate` feature naturally varies ±50% week-over-week (seasonal patterns); a `user_age` feature should never change — calibrate thresholds per-feature
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -521,7 +512,3 @@ graph TD
 | Upstream schema change (merchant_category renamed) | Feature becomes null for all transactions | Schema validation step before loading; data contract enforcement; alert on null rate spike >5% |
 | Feature drift post-promotion | Model degrades because feature distribution changed | Daily PSI check on all features; model performance monitoring; semi-automated rollback when PSI >0.2 + model AUC drops 5% |
 
-### Concept References
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)

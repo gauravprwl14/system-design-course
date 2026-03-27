@@ -79,8 +79,6 @@ graph LR
 | Network partition | Split-brain | Redis Sentinel requires majority quorum; minority side goes read-only |
 
 ### Concept References
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -115,7 +113,6 @@ graph LR
 - ❌ **Consistent hashing without virtual nodes:** Without virtual nodes, key distribution is uneven — some nodes handle 3× the keys of others; use 150+ virtual nodes per physical node
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -182,7 +179,6 @@ Redis uses **sampled LRU** — evicts from random sample of 5 keys (configurable
 - ❌ **Ignoring access pattern when choosing policy:** LRU is fine for recent-is-best workloads; LFU for power-law distributions; wrong choice causes hot-key eviction under pressure
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -226,7 +222,6 @@ graph LR
 - ❌ **Cache-aside without stampede protection:** 10K concurrent misses for same key → 10K DB reads simultaneously; use Redis SETNX lock: only 1 request queries DB, others wait
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -285,8 +280,6 @@ Four layers (Approach B): (1) Sentinel promotes replica within 30s — misses on
 - ❌ **Mutex TTL too long:** If DB is slow (10s response), mutex lock of 10s means all requestors wait 10s → request timeout; set mutex TTL = p99 DB query time × 2
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Circuit Breaker Pattern](../../../system-design/fundamentals/circuit-breaker-pattern)
 
 ---
 
@@ -320,7 +313,6 @@ graph LR
 - ❌ **Read from replica without acknowledging lag:** Replica lag of 100MB = significant staleness for rapidly-changing keys; check replication lag before routing read-heavy queries to replica
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -355,7 +347,6 @@ graph LR
 - ❌ **Local cache without invalidation:** Hot key updated in Redis but local cache stale for TTL duration; use short TTL (1-5s) for local cache of frequently-updated keys
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -417,8 +408,6 @@ Regional caches with async invalidation (Approach B). Each region has independen
 - ❌ **Ignoring write-write conflict:** Two regions update same key simultaneously — last-write-wins via timestamp; use `SETNX` or Lua compare-and-swap for critical keys
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -452,7 +441,6 @@ graph LR
 - ❌ **Large AOF file without rewriting:** AOF grows indefinitely; Redis `BGREWRITEAOF` compresses by rewriting current state; run periodically to keep AOF manageable
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -491,4 +479,3 @@ graph LR
 - ❌ **L1 too large:** 10,000 entries × 10KB each = 100MB per JVM instance × 100 servers = 10GB heap pressure; keep L1 small (100-1000 entries) for truly hot keys only
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

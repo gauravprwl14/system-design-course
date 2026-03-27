@@ -64,7 +64,6 @@ graph LR
 - ❌ **Large Bitmaps loaded at full resolution:** Loading a 4K image (8MB decoded) to display in a 100x100dp thumbnail wastes memory and causes GC pauses. Downsample to display size using `BitmapFactory.Options.inSampleSize` before loading into memory.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -122,7 +121,6 @@ graph TD
 - ❌ **Not returning `hasNextPage` flag:** Mobile UI needs to know when to stop showing "load more" — when the last page returns fewer than `limit` items, or when the API returns `hasNextPage: false`. Without this, the app may show an infinite spinner on the last page.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -182,7 +180,6 @@ graph TD
 - ❌ **Not handling notification permission denied:** iOS 12+ requires explicit permission prompt for push. If user denies, your app silently never receives notifications. Must check `UNNotificationSettings.authorizationStatus` and offer a re-prompt flow when appropriate.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -266,7 +263,6 @@ graph TD
 - ❌ **Not migrating to new architecture:** React Native 0.74+ defaults to the new architecture. Old bridge code that relies on legacy module initialization order may break. Migration guide required when upgrading.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -336,7 +332,6 @@ sequenceDiagram
 - ❌ **Forgetting token rotation:** Even securely stored tokens can be exfiltrated via runtime memory inspection or screenshot exploits. Implement short-lived access tokens (15 min) and long-lived refresh tokens (90 days with rotation). Refresh token rotation means a stolen refresh token becomes invalid after first use.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -442,4 +437,3 @@ graph TD
 - ❌ **Preloading too aggressively:** Preloading 10 tracks ahead wastes 12MB of data per session. Users on metered connections or low-storage devices will have a bad experience. Preload only the next 1 track; expand to 3 tracks if user is on WiFi and has 200MB+ free storage.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)

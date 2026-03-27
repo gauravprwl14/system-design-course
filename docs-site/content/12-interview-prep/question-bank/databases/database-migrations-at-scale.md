@@ -44,7 +44,6 @@ graph TD
 - ❌ **Backfilling without batching:** `UPDATE orders SET discount_pct = 0` on 100M rows creates a 100M row transaction — holds locks, fills WAL, crashes replicas; always batch in 1K–10K row increments
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -107,7 +106,6 @@ Expand-contract is the only safe pattern for column renames/type changes on live
 - ❌ **Dropping old column before verified:** A rollback after dropping old column requires the expand step again — keep old column for 2+ weeks after migration is confirmed
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -141,7 +139,6 @@ graph LR
 - ❌ **Running unsafe migrations from ORM auto-migration:** Django `makemigrations` or Rails `db:migrate` can generate `ALTER COLUMN TYPE` — always review generated SQL before running on production
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -214,7 +211,6 @@ gh-ost is the gold standard for large MySQL schema migrations. It uses binlog re
 - ❌ **Not testing chunk size:** Default chunk size 1000 rows; on a 50TB table at 50K writes/sec, too-large chunks cause replication lag spikes — tune based on row size and write rate
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -246,7 +242,6 @@ graph LR
 - ❌ **gh-ost without binary log format = ROW:** gh-ost requires `binlog_format=ROW`; if set to STATEMENT, gh-ost cannot parse changes correctly
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -280,7 +275,6 @@ graph TD
 - ❌ **Not versioning database state:** Without Flyway/Liquibase version tracking, you can't determine which migrations have been applied on which environment — use migration version numbering always
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -349,7 +343,6 @@ Dual-write + incremental backfill is the only safe approach for 500M row migrati
 - ❌ **Skipping consistency check:** Transformation bugs in backfill (wrong JSON parsing) go undetected until reads are cut — 1% sample verification catches 99% of logic errors
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -387,7 +380,6 @@ graph TD
 - ❌ **Running migrations from application code at startup:** If 10 pods all start simultaneously, 10 processes try to run the same migration — use a leader election or init container to run migrations once
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -421,7 +413,6 @@ graph TD
 - ❌ **Not automating backward-compat checking:** Manual review of every migration is error-prone at 100+ services — automated CI that validates schema changes against API contracts catches regressions
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -483,6 +474,3 @@ graph TD
 | Backfill stalls midway | Partial migration state | Backfill is idempotent — restart from where it stopped |
 | Replica lag grows during backfill | Reads from replicas 60s stale | Pause backfill when lag > 10s; resume when lag < 2s |
 
-### Concept References
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)

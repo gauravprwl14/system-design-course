@@ -47,7 +47,6 @@ graph LR
 - ❌ **Conflating "vector DB" and "embedding model":** Vector DB stores and searches vectors; the embedding model creates vectors — they're separate components
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -92,7 +91,6 @@ graph TD
 - ❌ **Default HNSW parameters for production:** Default M=16, ef=64 gives 90% recall; for RAG retrieval where missing the right document is costly, tune to 98% recall (M=32, ef=128) — 2× memory, 50% slower but ~8% more relevant answers
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -181,7 +179,6 @@ graph TD
 - ❌ **nprobe=1 in production:** Only searching the single nearest centroid misses 30–50% of true neighbors — nprobe=64 (search 64/4096 = 1.5% of data) balances recall and latency
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -215,7 +212,6 @@ graph TD
 - ❌ **Bitmap filter size for large N:** Pre-filtering for 1B vectors requires a 1B-bit bitmap (125 MB) to encode which vectors pass — manageable but must be transferred to GPU for each query
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -307,7 +303,6 @@ graph TD
 - ❌ **No replication for shards:** A single shard failure takes down 25% of the index — critical vectors become unretrievable
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -348,7 +343,6 @@ graph TD
 - ❌ **pgvector at 100M+ vectors:** pgvector's HNSW is single-node; at 100M+ 1536-dim vectors, memory exceeds most Postgres instance limits and index build takes 12+ hours
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -383,7 +377,6 @@ graph TD
 - ❌ **Same embedding space for all recommendation contexts:** "Driving music" and "study music" require different embeddings — Spotify uses context-aware embeddings with a context vector injected at query time
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -471,7 +464,6 @@ graph TD
 - ❌ **No quality gate before cutover:** Simply re-embedding and assuming it's better — measure NDCG on held-out test queries before exposing to users
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -511,7 +503,6 @@ graph LR
 - ❌ **Using PQ without validation:** Product quantization with aggressive compression (8 bytes/vec) can drop recall@10 from 95% to 70% — always validate recall on your specific data distribution
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -579,7 +570,3 @@ graph TD
 | Product catalog data quality (wrong attributes) | Semantic embeddings misaligned | Attribute normalization pipeline; validation before indexing |
 | Search latency spike (HNSW rebalancing) | P99 exceeds 200ms SLA | Pre-warm replicas before rebalancing; blue-green deployment for index updates |
 
-### Concept References
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
-→ [Observability](../../../system-design/scale-and-reliability/observability)

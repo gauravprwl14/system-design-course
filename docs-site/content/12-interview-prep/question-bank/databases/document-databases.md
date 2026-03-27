@@ -40,7 +40,6 @@ graph LR
 - ❌ **Embedding unbounded arrays:** Storing all comments in a post document — MongoDB's 16MB document limit causes failures at ~50K comments per post
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -75,7 +74,6 @@ graph TD
 - ❌ **Referencing everything like SQL:** MongoDB's strength is embedding; over-referencing creates N+1 queries (load user, then N separate loads for each reference)
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -149,7 +147,6 @@ Design to avoid multi-document transactions whenever possible — restructure th
 - ❌ **Transactions without session handling:** If session.commitTransaction() is never called (app crash), MongoDB auto-aborts after 60 seconds — design for transaction timeout recovery
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -188,7 +185,6 @@ graph TD
 - ❌ **Referencing everything for "normalization":** MongoDB's strength is embedding; over-normalization creates application-level joins that are slower than embedded reads
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -246,7 +242,6 @@ Design pipelines with `$match` first to reduce document count before expensive s
 - ❌ **$unwind before $match:** Unwinding an array before filtering multiplies document count — always filter first to minimize unwind output
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -282,7 +277,6 @@ graph TD
 - ❌ **Relying on schema enforcement for data integrity:** MongoDB schema validation (`$jsonSchema`) can enforce structure, but app-level validation is still needed — don't assume the DB catches all invalid data
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -321,7 +315,6 @@ graph TD
 - ❌ **Expecting sub-millisecond cross-region writes:** Speed of light constraints mean US-EU writes are 70ms minimum RTT — design shard keys so each user's writes stay in their home region
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -393,7 +386,6 @@ Use `tenant_id + _id` compound shard key — tenant_id provides routing for per-
 - ❌ **Compound shard key without tenant_id first:** `_id + tenant_id` distributes randomly — tenant_id must be first in compound key for query routing to work
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -429,7 +421,6 @@ graph LR
 - ❌ **Cosmos DB partition key with low cardinality:** Using `country_code` (195 values) as partition key for a 10TB container means ~50GB per country partition — exceeds 20GB limit for large countries
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -493,5 +484,3 @@ graph TD
 | Missing type-specific field on read | Null pointer in application | Default empty sub-document in all profiles; application handles null fields |
 | Slow search without index | Full collection scan | Ensure compound indexes on user_type + type-specific fields; test with `explain()` |
 
-### Concept References
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

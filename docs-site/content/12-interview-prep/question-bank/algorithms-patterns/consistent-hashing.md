@@ -61,7 +61,6 @@ graph TD
 - ❌ **Forgetting replication:** In practice, a key is assigned to the next N nodes clockwise (replication factor RF=3), not just one.
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -145,7 +144,6 @@ Virtual nodes assign each physical node multiple positions on the ring — Cassa
 - ❌ **Ignoring heterogeneous nodes:** With vnodes, a node with 2x memory should get 2x vnodes — otherwise it's underutilized while smaller nodes are overloaded.
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -193,7 +191,6 @@ sequenceDiagram
 - ❌ **Ignoring replication during migration:** With RF=3, adding a node requires copying data from up to 3 neighbors simultaneously — plan for network bandwidth spike.
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -269,7 +266,6 @@ Cassandra exposes the ring — operators see token ranges, can adjust vnode coun
 - ❌ **Confusing Cassandra partitions with vnodes:** One vnode owns a token range, which holds many partition keys. A single partition key with many clustering keys is a wide partition problem.
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -336,4 +332,3 @@ Akamai hashes the URL (or URL + path, stripping query params) to a position on t
 - ❌ **Including query parameters in the hash key:** `video.mp4?token=abc123` and `video.mp4?token=xyz456` should map to the same cache entry — strip auth tokens from the cache key.
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)

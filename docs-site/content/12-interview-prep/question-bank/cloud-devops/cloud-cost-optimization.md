@@ -231,7 +231,6 @@ Three levers: (1) CloudFront for all public egress — 91% saving. (2) VPC Endpo
 - ❌ **Using direct S3 for a public-facing download service:** S3 egress at $0.09/GB vs CloudFront at $0.0085/GB is a 10× cost difference — always put CloudFront in front of public content.
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 → [AWS Core Services](./aws-core-services)
 
 ---
@@ -363,7 +362,6 @@ Netflix's biggest saving is Open Connect (CDN at ISP level). For others to emula
 - ❌ **Not knowing Graviton is 40% cheaper:** Graviton (ARM) is widely available since 2021 and offers compelling savings — not knowing it signals outdated AWS knowledge.
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 → [AWS Core Services](./aws-core-services)
 
 ---
@@ -453,4 +451,3 @@ graph TD
 ### Concept References
 → [AWS Core Services](./aws-core-services)
 → [Infrastructure as Code](./infrastructure-as-code)
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)

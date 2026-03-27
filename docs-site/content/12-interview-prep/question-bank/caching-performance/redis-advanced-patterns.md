@@ -88,7 +88,6 @@ For multi-node HA, use **Redlock**: acquire on 5 Redis nodes, require majority (
 - ❌ **Using Redlock for strong correctness guarantees:** Martin Kleppmann's analysis shows Redlock is not safe under clock drift or long GC pauses. For true fencing, use ZooKeeper with monotonic fence tokens.
 
 ### Concept Reference
-→ [Distributed Locking Patterns](../../../system-design/fundamentals/distributed-coordination)
 
 ---
 
@@ -137,7 +136,6 @@ graph TD
 - ❌ **Pub/Sub across Redis Cluster:** Pub/Sub does NOT fan out across Redis Cluster nodes — only subscribers on the same node receive messages. Use keyslot sharding or a dedicated single-node Redis for pub/sub.
 
 ### Concept Reference
-→ [Message Queue Patterns](../../../system-design/messaging/message-queue-patterns)
 
 ---
 
@@ -216,7 +214,6 @@ Beyond 100M users (12GB+ RAM), shard by user_id mod N into N sorted sets. Top-K 
 - ❌ **Fetching full leaderboard on each request:** `ZREVRANGE 0 9999999` at 10M users is 10M entries — never do this. Always paginate with LIMIT.
 
 ### Concept Reference
-→ [Redis Data Structures](../../../system-design/caching/redis-patterns)
 
 ---
 
@@ -255,7 +252,6 @@ graph TD
 - ❌ **Ignoring ASK vs MOVED:** ASK is transient (during migration, don't cache). MOVED is permanent (update slot map). A client that caches ASK responses will route to the wrong node after resharding completes.
 
 ### Concept Reference
-→ [Redis Clustering](../../../system-design/caching/redis-patterns)
 
 ---
 
@@ -347,7 +343,6 @@ return weighted <= limit
 - ❌ **No EXPIRE on rate limit keys:** Memory leak. Each user creates 2 keys every minute — without TTL, 100K users = 200K leaked keys per minute.
 
 ### Concept Reference
-→ [Rate Limiting Patterns](../../../system-design/scalability/rate-limiting)
 
 ---
 
@@ -425,4 +420,3 @@ The architecture evolved: initially a single Redis cluster, then sharded by user
 - ❌ **Not LTRIM on message lists:** Without `LTRIM channel:{id}:messages 0 49` after each LPUSH, the list grows unbounded — OOM risk.
 
 ### Concept Reference
-→ [Redis Clustering](../../../system-design/caching/redis-patterns)

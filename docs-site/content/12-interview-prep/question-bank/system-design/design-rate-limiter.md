@@ -79,8 +79,6 @@ graph LR
 | Clock skew between nodes | Window boundaries differ | Use Redis server time (TIME command) not local clock |
 
 ### Concept References
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -112,7 +110,6 @@ graph LR
 - ❌ **Implementing rate limits at the application layer only:** Put them at the gateway/reverse proxy layer to protect before traffic hits your code
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -185,7 +182,6 @@ Token Bucket for most APIs: O(1) memory, handles burst with `burst_capacity > ra
 - ❌ **Choosing sliding window log for 1M keys at 50K rps:** Memory: 1M keys × 100 entries × 16 bytes = 1.6 GB just for rate limit logs
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -221,7 +217,6 @@ graph TD
 - ❌ **Not hashing to same Redis shard:** If same key lands on different shards, counters are split — use hash tags `{api_key}` to ensure same slot
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -251,7 +246,6 @@ graph LR
 - ❌ **Returning reset time in non-UTC or ambiguous format:** Use Unix epoch for `Reset` — timezone-independent, universally parseable
 
 ### Concept Reference
-→ [API Design](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -315,7 +309,6 @@ Parallel Lua script that checks all three dimensions in one round-trip. Script r
 - ❌ **Same time window for all dimensions:** IP rate limit should be per-second (burst protection), user per-minute (sustained use), API key per-hour (quota)
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -349,7 +342,6 @@ graph LR
 - ❌ **Local fallback without coordination allows N× the limit:** 10 nodes × 100 rps local limit = 1000 rps per user — communicate local limits as `limit/N` where N is node count
 
 ### Concept Reference
-→ [Circuit Breaker Pattern](../../../system-design/fundamentals/circuit-breaker-pattern)
 
 ---
 
@@ -379,7 +371,6 @@ graph LR
 - ❌ **Not documenting burst behavior in API docs:** Clients don't know why their 20 rapid requests succeed but the 21st fails — document `burst_capacity` explicitly
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -445,7 +436,6 @@ Dynamic config (Approach B). Tier limit stored in account DB. On request, lookup
 - ❌ **Using user tier limit for all their API keys:** User may have dev key (lower limit) and prod key (higher limit) — limits should be per API key, not per user account
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -480,5 +470,3 @@ graph LR
 - ❌ **Not binding abuse to authenticated identity:** Unauthenticated IP-based limiting is easily bypassed; require API key for all requests and rate-limit by key
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
-→ [Fraud Detection](../../../system-design/business-and-advanced/fraud-detection)

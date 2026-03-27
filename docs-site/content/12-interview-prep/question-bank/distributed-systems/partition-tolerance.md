@@ -162,7 +162,6 @@ Implement this as a multi-level fallback: primary DB → read replica → Redis 
 - ❌ **Serving stale writes silently:** If writes are queued during a partition, the user must know (optimistic UI: "Your order is being processed"). Silent queuing + apparent success sets wrong expectations.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -285,7 +284,6 @@ Sloppy quorum's implication: a read with `ConsistentRead: false` may not see a j
 - ❌ **Using sloppy quorum for financial data:** Sloppy quorum's inconsistency window is unacceptable for balance reads. Always use strong consistency reads for sensitive financial data.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -320,7 +318,6 @@ graph TD
 - ❌ **Not monitoring reconciliation progress:** After a long partition, anti-entropy can take hours on large datasets. Monitor divergence rate and alert if reconciliation is not complete within expected window.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -433,7 +430,6 @@ Design degraded mode as explicit operational modes with feature flags:
 - ❌ **Feature flags in the same failing database:** If your feature flags are stored in the primary database that's partitioned, you can't enable degraded mode. Store operational flags in a separate, always-available system (Redis, LaunchDarkly, CDN config).
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -497,7 +493,6 @@ graph TD
 
 ### Concept References
 → [CAP Theorem](cap-theorem-real-world)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 

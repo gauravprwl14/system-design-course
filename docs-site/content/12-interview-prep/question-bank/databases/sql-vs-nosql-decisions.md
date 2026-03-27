@@ -42,7 +42,6 @@ graph LR
 - ❌ **Ignoring query patterns:** SQL is designed for flexible queries; NoSQL forces you to design schema around access patterns — changing patterns later requires data migrations
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -81,7 +80,6 @@ sequenceDiagram
 - ❌ **Ignoring isolation level cost:** SERIALIZABLE isolation is fully ACID-safe but can reduce throughput by 50-80% due to lock contention
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -146,7 +144,6 @@ Use **Approach B** for SaaS at scale: PostgreSQL for user/billing/config data wh
 - ❌ **No tenant_id in every index:** Missing tenant_id as first column in composite indexes means full scans across all tenants' data
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -177,7 +174,6 @@ graph LR
 - ❌ **Embedding unbounded arrays:** Embedding all comments inside a post document; MongoDB's 16MB document limit causes failures at ~50K comments
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -217,7 +213,6 @@ sequenceDiagram
 - ❌ **Assuming "eventually" means fast:** Under network partition, Cassandra replication can lag seconds to minutes — design your UX for this
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -284,7 +279,6 @@ Always use **Approach B** (dual-write + backfill) for live systems. Dual writes 
 - ❌ **No consistency checks:** Silent data corruption during migration is hard to detect without automated diffing
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -315,7 +309,6 @@ graph LR
 - ❌ **Ignoring DynamoDB's 400KB item limit:** Large items (video metadata, documents) will hit this limit and require splitting
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -352,7 +345,6 @@ graph TD
 - ❌ **Polyglot without clear data ownership:** Two services writing to the same Elasticsearch index causes schema conflicts and ownership ambiguity
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -410,7 +402,6 @@ Airbnb uses MySQL for the booking transaction (guest, host, listing FK, payment 
 - ❌ **Updating HBase synchronously in booking transaction:** HBase failure would roll back MySQL booking — decouple via Kafka for resilience
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -446,4 +437,3 @@ graph TD
 - ❌ **Ignoring migration cost in evaluation:** A 2x faster DB with 6 months of migration work may be worse than a 1.5x faster DB achievable in 2 weeks via read replica promotion
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

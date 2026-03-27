@@ -84,9 +84,6 @@ graph LR
 | DB write lag | Redirect 404 for newly created URLs | Read-your-writes consistency; write to cache immediately |
 
 ### Concept References
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -116,7 +113,6 @@ graph LR
 - ❌ **Global counter as single point of failure:** Zookeeper or Redis for distributed counter; if it dies, ID generation stops
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -148,7 +144,6 @@ graph LR
 - ❌ **Case sensitivity ambiguity:** `My-Brand` vs `my-brand` — normalize to lowercase on write and lookup
 
 ### Concept Reference
-→ [API Design](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -215,8 +210,6 @@ Hybrid: Use CDN edge caching for static content (301 permanent redirects — no 
 - ❌ **Using 301 redirects for analytics:** Browser caches 301 permanently — analytics service never sees repeat visits
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -258,7 +251,6 @@ erDiagram
 - ❌ **VARCHAR(2048) for long_url:** URLs can exceed 2KB — use TEXT type; add separate column for display truncation
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -291,7 +283,6 @@ graph LR
 - ❌ **Cache stampede on popular URL expiry:** Multiple requests miss simultaneously, all hit DB; use probabilistic early expiry or Redis lock on miss
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -354,8 +345,6 @@ Use Kafka (Approach B). Redirect service emits to Kafka topic `click-events` wit
 - ❌ **Losing clicks when Kafka is down:** Use local buffer (in-memory queue) with circuit breaker to drop analytics, not redirects
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -389,7 +378,6 @@ graph LR
 - ❌ **Not cleaning up DB:** Expired rows accumulate — index size grows, slowing lookup; schedule nightly cleanup
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -424,8 +412,6 @@ graph TD
 - ❌ **Using synchronous malware scan in creation path:** VirusTotal scan takes 5–30s — always async; create first, disable retroactively
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
-→ [Fraud Detection](../../../system-design/business-and-advanced/fraud-detection)
 
 ---
 
@@ -493,5 +479,3 @@ Approach B for 90% of traffic. CDN caches popular redirects at edge (cache hit r
 - ❌ **Ignoring DNS TTL:** GeoDNS only works if DNS TTL is short (60s); long TTLs mean users stay on a failed region
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)

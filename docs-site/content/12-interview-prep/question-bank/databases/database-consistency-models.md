@@ -69,7 +69,6 @@ graph TD
 - ❌ **Choosing strong consistency for all use cases:** A social media "likes" counter doesn't need strong consistency — using eventual consistency saves 150ms per write at the cost of ±1 like lag, which is unnoticeable to users
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -167,7 +166,6 @@ graph TD
 - ❌ **Implementing linearizable reads by reading from the primary without lease:** Primary may be a stale ex-primary after a leader election — use lease-based reads (Raft ReadIndex) to ensure you're reading from the actual current leader
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -234,7 +232,6 @@ graph TD
 - ❌ **Routing all reads to primary to guarantee read-your-writes:** This defeats the purpose of read replicas — 100% of read traffic hits the primary; use one of the targeted strategies above
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -302,7 +299,6 @@ graph TD
 - ❌ **Assuming DynamoDB Streams give session consistency:** DynamoDB Streams are eventually consistent; a consumer reading a stream may process events out of order relative to the write — use DynamoDB Transactions for true session consistency across multiple items
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -407,7 +403,6 @@ graph TD
 - ❌ **Placing all leaseholders in one region for simplicity:** Majority of writes go cross-region for all other-region clients — co-locate leaseholders with the primary writer region; use multi-region table configuration for globally even traffic
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -509,4 +504,3 @@ sequenceDiagram
 - ❌ **Ignoring tombstone accumulation:** An OR-Set CRDT that processes 1M add/remove operations over 6 months accumulates 1M tombstones — without garbage collection, memory grows unbounded; plan GC with a coordinator election phase
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

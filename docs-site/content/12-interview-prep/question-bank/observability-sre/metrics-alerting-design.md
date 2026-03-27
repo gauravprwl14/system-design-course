@@ -58,7 +58,6 @@ graph TD
 - ❌ **Ignoring implicit errors:** An API that returns HTTP 200 with `{"status": "error"}` is an error. Error rate must include application-level error responses.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -117,7 +116,6 @@ graph TD
 - ❌ **Aggregating summaries across instances:** Five instances each report p99=200ms via Summary. You cannot average these — each computed its quantile independently. Use histograms instead; `histogram_quantile()` correctly aggregates across instances.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -205,7 +203,6 @@ graph LR
 - ❌ **No AlertManager deduplication:** If payment-svc runs on 10 instances and all fire simultaneously, on-call gets 10 identical pages. Configure `group_by: [service, alertname]` to merge into one.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -376,7 +373,6 @@ graph TD
 - ❌ **Querying 1 year of raw data without downsampling:** Raw 10M series over 1 year = ~25TB per query scan. Always query downsampled resolution for long time ranges (5m or 1h resolution).
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -473,4 +469,3 @@ graph LR
 - ❌ **Row-oriented storage for alert evaluation:** Scanning 1B time series row-by-row = 1B lookups per alert evaluation. Columnar storage scans only the values column — 10-100x faster for large cardinality analytical queries.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)

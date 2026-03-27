@@ -46,7 +46,6 @@ graph LR
 - ❌ **Confusing REST with CRUD:** REST resources map to domain objects, not database tables; one endpoint can trigger complex business logic.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -99,7 +98,6 @@ graph TD
 - ❌ **PUT with partial data:** PUT must send the full representation; fields omitted in PUT are deleted/nulled.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -193,7 +191,6 @@ Rules:
 - ❌ **Inconsistent naming:** mixing `camelCase`, `snake_case`, and `kebab-case` across endpoints confuses SDK generators.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -242,7 +239,6 @@ graph LR
 - ❌ **No total count with cursors:** Clients can't show "page 3 of 47" — design UI for infinite scroll instead.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -304,7 +300,6 @@ graph TD
 - ❌ **Never using 202:** Async operations (video processing, email sending) should return 202 + polling URL, not make the client wait.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -373,7 +368,6 @@ Stripe's DX excellence comes from **treating API consistency as a product featur
 - ❌ **No idempotency on writes:** Without idempotency keys, network retries create duplicate charges/records.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -428,7 +422,6 @@ graph LR
 - ❌ **Over-engineering:** For internal APIs with controlled clients, HATEOAS adds complexity with no benefit.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -507,7 +500,6 @@ Rules for 5-year compatibility:
 - ❌ **Infinite version accumulation:** Plan sunset dates up front; maintaining v1 through v8 simultaneously is unsustainable.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -561,7 +553,6 @@ graph TD
 - ❌ **Security through obscurity:** Hiding admin endpoints under obscure names — not a substitute for proper auth.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -680,6 +671,3 @@ GET /workspaces/ws_123/tasks?limit=50&cursor=eyJpZCI6MTAwfQ
 | Task assignment race | Two users assigned simultaneously | Database constraint + 409 Conflict response |
 | Cursor staleness | Task deleted mid-pagination | Cursor by created_at + id; deleted tasks just skip |
 
-### Concept References
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)

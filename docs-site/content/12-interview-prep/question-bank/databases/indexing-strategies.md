@@ -41,7 +41,6 @@ graph TD
 - ❌ **Forgetting that NULL values behave differently:** PostgreSQL excludes NULLs from B-tree indexes by default; queries on nullable columns may still scan
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -76,7 +75,6 @@ graph LR
 - ❌ **Hash index for range queries:** Hash index on created_at is useless for `WHERE created_at > now() - interval '7 days'` — B-tree is required for range
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -138,7 +136,6 @@ graph LR
 - ❌ **Duplicate single-column indexes after adding composite:** If you add `(tenant_id, status)`, the single-column `(tenant_id)` index is now redundant — remove it to save write overhead
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -171,7 +168,6 @@ graph TD
 - ❌ **Forcing index use with hints when planner is right:** If 60% of rows match, the planner's choice of full scan is correct — forcing index use makes it slower
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -204,7 +200,6 @@ graph LR
 - ❌ **Not checking visibility map:** PostgreSQL index-only scans still access the heap if the visibility map shows the page might have dead tuples — ensure regular VACUUM runs
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -274,7 +269,6 @@ graph TD
 - ❌ **Adding index without checking write impact:** A heavily written table with 10 existing indexes takes 50% longer to write — measure write latency before and after
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -308,7 +302,6 @@ graph TD
 - ❌ **Using REINDEX without CONCURRENTLY on production:** `REINDEX index_name` locks the table exclusively — use `REINDEX CONCURRENTLY` (PG 12+) to avoid blocking all reads
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -374,7 +367,6 @@ The PostgreSQL planner is cost-based — it estimates the cost of every feasible
 - ❌ **Trusting EXPLAIN without ANALYZE:** Planner estimates can be 100x off with stale statistics; always compare estimated vs actual rows
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -407,7 +399,6 @@ graph LR
 - ❌ **Partial index on high-cardinality subset:** If 50% of rows match the predicate, the partial index isn't much smaller — use full composite index instead
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -463,5 +454,3 @@ graph TD
 | New index not used (stale stats) | No improvement | `ANALYZE orders, order_items, customers` after index creation |
 | Query is fundamentally a bad design | Index doesn't help enough | Materialized view refreshed every 5 minutes |
 
-### Concept References
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)

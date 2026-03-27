@@ -57,7 +57,6 @@ graph LR
 - ❌ **Indexing everything at field level:** ES indexes every field by default. For logs with 200 unique fields, this creates a massive index. Use `dynamic: false` and explicitly map only queried fields to reduce index size by 3-5x.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -108,7 +107,6 @@ graph TD
 - ❌ **Free-form string for numeric fields:** `{"duration":"450ms"}` stores a string. `{"duration_ms":450}` stores a number. Only numeric types support range queries (`duration_ms > 200`) — critical for latency alerting.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -206,7 +204,6 @@ sequenceDiagram
 - ❌ **No sampling counter metric:** When you sample, emit a metric: `logs_sampled_total{level, service, kept=true/false}`. Without this, you cannot tell from Kibana whether low log volume means "no events" or "events dropped by sampler."
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -299,7 +296,6 @@ graph LR
 - ❌ **Not monitoring Kafka consumer lag:** Consumer lag = (Kafka latest offset) - (consumer committed offset). If lag grows continuously, consumers are too slow. Alert at lag > 10M messages (20 minutes of production logs at 500K/sec).
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -385,4 +381,3 @@ graph LR
 - ❌ **Ignoring primary key design:** ClickHouse primary key determines data sort order, not uniqueness. For time-series logs: `ORDER BY (timestamp, service_name)` enables partition pruning on time-range queries. Wrong primary key = full table scan for every query.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)

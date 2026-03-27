@@ -103,8 +103,6 @@ sequenceDiagram
 | Lock service unavailable | Clients cannot acquire new locks; existing locks hold until TTL | Redis Sentinel / ZooKeeper quorum for HA; lock operations queue during brief outages; 99.99% = 52 min/year total acceptable downtime |
 
 ### Concept References
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -139,7 +137,6 @@ graph LR
 - ❌ **Using DEL without value check on release:** Client A's lock expires; Client B acquires it; Client A finishes work and calls DEL — deletes Client B's lock; always verify value before deleting
 
 ### Concept Reference
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
 
 ---
 
@@ -213,8 +210,6 @@ Redlock is safe for use cases that tolerate a brief window of incorrect lock gra
 - ❌ **Using 3 nodes instead of 5 for Redlock:** With 3 nodes, 1 failure leaves majority = 2; network partition can split 1-2; minority of 2 grants lock; always use odd number ≥ 5
 
 ### Concept Reference
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
-→ [Consistency Patterns](../../../system-design/fundamentals/consistency-patterns)
 
 ---
 
@@ -293,8 +288,6 @@ ZooKeeper ephemeral sequential nodes are the gold standard for distributed locki
 - ❌ **Using ZooKeeper for high-throughput locking:** ZooKeeper handles ~10K writes/sec; if you need 100K lock acquisitions/sec, use Redis (500K ops/sec); ZooKeeper is for correctness-critical, low-throughput coordination (leader election, config)
 
 ### Concept Reference
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
-→ [Consistency Patterns](../../../system-design/fundamentals/consistency-patterns)
 
 ---
 
@@ -358,5 +351,3 @@ Fencing tokens are a defense-in-depth mechanism that makes distributed locking s
 - ❌ **Fencing only on lock service side (not resource):** Recording "Client A holds token=43" in the lock service is not enough; the resource must validate token on every write operation — split-brain happens when client is disconnected from lock service but still connected to the resource
 
 ### Concept Reference
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
-→ [Consistency Patterns](../../../system-design/fundamentals/consistency-patterns)

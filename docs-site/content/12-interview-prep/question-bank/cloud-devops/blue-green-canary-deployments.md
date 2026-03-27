@@ -172,7 +172,6 @@ sequenceDiagram
 - ❌ **Rollback trigger too sensitive:** Transient 30-second spikes trigger unnecessary rollbacks — use a sustained threshold (e.g., error rate > 1% for 5 consecutive minutes).
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -230,7 +229,6 @@ Load balancer weighted routing for simple canary (most teams). Istio/service mes
 - ❌ **Istio without observability:** Service mesh is useless for canary without the metrics layer (Prometheus + Kiali) to see the split in action.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -264,7 +262,6 @@ graph LR
 - ❌ **Ignoring shadow metrics:** Shadow deployment is only useful if you actively compare v2 metrics (latency, output differences) vs v1 — set up dashboards before launching shadow.
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -358,7 +355,6 @@ Argo Rollouts with a Prometheus AnalysisTemplate covering error rate and p99 lat
 - ❌ **Bake time too short:** A 2-minute analysis window at 5% traffic may see only 50 requests — not enough to detect a 2% error rate increase statistically.
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 → [CI/CD Pipeline Design](./cicd-pipeline-design)
 
 ---
@@ -457,5 +453,3 @@ graph TD
 
 ### Concept References
 → [CI/CD Pipeline Design](./cicd-pipeline-design)
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)

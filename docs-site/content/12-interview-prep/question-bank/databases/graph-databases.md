@@ -44,7 +44,6 @@ graph LR
 - ❌ **Assuming graph DB scales infinitely:** Most graph DBs (Neo4j community, single-instance) are not natively distributed; horizontal scaling requires specific editions or managed services
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -78,7 +77,6 @@ graph TD
 - ❌ **Neo4j for geographically distributed graph:** Neo4j Fabric (sharding) is complex; for truly distributed global graphs, Neptune or DGraph is a better fit
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -139,7 +137,6 @@ Neo4j's index-free adjacency stores physical pointers from each node directly to
 - ❌ **Underestimating the supernode problem:** A celebrity with 1M followers creates a 1M-edge traversal at hop 1 — graph DBs can still be slow for supernode traversal without pagination or filtering
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -177,7 +174,6 @@ graph TD
 - ❌ **Storing relationship properties in nodes:** Relationship properties (friendship start date, weight) belong on the edge, not duplicated on each node — graph DBs are designed for relationship properties
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -243,7 +239,6 @@ sequenceDiagram
 - ❌ **Not understanding why fixed-size records matter:** Variable-size records would require scanning to find a specific record by ID; fixed-size allows direct offset access
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -277,7 +272,6 @@ graph TD
 - ❌ **Graph sharding for write scale:** Read replicas help read scale; write scale for graphs is fundamentally limited by the need for consistent traversal across shards — design to minimize write rate at the graph layer
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -311,7 +305,6 @@ graph TD
 - ❌ **Underestimating RAM requirements:** 40B edges × 8 bytes = 320GB — this is feasible with a 100-node cluster but requires careful memory management and sharding strategy
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -374,7 +367,6 @@ graph TD
 | Graph DB primary fails | No fraud enrichment | Read replica serves traversals; writes resume after failover |
 
 ### Concept References
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -406,7 +398,6 @@ graph LR
 - ❌ **Not using relationship direction in queries:** `(a)-[:FOLLOWS]-(b)` matches both directions; `(a)-[:FOLLOWS]->(b)` matches only outgoing follows — direction matters for directed graphs like Twitter
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -441,4 +432,3 @@ graph TD
 - ❌ **Not mentioning the problem is likely domain-specific:** "Detect a cycle in a 1B-node graph" is usually a fraud ring detection problem — clarify depth and size constraints before proposing a general algorithm
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

@@ -45,7 +45,6 @@ graph LR
 - ❌ **Expecting ad-hoc queries to work:** Cassandra is schema-first — you design tables around the 3 queries you'll run, not the data model; changing query patterns requires new tables
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -78,7 +77,6 @@ graph TD
 - ❌ **Not including range column in clustering key:** If you need `WHERE created_at > X` within a partition, `created_at` must be the clustering key — otherwise it's a partition-wide scan
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -146,7 +144,6 @@ Cassandra uses a token ring where each partition key is hashed to a 64-bit token
 - ❌ **Low RF for write-heavy workloads:** RF=1 means no redundancy — a node failure loses data permanently; always use RF=3 for production
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -186,7 +183,6 @@ graph TD
 - ❌ **Not monitoring tombstone count:** `nodetool cfstats` shows tombstone ratios; alert when tombstone:live ratio exceeds 10:1
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -257,7 +253,6 @@ Use `QUORUM` for financial data and critical reads/writes where staleness is una
 - ❌ **ONE write + QUORUM read assuming staleness is prevented:** With ONE write, only 1 node has the data; QUORUM read hits 2 nodes but the 1 with fresh data may not be in that set
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -292,7 +287,6 @@ graph TD
 - ❌ **Not choosing bucket size based on data rate:** A sensor sending 1 reading/ms needs daily buckets (86.4K rows/day); a sensor sending 1 reading/hour needs yearly buckets (8.7K rows/year)
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -334,7 +328,6 @@ graph TD
 - ❌ **Choosing HBase outside the Hadoop ecosystem:** HBase's value comes from tight Hadoop integration; without Hadoop, Cassandra is simpler to operate with better write throughput
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -415,7 +408,6 @@ Discord's schema is textbook time-bucketed Cassandra: `(channel_id, bucket)` as 
 - ❌ **Timestamp as clustering key instead of message_id:** Two messages at the same millisecond would collide; Snowflake IDs with embedded timestamps are unique and sortable
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -476,8 +468,6 @@ graph TD
 | Hot conversations | High-volume chat on one partition | Bucket reduces partition size; active bucket stays in Cassandra cache |
 
 ### Concept References
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -514,4 +504,3 @@ graph TD
 - ❌ **Applying single-table for complex relational data:** Single-table works for 3–5 entity types with clear hierarchical relationships; 20+ entity types become unmaintainable — use separate tables
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

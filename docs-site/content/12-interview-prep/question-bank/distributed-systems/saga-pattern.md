@@ -44,7 +44,6 @@ graph LR
 - ❌ **Treating Saga as having ACID isolation:** Between T2 (reserve inventory) and T3 (charge payment), a concurrent saga can see the reserved inventory. Design your business logic to handle these temporary states.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -86,7 +85,6 @@ graph TD
 - ❌ **"Orchestration is always better":** Choreography is simpler to implement and scales better for high-throughput sagas where the coordinator would be a bottleneck (e.g., 100K events/sec).
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -168,7 +166,6 @@ Model the trip as an orchestrated saga with a state machine in the SEC. Key desi
 - ❌ **Infinite retry loops:** Without a max retry count, a permanently failing payment step retries forever. Always set a maximum and escalate to a dead letter queue.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -207,7 +204,6 @@ sequenceDiagram
 - ❌ **Compensating in wrong order:** C3 must execute before C2 which executes before C1. Compensation in wrong order can create invalid business states (e.g., cancelling order before releasing inventory leaves orphaned reservations).
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -279,7 +275,6 @@ SEC state machine must handle the crash-during-compensation scenario: if the SEC
 - ❌ **Not handling "already completed" on recovery:** If T2 completed but the SEC crashed before writing T2_COMPLETED, the recovery re-executes T2. Without idempotency in Service 2, this causes double execution.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -312,7 +307,6 @@ graph TD
 - ❌ **Very long-running workflows without checkpoints:** A Temporal workflow that runs for 30 days accumulates a 30-day event history. Enable workflow continuation-as-new to reset history while preserving state.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -351,7 +345,6 @@ graph TD
 - ❌ **Retrying compensation indefinitely:** An infinite retry loop against a permanently down service will never resolve. Set a max retry count and escalate.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -425,7 +418,6 @@ Key metric: **saga completion rate** = (completed + compensated) / (started). Sh
 - ❌ **Forgetting to test recovery after SEC crash:** If SEC state is correct but not tested under crash conditions, the first production outage will reveal an untested code path in SEC recovery.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -465,7 +457,6 @@ graph TD
 - ❌ **Making the SEC a monolith:** If the SEC contains business logic for all sagas (order saga, refund saga, onboarding saga), it becomes a distributed monolith. Keep each saga type in its own SEC deployment.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -528,5 +519,4 @@ stateDiagram-v2
 | Reservation TTL expires | Inventory released before payment | Set TTL > payment timeout (60s reservation TTL, 30s payment SLA) |
 
 ### Concept References
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 → [Distributed Transactions](distributed-transactions)

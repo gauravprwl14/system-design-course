@@ -42,7 +42,6 @@ graph TD
 - ❌ **Ignoring FLP:** Claiming an algorithm "always terminates" in an async network violates FLP. Real systems assume partial synchrony.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -88,7 +87,6 @@ sequenceDiagram
 - ❌ **Thinking Paxos is used directly in production:** Almost no system uses vanilla Paxos. Raft, ZAB, and Multi-Paxos are the practical implementations.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -166,7 +164,6 @@ The Raft paper measured comprehension in student experiments: 33 of 43 students 
 - ❌ **Forgetting leader restriction:** A Raft candidate wins election ONLY if its log is at least as up-to-date as the majority. Without this, a node with missing entries could become leader and overwrite committed data.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -200,7 +197,6 @@ stateDiagram-v2
 - ❌ **Forgetting the log completeness requirement:** Without it, a node that missed the last 1000 entries could win and truncate committed data.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -333,7 +329,6 @@ graph TD
 - ❌ **Confusing quorum with replication factor:** RF=3 means 3 copies exist. Quorum=2 means you need 2 nodes to agree. Both are needed: RF=3, CL=QUORUM for strong consistency.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -370,7 +365,6 @@ graph TD
 - ❌ **Running a 2-node etcd cluster:** 2 nodes = no fault tolerance (quorum=2, lose 1 = halt). Always run 3, 5, or 7 etcd nodes.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -480,7 +474,6 @@ graph TD
 - ❌ **Confusing BFT with security:** BFT handles *some* malicious behavior but doesn't replace TLS/authentication. A Byzantine node inside your security perimeter implies a breach — fix the breach, not the consensus algorithm.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -523,4 +516,3 @@ graph TD
 - ❌ **Mixing KRaft and ZooKeeper modes in a cluster:** KRaft is incompatible with ZooKeeper mode. Migration requires a clean migration procedure (Kafka provides a migration tool in 3.5+).
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)

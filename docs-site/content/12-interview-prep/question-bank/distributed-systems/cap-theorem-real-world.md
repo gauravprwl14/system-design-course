@@ -46,7 +46,6 @@ graph TD
 - ❌ **Ignoring latency:** PACELC shows that even without partitions, there's a latency vs consistency trade-off.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -86,7 +85,6 @@ graph LR
 - ❌ **Forgetting consistency levels:** Cassandra can be CP with `QUORUM` reads — CP/AP is a setting, not a fixed property.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -162,7 +160,6 @@ Hinted handoff stores writes for unreachable nodes for up to 3 hours (configurab
 - ❌ **Forgetting hinted handoff expiry:** Hints older than `max_hint_window` (3 hours default) are discarded. Long partitions cause permanent divergence.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -202,7 +199,6 @@ graph LR
 - ❌ **"Our timeout is 1ms so we detect immediately":** Very short timeouts cause false positives — healthy nodes appear partitioned under load spikes.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -242,7 +238,6 @@ sequenceDiagram
 - ❌ **Ignoring CP during leader election:** Leader election itself takes 100–2000ms. During this window, ZooKeeper is unavailable for writes — use etcd (300–500ms elections) for latency-sensitive use cases.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -315,7 +310,6 @@ Design separate degradation strategies for reads vs writes:
 - ❌ **Ignoring cache warming:** A cold cache during a partition provides zero benefit. Ensure cache TTL > expected partition duration.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -352,7 +346,6 @@ graph TD
 - ❌ **Assuming EL and EC are binary:** They exist on a spectrum. Cassandra's QUORUM gives EC at 2x the EL latency.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -388,7 +381,6 @@ graph LR
 - ❌ **Strong reads on DynamoDB Global Tables:** Not supported. Cross-region replication lag is 1–2 seconds, and strong reads revert to eventual.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -462,7 +454,6 @@ Discord migrated from Cassandra to ScyllaDB in 2023, reducing p99 read latency f
 - ❌ **Ignoring application-level ordering:** Without Snowflake IDs, Cassandra's LWW would produce incorrect message ordering under clock skew.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -497,4 +488,3 @@ graph TD
 - ❌ **Confusing CA with "high availability":** HA means multi-node redundancy — which reintroduces CAP. True CA is single-node, which is a SPOF.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)

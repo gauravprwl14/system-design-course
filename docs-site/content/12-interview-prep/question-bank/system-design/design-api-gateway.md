@@ -85,9 +85,6 @@ graph LR
 | Gateway node OOM | Pod crashes | Kubernetes HPA; memory limit alerts; connection drain before shutdown |
 
 ### Concept References
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
-→ [Circuit Breaker Pattern](../../../system-design/fundamentals/circuit-breaker-pattern)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -125,7 +122,6 @@ graph LR
 - ❌ **Making gateway a monolith for all microservice traffic including internal:** Gateway is for external clients; service-to-service traffic should use service mesh (Istio) to avoid gateway bottleneck
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -190,7 +186,6 @@ Local JWT verification (Approach B). Gateway downloads JWKS (JSON Web Key Set �
 - ❌ **Calling auth service on every request:** At 100K rps, auth service becomes the bottleneck; local verification with cached public keys eliminates this dependency on hot path
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -224,7 +219,6 @@ graph LR
 - ❌ **Not supporting trailing slash normalization:** `/api/orders/` vs `/api/orders` treated as different routes; normalize in gateway before matching
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -292,7 +286,6 @@ Per-service circuit breaker with fallback (Approach B). Gateway maintains circui
 - ❌ **No fallback when circuit opens:** Pure 503 on circuit open is harsh; stale cached response or degraded mode (empty list instead of error) provides better UX
 
 ### Concept Reference
-→ [Circuit Breaker Pattern](../../../system-design/fundamentals/circuit-breaker-pattern)
 
 ---
 
@@ -325,7 +318,6 @@ graph LR
 - ❌ **Running v1 and v2 as separate deployments forever:** Two codebases, double the maintenance; use feature flags + adapter pattern to serve both from same codebase when possible
 
 ### Concept Reference
-→ [API Design](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -356,7 +348,6 @@ graph LR
 - ❌ **Business-rule limits in gateway:** "Max 5 checkout attempts per user per day" is business logic, not infrastructure policy; belongs in Order Service, not gateway config
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -416,8 +407,6 @@ Hybrid (Approach B). Starter tenants: shared pool with per-tenant rate limiting 
 - ❌ **Per-tenant dedicated infrastructure for all tenants:** 10K dedicated Kubernetes namespaces is unmanageable; only Enterprise tier gets dedicated; Starter shares with tenant isolation via application-layer scoping
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -452,7 +441,6 @@ graph LR
 - ❌ **Blocking I/O in Lua plugins:** Nginx is single-threaded event loop; synchronous blocking call in Lua plugin blocks entire worker; use `ngx.timer.at` or `resty.http` non-blocking HTTP client
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -484,5 +472,3 @@ graph LR
 - ❌ **Propagating raw JWT to backend services:** Extract claims at gateway, forward as structured headers (`X-User-ID`, `X-User-Roles`); services don't need to re-verify JWT
 
 ### Concept Reference
-→ [API Design](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)

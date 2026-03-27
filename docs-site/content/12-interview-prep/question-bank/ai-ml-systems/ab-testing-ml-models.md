@@ -51,7 +51,6 @@ graph TD
 - ❌ **Forgetting long-tail metrics:** CTR improves but return rate increases 20% → net revenue is negative. Define success metrics AND downstream impact metrics before starting.
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -90,7 +89,6 @@ graph LR
 - ❌ **Calculating sample size after seeing results:** Setting MDE based on the observed difference you see on day 3 inflates Type I error rate from 5% to 30%+
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -145,7 +143,6 @@ Without guardrails, ML models can "win" on the success metric by harming other d
 - ❌ **Too many success metrics:** With 20 success metrics, you'll find a significant positive result by chance (p<0.05 means 1 in 20 will look significant at random) — pre-register 1–3 primary metrics
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -190,7 +187,6 @@ graph TD
 - ❌ **MAB in seasonal environments:** If Model A is better in summer but Model B is better in winter, the bandit will exploit A in summer, then have no budget to discover B's winter superiority
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -245,7 +241,6 @@ Each user serves as their own control — variance from user-to-user preference 
 - ❌ **Forgetting position bias:** Items shown in position 1 get more clicks regardless of model origin — use a position-debiased click model (DCG-style weighting) when attributing credits
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -283,7 +278,6 @@ graph TD
 - ❌ **Ignoring equilibrium effects:** In a two-sided marketplace, the new algorithm may need time to reach equilibrium — measure results after 7+ days, not immediately after launch
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -318,7 +312,6 @@ graph TD
 - ❌ **No holdout group:** Without a holdout, you cannot measure the cumulative effect of 250 concurrent shipped changes over a year — individual A/B wins can compound into a net negative
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -401,7 +394,6 @@ graph TD
 - ❌ **Sequential testing for non-stationary metrics:** SPRT assumes the treatment effect is constant. If effects are seasonal (e.g., Black Friday spike), sequential testing may stop too early when the effect is inflated
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -435,7 +427,6 @@ graph TD
 - ❌ **Holdout leakage:** Holdout users see launched features through social sharing, screenshots, or logged-out state — holdout must be enforced at the user session layer, not just at feature flag level
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -500,6 +491,3 @@ graph TD
 | Diversity guardrail violation | v2 recommends only top-10 popular songs → diversity drops 30% | Monitor catalog coverage (% of catalog recommended in past 24h) as guardrail; deep learning models often sacrifice diversity |
 | Model v2 fails silently | v2 returns empty recommendations for 0.5% of users | Per-variant empty response rate alert; auto-fallback to v1 for failed v2 requests (don't count as v2 impressions) |
 
-### Concept References
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)

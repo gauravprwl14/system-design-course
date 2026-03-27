@@ -77,7 +77,6 @@ graph TD
 - ❌ **Choosing separate schemas thinking it's as cheap as shared tables:** Every new tenant requires a schema creation + full DDL migration — adding 100 tenants per day means 100 schema migrations per day; operational overhead grows fast
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -163,7 +162,6 @@ graph TD
 - ❌ **Using `SET` instead of `SET LOCAL` in connection pools:** `SET app.current_tenant_id = 'X'` persists for the entire connection; if the connection is returned to the pool and reused by tenant Y, tenant Y's queries run with tenant X's context — always use `SET LOCAL` (transaction-scoped)
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -260,7 +258,6 @@ graph TD
 - ❌ **Not having per-tenant resource attribution:** If you can't identify which tenant is causing CPU spikes, you can't throttle them — add tenant_id as a query comment (`/* tenant_id=X */`) from day one so pg_stat_statements groups by tenant
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -355,7 +352,6 @@ graph TD
 - ❌ **Not using `SKIP LOCKED` in the backfill job:** Without SKIP LOCKED, multiple parallel backfill workers try to lock the same rows and serialize — `SKIP LOCKED` lets each worker grab a non-contended batch, enabling 4x parallel backfill speed
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -429,7 +425,6 @@ graph TD
 - ❌ **Forgetting derived data in analytics and search:** GDPR covers all systems that store personal data — deleting from PostgreSQL while leaving the tenant's data in Elasticsearch, S3 data lake, and BI warehouse is a GDPR violation; the Kafka event approach ensures all consumers handle deletion
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -527,4 +522,3 @@ graph TD
 - ❌ **Ignoring governor limits as a product design requirement:** If you build shared infrastructure without per-tenant rate limits, one enterprise customer's scheduled batch job will degrade all other tenants — governor limits are not just a feature, they are a necessity for shared infrastructure
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

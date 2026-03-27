@@ -43,7 +43,6 @@ graph LR
 - ❌ **"NTP makes clocks accurate":** NTP reduces drift but doesn't eliminate it. At best, NTP gives ±1ms in ideal conditions — not 0ms. Design for uncertainty, not precision.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -79,7 +78,6 @@ graph TD
 - ❌ **Confusing NTP precision with accuracy:** NTP can be precise (consistent) but inaccurate (consistently wrong). A stratum 3 server with bad network path has high uncertainty.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -251,7 +249,6 @@ CockroachDB's max clock skew assumption: 500ms. If nodes' clocks skew by > 500ms
 - ❌ **Confusing HLC with TrueTime:** TrueTime uses GPS + atomic clocks for hardware-enforced precision. HLC uses NTP with software-based skew bounding. TrueTime is more precise but requires special hardware.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -284,7 +281,6 @@ graph TD
 - ❌ **Using TrueTime for sub-millisecond ordering:** TrueTime uncertainty is 7ms. Two events within 7ms of each other cannot be reliably ordered by TrueTime — Spanner waits for the uncertainty to resolve.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -476,4 +472,3 @@ graph TD
 - ❌ **Using Spanner's external consistency for every query:** External consistency is provided by read-write transactions. Read-only queries with `AS OF SYSTEM TIME` bypass commit wait and run at 1–5ms. Use the right transaction type for the latency SLA.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)

@@ -56,7 +56,6 @@ graph LR
 - ❌ **RAG for reasoning patterns:** If you need the model to answer in a specific structured format (JSON, bullet points, etc.), fine-tuning is more reliable than prompt engineering in RAG
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -98,7 +97,6 @@ graph TD
 - ❌ **Chunks too large (>2048 tokens):** Embedding one large chunk averages over many topics — the embedding loses specificity, reducing recall for specific questions
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -189,7 +187,6 @@ For 500 QPS with a latency budget of <100ms: **E5-Large self-hosted** on 2× A10
 - ❌ **Ignoring embedding re-indexing cost:** Switching embedding models requires re-embedding the entire corpus — 5M docs × 500 tokens = 2.5B tokens at $0.13/1M = $325 re-indexing cost
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -225,7 +222,6 @@ graph TD
 - ❌ **Equal weight for all query types:** Analytical/conceptual queries benefit from higher dense weight (α=0.7); identifier-heavy queries need higher sparse weight (α=0.3) — query type routing improves results 8–12%
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -308,7 +304,6 @@ graph TD
 - ❌ **Skipping candidate retrieval diversity:** If ANN search retrieves 50 near-duplicate chunks, re-ranking has nothing to improve — use MMR (Maximum Marginal Relevance) to diversify candidates before re-ranking
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -354,7 +349,6 @@ graph TD
 - ❌ **Static test sets for evaluation:** User queries evolve — a test set from 6 months ago may not represent current query distribution; resample monthly
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -393,7 +387,6 @@ graph TD
 - ❌ **Batch indexing (nightly):** A note written at 9pm won't be retrievable until tomorrow morning — users expect freshness within seconds of writing
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -484,7 +477,6 @@ graph TD
 - ❌ **Ignoring deduplication:** If 3 of your top-10 chunks are from the same document with 80% overlap, you waste 2× context budget on redundant information
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -525,7 +517,6 @@ graph TD
 - ❌ **Error propagation:** If hop 1 retrieves the wrong entity, hop 2 answers a completely wrong question — multi-hop errors compound
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -592,7 +583,3 @@ graph TD
 | Semantic cache poisoning (wrong answer cached) | Incorrect answer served to all users with similar queries | Cache answers only when LLM confidence is high (>0.9) AND answer has been verified; TTL 24h |
 | Query outside KB scope | Chatbot makes up answer | Retrieval confidence gate: if top-1 similarity <0.6, route to human — don't generate an answer |
 
-### Concept References
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)

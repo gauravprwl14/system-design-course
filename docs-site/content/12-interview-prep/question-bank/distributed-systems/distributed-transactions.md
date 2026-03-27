@@ -42,7 +42,6 @@ graph TD
 - ❌ **Ignoring idempotency:** Retrying a failed distributed transaction without idempotency keys causes double-writes. Always design for at-least-once with idempotent operations.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -85,7 +84,6 @@ sequenceDiagram
 - ❌ **Using 2PC across microservices without timeout handling:** Without a transaction timeout, a crashed participant can hold locks for hours. Always configure `innodb_lock_wait_timeout` (default 50 seconds) or equivalent.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -167,7 +165,6 @@ In practice this means: coordinator downtime = proportional lock contention. If 
 - ❌ **"3PC solves all blocking":** 3PC is non-blocking under crash failures but still blocks under network partitions (CAP applies to 3PC too).
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -204,7 +201,6 @@ graph LR
 - ❌ **Forgetting compensating transaction failures:** What if C2 (release inventory) also fails? You need a retry mechanism with exponential backoff — compensating transactions must be idempotent and retryable.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -289,7 +285,6 @@ Compensating transactions must satisfy four properties:
 - ❌ **Not handling compensation failures:** If `CancelReservation` fails, inventory leaks — reserved units are never returned. Monitor compensation failure rate (alert at > 0.1%).
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -325,7 +320,6 @@ graph TD
 - ❌ **Using Spanner for sub-5ms latency:** Spanner's TrueTime commit wait adds 7–14ms per read-write transaction. For sub-5ms requirements, use single-region databases with no cross-shard transactions.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -363,7 +357,6 @@ graph TD
 - ❌ **Confusing XA with Saga:** XA is synchronous 2PC; Saga is asynchronous compensation. Both solve cross-service atomicity but with entirely different trade-offs.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -440,7 +433,6 @@ This reduces order placement latency from 200–500ms (2PC) to 10–30ms (local 
 - ❌ **Ignoring the notification use case:** Notifications are the classic example of over-transactionalized operations. They should always be async with retry, never in a synchronous transaction.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -478,7 +470,6 @@ graph TD
 - ❌ **Forgetting idempotency key expiry:** Stripe's idempotency keys expire after 24 hours. After expiry, the same key creates a new charge. Client retry logic must handle this.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -542,6 +533,3 @@ graph TD
 | Order creation fails after payment success | User charged, no order | Compensating tx: refund payment, release reservation |
 | Reservation TTL expires before payment | User redirected to restart | Set reservation TTL > payment processing SLA + buffer (60s) |
 
-### Concept References
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)

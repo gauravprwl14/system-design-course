@@ -88,8 +88,6 @@ graph TD
 | Dynamic JS content (SPAs) | Crawler fetches empty HTML shell, misses content | Detect single-page apps; route to headless Chrome pool (Puppeteer); much slower (1 page/2s vs 1/200ms) |
 
 ### Concept References
-→ [Message Queues](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -128,7 +126,6 @@ graph LR
 - ❌ **Fixed 1s crawl delay for all domains:** Small blog may only handle 1 req/30s (robots.txt `Crawl-Delay: 30`); large CDN-backed sites can handle 1 req/s; always read and respect robots.txt `Crawl-Delay`
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -199,8 +196,6 @@ Three-layer dedup strategy: (1) URL Bloom filter at frontier add — 10 GB catch
 - ❌ **No normalization before URL fingerprinting:** `http://example.com/page` vs `http://Example.COM/Page?a=1&b=2` vs `https://example.com/page?b=2&a=1` are the same page; without normalization, Bloom filter misses all three as different URLs
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -235,7 +230,6 @@ graph LR
 - ❌ **Not waiting for network idle before capture:** Capturing DOM after 500ms misses lazily-loaded content; use `waitForNetworkIdle(timeout=3s)` or wait for specific DOM element
 
 ### Concept Reference
-→ [Scalability](../../../system-design/fundamentals/horizontal-vs-vertical-scaling)
 
 ---
 
@@ -296,5 +290,3 @@ Googlebot uses a combination of: (1) Historical change-rate model per URL — pa
 - ❌ **Trusting `changefreq` in sitemaps blindly:** Many sites set `changefreq=always` for all URLs to game crawl frequency; cross-validate with observed actual change rate from historical crawls
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)

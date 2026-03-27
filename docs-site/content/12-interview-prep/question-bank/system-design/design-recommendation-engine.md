@@ -95,8 +95,6 @@ graph TD
 | Stale recommendations | User watches 10 items in one session; old rec list shows watched items | Real-time watch filter: exclude `user_watched` set (Redis SET) from candidates post-retrieval |
 
 ### Concept References
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -136,7 +134,6 @@ graph LR
 - ❌ **User-based CF at scale:** Computing pairwise similarity across 200M users = 200M² comparisons — computationally infeasible; use item-based CF or latent factor models instead
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -213,8 +210,6 @@ Hybrid approach: pre-compute recommendations for active users nightly (last 30 d
 - ❌ **Caching recs without watched-item filter:** User watches 5 items in a session; cached recs still show those 5 items; watched-item filter must run at serving time, not cache population time
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -251,7 +246,6 @@ graph TD
 - ❌ **Using CTR as primary metric for recommendation quality:** Users click on thumbnail, watch 30 seconds, abandon — high CTR but poor quality; use completion rate or 7-day retention as primary metric
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -316,5 +310,3 @@ Discover Weekly is entirely offline: train weekly on all user interactions (stre
 - ❌ **One model for all recommendation surfaces:** Autoplay (next song) requires very different model than discovery (serendipitous new artists); train and serve models separately per surface
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)

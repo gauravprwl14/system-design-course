@@ -47,7 +47,6 @@ graph LR
 - ❌ **Training–serving skew:** Computing features differently at training vs inference time causes 10–30% accuracy drops
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -85,7 +84,6 @@ graph TD
 - ❌ **High-cardinality categoricals without encoding:** 1M user IDs as one-hot = 1M-dimensional sparse vector — use embeddings or hashing
 
 ### Concept Reference
-→ [RAG & Embeddings](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -199,7 +197,6 @@ For 70B parameter training: combine **Tensor Parallelism** (TP=8, intra-node NVL
 - ❌ **Pipeline bubble underestimated:** With 4 pipeline stages, ~25% of GPU time is idle during pipeline fill/drain
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -235,7 +232,6 @@ graph LR
 - ❌ **No data lineage:** Cannot answer "which experiments used the corrupted batch from 2025-03-01" without lineage tracking
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -329,7 +325,6 @@ Use Parquet with column pruning — reading 500 features from 100M rows requires
 - ❌ **Fixed cluster size:** Spot instances for Spark training can cut cost 60–70%; use checkpointing to tolerate preemptions
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -365,7 +360,6 @@ graph TD
 - ❌ **Ignoring upstream data SLAs:** If the data warehouse team changes a column name, the pipeline silently drops the feature (null fill)
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -400,7 +394,6 @@ graph TD
 - ❌ **No feature ownership:** When 10K features exist, unclear ownership means deprecated/broken features stay live and degrade models silently
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -494,7 +487,6 @@ graph TD
 - ❌ **No TTL on online features:** Stale features in Redis (written once, never updated) silently serve 6-month-old values
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -544,7 +536,6 @@ graph LR
 - ❌ **Shared test environments:** ML models trained in staging on synthetic data perform differently in production — always shadow score on live traffic
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -615,7 +606,3 @@ graph TD
 | Training data poisoning | Fraudsters deliberately trigger false positives to exhaust manual review queue | Monitor false-positive rate trends; add diversity constraints to training sampling |
 | Cold start for new merchants | No transaction history → features are null → model defaults to allow | Merchant risk-tier assignment (new = high risk) as explicit feature |
 
-### Concept References
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)

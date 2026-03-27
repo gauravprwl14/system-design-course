@@ -67,7 +67,6 @@ graph TD
 - ❌ **Ignoring clock size growth:** In dynamic systems where nodes join and leave, vector clocks can grow unboundedly. DynamoDB caps them with periodic pruning.
 
 ### Concept Reference
-→ [Distributed Systems Fundamentals](../../../system-design/distributed-systems/fundamentals)
 
 ---
 
@@ -112,7 +111,6 @@ graph TD
 - ❌ **Treating concurrent as an error:** Concurrency is expected in distributed systems. The system must have a defined policy for handling concurrent writes (merge, LWW, or multi-version).
 
 ### Concept Reference
-→ [Distributed Systems Fundamentals](../../../system-design/distributed-systems/fundamentals)
 
 ---
 
@@ -197,7 +195,6 @@ Vector clock entries are pruned when they exceed a maximum count (10 entries) by
 - ❌ **"Pruning vector clocks is safe":** Pruning drops causal history. It can cause the system to treat a causally-ordered pair as concurrent — creating spurious conflicts. It is a correctness trade-off.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -237,7 +234,6 @@ graph TD
 - ❌ **"Version vectors require one entry per node in the cluster":** Modern implementations use **dotted version vectors** which are more space-efficient, tracking only nodes that have written the specific key.
 
 ### Concept Reference
-→ [Distributed Systems Fundamentals](../../../system-design/distributed-systems/fundamentals)
 
 ---
 
@@ -330,4 +326,3 @@ Riak stores multiple versions of an object (siblings) when it detects concurrent
 - ❌ **Using LWW for all data types:** LWW is safe for last-valued semantics (user name, profile photo URL) but loses writes for additive operations (shopping cart, like count). Use CRDTs for additive data.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)

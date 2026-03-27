@@ -60,8 +60,6 @@ graph TD
 - ❌ **BFF as business logic layer:** BFF should aggregate and transform, not implement business logic — that belongs in services.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -111,7 +109,6 @@ graph TD
 - ❌ **No timeout on individual service calls:** One slow service (30s timeout) blocks all other composed results.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -207,8 +204,6 @@ Implement circuit breakers **per downstream service** at the gateway layer. Use 
 - ❌ **No fallback:** Circuit open with no fallback = worse UX than slow service; implement graceful degradation.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -261,7 +256,6 @@ graph LR
 - ❌ **Not handling gRPC streaming at gateway:** Server-streaming gRPC → SSE translation is possible but adds complexity; plan upfront.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -339,8 +333,6 @@ Netflix Zuul succeeds at 2M RPS through: **non-blocking I/O (Netty)**, **filter-
 - ❌ **No circuit breaking at gateway:** Without Hystrix/equivalent, one slow service blocks all Zuul threads.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -398,8 +390,6 @@ graph TD
 - ❌ **Service mesh without gateway:** No external rate limiting, auth, or API management; external traffic has no control plane.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -473,7 +463,6 @@ graph LR
 - ❌ **No plugin versioning:** Updating a plugin without versioning can break all routes using it; test plugins in staging first.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -560,8 +549,6 @@ graph TD
 - ❌ **Leaking tenant data between requests:** Always clear tenant context after request; async processing must carry tenant context explicitly.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -614,7 +601,6 @@ graph LR
 - ❌ **Java runtime without SnapStart:** Java Lambda cold starts of 5s are unacceptable for APIs; always use SnapStart or switch runtime.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -716,7 +702,3 @@ Route rules:
 | Single gateway instance crash | ~3% traffic loss (1 of 30 instances) | Health checks + ELB; failing instance removed in <15s |
 | Payment service circuit open | Payment requests rejected | Return 503 + retry-after; queue for async retry |
 
-### Concept References
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)

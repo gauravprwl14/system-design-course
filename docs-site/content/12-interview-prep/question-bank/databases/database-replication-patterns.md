@@ -50,7 +50,6 @@ sequenceDiagram
 - ❌ **Forcing all replicas synchronous:** If 3 replicas are all synchronous, a single slow replica blocks every write — use "any 1 of N" semi-sync
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -82,7 +81,6 @@ graph TD
 - ❌ **Using replicas for transactions:** A replica that falls 10 seconds behind due to a large write means reads are 10 seconds stale — monitor replica lag as a key SLI
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -159,7 +157,6 @@ MySQL GTID replication (Global Transaction Identifiers) is the modern standard �
 - ❌ **Not using GTID for new setups:** Manual binlog position tracking for failover is error-prone; GTID enables automated tools
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -200,7 +197,6 @@ sequenceDiagram
 - ❌ **Not monitoring replica lag:** Replication lag can silently grow during a write spike, serving stale data to thousands of users before anyone notices
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -266,7 +262,6 @@ Use **Patroni with etcd** for PostgreSQL — etcd's Raft consensus prevents spli
 - ❌ **Promoting replica with highest lag:** Should promote the replica with least lag (or the designated synchronous replica) to minimize RPO
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -302,7 +297,6 @@ graph LR
 - ❌ **Underestimating operational complexity:** Conflict detection, resolution logic, and monitoring for split-brain make multi-primary 10x harder to operate than single-primary
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -366,7 +360,6 @@ Use **streaming replication** for HA standbys and read replicas (simplest, lowes
 - ❌ **Using logical replication as HA standby:** Cannot promote logical subscriber as primary with zero data loss (no built-in failover tooling)
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -401,7 +394,6 @@ sequenceDiagram
 - ❌ **Using SERIALIZABLE everywhere:** SERIALIZABLE isolation serializes all transactions — a 5x throughput reduction for a problem that affects <1% of queries
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -438,7 +430,6 @@ graph TD
 - ❌ **Not using follower reads for read-heavy workloads:** Default reads go to leaseholder; `AS OF SYSTEM TIME follower_read_timestamp()` enables local replica reads — 10x latency improvement for tolerable staleness
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -493,6 +484,3 @@ graph TD
 | Parallel replication causes row-order conflicts | SQL thread error, replication stops | Use `slave_parallel_type=LOGICAL_CLOCK` (safer than DATABASE) |
 | Replica never catches up (8K TPS > any single replica) | Permanent lag | Scale up replica instance; add more replicas behind load balancer |
 
-### Concept References
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

@@ -61,7 +61,6 @@ graph TD
 - ❌ **Ignoring N+1 in nested queries:** Problem occurs at every level of nesting, not just top-level queries.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -120,7 +119,6 @@ graph LR
 - ❌ **Mutation side effects in queries:** Queries may be cached or batched; never perform writes inside query resolvers.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -229,7 +227,6 @@ type ProductConnection {
 - ❌ **totalCount on every list:** `SELECT COUNT(*)` on 10M filtered rows without index = full table scan; make it opt-in.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -280,7 +277,6 @@ graph LR
 - ❌ **Not expiring old queries:** Registry grows unbounded; add TTL or tie to app version lifecycle.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -360,7 +356,6 @@ Key federation concepts:
 - ❌ **No performance monitoring per subgraph:** The gateway hides which subgraph is slow; instrument each subgraph independently.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -411,7 +406,6 @@ graph TD
 - ❌ **Not exposing rate limit info:** Developers can't optimize if they can't see their query cost (use `extensions.rateLimit` in response).
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -466,7 +460,6 @@ graph LR
 - ❌ **Ignoring schema governance:** GitHub published their full schema; consistency required a schema review process.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -561,8 +554,6 @@ Only possible with persisted queries using GET method. Non-personalized queries 
 - ❌ **Uniform TTL across all types:** Product prices need 5-minute cache; stock levels need real-time; set per-type TTLs.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -739,6 +730,3 @@ type PostConnection {
 | Subscription connection storm | Server OOM on Redis publish to 1M subscribers | Fan-out via message queue, not direct Redis publish |
 | Deep comment nesting attack | Resolver stack overflow | Max depth = 7; reject deeper queries |
 
-### Concept References
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

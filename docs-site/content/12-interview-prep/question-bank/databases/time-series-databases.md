@@ -45,7 +45,6 @@ graph LR
 - ❌ **Using TSDB for transactional data:** TSDBs lack ACID transactions and foreign keys — don't store user accounts or orders in InfluxDB
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -80,7 +79,6 @@ graph TD
 - ❌ **InfluxDB for relational queries:** InfluxDB does not support JOINs — if your metrics need to be correlated with user data via joins, use TimescaleDB instead
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -143,7 +141,6 @@ Time-series compression works because time-series data has high redundancy: time
 - ❌ **High-cardinality tags defeating compression:** Dictionary encoding of tags only works when cardinality is low — using UUIDs as tag values (10M unique values) eliminates dictionary compression benefit
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -182,7 +179,6 @@ graph TD
 - ❌ **Not accounting for query pattern before setting retention:** If SLA requires 90-day p99 latency analysis at 1-minute resolution, your downsampling policy can't drop 1-minute aggregates after 30 days
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -242,7 +238,6 @@ TSM is InfluxDB's purpose-built storage engine, inspired by LSM trees but optimi
 - ❌ **Not tuning cache size for write throughput:** Default cache is 1GB; at 1M writes/sec with large point sizes, cache evicts too frequently — increase `cache-max-memory-size` to 4–8GB
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -279,7 +274,6 @@ graph TD
 - ❌ **Ignoring cardinality until the TSDB OOMs:** InfluxDB will consume available RAM proportional to series cardinality; monitor cardinality on new metric ingestion pipelines before they reach production scale
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -338,7 +332,6 @@ The key design decisions: (1) Use Kafka between ingest and TSDB to absorb traffi
 - ❌ **Using device_id as a tag for 10M devices:** 10M series cardinality = 10GB+ TSI index per node — index OOM kills the cluster
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -378,7 +371,6 @@ graph TD
 - ❌ **Running Prometheus without Thanos/Cortex for long-term:** Single Prometheus for 6+ months of data requires >1TB local disk and no HA; Thanos adds object storage + multi-replica query
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -414,7 +406,6 @@ graph LR
 - ❌ **Ignoring the tiered access pattern:** Fetching all historical data for every query is expensive; routing queries to the cheapest storage tier that has the required resolution is the key optimization
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -475,5 +466,3 @@ graph TD
 | Kafka lag grows | Alerts delayed | Monitor consumer lag; scale stream processors |
 | IoT sensor offline 1 hour | Gap in data | Sensor client buffers locally and replays on reconnect |
 
-### Concept References
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

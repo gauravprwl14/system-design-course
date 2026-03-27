@@ -74,7 +74,6 @@ graph TD
 - ❌ **Severity set by the reporter not the impact:** "The CEO's dashboard is broken" is not automatically P0. Apply the severity criteria consistently. If the CEO's dashboard is non-critical and cosmetic, it's P3.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -131,7 +130,6 @@ graph TD
 - ❌ **IC making technical decisions unilaterally:** IC is not a dictator. For significant decisions (rollback vs hotfix), IC seeks technical lead input, time-boxes the discussion (5 minutes), then makes the call. Unilateral decisions without technical input cause wrong choices.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -210,7 +208,6 @@ graph TD
 - ❌ **No follow-up on action items:** Postmortem with 10 action items, 0 completed — worse than no postmortem (false sense of learning). Assign a postmortem reviewer who checks completion at the due date.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -307,7 +304,6 @@ graph TD
 - ❌ **Multiple engineers debugging independently:** Without an IC declaring "we are rolling back" at T=8m, one engineer rolls back while another is deploying a hotfix — conflict causes longer outage.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -368,7 +364,6 @@ sequenceDiagram
 - ❌ **No hypothesis before the experiment:** Random chaos without a hypothesis is just breaking things. Define: "We expect X to happen when we inject Y. If we observe Z instead, here is what we will fix." The hypothesis makes it an experiment, not sabotage.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -478,4 +473,3 @@ graph TD
 - ❌ **Routing all alerts with equal urgency:** Not all alerts need immediate phone calls. Configure urgency policies: P0 = phone + SMS, P1 = SMS only, P2 = Slack + mobile push. Waking someone at 3am for a P2 issue destroys on-call morale.
 
 ### Concept Reference
-→ [Observability Fundamentals](../../../09-observability/concepts/observability-fundamentals)

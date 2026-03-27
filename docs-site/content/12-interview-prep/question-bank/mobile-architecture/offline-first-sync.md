@@ -60,7 +60,6 @@ graph TD
 - ❌ **Syncing entire dataset on reconnect:** A user offline for 3 days syncing 3 days of server changes is a 10MB+ download on reconnect — destroys battery and data plan. Use incremental sync (only changes since last sync timestamp).
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -120,7 +119,6 @@ graph TD
 - ❌ **Three-way merge without tracking the common ancestor:** Without the common ancestor version, you cannot distinguish "device A changed this field" from "device A kept it the same." Always store the ancestor version at the time of the last sync.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -225,7 +223,6 @@ graph TD
 - ❌ **OR-Set tombstone accumulation:** Every deleted element creates a tombstone. If a set has 1M additions and 990K deletions, the OR-Set stores 1M tombstones forever (they cannot be garbage collected without coordination). Use OR-Set for small sets only (< 1000 elements).
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -312,7 +309,6 @@ graph LR
 - ❌ **Not handling the case where WorkManager constraints are never met:** User is on airplane mode for 3 days. WorkManager queues the sync but never runs. The queue must have a maximum depth (e.g., 1000 pending sync operations) — beyond that, fail the oldest unsynced changes and inform the user.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -374,7 +370,6 @@ sequenceDiagram
 - ❌ **No conflict fallback:** When OT cannot produce a clean merge, the app must create two versions and surface them to the user. Silently picking one version loses the user's work without notice.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
@@ -481,4 +476,3 @@ sequenceDiagram
 - ❌ **Using LWW for text content:** LWW on a text field loses concurrent edits. If user A types "Hello" and user B types "World" simultaneously offline, LWW keeps one and discards the other. Use sequence CRDT for text where preserving all concurrent edits is correct behavior.
 
 ### Concept Reference
-→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)

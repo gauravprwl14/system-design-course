@@ -84,8 +84,6 @@ stateDiagram-v2
 | Card network latency spike | p99 breaches 3s SLA | Circuit breaker; timeout at 2.5s; return retry response |
 
 ### Concept References
-→ [Saga / CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
 
 ---
 
@@ -120,7 +118,6 @@ graph LR
 - ❌ **Short idempotency key TTL:** If client retries after 25h due to async retry system, 24h TTL expired → re-processed as new charge; extend TTL for long-running retry systems
 
 ### Concept Reference
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
 
 ---
 
@@ -185,8 +182,6 @@ Multi-layer (Approach B): (1) Redis SETNX `idem:{key}` with 5min TTL to gate con
 - ❌ **Not reconciling against card network:** Internal DB can be wrong; reconciliation against Visa/Mastercard settlement files is the ultimate source of truth
 
 ### Concept Reference
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
-→ [Saga / CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -228,7 +223,6 @@ sequenceDiagram
 - ❌ **Not capturing within auth expiry window:** Auth codes expire in 5-7 days; uncaptured auth releases hold automatically — merchant must re-authorize if shipping delayed
 
 ### Concept Reference
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
 
 ---
 
@@ -294,7 +288,6 @@ Orchestration (Approach B) for payment flows — the compensating transaction or
 - ❌ **Choreography without correlation ID:** Events from 5 services with no correlation ID — impossible to trace which event belongs to which order; always include `order_id` as correlation ID
 
 ### Concept Reference
-→ [Saga / CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -328,7 +321,6 @@ graph LR
 - ❌ **Retrying non-retriable declines:** `do_not_retry` flag exists for a reason (fraud rules, account closed) — checking again may trigger security escalation at card network
 
 ### Concept Reference
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
 
 ---
 
@@ -362,7 +354,6 @@ graph LR
 - ❌ **Matching on amount alone:** Same amount, different transaction IDs = false match; always match on transaction ID + amount + timestamp range
 
 ### Concept Reference
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
 
 ---
 
@@ -424,7 +415,6 @@ Cached rate (Approach B). FX service fetches ECB or OpenExchangeRates API every 
 - ❌ **Fetching all 18K pairs on every transaction lookup:** Pre-compute all pairs in background and store in Redis; lookup is O(1) key read, not API call
 
 ### Concept Reference
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
 
 ---
 
@@ -458,8 +448,6 @@ graph LR
 - ❌ **Storing card number in logs "temporarily":** Any log containing PAN (Primary Account Number) makes that logging system in-scope for PCI audit; sanitize logs to `**** **** **** 4242`
 
 ### Concept Reference
-→ [Payments / Ecommerce](../../../system-design/business-and-advanced/ecommerce-checkout)
-→ [Fraud Detection](../../../system-design/business-and-advanced/fraud-detection)
 
 ---
 
@@ -495,4 +483,3 @@ graph LR
 - ❌ **Not adapting fraud rules to merchant vertical:** Online gaming fraud patterns differ from airline tickets; per-merchant model calibration dramatically reduces false positives
 
 ### Concept Reference
-→ [Fraud Detection](../../../system-design/business-and-advanced/fraud-detection)

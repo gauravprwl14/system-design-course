@@ -89,8 +89,6 @@ sequenceDiagram
 | Presence service down | Can't route to recipient server | Fallback: broadcast to all chat servers, each checks local connections |
 
 ### Concept References
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -120,7 +118,6 @@ graph LR
 - ❌ **WebSocket without sticky sessions:** Message arrives at LB, gets routed to server that doesn't hold client's connection — need sticky routing by user ID or connection ID
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
 
 ---
 
@@ -192,7 +189,6 @@ Cassandra with `conversation_id` as partition key and `message_id` (TIMEUUID) as
 - ❌ **Large Cassandra partition for very active chats:** 1 conversation × 10 years × 100 msg/day = 365K rows in one partition — fine; but celebrity group chat at 10K msg/day = 36M rows/year — consider bucketing by month
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -228,7 +224,6 @@ graph LR
 - ❌ **Not tracking last_seen per conversation:** Without cursor, client fetches all messages on reconnect — O(all time) query vs O(unread)
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
 
 ---
 
@@ -288,7 +283,6 @@ Sequence numbers per conversation (Approach B): Redis `INCR seq:conv:{conv_id}` 
 - ❌ **Trusting client-provided timestamps for ordering:** Client clock can be manipulated — always use server-assigned sequence
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -320,7 +314,6 @@ graph TD
 - ❌ **Checking all 1000 members' presence synchronously:** Do presence lookups in parallel batches of 100; or use lazy delivery (let clients poll)
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
 
 ---
 
@@ -354,7 +347,6 @@ graph LR
 - ❌ **E2E encryption without key verification:** Man-in-the-middle attack: server substitutes its own public key; users must manually verify safety numbers to detect this
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
 
 ---
 
@@ -414,8 +406,6 @@ Subscribe model (Approach B): Redis hash `presence:{user_id}` with 15s TTL. Clie
 - ❌ **Using exact online/offline instead of TTL:** Explicit disconnect not reliable (mobile app killed by OS) — TTL-based expiry is more accurate
 
 ### Concept Reference
-→ [WebSockets Real-Time](../../../system-design/real-time-systems/websockets-real-time)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -445,7 +435,6 @@ graph LR
 - ❌ **Single Kafka partition per user:** 500M users × 1 partition = impractical; hash-based assignment into fixed partition pool
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -478,4 +467,3 @@ graph LR
 - ❌ **Indexing all messages in Elasticsearch without retention policy:** At 100B messages/day, full history index is economically unviable — pagefind per-workspace, rolling 6-month window
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

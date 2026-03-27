@@ -68,7 +68,6 @@ graph TD
 - ❌ **Assuming eventual = unlimited staleness:** Most gossip intervals are 1 second. Full cluster convergence at 10,000 nodes takes ~14 seconds under normal conditions.
 
 ### Concept Reference
-→ [Distributed Systems Fundamentals](../../../system-design/distributed-systems/fundamentals)
 
 ---
 
@@ -147,7 +146,6 @@ State propagated via gossip includes: token ownership, load (disk usage), schema
 - ❌ **"DOWN means data is lost":** When a node is marked DOWN, its token ranges are still served by replicas. Hinted handoff stores writes for up to 3 hours for replay on recovery.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -188,7 +186,6 @@ graph TD
 - ❌ **Running anti-entropy too frequently:** Cassandra's `nodetool repair` is resource-intensive — it generates Merkle tree comparisons across all data. Running it daily on large clusters causes read latency spikes of 20–50%.
 
 ### Concept Reference
-→ [Distributed Systems Fundamentals](../../../system-design/distributed-systems/fundamentals)
 
 ---
 
@@ -272,7 +269,6 @@ Cassandra's operational recommendation: for clusters spanning 2 DCs, use `EACH_Q
 - ❌ **Ignoring the partition recovery phase:** When partitions heal, anti-entropy repair must run to reconcile diverged writes. Without `nodetool repair`, inconsistencies persist indefinitely.
 
 ### Concept Reference
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -352,4 +348,3 @@ Failure detection latency at 10,000 nodes: direct ping timeout 200ms + indirect 
 - ❌ **Ignoring the WAN pool:** Cross-DC Consul federation uses a separate WAN gossip pool with only Consul servers (not all agents). This prevents WAN bandwidth explosion.
 
 ### Concept Reference
-→ [Distributed Systems Fundamentals](../../../system-design/distributed-systems/fundamentals)

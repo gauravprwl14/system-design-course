@@ -56,7 +56,6 @@ graph LR
 - ❌ **Per-endpoint versioning:** `/v1/users` and `/v3/orders` in same API — impossible to know which combination is valid.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -111,7 +110,6 @@ graph TD
 - ❌ **Changing error message text:** While technically not structural, applications that parse error message strings will break.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -190,7 +188,6 @@ Stripe's approach: **date-based versions, version stored per API key, single can
 - ❌ **No automated tests for old versions:** Without integration tests per old version, shim layer regressions go undetected.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -238,7 +235,6 @@ graph LR
 - ❌ **No usage monitoring:** Without knowing who's still calling the deprecated endpoint, you can't proactively notify them or safely retire it.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -343,7 +339,6 @@ Dedicated lightweight adapter services per major version. More flexible than pur
 - ❌ **Not testing old version transformations in CI:** Gateway transformation rules must be tested against old version contracts.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -393,7 +388,6 @@ graph LR
 - ❌ **Not honoring the sunset date:** Keeping the endpoint running past sunset makes future sunsets unbelievable; once you set a date, stick to it.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -445,7 +439,6 @@ graph LR
 - ❌ **Never cleaning up deprecated fields:** Schema becomes unmanageably large; set a deprecation → removal timeline (6–12 months).
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -524,7 +517,6 @@ graph LR
 - ❌ **No schema registry for events:** Kafka consumers silently break when producers change message format; schema registry catches this at deployment.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -567,7 +559,6 @@ graph LR
 - ❌ **No migration automation:** Providing a migration tool (API compatibility layer) dramatically increases migration rates.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -654,6 +645,3 @@ graph TD
 | No usage monitoring | Can't identify who to notify | Instrument every API call by version; store in analytics |
 | Migration guide incomplete | Developers can't migrate | Changelog-driven: no version launches without migration guide for every breaking change |
 
-### Concept References
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)

@@ -85,8 +85,6 @@ graph TD
 | Token stale | Push to uninstalled app | Handle APNs/FCM feedback API to remove stale tokens |
 
 ### Concept References
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -117,7 +115,6 @@ graph LR
 - ❌ **Not handling APNs feedback loop:** Stale tokens from uninstalled apps cause growing dead-delivery list; process feedback API daily
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -180,7 +177,6 @@ Use Kafka with `acks=all` and `replication.factor=3`. Worker consumes from Kafka
 - ❌ **Relying on FCM's own retry:** FCM retries internally but has a 4-week TTL and doesn't guarantee delivery to offline devices — own your retry logic
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -215,7 +211,6 @@ graph LR
 - ❌ **Per-request DB query at 100K rps:** 100K DB reads/sec for preference check will saturate any DB — always use Redis cache
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -246,7 +241,6 @@ graph LR
 - ❌ **Same rate limit for all categories:** Marketing and OTP have very different urgency — separate rate limits per category
 
 ### Concept Reference
-→ [Rate Limiting](../../../system-design/fundamentals/rate-limiting)
 
 ---
 
@@ -311,7 +305,6 @@ Use hybrid: fans with < 10K followers get eager fan-out (messages pre-queued). C
 - ❌ **Not rate-limiting fan-out workers:** Fan-out at full speed can trigger FCM rate limits (1M rps per project) — respect API quotas
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -342,7 +335,6 @@ graph LR
 - ❌ **No TTL on dedup keys:** Redis memory fills up — always set TTL proportional to retry window (24h typical)
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -374,7 +366,6 @@ graph LR
 - ❌ **Polling entire table every minute at 100M rows:** Use time-bucket index + partition; only scan current minute's partition
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -439,7 +430,6 @@ Four dedicated Kafka topics by priority with independent worker pools. Critical 
 - ❌ **Too many priority tiers:** 10 priority levels = 10 worker pools = operational overhead; 4 tiers (critical/transactional/social/marketing) is sufficient
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -477,4 +467,3 @@ graph LR
 - ❌ **Not correlating failures to providers:** APNs vs FCM vs Twilio have independent outage profiles — alert per provider, not aggregated
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)

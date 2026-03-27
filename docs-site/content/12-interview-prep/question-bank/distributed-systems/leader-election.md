@@ -45,7 +45,6 @@ graph TD
 - ❌ **Ignoring the "no leader" window:** During election (100–600ms), no leader is active. Operations that require a leader must either queue, fail, or be served by a read replica.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -422,7 +421,6 @@ The key metric: **partition leadership imbalance**. If all partition leaders con
 - ❌ **Running RF=1 in production for performance:** RF=1 means a broker failure = immediate data loss for all partitions on that broker. Always RF=3, CL=acks:-1 for durability.
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 

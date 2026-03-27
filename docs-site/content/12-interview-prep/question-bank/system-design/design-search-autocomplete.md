@@ -83,8 +83,6 @@ graph TD
 | Single trie shard hotspot | a-f prefix overloaded | Sub-shard hot prefixes (e.g., "th" → dedicated shard) |
 
 ### Concept References
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -120,7 +118,6 @@ graph TD
 - ❌ **Not pre-sorting at each node:** Top-k must be pre-sorted by frequency at write time; computing at query time is O(subtree) — too slow
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -185,8 +182,6 @@ Multi-signal approach (Approach B). Trie stores top-50 candidates per node (over
 - ❌ **Personalizing for anonymous users:** Anonymous users have no search history — fall back to global ranking; only personalize for logged-in users
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Recommendation System](../../../system-design/business-and-advanced/recommendation-system)
 
 ---
 
@@ -219,7 +214,6 @@ graph LR
 - ❌ **Trend TTL too long:** Trend for "Oscar nominations" lasts 6 hours; TTL should be proportional to trend duration — start with 30 min, extend if trend continues
 
 ### Concept Reference
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -281,7 +275,6 @@ Radix trie compression reduces memory by 5-10× (1B × 15 chars → 200GB after 
 - ❌ **Rebuilding entire trie on every update:** Hourly batch for full rebuild; trending updates injected as hot-patching to live trie nodes, not full rebuild
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -315,7 +308,6 @@ graph LR
 - ❌ **Edit distance 3+ in autocomplete:** Too many false positives; "cat" within edist=3 of hundreds of words — limit to edist=1 or 2
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -348,7 +340,6 @@ graph LR
 - ❌ **Storing full personal trie per user:** 1B users × personal trie = impossible; use lightweight Redis hash of top-N personal terms, not full trie
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -410,7 +401,6 @@ Per-language shards (Approach B). Latin-script languages share a 26–52 charact
 - ❌ **Using Latin trie for Chinese:** Chinese has 50K+ common characters; 50K children per node × billions of terms = unworkable; use n-gram or word-segmentation + inverted index
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -444,7 +434,6 @@ graph LR
 - ❌ **Running ML classifier synchronously on every suggestion at 60K rps:** Pre-classify all trie node suggestions async when stored; classifier runs offline, results cached per term
 
 ### Concept Reference
-→ [Fraud Detection](../../../system-design/business-and-advanced/fraud-detection)
 
 ---
 
@@ -478,4 +467,3 @@ graph LR
 - ❌ **Always showing did-you-mean for any misspelling:** If original query returns meaningful results, suppress the suggestion — user may be searching for their intentional term (brand name, username)
 
 ### Concept Reference
-→ [Recommendation System](../../../system-design/business-and-advanced/recommendation-system)

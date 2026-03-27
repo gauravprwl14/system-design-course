@@ -253,7 +253,6 @@ Sidecar pattern: one Envoy proxy per Pod injected by the mesh control plane; int
 
 ### Concept Reference
 → [Kubernetes Architecture](./kubernetes-architecture)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -386,7 +385,6 @@ Shopify's scale requires application-level multi-tenancy (all merchants in the s
 
 ### Concept Reference
 → [Kubernetes Architecture](./kubernetes-architecture)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 
@@ -484,4 +482,3 @@ graph TD
 ### Concept References
 → [Kubernetes Architecture](./kubernetes-architecture)
 → [CI/CD Pipeline Design](./cicd-pipeline-design)
-→ [Observability](../../../system-design/scale-and-reliability/observability)

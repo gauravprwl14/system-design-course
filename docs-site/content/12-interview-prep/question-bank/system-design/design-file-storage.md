@@ -97,8 +97,6 @@ sequenceDiagram
 | Metadata DB overloaded | File listing/browsing slow | Separate read replicas for listing; cache directory listings in Redis TTL=60s |
 
 ### Concept References
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -136,7 +134,6 @@ graph TD
 - ❌ **Treating chunk hash as encryption:** SHA-256 is a fingerprint, not encryption; chunks must be encrypted separately (AES-256) before storing in S3; dedup key is the hash, but stored content must be ciphertext
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -201,8 +198,6 @@ Approach B (WebSocket Push) for mobile + desktop clients. Dropbox uses a long-po
 - ❌ **Ignoring offline devices:** Device offline for 7 days reconnects — must catch up all changes since last cursor; cursor-based change feed is essential
 
 ### Concept Reference
-→ [Real-Time Data](../../../system-design/messaging-and-streaming/real-time-data)
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -238,7 +233,6 @@ graph TD
 - ❌ **Not syncing conflict copies back:** Creating a conflict copy on server but not syncing it to all devices defeats the purpose; conflict copies must be treated as new files and synced normally
 
 ### Concept Reference
-→ [Consistency Patterns](../../../system-design/fundamentals/consistency-patterns)
 
 ---
 
@@ -301,5 +295,3 @@ Dropbox uses convergent encryption for cross-user dedup. Each chunk is encrypted
 - ❌ **Deleting chunks when one user deletes file:** Chunk may be referenced by other users; use reference counting; delete chunk only when ref count reaches 0
 
 ### Concept Reference
-→ [Security Encryption](../../../system-design/security/encryption-at-rest)
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)

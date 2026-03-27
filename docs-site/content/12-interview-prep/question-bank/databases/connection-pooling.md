@@ -41,7 +41,6 @@ graph TD
 - ❌ **Not accounting for connection pool overhead in capacity planning:** Each PgBouncer proxy process uses ~5MB RAM; at 10 PgBouncer instances, that's 50MB overhead — negligible but worth knowing
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -80,7 +79,6 @@ graph TD
 - ❌ **No pool monitoring:** Pool exhaustion is silent until users complain — add alerts on `pool_available < 20%` and `pool_wait_time > 100ms`
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -152,7 +150,6 @@ Use **transaction mode** for most OLTP workloads — it multiplexes 2,000 client
 - ❌ **Using prepared statements with transaction mode:** Prepared statements are session-scoped in PostgreSQL; transaction mode changes server connections, causing "prepared statement does not exist" errors
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -185,7 +182,6 @@ graph LR
 - ❌ **Same pool size for all services:** A heavy analytics service needs larger pools than a simple CRUD service — size per service based on actual query duration
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -241,7 +237,6 @@ Implement all 5 layers. A 200ms pool timeout fails fast instead of queuing for 3
 - ❌ **Circuit breaker without half-open state:** A circuit breaker that never tests recovery keeps the circuit open even after the DB recovers — add half-open state with test request every 30s
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -276,7 +271,6 @@ graph LR
 - ❌ **Expecting multiplexing to improve throughput per connection:** Multiplexing reduces connection overhead, not query execution time — DB throughput is still bounded by server CPU
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -314,7 +308,6 @@ graph TD
 - ❌ **No idle-in-transaction tracking:** A connection idle-in-transaction holds locks but appears idle — track `pg_stat_activity WHERE state = 'idle in transaction'` and alert at duration > 60s
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -375,7 +368,6 @@ RDS Proxy is purpose-built for serverless Lambda workloads — it absorbs 1,000 
 - ❌ **Using RDS Proxy and still opening large pools per Lambda:** If each Lambda allocates pool_size=10, RDS Proxy's client side is 10K connections — keep Lambda pool_size=1 when using RDS Proxy
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -417,7 +409,6 @@ sequenceDiagram
 - ❌ **Switching to session mode to fix it:** Session mode eliminates the pooling benefit — use `prepared_statements=false` in the app driver instead
 
 ### Concept Reference
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
 
 ---
 
@@ -477,6 +468,3 @@ graph TD
 | Scaling pods increases total pool connections | max_connections still exceeded | Reduce per-pod pool size when scaling out |
 | statement_timeout too aggressive | Legitimate long queries killed | Monitor slow query log; adjust timeout per query type |
 
-### Concept References
-→ [Database Indexing](../../../system-design/storage-and-databases/database-indexing)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

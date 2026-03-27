@@ -84,8 +84,6 @@ graph TD
 | TSDB out-of-order writes | Stale data arriving late breaks Prometheus's append-only TSDB | Prometheus 2.39+ supports out-of-order ingestion (10min window); Thanos with out-of-order receive |
 
 ### Concept References
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -122,7 +120,6 @@ graph LR
 - ❌ **Push model without backpressure:** Service emits 100K metrics/sec during incident; push floods collector; pull model naturally rate-limits to scrape frequency
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -185,8 +182,6 @@ Three-layer prevention: (1) Label allowlist in scrape config — relabeling rule
 - ❌ **Using unique identifiers (URLs, UUIDs) as label values:** Every unique URL or UUID creates a new series; label values must be bounded (e.g., endpoint labels should be route patterns like `/users/{id}`, not full URLs like `/users/789`)
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -255,7 +250,6 @@ Two-stage alerting: (1) Prometheus evaluates rules every 30s; `FOR: 2m` clause p
 - ❌ **Alerting on raw metric values instead of rates:** `http_errors_total > 100` fires when counter reaches 100, then never again (counters only go up); alert on `rate(http_errors_total[5m]) > 1` — errors per second
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -332,5 +326,3 @@ Thanos Sidecar runs alongside each Prometheus, uploading immutable 2-hour TSDB b
 - ❌ **No downsampling:** 90 days × 100M points/day × 12B = 108 GB raw; querying "average latency over last 90 days" scans 108 GB from S3; with 1-hour downsampling, same query scans 216 KB — 500,000× faster
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)

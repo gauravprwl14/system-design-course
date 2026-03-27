@@ -376,7 +376,6 @@ Netflix combines: trunk-based development + immutable AMI bake + Spinnaker canar
 
 ### Concept Reference
 → [Blue-Green & Canary Deployments](./blue-green-canary-deployments)
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 

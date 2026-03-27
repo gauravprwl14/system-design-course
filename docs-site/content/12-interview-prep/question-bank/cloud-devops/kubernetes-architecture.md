@@ -185,7 +185,6 @@ graph LR
 - ❌ **One LoadBalancer per service:** At 20 services you pay for 20 cloud LBs — use an Ingress controller instead.
 
 ### Concept Reference
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -244,7 +243,6 @@ Explain the 15s feedback loop with the ceiling formula for CPU metrics. Note the
 - ❌ **No PodDisruptionBudget with HPA:** Scale-down can terminate all Pods of a small deployment simultaneously without a PDB.
 
 ### Concept Reference
-→ [Observability](../../../system-design/scale-and-reliability/observability)
 
 ---
 
@@ -279,7 +277,6 @@ sequenceDiagram
 - ❌ **StatefulSet split-brain:** Force-deleting a StatefulSet Pod on an Unknown node without confirming the node is truly dead can cause two Pods with the same identity writing to the same storage.
 
 ### Concept Reference
-→ [Microservices Migration](../../../system-design/scale-and-reliability/microservices-migration)
 
 ---
 

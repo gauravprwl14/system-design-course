@@ -60,7 +60,6 @@ graph TD
 - ❌ **Confusing tracing with profiling:** Tracing records inter-service latency at the request level. Profiling records function-level CPU time within a single process. Both are useful; neither replaces the other.
 
 ### Concept Reference
-→ [Observability Patterns](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -108,7 +107,6 @@ sequenceDiagram
 - ❌ **Not knowing the W3C standard:** Using proprietary trace headers (X-B3-TraceId for Zipkin, X-Amzn-Trace-Id for AWS) creates interoperability problems. W3C Trace Context is the standard as of 2021 — recommend it in interviews.
 
 ### Concept Reference
-→ [Observability Patterns](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -201,7 +199,6 @@ For production systems, combine both: **head sampling at 1% for baseline coverag
 - ❌ **Not buffering long enough for tail sampling:** If the buffer TTL is 10 seconds but some traces take 30 seconds (slow queries, retries), tail sampling decisions are made before the trace is complete — errors in the last spans are missed.
 
 ### Concept Reference
-→ [Observability Patterns](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -297,7 +294,6 @@ For 1M traces/day (10GB/day, 70GB retention), either backend is viable. The choi
 - ❌ **Not configuring TTL on trace data:** Without data TTL (Cassandra `default_time_to_live`, ES ILM), trace data accumulates indefinitely. 7 days of trace data at 1M traces/day = 70GB raw. Without TTL, this grows to TBs.
 
 ### Concept Reference
-→ [Observability Patterns](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -345,7 +341,6 @@ graph TD
 - ❌ **Using different time sources:** If Jaeger uses UTC and Prometheus uses local time, "find traces from the alert timestamp" requires manual timezone conversion. Standardise on UTC with NTP synchronisation across all services.
 
 ### Concept Reference
-→ [Observability Patterns](../../../09-observability/concepts/observability-fundamentals)
 
 ---
 
@@ -433,4 +428,3 @@ Uber open-sourced Jaeger in 2017 based on their internal tracing infrastructure.
 - ❌ **Fixed sampling for all services at Uber scale:** Uber's dispatch service handles millions of requests/day; Uber's long-tail configuration microservices handle dozens. Fixed 1% sampling gives 10K dispatch traces and 0 configuration traces. Adaptive sampling is mandatory for diverse traffic volumes.
 
 ### Concept Reference
-→ [Observability Patterns](../../../09-observability/concepts/observability-fundamentals)

@@ -67,7 +67,6 @@ graph TD
 - ❌ **Ignoring row count mismatches:** If estimated rows=10 but actual rows=500,000, the planner made a catastrophically wrong join order or index decision; fix statistics with `ANALYZE`, not the query
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -123,7 +122,6 @@ graph TD
 - ❌ **Eager loading everything always:** Over-eager loading 10 related tables when you only need 1 causes a massive JOIN returning far more data than needed — profile first, then eager load only what the endpoint uses
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -203,7 +201,6 @@ Add a **composite index** on `(category, score DESC)` to avoid the sort and let 
 - ❌ **Not measuring index size vs RAM:** An index larger than RAM causes disk thrashing — a 20GB index on a server with 16GB RAM is slower than no index for some queries; right-size with partial indexes
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -254,7 +251,6 @@ graph TD
 - ❌ **Expecting Index Only Scan on tables with high UPDATE rate:** Frequent updates invalidate the visibility map — PostgreSQL falls back to heap checks, negating the Index Only Scan benefit; run AUTOVACUUM more aggressively
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -309,7 +305,6 @@ graph TD
 - ❌ **Lowering `work_mem` globally:** Setting `work_mem=4MB` forces the planner to avoid hash joins on anything larger than 4MB — one large report query then spills to disk and takes 10x longer; set `work_mem` per-session for heavy queries
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -386,7 +381,6 @@ PostgreSQL's prepared statement planner runs a generic plan after 5 parameter-sp
 - ❌ **Setting `force_custom_plan` globally:** Re-planning every prepared statement on every execution adds 1–5ms overhead per query — apply only to queries with skewed data distributions
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -488,4 +482,3 @@ graph TD
 - ❌ **Disabling hash joins globally to fix one query:** `SET enable_hashjoin = off` at the session level makes all joins in that session avoid hash join — fix statistics or adjust `work_mem` instead; disabling algorithms globally degrades unrelated queries
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)

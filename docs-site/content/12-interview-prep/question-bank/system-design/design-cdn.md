@@ -80,8 +80,6 @@ graph LR
 | DNS hijacking | Users routed to wrong server | DNSSEC; monitor for DNS anomalies |
 
 ### Concept References
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
 
 ---
 
@@ -123,7 +121,6 @@ sequenceDiagram
 - ❌ **Caching responses with Set-Cookie:** Cookies make responses user-specific; CDN serves one user's cookie to another; strip cookies from CDN-cached responses
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -183,7 +180,6 @@ Anycast (Approach B) for the routing IP. All PoPs announce the same IP (`104.16.
 - ❌ **GeoDNS with long TTL:** 5-minute TTL means PoP failure takes 5 min to route around; for production CDN use anycast or 30s TTL maximum
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -216,7 +212,6 @@ graph LR
 - ❌ **Not caching dynamic pages that could be cached:** Home page with top 10 products changes every 10 min — cacheable for 10 min; improper "dynamic = no cache" assumption wastes CDN capacity
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -277,7 +272,6 @@ URL versioning for JS/CSS bundles (content hash in filename: `app.abc123.js`). T
 - ❌ **Not versioning images referenced in CSS:** `background: url('/logo.png')` with no versioning — logo update takes 24h to propagate via TTL; use content-hashed image filenames too
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -311,7 +305,6 @@ graph LR
 - ❌ **Using anycast without session affinity for TCP:** Mid-TCP-session packet rerouted to different PoP = connection reset; use ECMP hash on `(src_ip, src_port)` to keep session on same PoP
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -343,7 +336,6 @@ graph LR
 - ❌ **No origin fallback configuration:** If CDN entirely unavailable (rare), serve directly from origin; configure origin as CDN fallback to prevent total outage
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -407,7 +399,6 @@ Differentiated TTL (Approach B). Manifests: `Cache-Control: s-maxage=5` — CDN 
 - ❌ **Not supporting byte-range requests:** ABR players sometimes request first 256 KB of segment to probe bitrate; CDN must support `Range: bytes=0-262143` headers
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -441,7 +432,6 @@ graph LR
 - ❌ **Not setting Vary: Accept-Encoding:** CDN caches gzip version, serves to client that can't decompress — corrupted response; always set Vary: Accept-Encoding when serving compressed content
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -477,4 +467,3 @@ graph TD
 - ❌ **Not peering with local ISPs:** A PoP in Mumbai without Jio peering still routes via international backbone for Jio users; direct IXP peering is the critical step that reduces latency from 150ms to 10ms
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)

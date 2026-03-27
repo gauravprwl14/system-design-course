@@ -48,7 +48,6 @@ graph LR
 - ❌ **Storing technical events instead of business events:** `RowUpdated` is not an event. `MoneyTransferred`, `OrderPlaced`, `ItemShipped` are business events.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -83,7 +82,6 @@ graph TD
 - ❌ **Synchronous projection updates:** Blocking the write path until projections are updated defeats the purpose. Projections must be asynchronous consumers of the event stream.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -151,7 +149,6 @@ For 100K events/sec, use **Kafka as the event store backbone** with PostgreSQL f
 - ❌ **Storing full event payload in the index:** The index should store only (aggregate_id, partition, start_offset, end_offset). Storing payload doubles storage costs.
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -191,7 +188,6 @@ graph TD
 - ❌ **Replaying at full speed without throttling:** A replay consumer reading 50K events/sec competes with live consumers for Kafka broker I/O. Set replay consumer `fetch.max.bytes` to limit impact.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -263,7 +259,6 @@ For 7-year event retention: the schema registry stores schema versions permanent
 - ❌ **Renaming fields directly:** Field rename = remove + add. This is a BREAKING change. Old consumers that reference the old field name break. Always add new name + deprecate old.
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -307,7 +302,6 @@ sequenceDiagram
 - ❌ **Waiting indefinitely for projection:** If projection consumer is down, the 500ms wait turns into an infinite hang. Always set a timeout — return 202 Accepted + polling URL if projection isn't ready.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -342,7 +336,6 @@ graph TD
 - ❌ **Sharding by timestamp instead of aggregate_id:** Sharding by timestamp creates hot shards (all recent writes go to the "current time" shard). Always shard by aggregate_id for even distribution.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
 
 ---
 
@@ -413,7 +406,6 @@ Two critical operational mechanisms for event sourcing at scale:
 - ❌ **Compacting events without snapshots:** Compacting/deleting events before ensuring a snapshot covers them makes full replay impossible. Snapshot first, then compact.
 
 ### Concept Reference
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -474,8 +466,6 @@ graph TD
 | Consumer crash mid-replay | Projection partially updated | Idempotent projection updates; track last processed event |
 
 ### Concept References
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)
 
 ---
 
@@ -510,4 +500,3 @@ graph TD
 - ❌ **Storing only aggregate-level events:** To debug cross-aggregate interactions (why did Order O-123 trigger a refund on Account A-456?), you need events from both aggregates correlated by saga ID. Include correlation IDs in all events.
 
 ### Concept Reference
-→ [Saga/CQRS Patterns](../../../system-design/business-and-advanced/saga-cqrs-patterns)

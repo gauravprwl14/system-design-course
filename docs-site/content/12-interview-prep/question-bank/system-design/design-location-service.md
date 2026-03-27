@@ -84,8 +84,6 @@ graph TD
 | Query service overload | Nearby query latency spikes | Cache popular area queries for 2s (NYC Times Square always has 50+ drivers nearby); 2s stale acceptable |
 
 ### Concept References
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Real-Time Data](../../../system-design/messaging-and-streaming/real-time-data)
 
 ---
 
@@ -129,7 +127,6 @@ graph LR
 - ❌ **Using H3 for basic nearby driver query:** H3 is excellent for zone analytics but adds complexity; Redis GEORADIUS is simpler and sufficient for "find 20 nearby drivers" use case
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
 
 ---
 
@@ -196,8 +193,6 @@ Approach A (direct Redis) for driver location updates — 1-3ms write latency is
 - ❌ **No TTL on driver location:** Driver closes app; last location stays in Redis forever; `EXPIRE drivers:{id} 15` ensures stale drivers auto-removed after 15s without update
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)
 
 ---
 
@@ -242,7 +237,6 @@ sequenceDiagram
 - ❌ **Not expiring driver state after trip ends:** Driver completes trip but state remains `matched`; driver never appears in nearby query results; always reset state to `available` on trip completion
 
 ### Concept Reference
-→ [Distributed Locking](../../../system-design/distributed-systems/distributed-locking)
 
 ---
 
@@ -305,5 +299,3 @@ H3 resolves the key problem with geohash for zone analytics: uniform cell area. 
 - ❌ **Using H3 for basic nearby driver query:** H3 lookup tells you cell membership, not euclidean distance to specific drivers; still need GEORADIUS for "find nearest 5 drivers"
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Kafka / Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)

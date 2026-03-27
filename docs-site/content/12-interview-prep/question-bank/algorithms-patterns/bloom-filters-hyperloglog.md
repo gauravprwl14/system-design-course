@@ -64,7 +64,6 @@ graph TD
 - ❌ **Forgetting that FP rate grows as the filter fills:** If you insert more elements than designed for, the FP rate increases beyond target.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/caching/caching-strategies)
 
 ---
 
@@ -115,7 +114,6 @@ graph TD
 - ❌ **Confusing HyperLogLog with Bloom filter:** HLL counts how many distinct elements; Bloom filter checks if a specific element was seen. Different problems.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/caching/caching-strategies)
 
 ---
 
@@ -168,7 +166,6 @@ graph LR
 - ❌ **Not accounting for growth:** Size the filter for 2x your expected N — Bloom filters can't be resized without rebuilding. A Scalable Bloom Filter chains multiple filters to handle growth.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/caching/caching-strategies)
 
 ---
 
@@ -240,7 +237,6 @@ Use `PFADD key user_id` on every page view. Query with `PFCOUNT key`. For weekly
 - ❌ **Using HLL when exact counts are required:** For billing or legal compliance, use exact counting (Redis Set with expiry, or a dedicated counting database).
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/caching/caching-strategies)
 
 ---
 
@@ -287,7 +283,6 @@ graph TD
 - ❌ **Choosing CBF by default:** If you don't need deletion, standard Bloom filter is 4x more memory-efficient. Use CBF only when deletion is required.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/caching/caching-strategies)
 
 ---
 
@@ -367,4 +362,3 @@ Chrome downloads a ~100MB Bloom filter locally (uses hash prefix compression, no
 - ❌ **Sending full URLs to server for verification:** Chrome sends only a 32-byte hash prefix — not the full URL — to protect user privacy while still enabling exact matching.
 
 ### Concept Reference
-→ [Caching Strategies](../../../system-design/caching/caching-strategies)

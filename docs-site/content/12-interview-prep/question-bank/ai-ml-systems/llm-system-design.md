@@ -46,7 +46,6 @@ sequenceDiagram
 - ❌ **Ignoring TPOT for long outputs:** For a 1000-token response at 25ms/token, TPOT contributes 25 seconds — dwarfs TTFT
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -84,7 +83,6 @@ graph TD
 - ❌ **Fixed context length assumptions:** Allocating KV cache for max sequence length wastes GPU memory; PagedAttention allocates dynamically
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -169,7 +167,6 @@ Combined with **PagedAttention** (KV cache memory virtualization), continuous ba
 - ❌ **Memory fragmentation without PagedAttention:** Variable-length KV caches fragment GPU memory, reducing effective batch size by 2–3× — PagedAttention eliminates fragmentation
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -212,7 +209,6 @@ graph TD
 - ❌ **Tensor parallelism across InfiniBand:** All-reduce across 400 Gbps InfiniBand is 10–100× slower than NVLink — model quality is fine but latency per layer increases from 0.5ms to 5ms, making TP across nodes impractical for interactive serving
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -307,7 +303,6 @@ For the given constraints: **INT8 (SmoothQuant or W8A8)**. Reduces memory from 1
 - ❌ **Quantizing all layers equally:** Attention layers are more sensitive to quantization than FFN layers — mixed-precision (attention=INT8, FFN=INT4) reduces accuracy loss by 0.3–0.5% vs uniform INT4
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -341,7 +336,6 @@ graph TD
 - ❌ **Ignoring cache eviction:** KV caches are evicted when GPU memory is needed; at high load, cache hit rate can drop to 0% — don't architect around 100% cache hit rate
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -381,7 +375,6 @@ graph TD
 - ❌ **Ignoring MoE implications:** MoE models have the same inference latency as a smaller dense model but with better quality — the key serving challenge is expert routing, not just model parallelism
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -473,8 +466,6 @@ Combine **Approach A + Approach C**: semantic cache for repeated queries (cache 
 - ❌ **Routing based only on input complexity:** Long inputs are not always complex; a 5,000-token document summarization task is simpler than a 50-token math proof request
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
-→ [RAG Architecture](../../../system-design/ai-and-agents/rag-retrieval-augmented-generation)
 
 ---
 
@@ -513,7 +504,6 @@ sequenceDiagram
 - ❌ **Mismatched draft/target tokenizers:** Draft and target models must use the same tokenizer — token IDs must correspond exactly for the rejection sampling to be valid
 
 ### Concept Reference
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
 
 ---
 
@@ -577,7 +567,3 @@ graph TD
 | Burst beyond 100 A100s capacity | Queue builds, TTFT >2s | Priority queue: premium users served first; free tier rate limited to 10 req/min |
 | Model weight loading on new node | Cold start takes 8–12 min (download 70 GB weights) | Pre-warm spare nodes; keep 10% warm but idle; use model weight caching on NVMe |
 
-### Concept References
-→ [AI Agents](../../../system-design/ai-and-agents/agent-loop-tool-calling)
-→ [Observability](../../../system-design/scale-and-reliability/observability)
-→ [Kafka & Messaging](../../../system-design/messaging-and-streaming/kafka-rabbitmq)

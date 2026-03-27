@@ -42,7 +42,6 @@ graph TD
 - ❌ **Not defining a shard key first:** The shard key determines everything — cross-shard join frequency, hotspot risk, re-shard difficulty
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -118,7 +117,6 @@ graph TD
 - ❌ **Hash sharding when range queries are frequent:** "Get all orders for user in last 30 days" hits all N shards if orders are hashed by order_id instead of user_id
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -154,7 +152,6 @@ graph TD
 - ❌ **Ignoring read hotspots:** Read replicas help for read-heavy hot shards, but write hotspots require re-sharding or key redesign
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -222,7 +219,6 @@ Design shard keys to **co-locate related data** — all of a user's data on the 
 - ❌ **Joining across shards in application layer:** Fetching 10K rows from shard A then 10K from shard B and joining in memory is an N+1 at scale — use co-location or denormalization
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -255,7 +251,6 @@ graph TD
 - ❌ **Not pre-allocating logical shards:** Physical re-sharding requires data movement; logical-to-physical remapping only updates a routing table — plan for this from day 1
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -289,7 +284,6 @@ graph TD
 - ❌ **Too few logical shards:** Instagram uses 2048 logical shards for 100 physical machines; if they used 100 logical shards, future splits require data movement
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -362,7 +356,6 @@ Avoid distributed transactions across shards where possible — redesign data mo
 - ❌ **Saga without idempotent compensations:** If the compensation step is retried, double-refund is worse than the original failure
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -396,7 +389,6 @@ graph LR
 - ❌ **Ignoring hot virtual nodes:** A virtual node handling a celebrity user's data still creates a hotspot — consistent hashing distributes shards, not traffic
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -432,7 +424,6 @@ graph TD
 - ❌ **Ignoring VSchema design:** VSchema must match your access patterns — wrong shard key in VSchema is as bad as wrong shard key in native sharding
 
 ### Concept Reference
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
 
 ---
 
@@ -494,6 +485,3 @@ graph TD
 | Backfill job crashes | Partial migration | Idempotent backfill with checkpoint; restart from last checkpoint |
 | Shard 1 primary fails | 33% of writes fail | Automated failover to replica in <30s; use Patroni or RDS Multi-AZ |
 
-### Concept References
-→ [Database Sharding](../../../system-design/storage-and-databases/database-sharding)
-→ [Database Replication](../../../system-design/storage-and-databases/database-replication)

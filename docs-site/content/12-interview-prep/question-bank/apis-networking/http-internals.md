@@ -64,7 +64,6 @@ graph TD
 - ❌ **HTTP/2 push deprecated:** Chrome deprecated HTTP/2 server push in 2022 (2% usage, often harmful); don't design around it.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -107,7 +106,6 @@ graph LR
 - ❌ **Dismissing HTTP/2 benefits:** Even with TCP HOL, HTTP/2 is a major improvement over HTTP/1.1 for most networks (low packet loss).
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -192,7 +190,6 @@ HTTP/2 multiplexing works via the **binary framing layer**: all HTTP messages ar
 - ❌ **Ignoring flow control:** Without flow control, a slow client receiving a large response would block faster requests on the same connection.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -325,7 +322,6 @@ QUIC eliminates TCP HOL blocking by building multiplexing directly into the tran
 - ❌ **QUIC in user space = insecure:** User-space doesn't mean unencrypted; QUIC mandates TLS 1.3 — always encrypted.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -384,7 +380,6 @@ graph LR
 - ❌ **No keep-alive between services:** Internal service-to-service calls benefit just as much as client-to-server; always pool connections in microservices.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -440,7 +435,6 @@ graph LR
 - ❌ **Not handling chunked in API clients:** Some HTTP client libraries need explicit configuration to process chunked streams incrementally vs buffering the whole response.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -515,7 +509,6 @@ Server push was deprecated because it couldn't solve the cache coordination prob
 - ❌ **Confusing push with WebSocket push:** HTTP/2 server push is a one-time connection-setup feature; WebSocket push is ongoing; completely different.
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -560,7 +553,6 @@ graph LR
 - ❌ **HTTP/3 uses QPACK, not HPACK:** QPACK is HPACK adapted for QUIC's stream ordering (out-of-order frames in QUIC would corrupt HPACK state).
 
 ### Concept Reference
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
 
 ---
 
@@ -650,6 +642,3 @@ If 200ms is in `Connect` time → TCP/TLS cold start is the issue.
 | Geographic distance | CDN edge nodes | -150ms | High |
 | No compression | gzip/brotli response body | -50ms transfer | Low |
 
-### Concept References
-→ [API Design: REST, GraphQL, gRPC](../../../system-design/fundamentals/api-design-rest-graphql-grpc)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)

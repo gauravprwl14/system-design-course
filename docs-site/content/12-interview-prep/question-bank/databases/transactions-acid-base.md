@@ -48,7 +48,6 @@ sequenceDiagram
 - ❌ **Assuming Isolation means full serialization by default:** PostgreSQL default isolation is READ COMMITTED — allows non-repeatable reads; SERIALIZABLE prevents all anomalies but reduces throughput
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -88,7 +87,6 @@ graph TD
 - ❌ **Assuming REPEATABLE READ prevents phantoms in PostgreSQL:** PostgreSQL's REPEATABLE READ uses snapshot isolation which actually prevents most phantoms in practice, but SERIALIZABLE is the only standard guarantee
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -165,7 +163,6 @@ MVCC maintains multiple row versions — each transaction sees a consistent snap
 - ❌ **Disabling AUTOVACUUM:** MVCC dead tuples accumulate without VACUUM — disabling AUTOVACUUM causes table bloat and eventually transaction ID wraparound (requires emergency VACUUM FREEZE)
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -213,7 +210,6 @@ sequenceDiagram
 - ❌ **Assuming PostgreSQL REPEATABLE READ allows phantoms:** PostgreSQL's REPEATABLE READ snapshot isolation prevents most phantoms in practice (via snapshot), but the SQL standard says REPEATABLE READ should allow them
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -279,7 +275,6 @@ Use SERIALIZABLE only for transactions that have a true check-then-act pattern o
 - ❌ **Serializable for all reads:** Reads in a serializable transaction also track dependencies — use it only for transactions that both read and write shared state
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -319,7 +314,6 @@ sequenceDiagram
 - ❌ **Not indexing the version column:** The WHERE clause includes version — ensure the index includes it for efficient conflict detection
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -361,7 +355,6 @@ graph TD
 - ❌ **Not understanding why VACUUM can't always reclaim space:** VACUUM marks pages as free but doesn't return disk space to OS; `VACUUM FULL` reclaims disk but locks table — only use VACUUM FULL during maintenance windows
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -436,7 +429,6 @@ Use the **Outbox pattern**: write the event to the same PostgreSQL transaction a
 - ❌ **Not making Kafka consumers idempotent:** Outbox relay will retry on failure — consumers receive the same event twice; must handle duplicate order_created events gracefully
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -471,7 +463,6 @@ graph LR
 - ❌ **Assuming all databases use MVCC:** DB2 and SQL Server traditionally use lock-based (2PL); PostgreSQL, MySQL InnoDB, Oracle use MVCC — database selection matters for workload type
 
 ### Concept Reference
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
 
 ---
 
@@ -531,6 +522,3 @@ graph TD
 | Redis DECR race | Redis goes to -1 | Check after decrement: if stock < 0, INCR back and reject |
 | High retry rate under flash sale | 10K retries overload DB | Queue-based reservation with distributed lock (Redis SETNX) |
 
-### Concept References
-→ [SQL vs NoSQL](../../../system-design/storage-and-databases/sql-vs-nosql)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)

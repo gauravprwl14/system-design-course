@@ -277,7 +277,6 @@ graph LR
 - ❌ **Invalidating `/*` on every deploy:** At 1,000+ paths this costs money and is slow (5–10 min); use content-hashed filenames (`app.abc123.js`) so old cached files expire naturally.
 
 ### Concept Reference
-→ [CDN Design](../../../system-design/scale-and-reliability/cdn-design)
 
 ---
 
@@ -475,6 +474,3 @@ graph TD
 
 ### Concept References
 → [AWS Quick Reference](../../../quick-reference/aws-cloud/)
-→ [Caching Strategies](../../../system-design/fundamentals/caching-strategies)
-→ [Load Balancing](../../../system-design/fundamentals/load-balancing)
-→ [Observability](../../../system-design/scale-and-reliability/observability)
