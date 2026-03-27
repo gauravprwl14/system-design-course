@@ -38,7 +38,6 @@ graph TD
 - ❌ **EKS for 3-service startup:** Kubernetes control plane + managed node groups = $150+/month minimum before you run a single container.
 
 ### Concept Reference
-→ [AWS Quick Reference](../../../quick-reference/aws-cloud/)
 
 ---
 
@@ -141,7 +140,6 @@ Default to Aurora PostgreSQL for new OLTP workloads (better than RDS for most ca
 - ❌ **Choosing RDS for a new 100M-row, write-heavy table:** RDS single-writer becomes a bottleneck at sustained >10K writes/sec — Aurora or DynamoDB is better.
 
 ### Concept Reference
-→ [AWS Quick Reference](../../../quick-reference/aws-cloud/)
 
 ---
 
@@ -176,7 +174,6 @@ graph TD
 - ❌ **SNS for durable queuing:** SNS does not persist messages — if a subscriber is down, messages are lost. Always pair SNS with SQS for durability.
 
 ### Concept Reference
-→ [AWS Quick Reference](../../../quick-reference/aws-cloud/)
 
 ---
 
@@ -243,7 +240,6 @@ Replace NAT Gateway traffic to S3/DynamoDB/SQS with VPC Gateway/Interface Endpoi
 - ❌ **Overly broad security groups (0.0.0.0/0 ingress):** A common audit finding; every ingress rule should reference a specific SG or /32 CIDR.
 
 ### Concept Reference
-→ [AWS Quick Reference](../../../quick-reference/aws-cloud/)
 
 ---
 
@@ -310,7 +306,6 @@ graph TD
 - ❌ **Using Geolocation for latency optimisation:** Geolocation routes by country, not latency — a user in France might get routed to eu-west-1 even if us-east-1 is closer. Use Latency-based for performance.
 
 ### Concept Reference
-→ [AWS Quick Reference](../../../quick-reference/aws-cloud/)
 
 ---
 
@@ -374,7 +369,6 @@ AWS Organizations with OUs + SCPs for guardrails; IAM Identity Center + IdP fede
 - ❌ **No SCP guardrails:** Without SCPs, an account admin can create an IAM user with AdministratorAccess and bypass all controls.
 
 ### Concept Reference
-→ [AWS Quick Reference](../../../quick-reference/aws-cloud/)
 
 ---
 
@@ -473,4 +467,3 @@ graph TD
 | Deployment failure | 503 errors during rollout | ECS rolling deploy with health check gate + 2-min rollback |
 
 ### Concept References
-→ [AWS Quick Reference](../../../quick-reference/aws-cloud/)

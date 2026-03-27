@@ -56,7 +56,6 @@ graph TD
 - ❌ **Not knowing the complexity:** Skip list operations are O(log N) expected, not O(log N) worst-case. Worst case is O(N) with astronomically low probability. For practical purposes, treat as O(log N).
 
 ### Concept Reference
-→ [Data Structures](../../../algorithms/concepts/data-structures-fundamentals)
 
 ---
 
@@ -103,7 +102,6 @@ graph TD
 - ❌ **Heap-based approach for streaming with frequency (not value):** Top-K by access frequency (trending items) is not solvable with a simple min-heap because items can be processed multiple times. Use SpaceSaving or Count-Min Sketch + heap instead (see Q6 in approximation-algorithms).
 
 ### Concept Reference
-→ [Data Structures](../../../algorithms/concepts/data-structures-fundamentals)
 
 ---
 
@@ -182,7 +180,6 @@ A Count-Min Sketch (CMS) is the right data structure for this problem — it pro
 - ❌ **Sending full sketches to aggregator every second:** A CMS with width=10,000 × depth=7 × 4 bytes = 280KB per snapshot. At 10 servers × 1 snapshot/sec = 2.8MB/sec. Acceptable at 60-second aggregation; too much at 1-second.
 
 ### Concept Reference
-→ [Data Structures](../../../algorithms/concepts/data-structures-fundamentals)
 
 ---
 
@@ -258,7 +255,6 @@ For 10M queries/sec, a pure in-process trie is insufficient without optimisation
 - ❌ **Full trie in a single process:** 10M terms × 50 bytes/node (compressed trie) = 500MB — fits. But 10M req/sec against a single process = Python GIL or Node.js event loop saturation. Shard.
 
 ### Concept Reference
-→ [Data Structures](../../../algorithms/concepts/data-structures-fundamentals)
 
 ---
 
@@ -307,7 +303,6 @@ graph TD
 - ❌ **Not handling duplicates:** Duplicates work correctly — equal values go to max-heap (≤ condition). The algorithm handles duplicates naturally.
 
 ### Concept Reference
-→ [Data Structures](../../../algorithms/concepts/data-structures-fundamentals)
 
 ---
 
@@ -400,4 +395,3 @@ Twitter uses HyperLogLog for counting distinct viewers per tweet and reservoir s
 - ❌ **Using HLL for billing:** ±1% error on 400M impressions = ±4M impressions. For analytics, acceptable. For billing at $0.001 per impression, ±$4,000 error per day — not acceptable. Use exact counting for billing-critical metrics.
 
 ### Concept Reference
-→ [Data Structures](../../../algorithms/concepts/data-structures-fundamentals)

@@ -51,7 +51,6 @@ graph TD
 - ❌ **Forgetting that CMS only handles insertions (not deletions):** Decrementing a cell can create values below the true count. For streams with deletions, use CMS with conservative updates or Count sketch (supports subtraction).
 
 ### Concept Reference
-→ [Probabilistic Algorithms](../../../algorithms/concepts/probabilistic-data-structures)
 
 ---
 
@@ -104,7 +103,6 @@ sequenceDiagram
 - ❌ **Reservoir sampling for weighted sampling:** Algorithm R gives equal probability to all items. For weighted sampling (some events are more important), use weighted reservoir sampling (Algorithm A-Res) which replaces with probability proportional to weight.
 
 ### Concept Reference
-→ [Probabilistic Algorithms](../../../algorithms/concepts/probabilistic-data-structures)
 
 ---
 
@@ -199,7 +197,6 @@ For 1TB log file with 100MB budget and ±2% error, use HyperLogLog with m=16,384
 - ❌ **Assuming HLL is exact for small cardinalities:** For very small sets (< 5 × m / 30), HLL uses linear counting for better accuracy. Redis handles this automatically with the small-representation optimisation.
 
 ### Concept Reference
-→ [Probabilistic Algorithms](../../../algorithms/concepts/probabilistic-data-structures)
 
 ---
 
@@ -291,7 +288,6 @@ SpaceSaving (Metwally et al., 2005) is the most space-efficient algorithm for th
 - ❌ **Using K too small:** K=10 only guarantees items with frequency > 10% of all events. For "top 100 of 1M items" problems, K must be at least 100. Larger K gives better accuracy but more memory.
 
 ### Concept Reference
-→ [Probabilistic Algorithms](../../../algorithms/concepts/probabilistic-data-structures)
 
 ---
 
@@ -374,4 +370,3 @@ Cloudflare uses Count-Min Sketch as the first stage of a two-level DDoS detectio
 - ❌ **Not resetting sketches frequently enough:** A 24-hour CMS window accumulates 8.64T events (at 100M/sec). The total_events term in the CMS error bound grows with window size — error becomes enormous. Use short windows (10 seconds) and reset frequently.
 
 ### Concept Reference
-→ [Probabilistic Algorithms](../../../algorithms/concepts/probabilistic-data-structures)

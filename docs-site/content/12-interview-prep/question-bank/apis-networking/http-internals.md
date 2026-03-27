@@ -245,7 +245,6 @@ sequenceDiagram
 - ❌ **Not disabling TLS 1.0/1.1:** Outdated versions have known vulnerabilities (BEAST, POODLE); disable at load balancer level.
 
 ### Concept Reference
-→ [Security Quick Reference](../../../quick-reference/security-encryption/)
 
 ---
 
