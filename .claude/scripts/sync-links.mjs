@@ -7,7 +7,7 @@ import { EDGE_FIELDS, SKIP_NAMES } from './constants.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '../../');
-const PAGES_DIR = join(REPO_ROOT, 'docs-site/pages');
+const PAGES_DIR = join(REPO_ROOT, 'docs-site/content');
 
 export function buildAdjacencyMap(nodes) {
   const adj = new Map();
@@ -158,7 +158,7 @@ function generateKnowledgeGraph(nodes, adj) {
     for (const o of orphans) lines.push(`- ${o}`);
   }
 
-  writeFileSync(join(PAGES_DIR, 'KNOWLEDGE-GRAPH.md'), lines.join('\n') + '\n');
+  writeFileSync(join(REPO_ROOT, 'KNOWLEDGE-GRAPH.md'), lines.join('\n') + '\n');
   console.log(`Generated KNOWLEDGE-GRAPH.md (${totalNodes} nodes, ${totalEdges} edges)`);
 }
 
@@ -196,8 +196,8 @@ function printGapReport(nodes) {
 
 async function main() {
   const filePaths = await glob(
-    ['system-design/**/*.md', 'interview-prep/**/*.md', 'problems-at-scale/**/*.md'],
-    { cwd: PAGES_DIR, ignore: ['**/database-archival-poc/**'] }
+    ['**/*.md'],
+    { cwd: PAGES_DIR, ignore: ['**/database-archival-poc/**', '_meta.js', 'KNOWLEDGE-GRAPH.md'] }
   );
   const articlePaths = filePaths.filter(f => !SKIP_NAMES.has(f.split('/').pop()));
 
