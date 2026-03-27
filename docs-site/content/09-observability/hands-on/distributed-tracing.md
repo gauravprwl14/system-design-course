@@ -11,10 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/observability-monitoring
-  - system-design/monitoring/observability-slos
+linked_from: []
 tags:
   - distributed-tracing
   - opentelemetry

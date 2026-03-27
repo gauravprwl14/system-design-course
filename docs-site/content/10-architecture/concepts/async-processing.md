@@ -21,16 +21,12 @@ see_poc:
   - interview-prep/practice-pocs/backpressure-queues
   - interview-prep/practice-pocs/outbox-pattern
 linked_from:
-  - interview-prep/aws-cloud/lambda-serverless
-  - interview-prep/practice-pocs/redis-job-queue
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/high-concurrency-api
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - interview-prep/system-design/pdf-converter
-  - system-design/case-studies/news-feed
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/youtube
-  - system-design/scalability/backpressure
+  - 12-interview-prep/system-design/fundamentals/high-concurrency-api
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq
+  - 12-interview-prep/system-design/messaging-and-streaming/pdf-converter
 tags:
   - async
   - message-queues

@@ -1,14 +1,42 @@
 ---
-title: "Duplicate Orders on Retry: When the Network Lies to You"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["concurrency", "distributed-systems", "idempotency"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead"]
-tags: ["idempotency", "retry", "network-timeout", "duplicate-detection", "outbox-pattern", "exactly-once", "kafka", "distributed-systems"]
-description: "Network timeouts cause clients to retry POST requests, creating duplicate orders, charges, and fulfillment actions"
-reading_time: "22 min"
-difficulty: "senior"
-status: "published"
+title: 'Duplicate Orders on Retry: When the Network Lies to You'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - concurrency
+  - distributed-systems
+  - idempotency
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - idempotency
+  - retry
+  - network-timeout
+  - duplicate-detection
+  - outbox-pattern
+  - exactly-once
+  - kafka
+  - distributed-systems
+description: >-
+  Network timeouts cause clients to retry POST requests, creating duplicate
+  orders, charges, and fulfillment actions
+reading_time: 22 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/hands-on/database-sequences
+  - 03-redis/hands-on/redis-atomic-inventory
+  - 04-messaging/failures/duplicate-event-processing
+  - 05-distributed-systems/failures/double-booking
+  - 05-distributed-systems/failures/double-charge-payment
+  - 05-distributed-systems/failures/race-condition-inventory
+  - 07-api-design/concepts/idempotency
+  - 07-api-design/hands-on/idempotency-keys
+  - 11-real-world/payment-system
+  - 11-real-world/unique-id-generator
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
 ---
 
 # Duplicate Orders on Retry: When the Network Lies to You

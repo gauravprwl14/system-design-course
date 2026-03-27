@@ -12,9 +12,7 @@ related_problems:
   - problems-at-scale/data-integrity/duplicate-event-processing
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/event-driven-architecture
-  - system-design/scalability/event-driven-architecture
+linked_from: []
 tags:
   - event-store
   - event-sourcing

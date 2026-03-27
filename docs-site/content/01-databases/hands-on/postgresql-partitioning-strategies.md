@@ -12,11 +12,7 @@ related_problems:
   - problems-at-scale/cost-optimization/storage-bloat
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/cost-optimization/storage-bloat
-  - problems-at-scale/scalability/hot-partition
-  - system-design/databases/data-archival-strategies
-  - system-design/databases/sharding-strategies
+linked_from: []
 tags:
   - postgresql
   - partitioning

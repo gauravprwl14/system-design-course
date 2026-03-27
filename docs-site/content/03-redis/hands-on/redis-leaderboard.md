@@ -10,10 +10,7 @@ related_problems:
   - problems-at-scale/scalability/database-hotspots
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/social-media-feed
-  - system-design/case-studies/news-feed
+linked_from: []
 tags:
   - redis
   - leaderboard

@@ -1,15 +1,34 @@
 ---
-title: "Consistent Hashing: Virtual Nodes, Rehashing Cost, and Hot Spot Avoidance"
-date: "2026-03-18"
-category: "system-design-playbook"
-subcategories: ["distributed-systems", "load-balancing", "data-partitioning"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead", "Staff Engineer", "Principal Engineer"]
-tags: ["consistent-hashing", "virtual-nodes", "vnodes", "rehashing", "hot-spots", "distributed-cache", "partitioning"]
-description: "Master consistent hashing from basic ring mechanics to virtual nodes, rehashing cost math, and hot spot avoidance at production scale."
-reading_time: "22 min"
-difficulty: "staff+"
-status: "published"
-featured_image: "/assets/diagrams/consistent-hashing-deep-dive.png"
+title: 'Consistent Hashing: Virtual Nodes, Rehashing Cost, and Hot Spot Avoidance'
+date: '2026-03-18'
+category: system-design-playbook
+subcategories:
+  - distributed-systems
+  - load-balancing
+  - data-partitioning
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+  - Principal Engineer
+tags:
+  - consistent-hashing
+  - virtual-nodes
+  - vnodes
+  - rehashing
+  - hot-spots
+  - distributed-cache
+  - partitioning
+description: >-
+  Master consistent hashing from basic ring mechanics to virtual nodes,
+  rehashing cost math, and hot spot avoidance at production scale.
+reading_time: 22 min
+difficulty: staff+
+status: published
+featured_image: /assets/diagrams/consistent-hashing-deep-dive.png
+linked_from:
+  - 12-interview-prep/system-design/storage-and-databases/geospatial-service
 ---
 
 # Consistent Hashing: Virtual Nodes, Rehashing Cost, and Hot Spot Avoidance

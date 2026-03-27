@@ -11,11 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/circuit-breaker-pattern
-  - problems-at-scale/availability/retry-storm
-  - system-design/patterns/circuit-breaker
-  - system-design/patterns/timeouts-backpressure
+linked_from: []
 tags:
   - resilience
   - retry

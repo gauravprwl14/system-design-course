@@ -12,13 +12,7 @@ related_problems:
   - problems-at-scale/availability/circuit-breaker-failure
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/circuit-breaker-pattern
-  - problems-at-scale/availability/cascading-failures
-  - system-design/patterns/timeouts-backpressure
-  - system-design/scalability/backpressure
-  - system-design/scalability/chaos-engineering
-  - system-design/scalability/high-availability
+linked_from: []
 tags:
   - resilience
   - graceful-degradation

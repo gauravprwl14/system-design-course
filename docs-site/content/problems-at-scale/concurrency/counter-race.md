@@ -1,14 +1,37 @@
 ---
-title: "Lost Counter Updates: The Race Condition Silently Eating Your Analytics"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["concurrency", "race-conditions", "analytics"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead"]
-tags: ["race-condition", "counter", "redis-incr", "atomic-update", "counter-sharding", "hyperloglog", "batch-flushing", "lost-updates"]
-description: "Concurrent read-modify-write on shared counters causes updates to be lost, silently under-counting views, likes, and other metrics"
-reading_time: "20 min"
-difficulty: "senior"
-status: "published"
+title: 'Lost Counter Updates: The Race Condition Silently Eating Your Analytics'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - concurrency
+  - race-conditions
+  - analytics
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - race-condition
+  - counter
+  - redis-incr
+  - atomic-update
+  - counter-sharding
+  - hyperloglog
+  - batch-flushing
+  - lost-updates
+description: >-
+  Concurrent read-modify-write on shared counters causes updates to be lost,
+  silently under-counting views, likes, and other metrics
+reading_time: 20 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/failures/database-hotspots
+  - 03-redis/hands-on/redis-counter
+  - 03-redis/hands-on/redis-lua-leaderboards
+  - >-
+    12-interview-prep/system-design/real-time-systems/collaborative-editing-google-docs
+  - 12-interview-prep/system-design/real-time-systems/online-gaming-backend
 ---
 
 # Lost Counter Updates: The Race Condition Silently Eating Your Analytics

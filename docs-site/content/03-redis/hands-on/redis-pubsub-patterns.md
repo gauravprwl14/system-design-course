@@ -12,10 +12,7 @@ related_problems:
   - problems-at-scale/consistency/message-out-of-order
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/websocket-architecture
-  - system-design/case-studies/chat-system
+linked_from: []
 tags:
   - redis
   - pubsub

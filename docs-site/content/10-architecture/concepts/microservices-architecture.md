@@ -20,42 +20,17 @@ see_poc:
   - interview-prep/practice-pocs/integration-testing
   - interview-prep/practice-pocs/health-check-patterns
 linked_from:
-  - interview-prep/practice-pocs/circuit-breaker
-  - interview-prep/practice-pocs/contract-testing
-  - interview-prep/practice-pocs/distributed-tracing
-  - interview-prep/practice-pocs/feature-flags
-  - interview-prep/practice-pocs/integration-testing
-  - interview-prep/practice-pocs/redis-distributed-lock
-  - interview-prep/practice-pocs/saga-pattern
-  - interview-prep/practice-pocs/service-discovery
-  - interview-prep/system-design/api-design-rest-graphql-grpc
-  - interview-prep/system-design/api-gateway-pattern
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/kubernetes-basics
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/observability-monitoring
-  - interview-prep/system-design/saga-pattern
-  - interview-prep/system-design/service-discovery
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/scalability/memory-leak-long-running
-  - system-design/api-design/idempotency
-  - system-design/api-design/rest-graphql-grpc
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/netflix
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/spotify
-  - system-design/case-studies/uber-backend
-  - system-design/case-studies/unique-id-generator
-  - system-design/consistency/distributed-consensus
-  - system-design/monitoring/observability-slos
-  - system-design/patterns/circuit-breaker
-  - system-design/patterns/microservices-communication
-  - system-design/patterns/timeouts-backpressure
-  - system-design/scalability/chaos-engineering
-  - system-design/scalability/cqrs
-  - system-design/scalability/event-driven-architecture
+  - 12-interview-prep/system-design/business-and-advanced/saga-pattern
+  - 12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc
+  - 12-interview-prep/system-design/fundamentals/api-gateway-pattern
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - 12-interview-prep/system-design/scale-and-reliability/kubernetes-basics
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/observability-monitoring
+  - 12-interview-prep/system-design/scale-and-reliability/service-discovery
 tags:
   - microservices
   - architecture

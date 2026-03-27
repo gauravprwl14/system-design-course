@@ -1,14 +1,62 @@
 ---
-title: "Thundering Herd: How Your Cache Expiry Killed Your Database"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["availability", "caching"]
-personas: ["Senior Engineer", "Tech Lead", "Staff Engineer"]
-tags: ["thundering herd", "cache stampede", "redis", "TTL", "mutex", "XFetch", "stale-while-revalidate", "cache warming"]
-description: "Your Redis cache expires at 00:00:00. In the next 847 milliseconds, 14,000 concurrent requests all miss the cache, all query the database simultaneously. Your PostgreSQL CPU hits 100%. The cache just killed the database it was protecting."
-reading_time: "20 min"
-difficulty: "senior"
-status: "published"
+title: 'Thundering Herd: How Your Cache Expiry Killed Your Database'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - availability
+  - caching
+personas:
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+tags:
+  - thundering herd
+  - cache stampede
+  - redis
+  - TTL
+  - mutex
+  - XFetch
+  - stale-while-revalidate
+  - cache warming
+description: >-
+  Your Redis cache expires at 00:00:00. In the next 847 milliseconds, 14,000
+  concurrent requests all miss the cache, all query the database simultaneously.
+  Your PostgreSQL CPU hits 100%. The cache just killed the database it was
+  protecting.
+reading_time: 20 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/failures/hot-partition
+  - 02-caching/concepts/caching-fundamentals
+  - 02-caching/concepts/caching-strategies
+  - 02-caching/failures/cache-invalidation-race
+  - 06-scalability/concepts/high-availability
+  - 06-scalability/hands-on/rate-limiting-algorithms
+  - 07-api-design/concepts/rate-limiting
+  - 09-observability/hands-on/load-testing-k6
+  - 10-architecture/concepts/cdn-edge-computing
+  - 10-architecture/concepts/load-balancing-strategies
+  - 10-architecture/failures/retry-storm
+  - 11-real-world/news-feed
+  - 11-real-world/rate-limiter
+  - 11-real-world/spotify
+  - 11-real-world/ticket-booking
+  - 12-interview-prep/system-design/business-and-advanced/ad-auction-system
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
+  - 12-interview-prep/system-design/fundamentals/load-balancing-strategies
+  - 12-interview-prep/system-design/fundamentals/rate-limiting
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/audio-streaming-spotify
+  - 12-interview-prep/system-design/messaging-and-streaming/pdf-converter
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/online-gaming-backend
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - 12-interview-prep/system-design/real-time-systems/websocket-architecture
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
+  - 12-interview-prep/system-design/scale-and-reliability/cdn-from-scratch
 ---
 
 # Thundering Herd: How Your Cache Expiry Killed Your Database

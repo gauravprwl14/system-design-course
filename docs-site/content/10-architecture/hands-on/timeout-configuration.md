@@ -11,13 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/circuit-breaker-pattern
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/thread-pool-exhaustion
-  - system-design/patterns/circuit-breaker
-  - system-design/patterns/timeouts-backpressure
+linked_from: []
 tags:
   - resilience
   - timeouts

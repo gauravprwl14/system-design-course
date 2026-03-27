@@ -10,18 +10,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/aws-cloud/load-balancer
-  - interview-prep/system-design/api-gateway-pattern
-  - interview-prep/system-design/audio-streaming-spotify
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/load-balancing-strategies
-  - interview-prep/system-design/service-discovery
-  - interview-prep/system-design/video-conferencing
-  - system-design/load-balancing/load-balancing-strategies
-  - system-design/scalability/cdn-edge-computing
-  - system-design/scalability/scaling-basics
+linked_from: []
 tags:
   - nginx
   - load-balancing

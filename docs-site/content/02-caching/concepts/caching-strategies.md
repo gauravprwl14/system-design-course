@@ -21,13 +21,7 @@ see_poc:
   - interview-prep/practice-pocs/redis-cluster-caching
   - interview-prep/practice-pocs/http-caching-headers
 linked_from:
-  - interview-prep/practice-pocs/cache-aside-pattern
-  - interview-prep/practice-pocs/cache-invalidation-strategies
-  - interview-prep/practice-pocs/redis-cluster-caching
-  - interview-prep/practice-pocs/redis-key-value-cache
-  - interview-prep/practice-pocs/write-through-caching
-  - interview-prep/system-design/caching-strategies
-  - problems-at-scale/consistency/cache-invalidation-race
+  - 12-interview-prep/system-design/fundamentals/caching-strategies
 tags:
   - caching
   - redis

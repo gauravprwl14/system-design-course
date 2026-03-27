@@ -11,12 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/kubernetes-basics
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/service-discovery
-  - system-design/patterns/microservices-communication
-  - system-design/scalability/microservices-architecture
+linked_from: []
 tags:
   - service-discovery
   - microservices

@@ -1,14 +1,44 @@
 ---
-title: "Double Charge: When a Timeout Costs Your Customer Money"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["concurrency", "race-conditions", "payments"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead"]
-tags: ["idempotency", "payments", "retry", "timeout", "outbox-pattern", "stripe", "exactly-once", "distributed-systems"]
-description: "A successful payment response gets lost in a network timeout, the client retries, and the customer is charged twice"
-reading_time: "21 min"
-difficulty: "senior"
-status: "published"
+title: 'Double Charge: When a Timeout Costs Your Customer Money'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - concurrency
+  - race-conditions
+  - payments
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - idempotency
+  - payments
+  - retry
+  - timeout
+  - outbox-pattern
+  - stripe
+  - exactly-once
+  - distributed-systems
+description: >-
+  A successful payment response gets lost in a network timeout, the client
+  retries, and the customer is charged twice
+reading_time: 21 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/hands-on/database-transactions
+  - 03-redis/hands-on/redis-banking-transfers
+  - 03-redis/hands-on/redis-transaction-rollback
+  - 04-messaging/failures/duplicate-event-processing
+  - 05-distributed-systems/failures/duplicate-orders
+  - 05-distributed-systems/failures/race-condition-inventory
+  - 05-distributed-systems/failures/stock-order-matching-race
+  - 07-api-design/concepts/idempotency
+  - 07-api-design/hands-on/idempotency-keys
+  - 10-architecture/hands-on/saga-pattern
+  - 11-real-world/payment-system
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
+  - 12-interview-prep/system-design/business-and-advanced/saga-pattern
 ---
 
 # Double Charge: When a Timeout Costs Your Customer Money

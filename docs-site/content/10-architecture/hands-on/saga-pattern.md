@@ -13,8 +13,7 @@ related_problems:
   - problems-at-scale/data-integrity/duplicate-event-processing
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/saga-pattern
+linked_from: []
 tags:
   - saga
   - distributed-transactions

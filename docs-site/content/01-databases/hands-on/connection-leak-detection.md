@@ -11,9 +11,7 @@ related_problems:
   - problems-at-scale/scalability/memory-leak-long-running
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/scalability/memory-leak-long-running
-  - system-design/performance/connection-pool-management
+linked_from: []
 tags:
   - connection-pooling
   - leak-detection

@@ -1,15 +1,35 @@
 ---
-title: "Encryption at Rest: Key Management, Envelope Encryption, and BYOK"
-date: "2026-03-18"
-category: "system-design-playbook"
-subcategories: ["security", "data-protection", "compliance"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead", "Staff Engineer", "Principal Engineer"]
-tags: ["encryption", "kms", "envelope-encryption", "byok", "aes", "key-rotation", "compliance", "pii"]
-description: "How envelope encryption, key hierarchies, and BYOK actually work — and why encrypted data is still vulnerable to the attack you're not thinking about."
-reading_time: "17 min"
-difficulty: "senior"
-status: "published"
-featured_image: "/assets/diagrams/encryption-at-rest.png"
+title: 'Encryption at Rest: Key Management, Envelope Encryption, and BYOK'
+date: '2026-03-18'
+category: system-design-playbook
+subcategories:
+  - security
+  - data-protection
+  - compliance
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+  - Principal Engineer
+tags:
+  - encryption
+  - kms
+  - envelope-encryption
+  - byok
+  - aes
+  - key-rotation
+  - compliance
+  - pii
+description: >-
+  How envelope encryption, key hierarchies, and BYOK actually work — and why
+  encrypted data is still vulnerable to the attack you're not thinking about.
+reading_time: 17 min
+difficulty: senior
+status: published
+featured_image: /assets/diagrams/encryption-at-rest.png
+linked_from:
+  - 08-security/concepts/compliance-architecture
 ---
 
 # Encryption at Rest: Key Management, Envelope Encryption, and BYOK

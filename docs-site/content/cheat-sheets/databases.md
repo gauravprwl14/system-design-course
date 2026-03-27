@@ -383,3 +383,253 @@ graph TD
 - [Scaling Strategies](../12-interview-prep/quick-reference/databases/scaling-strategies)
 - [DynamoDB (AWS)](../12-interview-prep/quick-reference/aws-cloud/dynamodb-nosql)
 - [RDS on AWS](../12-interview-prep/quick-reference/aws-cloud/rds-databases)
+
+---
+
+## 12. Question-Bank: Database Deep Dives
+
+### SQL vs NoSQL Decisions
+**SQL vs NoSQL** — choosing the right database for the job
+
+| Signal | Choose SQL | Choose NoSQL |
+|--------|-----------|-------------|
+| Joins | >3 tables in hot query | Key-value/document lookups |
+| Scale | <5TB, ~10K TPS | >5TB, horizontal write scale |
+| Consistency | ACID mandatory | Eventual OK |
+
+- **Key number**: PostgreSQL handles ~10K TPS single node; DynamoDB handles 10M+ RPS at Amazon
+- **Decision**: SQL when schema is stable and relationships are complex; NoSQL when schema evolves and scale is horizontal
+- **Trap**: Joining >3 tables in every hot query at scale — SQL's relational model works against you; denormalize or switch to document DB
+- → [Full article](../12-interview-prep/question-bank/databases/sql-vs-nosql-decisions)
+
+---
+
+### Database Sharding
+**Database sharding** — horizontal partitioning when single-node write throughput maxes out
+
+| Strategy | Distribution | Range queries | Hot spots |
+|----------|-------------|---------------|-----------|
+| **Range** | Uneven (new data floods last shard) | Easy | Yes (time-based) |
+| **Hash** | Even | Scatter-gather | No |
+| **Consistent hashing** | Even, minimal rebalance | Scatter-gather | No |
+
+- **Key number**: Shard when: single-node writes exceed ~10K TPS, or table exceeds ~1TB (index stops fitting in RAM)
+- **Decision**: Hash sharding for even distribution; directory-based for flexibility to relocate hot keys
+- **Trap**: Sharding prematurely — exhaust read replicas, connection pooling, and vertical scaling first; cross-shard JOINs and transactions become extremely painful
+- → [Full article](../12-interview-prep/question-bank/databases/database-sharding-deep-dive)
+
+---
+
+### Database Replication Patterns
+**Replication patterns** — scaling reads and achieving high availability
+
+| Mode | Sync | Read scale | Failover | Lag |
+|------|------|-----------|---------|-----|
+| **Primary-Replica async** | No | Yes (up to 15 Aurora) | Manual | 100ms–seconds |
+| **Multi-AZ sync** | Yes | No | Auto ~1-2 min | 0 (synchronous) |
+| **Aurora Global** | Async | Yes (per region) | Manual (<1 min) | ~100ms cross-region |
+
+- **Key number**: MySQL/PostgreSQL: up to 5 read replicas; Aurora: up to **15** read replicas with sub-10ms lag
+- **Decision**: Read replicas for read scale; Multi-AZ for HA/DR; Global DB for active-passive multi-region
+- **Trap**: Routing post-write reads to read replica — replica may be 100ms+ behind; always route critical read-after-write to primary
+- → [Full article](../12-interview-prep/question-bank/databases/database-replication-patterns)
+
+---
+
+### Indexing Strategies
+**Indexing** — accelerating reads at the cost of write overhead
+
+| Index type | Best for | Avoid when |
+|-----------|---------|-----------|
+| **B-tree** | Range, =, ORDER BY | Arbitrary LIKE (not prefix) |
+| **Hash** | Exact equality only | Range queries needed |
+| **Composite** | Multi-column WHERE | Leading column not in query |
+| **Covering** | All columns in SELECT+WHERE | Large payloads (extra storage) |
+| **Partial** | Subset of rows (e.g., status='active') | Full table queries |
+
+- **Key number**: Covering index = zero table access; Composite `(a,b,c)` usable for `WHERE a=` but NOT `WHERE b=` alone
+- **Decision**: Index high-cardinality columns (email, UUID); skip low-cardinality (gender, boolean)
+- **Trap**: `WHERE YEAR(created_at) = 2024` — function on indexed column breaks index; use range query instead: `BETWEEN '2024-01-01' AND '2024-12-31'`
+- → [Full article](../12-interview-prep/question-bank/databases/indexing-strategies)
+
+---
+
+### Transactions: ACID & Isolation
+**ACID + isolation levels** — preventing data anomalies in concurrent systems
+
+| Level | Dirty reads | Non-repeatable | Phantom | Throughput |
+|-------|------------|---------------|---------|-----------|
+| READ COMMITTED (PG default) | ❌ | ✅ possible | ✅ possible | Fast |
+| REPEATABLE READ (MySQL default) | ❌ | ❌ | ✅ possible | Medium |
+| SERIALIZABLE | ❌ | ❌ | ❌ | **50-80% slower** |
+
+- **Key number**: SERIALIZABLE reduces throughput by 50–80%; PostgreSQL WAL fsync ~1ms overhead per commit
+- **Decision**: READ COMMITTED for most apps; REPEATABLE READ for inventory/booking; SERIALIZABLE only for financial reconciliation
+- **Trap**: Using SERIALIZABLE everywhere — massive throughput penalty; use explicit locking (`SELECT FOR UPDATE`) for specific critical sections instead
+- → [Full article](../12-interview-prep/question-bank/databases/transactions-acid-base)
+
+---
+
+### Connection Pooling
+**Connection pooling** — preventing DB connection exhaustion at scale
+
+| Pooler | Mode | Best for |
+|--------|------|---------|
+| **PgBouncer** | Transaction / session | PostgreSQL, high connection count |
+| **RDS Proxy** | Session | AWS Lambda → RDS (mandatory) |
+| **HikariCP** | App-level | Spring Boot JVM services |
+
+- **Key number**: PostgreSQL supports 100–500 max connections; PgBouncer reduces 10K app connections to 10-50 real DB connections
+- **Decision**: PgBouncer transaction mode for stateless services; session mode when using prepared statements or temp tables
+- **Trap**: Lambda + RDS without RDS Proxy — each cold start creates a new DB connection; 100 concurrent Lambdas = 100 connections; always use RDS Proxy with serverless
+- → [Full article](../12-interview-prep/question-bank/databases/connection-pooling)
+
+---
+
+### Database Migrations at Scale
+**Zero-downtime migrations** — schema changes on 100M+ row tables without locking
+
+| Operation | Lock? | Safe approach |
+|-----------|-------|-------------|
+| ADD COLUMN nullable (PG11+) | No | Instant — stored in catalog |
+| ADD COLUMN NOT NULL with default (PG11+) | No | Instant — PG11+ stores default in catalog |
+| ADD INDEX | Lock | `CREATE INDEX CONCURRENTLY` |
+| ADD UNIQUE CONSTRAINT | Lock | `ADD CONSTRAINT NOT VALID` → `VALIDATE CONSTRAINT` separately |
+| RENAME COLUMN | Lock | Expand-contract pattern (add new, dual-write, migrate, drop old) |
+
+- **Key number**: `ALTER TABLE` on 100M rows can lock for minutes; `CREATE INDEX CONCURRENTLY` takes longer but never locks
+- **Decision**: gh-ost (binlog-based, pauseable) for large tables >10GB at high write rates; pt-osc for smaller tables with simpler setup
+- **Trap**: `ALTER TABLE ... ADD COLUMN ... NOT NULL DEFAULT 'x'` on pre-PG11 — triggers full table rewrite; use expand-contract pattern instead
+- → [Full article](../12-interview-prep/question-bank/databases/database-migrations-at-scale)
+
+---
+
+### Time-Series Databases
+**Time-series DBs** — append-only, time-indexed, high-compression storage for metrics/IoT
+
+| DB | Ingest rate | Query language | Best for |
+|----|------------|---------------|---------|
+| **Prometheus** | 1M+ metrics/sec scrape | PromQL | K8s/infra monitoring, alerting |
+| **InfluxDB** | 1M+ data points/sec | Flux / InfluxQL | IoT, custom app telemetry |
+| **TimescaleDB** | 500K inserts/sec | Full SQL | Mixed TSDB + relational, existing PG |
+
+- **Key number**: TSDB compression 10–100× vs raw; downsampling tiers — raw 7 days → 1-min agg 30 days → 1-hour agg 1 year = 60× storage reduction
+- **Decision**: Prometheus for infra metrics; InfluxDB for push-based IoT/app events; TimescaleDB when you need SQL joins or already use PostgreSQL
+- **Trap**: High cardinality label in Prometheus (e.g., `user_id` as label) — creates millions of time series, crashes Prometheus; never use unbounded values as labels
+- → [Full article](../12-interview-prep/question-bank/databases/time-series-databases)
+
+---
+
+### Graph Databases
+**Graph DBs** — relationship traversal orders of magnitude faster than SQL self-joins
+
+| DB | Best for | Scale | Managed? |
+|----|---------|-------|---------|
+| **Neo4j** | Deep traversal, single-tenant | ~4B nodes on 256GB RAM | Self-hosted / AuraDB |
+| **Amazon Neptune** | AWS-native, HA, multi-protocol | Horizontal read replicas | Yes (AWS managed) |
+| **DGraph** | Distributed graph, 100B+ edges | Horizontal | Self-hosted |
+
+- **Key number**: SQL self-join 3 hops on 10M users = billions of row comparisons; Neo4j = thousands of edge traversals — **1000× faster** for deep traversal
+- **Decision**: Neo4j for social graphs/fraud detection; Neptune for AWS workloads with HA requirements; DGraph for massive distributed graphs
+- **Trap**: Unbounded traversal depth in Cypher (`MATCH (a)-[:FOLLOWS*]->(b)`) — can run indefinitely on large graphs; always bound depth: `[:FOLLOWS*1..3]`
+- → [Full article](../12-interview-prep/question-bank/databases/graph-databases)
+
+---
+
+### Document Databases
+**Document DBs** — flexible schema, hierarchical data, horizontal scale
+
+| Signal | Use MongoDB | Use PostgreSQL |
+|--------|-----------|---------------|
+| Schema | Varies per record (product catalog, different attrs per SKU) | Fixed, normalized |
+| Queries | Mostly by primary key + index | Ad-hoc joins, aggregations |
+| Scale | 100K reads/sec sharded | 50K reads/sec with replicas |
+
+- **Key number**: MongoDB handles 100K reads/sec on a sharded cluster; PostgreSQL ~50K reads/sec with read replicas
+- **Decision**: Document DB for hierarchical/catalog data (10M SKUs with different attributes); PostgreSQL for orders, payments, anything needing joins
+- **Trap**: Embedding unbounded arrays in a document (e.g., `comments: []` in a post document) — document grows without bound, hits MongoDB 16MB document size limit; use reference model for unbounded relationships
+- → [Full article](../12-interview-prep/question-bank/databases/document-databases)
+
+---
+
+### Wide-Column Stores (Cassandra)
+**Wide-column stores** — write-optimized, horizontally scaled, tunable consistency
+
+| Concept | Detail |
+|---------|--------|
+| **Writes** | Append to Memtable + Commit Log → O(1); ~100K writes/sec per node |
+| **Reads** | Merge SSTables → more expensive than writes |
+| **Partition key** | Determines node; rows with same PK on same node |
+| **Clustering key** | Sort order within a partition; enables range queries |
+
+- **Key number**: Cassandra handles 1M+ writes/sec on a 10-node cluster; linear scale by adding nodes
+- **Decision**: Partition key determines data locality — model around your most frequent query (e.g., `(user_id, month)` for chat messages)
+- **Trap**: Tombstone accumulation — every DELETE writes a tombstone; if `tombstone_failure_threshold=100K` is hit, reads fail; set appropriate TTL and compaction strategy (TWCS for time-series)
+- → [Full article](../12-interview-prep/question-bank/databases/wide-column-stores)
+
+---
+
+### Query Optimization
+**Query optimization** — EXPLAIN ANALYZE, N+1, pagination, index usage
+
+| Anti-pattern | Impact | Fix |
+|-------------|--------|-----|
+| `SELECT *` | Over-fetches columns | Select only needed columns |
+| `WHERE LOWER(email) = ?` | Index skipped | Store lowercase, index directly |
+| `OFFSET 100000` | Scans + discards 100K rows | Cursor pagination: `WHERE id > :last_id` |
+| N+1 queries | O(N) DB round-trips | JOIN or DataLoader batch |
+| Function on indexed col | Full table scan | Rewrite to range/exact match |
+
+- **Key number**: `OFFSET 100000` scans 100K rows; cursor-based pagination is O(log N) with index
+- **Decision**: Always use cursor (keyset) pagination for large tables; OFFSET only for small tables or random access UIs
+- **Trap**: `WHERE YEAR(created_at) = 2024` disables index — function on column forces full scan; use `BETWEEN '2024-01-01' AND '2024-12-31'` instead
+- → [Full article](../12-interview-prep/question-bank/databases/query-optimization)
+
+---
+
+### Database Consistency Models
+**Consistency models** — strong vs eventual vs causal consistency trade-offs
+
+| Model | Staleness | Latency | Use when |
+|-------|----------|---------|---------|
+| **Strong** | Never stale | +50–200ms cross-region RTT | Banking, inventory, seat booking |
+| **Eventual** | Up to 500ms stale | <5ms local | Social feeds, likes, analytics |
+| **Causal** | Causally ordered | ~20ms (vector clocks) | Comments (reply must appear after parent) |
+| **Read-your-writes** | Self-consistent | Low | User profile edits, form submissions |
+
+- **Key number**: Consistent reads in DynamoDB cost **2× RCU** vs eventually consistent; cross-region strong consistency adds **~150ms RTT**
+- **Decision**: Eventual consistency where staleness is acceptable; read-your-writes for user-facing writes so users see their own changes immediately
+- **Trap**: Applying strong consistency everywhere in a geo-distributed system — adds 150ms+ to every operation; explicitly choose per-operation based on business requirement
+- → [Full article](../12-interview-prep/question-bank/databases/database-consistency-models)
+
+---
+
+### Multi-Tenancy Database Patterns
+**Multi-tenancy** — shared vs isolated database architecture for SaaS
+
+| Pattern | Tenants per DB | Isolation | Cost/tenant | Used by |
+|---------|---------------|---------|------------|--------|
+| **Shared tables** (tenant_id col) | 10K+ | Lowest | Lowest | Shopify, Slack |
+| **Separate schemas** | 100–1K | Medium | Medium | Heroku add-ons |
+| **Isolated DB** | 1 | Highest | High ($50–500/mo) | Enterprise SaaS (SOC2/HIPAA) |
+
+- **Key number**: Isolated DB per enterprise tenant = $50–500/month each RDS instance; shared tables scale to 10K+ tenants cheaply
+- **Decision**: Shared tables for SMB SaaS (1K–100K tenants); isolated DB for enterprise with compliance requirements
+- **Trap**: App-level `WHERE tenant_id = ?` filter without Row-Level Security — one developer forgets the filter, one bug leaks all tenants' data; use PostgreSQL RLS to enforce isolation at DB level
+- → [Full article](../12-interview-prep/question-bank/databases/multi-tenancy-database-patterns)
+
+---
+
+### Database Backup & Recovery
+**Backup & recovery** — RPO/RTO-driven strategy selection
+
+| Strategy | RPO | RTO | Storage | Use for |
+|----------|-----|-----|---------|---------|
+| **Full backup weekly** | 1 week | Hours (full restore) | 1× DB size/week | Low-criticality systems |
+| **Full + WAL archiving** | 5 min | 30–60 min (PITR) | Incremental WAL | Production OLTP |
+| **Hot standby** | Near-zero | Seconds (failover) | 2× DB cost | Mission-critical |
+
+- **Key number**: E-commerce RPO=1 min / RTO=15 min; internal analytics RPO=24h / RTO=48h — radically different architectures and costs
+- **Decision**: WAL-based PITR (PostgreSQL) for RPO <5 min without hot standby cost; hot standby for RTO <30 seconds
+- **Trap**: Testing backups only by taking them, never by restoring — restoring from a corrupt backup during an incident is the worst time to discover it fails; run quarterly restore drills
+- → [Full article](../12-interview-prep/question-bank/databases/database-backup-recovery)

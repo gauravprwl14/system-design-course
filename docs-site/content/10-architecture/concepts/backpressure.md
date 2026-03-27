@@ -18,9 +18,7 @@ see_poc:
   - interview-prep/practice-pocs/backpressure-queues
   - interview-prep/practice-pocs/redis-rate-limiting
   - interview-prep/practice-pocs/graceful-degradation
-linked_from:
-  - interview-prep/practice-pocs/backpressure-queues
-  - system-design/patterns/timeouts-backpressure
+linked_from: []
 tags:
   - backpressure
   - flow-control

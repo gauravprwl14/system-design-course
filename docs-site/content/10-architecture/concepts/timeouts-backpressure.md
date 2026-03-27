@@ -19,12 +19,7 @@ see_poc:
   - interview-prep/practice-pocs/retry-backoff
   - interview-prep/practice-pocs/graceful-degradation
 linked_from:
-  - interview-prep/practice-pocs/retry-backoff
-  - interview-prep/practice-pocs/timeout-configuration
-  - interview-prep/system-design/circuit-breaker-pattern
-  - problems-at-scale/availability/retry-storm
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/thread-pool-exhaustion
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
 tags:
   - timeouts
   - backpressure

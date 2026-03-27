@@ -12,17 +12,7 @@ related_problems:
   - problems-at-scale/availability/circuit-breaker-failure
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/monolith-to-microservices
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/circuit-breaker-failure
-  - problems-at-scale/availability/retry-storm
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/thread-pool-exhaustion
-  - system-design/case-studies/netflix
-  - system-design/patterns/circuit-breaker
+linked_from: []
 tags:
   - resilience
   - circuit-breaker

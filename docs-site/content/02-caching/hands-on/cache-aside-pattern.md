@@ -11,17 +11,7 @@ related_problems:
   - problems-at-scale/consistency/cache-invalidation-race
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/caching-cdn/cache-strategies
-  - interview-prep/system-design/audio-streaming-spotify
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/cms-design
-  - interview-prep/system-design/video-streaming-platform
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/consistency/stale-read-after-write
-  - system-design/caching/caching-fundamentals
-  - system-design/caching/caching-strategies
+linked_from: []
 tags:
   - caching
   - cache-aside

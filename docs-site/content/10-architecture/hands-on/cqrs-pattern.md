@@ -12,9 +12,7 @@ related_problems:
   - problems-at-scale/consistency/stale-read-after-write
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/cqrs-pattern
-  - system-design/scalability/cqrs
+linked_from: []
 tags:
   - cqrs
   - command-query

@@ -22,22 +22,14 @@ see_poc:
   - interview-prep/practice-pocs/blue-green-deployment
   - interview-prep/practice-pocs/redis-cluster-caching
 linked_from:
-  - interview-prep/practice-pocs/blue-green-deployment
-  - interview-prep/practice-pocs/chaos-engineering
-  - interview-prep/practice-pocs/graceful-degradation
-  - interview-prep/practice-pocs/health-check-patterns
-  - interview-prep/practice-pocs/redis-cluster-sharding
-  - interview-prep/practice-pocs/redis-persistence-strategies
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/database-replication
-  - interview-prep/system-design/load-balancing-strategies
-  - interview-prep/system-design/observability-monitoring
-  - interview-prep/system-design/ticket-booking-system
-  - interview-prep/system-design/video-conferencing
-  - system-design/case-studies/payment-system
-  - system-design/monitoring/observability-slos
-  - system-design/scalability/chaos-engineering
-  - system-design/scalability/multi-region
+  - 05-distributed-systems/concepts/disaster-recovery-design
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
+  - 12-interview-prep/system-design/fundamentals/load-balancing-strategies
+  - 12-interview-prep/system-design/real-time-systems/video-conferencing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/observability-monitoring
+  - 12-interview-prep/system-design/storage-and-databases/database-replication
 tags:
   - high-availability
   - uptime

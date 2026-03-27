@@ -1,10 +1,18 @@
 ---
-title: "POC: Semantic Similarity Search from Scratch"
+title: 'POC: Semantic Similarity Search from Scratch'
 layer: poc
 section: vector-databases/hands-on
 difficulty: beginner
 prerequisites: []
-tags: [vector-databases, embeddings, cosine-similarity, semantic-search, numpy]
+tags:
+  - vector-databases
+  - embeddings
+  - cosine-similarity
+  - semantic-search
+  - numpy
+linked_from:
+  - 15-vector-databases/hands-on/embedding-pipeline
+  - 15-vector-databases/hands-on/hybrid-search-poc
 ---
 
 # POC: Semantic Similarity Search from Scratch

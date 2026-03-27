@@ -158,7 +158,7 @@ function generateKnowledgeGraph(nodes, adj) {
     for (const o of orphans) lines.push(`- ${o}`);
   }
 
-  writeFileSync(join(REPO_ROOT, 'KNOWLEDGE-GRAPH.md'), lines.join('\n') + '\n');
+  writeFileSync(join(PAGES_DIR, 'KNOWLEDGE-GRAPH.md'), lines.join('\n') + '\n');
   console.log(`Generated KNOWLEDGE-GRAPH.md (${totalNodes} nodes, ${totalEdges} edges)`);
 }
 

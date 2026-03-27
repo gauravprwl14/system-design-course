@@ -18,46 +18,20 @@ see_poc:
   - interview-prep/practice-pocs/redis-job-queue
   - interview-prep/practice-pocs/backpressure-queues
 linked_from:
-  - interview-prep/practice-pocs/backpressure-queues
-  - interview-prep/practice-pocs/kafka-basics-producer-consumer
-  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
-  - interview-prep/practice-pocs/kafka-exactly-once-semantics
-  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
-  - interview-prep/practice-pocs/kafka-streams-real-time-processing
-  - interview-prep/practice-pocs/outbox-pattern
-  - interview-prep/practice-pocs/redis-deduplication
-  - interview-prep/practice-pocs/redis-pubsub-patterns
-  - interview-prep/practice-pocs/redis-streams
-  - interview-prep/practice-pocs/redis-streams-event-sourcing
-  - interview-prep/practice-pocs/saga-pattern
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/cqrs-pattern
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - interview-prep/system-design/pdf-converter
-  - interview-prep/system-design/saga-pattern
-  - interview-prep/system-design/ticket-booking-system
-  - interview-prep/system-design/video-streaming-platform
-  - interview-prep/system-design/websocket-architecture
-  - problems-at-scale/consistency/message-out-of-order
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/api-design/idempotency
-  - system-design/case-studies/chat-system
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/netflix
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/spotify
-  - system-design/case-studies/uber-backend
-  - system-design/case-studies/youtube
-  - system-design/patterns/microservices-communication
-  - system-design/queues/kafka-vs-rabbitmq
-  - system-design/scalability/async-processing
-  - system-design/scalability/backpressure
-  - system-design/scalability/event-driven-architecture
-  - system-design/scalability/microservices-architecture
+  - 12-interview-prep/system-design/business-and-advanced/cqrs-pattern
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/business-and-advanced/saga-pattern
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq
+  - 12-interview-prep/system-design/messaging-and-streaming/pdf-converter
+  - >-
+    12-interview-prep/system-design/real-time-systems/collaborative-editing-google-docs
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - 12-interview-prep/system-design/real-time-systems/websocket-architecture
 tags:
   - queues
   - messaging

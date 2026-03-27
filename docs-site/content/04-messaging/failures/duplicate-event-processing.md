@@ -18,30 +18,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/payment-system
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/event-store-implementation
-  - interview-prep/practice-pocs/idempotency-keys
-  - interview-prep/practice-pocs/kafka-exactly-once-semantics
-  - interview-prep/practice-pocs/outbox-pattern
-  - interview-prep/practice-pocs/redis-deduplication
-  - interview-prep/practice-pocs/redis-streams-event-sourcing
-  - interview-prep/practice-pocs/saga-pattern
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - interview-prep/system-design/saga-pattern
-  - problems-at-scale/concurrency/double-charge-payment
-  - problems-at-scale/concurrency/duplicate-orders
-  - problems-at-scale/consistency/message-out-of-order
-  - problems-at-scale/data-integrity/orphaned-records
-  - system-design/api-design/idempotency
-  - system-design/case-studies/chat-system
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/unique-id-generator
-  - system-design/queues/kafka-vs-rabbitmq
-  - system-design/queues/message-queue-basics
-  - system-design/scalability/async-processing
-  - system-design/scalability/event-driven-architecture
+linked_from: []
 tags:
   - data-integrity
   - idempotency

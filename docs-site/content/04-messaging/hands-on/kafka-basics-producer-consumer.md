@@ -11,28 +11,7 @@ related_problems:
   - problems-at-scale/consistency/message-out-of-order
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/pdf-converter
-  - interview-prep/system-design/social-media-feed
-  - interview-prep/system-design/video-streaming-platform
-  - system-design/case-studies/chat-system
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/netflix
-  - system-design/case-studies/news-feed
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/spotify
-  - system-design/case-studies/uber-backend
-  - system-design/case-studies/youtube
-  - system-design/patterns/microservices-communication
-  - system-design/queues/kafka-vs-rabbitmq
-  - system-design/queues/message-queue-basics
-  - system-design/scalability/async-processing
-  - system-design/scalability/event-driven-architecture
+linked_from: []
 tags:
   - kafka
   - producers

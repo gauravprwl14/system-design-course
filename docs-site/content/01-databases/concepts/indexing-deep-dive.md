@@ -19,13 +19,11 @@ see_poc:
   - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
   - interview-prep/practice-pocs/database-n-plus-one
 linked_from:
-  - interview-prep/practice-pocs/database-explain
-  - interview-prep/practice-pocs/database-full-text-search
-  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
-  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
-  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
-  - interview-prep/system-design/database-indexing-deep-dive
-  - interview-prep/system-design/search-engine-architecture
+  - >-
+    12-interview-prep/system-design/storage-and-databases/database-indexing-deep-dive
+  - 12-interview-prep/system-design/storage-and-databases/geospatial-service
+  - >-
+    12-interview-prep/system-design/storage-and-databases/search-engine-architecture
 tags:
   - databases
   - indexes

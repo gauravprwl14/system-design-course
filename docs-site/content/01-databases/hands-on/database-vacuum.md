@@ -10,9 +10,7 @@ related_problems:
   - problems-at-scale/cost-optimization/storage-bloat
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/cost-optimization/storage-bloat
-  - system-design/databases/data-archival-strategies
+linked_from: []
 tags:
   - postgresql
   - vacuum

@@ -9,9 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/security-encryption/jwt-vs-session
-  - system-design/security/authentication-at-scale
+linked_from: []
 tags:
   - oauth
   - authentication

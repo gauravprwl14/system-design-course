@@ -15,15 +15,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/netflix
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/chaos-engineering
-  - interview-prep/practice-pocs/circuit-breaker
-  - interview-prep/practice-pocs/graceful-degradation
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/service-discovery
-  - problems-at-scale/availability/retry-storm
-  - system-design/patterns/circuit-breaker
-  - system-design/scalability/chaos-engineering
+linked_from: []
 tags:
   - availability
   - circuit-breaker

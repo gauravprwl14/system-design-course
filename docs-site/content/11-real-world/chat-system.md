@@ -20,13 +20,7 @@ see_poc:
   - interview-prep/practice-pocs/kafka-basics-producer-consumer
   - interview-prep/practice-pocs/redis-streams
 linked_from:
-  - interview-prep/system-design/websocket-architecture
-  - problems-at-scale/consistency/stale-read-after-write
-  - system-design/databases/indexing-deep-dive
-  - system-design/databases/sharding-strategies
-  - system-design/load-balancing/load-balancing-strategies
-  - system-design/scalability/cqrs
-  - system-design/security/authentication-at-scale
+  - 12-interview-prep/system-design/real-time-systems/websocket-architecture
 tags:
   - chat
   - websockets

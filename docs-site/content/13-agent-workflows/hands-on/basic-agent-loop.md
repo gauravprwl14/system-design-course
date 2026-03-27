@@ -1,5 +1,5 @@
 ---
-title: "POC: Build a Basic Agent Loop"
+title: 'POC: Build a Basic Agent Loop'
 layer: poc
 section: agent-workflows/hands-on
 difficulty: beginner
@@ -9,8 +9,17 @@ solves_with: []
 related_problems: []
 see_poc: []
 linked_from:
-  - 13-agent-workflows/concepts/what-is-an-agent
-tags: [agents, react, tool-calling, llm, fundamentals, node.js]
+  - 13-agent-workflows/hands-on/mcp-server
+  - 13-agent-workflows/hands-on/multi-agent-pipeline
+  - 13-agent-workflows/hands-on/rag-pipeline
+  - 13-agent-workflows/hands-on/tool-calling-agent
+tags:
+  - agents
+  - react
+  - tool-calling
+  - llm
+  - fundamentals
+  - node.js
 ---
 
 # POC: Build a Basic Agent Loop

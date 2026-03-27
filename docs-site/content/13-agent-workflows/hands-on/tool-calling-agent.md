@@ -1,5 +1,5 @@
 ---
-title: "POC: Production Tool-Calling Agent"
+title: 'POC: Production Tool-Calling Agent'
 layer: poc
 section: agent-workflows/hands-on
 difficulty: intermediate
@@ -10,8 +10,16 @@ solves_with: []
 related_problems: []
 see_poc:
   - 13-agent-workflows/hands-on/basic-agent-loop
-linked_from: []
-tags: [agents, tool-calling, python, retry, parallel-tools, cost-tracking, production]
+linked_from:
+  - 13-agent-workflows/hands-on/multi-agent-pipeline
+tags:
+  - agents
+  - tool-calling
+  - python
+  - retry
+  - parallel-tools
+  - cost-tracking
+  - production
 ---
 
 # POC: Production Tool-Calling Agent

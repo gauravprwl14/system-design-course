@@ -16,14 +16,9 @@ see_poc:
   - interview-prep/practice-pocs/retry-backoff
   - interview-prep/practice-pocs/timeout-configuration
 linked_from:
-  - interview-prep/practice-pocs/circuit-breaker
-  - interview-prep/practice-pocs/graceful-degradation
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/observability-monitoring
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/circuit-breaker-failure
-  - problems-at-scale/availability/retry-storm
-  - system-design/scalability/chaos-engineering
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/observability-monitoring
 tags:
   - resilience
   - microservices

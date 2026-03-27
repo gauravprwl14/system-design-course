@@ -21,9 +21,8 @@ see_poc:
   - interview-prep/practice-pocs/redis-cluster-caching
   - interview-prep/practice-pocs/http-caching-headers
 linked_from:
-  - interview-prep/system-design/audio-streaming-spotify
-  - problems-at-scale/scalability/hot-partition
-  - system-design/scalability/cdn-edge-computing
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/audio-streaming-spotify
 tags:
   - spotify
   - music-streaming

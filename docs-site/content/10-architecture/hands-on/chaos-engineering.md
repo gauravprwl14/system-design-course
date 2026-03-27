@@ -12,9 +12,7 @@ related_problems:
   - problems-at-scale/availability/circuit-breaker-failure
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/case-studies/netflix
-  - system-design/scalability/chaos-engineering
+linked_from: []
 tags:
   - chaos-engineering
   - resilience

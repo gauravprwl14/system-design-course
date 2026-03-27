@@ -1,14 +1,52 @@
 ---
-title: "N+1 Query Problem: 50,001 Queries Where You Expected 1"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["performance", "database"]
-personas: ["Senior Engineer", "Tech Lead"]
-tags: ["n+1", "orm", "eager-loading", "dataloader", "query-optimization", "sequelize", "prisma", "graphql", "postgresql"]
-description: "A product listing page loads in 85ms on your laptop. In production with 50,000 products and 200 concurrent users, it takes 47 seconds. You have 50,001 queries happening where you expected 1."
-reading_time: "18 min"
-difficulty: "senior"
-status: "published"
+title: 'N+1 Query Problem: 50,001 Queries Where You Expected 1'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - performance
+  - database
+personas:
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - n+1
+  - orm
+  - eager-loading
+  - dataloader
+  - query-optimization
+  - sequelize
+  - prisma
+  - graphql
+  - postgresql
+description: >-
+  A product listing page loads in 85ms on your laptop. In production with 50,000
+  products and 200 concurrent users, it takes 47 seconds. You have 50,001
+  queries happening where you expected 1.
+reading_time: 18 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/concepts/indexing-deep-dive
+  - 01-databases/concepts/indexing-strategies
+  - 01-databases/concepts/read-replicas
+  - 01-databases/hands-on/database-explain
+  - 01-databases/hands-on/database-indexes
+  - 01-databases/hands-on/database-materialized-views
+  - 01-databases/hands-on/database-n-plus-one
+  - 01-databases/hands-on/database-partitioning
+  - 01-databases/hands-on/postgresql-btree-hash-indexes
+  - 01-databases/hands-on/postgresql-composite-covering-indexes
+  - 01-databases/hands-on/postgresql-explain-analyze-optimization
+  - 03-redis/hands-on/redis-key-value-cache
+  - 07-api-design/concepts/rest-graphql-grpc
+  - 12-interview-prep/quick-reference/caching/performance-bottlenecks
+  - 12-interview-prep/quick-reference/databases/indexing-strategies
+  - 12-interview-prep/quick-reference/databases/query-optimization
+  - 12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc
+  - >-
+    12-interview-prep/system-design/storage-and-databases/database-indexing-deep-dive
+  - >-
+    12-interview-prep/system-design/storage-and-databases/search-engine-architecture
 ---
 
 # N+1 Query Problem: 50,001 Queries Where You Expected 1

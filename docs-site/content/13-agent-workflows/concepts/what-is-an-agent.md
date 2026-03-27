@@ -9,8 +9,18 @@ solves_with: []
 related_problems: []
 see_poc:
   - agent-workflows/hands-on/basic-agent-loop
-linked_from: []
-tags: [agents, fundamentals, llm, tools, memory]
+linked_from:
+  - 13-agent-workflows/hands-on/basic-agent-loop
+  - 13-agent-workflows/hands-on/mcp-server
+  - 13-agent-workflows/hands-on/multi-agent-pipeline
+  - 13-agent-workflows/hands-on/rag-pipeline
+  - 13-agent-workflows/hands-on/tool-calling-agent
+tags:
+  - agents
+  - fundamentals
+  - llm
+  - tools
+  - memory
 ---
 
 # What is an AI Agent?

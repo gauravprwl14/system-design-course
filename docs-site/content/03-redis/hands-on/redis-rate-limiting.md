@@ -11,15 +11,7 @@ related_problems:
   - problems-at-scale/availability/retry-storm
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/caching-cdn/redis-fundamentals
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/rate-limiting
-  - problems-at-scale/availability/retry-storm
-  - problems-at-scale/availability/thundering-herd
-  - system-design/api-design/rate-limiting
-  - system-design/case-studies/rate-limiter
-  - system-design/scalability/backpressure
+linked_from: []
 tags:
   - redis
   - rate-limiting

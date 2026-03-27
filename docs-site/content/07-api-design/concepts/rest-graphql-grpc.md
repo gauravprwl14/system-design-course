@@ -18,11 +18,7 @@ see_poc:
   - interview-prep/practice-pocs/grpc-protocol-buffers
   - interview-prep/practice-pocs/api-versioning-strategies
 linked_from:
-  - interview-prep/practice-pocs/api-versioning-strategies
-  - interview-prep/practice-pocs/graphql-server-implementation
-  - interview-prep/practice-pocs/grpc-protocol-buffers
-  - interview-prep/practice-pocs/rest-api-best-practices
-  - interview-prep/system-design/api-design-rest-graphql-grpc
+  - 12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc
 tags:
   - rest
   - graphql

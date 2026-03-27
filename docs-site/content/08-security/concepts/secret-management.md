@@ -1,15 +1,34 @@
 ---
-title: "Secret Management: HashiCorp Vault, KMS, and Secret Rotation at Scale"
-date: "2026-03-18"
-category: "system-design-playbook"
-subcategories: ["security", "infrastructure", "devops"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead", "Staff Engineer", "Principal Engineer"]
-tags: ["vault", "kms", "secrets", "dynamic-credentials", "rotation", "envelope-encryption", "kubernetes"]
-description: "How to replace static credentials in env vars with dynamic secrets, envelope encryption, and zero-downtime rotation across distributed systems."
-reading_time: "19 min"
-difficulty: "staff+"
-status: "published"
-featured_image: "/assets/diagrams/secret-management.png"
+title: 'Secret Management: HashiCorp Vault, KMS, and Secret Rotation at Scale'
+date: '2026-03-18'
+category: system-design-playbook
+subcategories:
+  - security
+  - infrastructure
+  - devops
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+  - Principal Engineer
+tags:
+  - vault
+  - kms
+  - secrets
+  - dynamic-credentials
+  - rotation
+  - envelope-encryption
+  - kubernetes
+description: >-
+  How to replace static credentials in env vars with dynamic secrets, envelope
+  encryption, and zero-downtime rotation across distributed systems.
+reading_time: 19 min
+difficulty: staff+
+status: published
+featured_image: /assets/diagrams/secret-management.png
+linked_from:
+  - 08-security/concepts/compliance-architecture
 ---
 
 # Secret Management: HashiCorp Vault, KMS, and Secret Rotation at Scale

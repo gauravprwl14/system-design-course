@@ -18,19 +18,16 @@ see_poc:
   - interview-prep/practice-pocs/http-caching-headers
   - interview-prep/practice-pocs/nginx-load-balancer
 linked_from:
-  - interview-prep/caching-cdn/cdn-usage
-  - interview-prep/system-design/audio-streaming-spotify
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/cms-design
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/social-media-feed
-  - interview-prep/system-design/video-streaming-platform
-  - system-design/case-studies/netflix
-  - system-design/case-studies/spotify
-  - system-design/case-studies/youtube
-  - system-design/scalability/multi-region
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/fundamentals/caching-strategies
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/audio-streaming-spotify
+  - 12-interview-prep/system-design/messaging-and-streaming/cms-design
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
 tags:
   - cdn
   - edge-computing

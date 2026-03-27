@@ -18,9 +18,7 @@ see_poc:
   - interview-prep/practice-pocs/chaos-engineering
   - interview-prep/practice-pocs/graceful-degradation
   - interview-prep/practice-pocs/health-check-patterns
-linked_from:
-  - interview-prep/practice-pocs/chaos-engineering
-  - system-design/case-studies/netflix
+linked_from: []
 tags:
   - chaos-engineering
   - resilience

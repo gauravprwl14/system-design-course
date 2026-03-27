@@ -11,16 +11,7 @@ related_problems:
   - problems-at-scale/scalability/hot-partition
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/aws-cloud/load-balancer
-  - interview-prep/system-design/database-sharding
-  - interview-prep/system-design/load-balancing-strategies
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/video-conferencing
-  - problems-at-scale/scalability/database-hotspots
-  - system-design/case-studies/uber-backend
-  - system-design/databases/sharding-strategies
-  - system-design/load-balancing/load-balancing-strategies
+linked_from: []
 tags:
   - load-balancing
   - consistent-hashing

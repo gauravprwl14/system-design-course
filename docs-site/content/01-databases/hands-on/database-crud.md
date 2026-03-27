@@ -9,11 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/database-storage/sql-vs-nosql
-  - system-design/case-studies/pastebin
-  - system-design/case-studies/url-shortener
-  - system-design/databases/replication-basics
+linked_from: []
 tags:
   - postgresql
   - crud

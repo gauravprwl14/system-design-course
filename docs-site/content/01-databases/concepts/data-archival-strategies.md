@@ -18,10 +18,9 @@ see_poc:
   - interview-prep/practice-pocs/postgresql-partitioning-strategies
   - interview-prep/practice-pocs/database-vacuum
 linked_from:
-  - interview-prep/practice-pocs/database-archival-strategies
-  - interview-prep/system-design/cms-design
-  - interview-prep/system-design/monolith-to-microservices
-  - problems-at-scale/cost-optimization/storage-bloat
+  - 12-interview-prep/system-design/messaging-and-streaming/cms-design
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices
 tags:
   - databases
   - archival

@@ -12,15 +12,7 @@ related_problems:
   - problems-at-scale/scalability/database-hotspots
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/database-storage/database-replication
-  - interview-prep/database-storage/scaling-strategies
-  - interview-prep/system-design/cqrs-pattern
-  - interview-prep/system-design/database-replication
-  - problems-at-scale/consistency/stale-read-after-write
-  - system-design/case-studies/news-feed
-  - system-design/databases/read-replicas
-  - system-design/databases/replication-basics
+linked_from: []
 tags:
   - postgresql
   - read-replicas

@@ -9,8 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/monolith-to-microservices
+linked_from: []
 tags:
   - feature-flags
   - configuration

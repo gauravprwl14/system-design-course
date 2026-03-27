@@ -9,9 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/api-design-rest-graphql-grpc
-  - system-design/api-design/rest-graphql-grpc
+linked_from: []
 tags:
   - api-versioning
   - backwards-compatibility

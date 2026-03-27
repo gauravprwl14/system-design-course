@@ -16,19 +16,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/payment-system
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/database-transactions
-  - interview-prep/practice-pocs/idempotency-keys
-  - interview-prep/practice-pocs/redis-banking-transfers
-  - interview-prep/practice-pocs/redis-transaction-rollback
-  - interview-prep/practice-pocs/saga-pattern
-  - interview-prep/system-design/saga-pattern
-  - problems-at-scale/concurrency/duplicate-orders
-  - problems-at-scale/concurrency/race-condition-inventory
-  - problems-at-scale/concurrency/stock-order-matching-race
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/api-design/idempotency
-  - system-design/case-studies/payment-system
+linked_from: []
 tags:
   - concurrency
   - payments

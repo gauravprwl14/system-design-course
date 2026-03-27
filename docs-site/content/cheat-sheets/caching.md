@@ -441,3 +441,179 @@ graph LR
 - [Performance Bottlenecks](../12-interview-prep/quick-reference/caching/performance-bottlenecks)
 - [ElastiCache / Redis on AWS](../12-interview-prep/quick-reference/aws-cloud/elasticache-redis)
 - [CloudFront CDN](../12-interview-prep/quick-reference/aws-cloud/cloudfront-cdn)
+
+---
+
+## 13. Question-Bank: Caching & Performance Deep Dives
+
+### Cache Invalidation Strategies
+**Cache invalidation** — keeping cache consistent with the source of truth
+
+| Strategy | Staleness window | Complexity | Use when |
+|----------|-----------------|-----------|---------|
+| **TTL expiry** | Up to TTL (e.g., 60s) | Lowest | Staleness is acceptable |
+| **Explicit delete on write** | <100ms (race condition risk) | Low | Strong consistency needed |
+| **Event-driven (pub/sub)** | <100ms (pub/sub latency) | Medium | High write frequency |
+| **Versioned keys** (`user:123:v5`) | 0ms (old version auto-expires) | Medium | Concurrent writes to same key |
+| **Write-through** | 0ms | High (slower writes) | Read-heavy, must be fresh |
+
+- **Key number**: TTL=60s → up to 60s stale; event-driven → typically **<100ms** stale
+- **Decision**: TTL for most cases; explicit delete for low-write high-read; write-through for real-time accuracy requirements
+- **Trap**: Cache-aside write race — Thread A reads DB (old), Thread B writes + deletes cache, Thread A writes OLD value back to cache; fix with versioned keys or short TTL safety net
+- → [Full article](../12-interview-prep/question-bank/caching-performance/cache-invalidation-strategies)
+
+---
+
+### Redis Advanced Patterns
+**Redis pub/sub vs streams** — choosing the right real-time messaging primitive
+
+| | Redis Pub/Sub | Redis Streams |
+|-|--------------|--------------|
+| **Persistence** | No (miss on disconnect) | Yes (append-only log) |
+| **Replay** | No | Yes (from any offset) |
+| **Consumer groups** | No | Yes (distributed consumers) |
+| **Throughput** | ~1M msg/sec | ~500K msg/sec |
+| **Use when** | Chat presence, cache invalidation fan-out | Task queues, audit logs, event sourcing |
+
+- **Key number**: Pub/Sub ~1M msg/sec; Streams ~500K msg/sec; Redis Cluster: **16,384 hash slots** distributed across shards
+- **Decision**: Pub/Sub for fire-and-forget notifications where missed messages are OK; Streams for at-least-once delivery where consumers may disconnect
+- **Trap**: Using Pub/Sub for task queues — any worker that's offline misses messages permanently; use Streams with consumer groups for reliable job processing
+- → [Full article](../12-interview-prep/question-bank/caching-performance/redis-advanced-patterns)
+
+---
+
+### CDN Caching Strategies
+**CDN caching** — headers, invalidation, and cache busting patterns
+
+| Header | Meaning | Use for |
+|--------|---------|--------|
+| `max-age=N` | Browser + CDN cache N seconds | Static assets |
+| `s-maxage=N` | CDN only (overrides max-age for CDNs) | API responses with longer CDN TTL |
+| `private` | Browser only, CDN must NOT store | Personalized responses |
+| `no-store` | Never cache anywhere | Auth tokens, bank statements |
+| `stale-while-revalidate=60` | Serve stale 60s, revalidate in bg | High-traffic pages tolerating brief staleness |
+
+- **Key number**: CloudFront invalidation after free 1K paths = **$0.005/1000 paths**; prefer filename hash (`main.a1b2c3.js`) over invalidation
+- **Decision**: Filename-based cache busting for static assets; `s-maxage` to give CDN longer TTL than browser; `private` for any user-personalized content
+- **Trap**: Missing `Cache-Control: private` on user-specific API responses — CDN caches user A's data and serves it to user B
+- → [Full article](../12-interview-prep/question-bank/caching-performance/cdn-caching-strategies)
+
+---
+
+### Database Query Caching & N+1
+**N+1 query problem** — eliminating redundant DB round-trips
+
+| Fix | Approach | Round trips |
+|-----|---------|------------|
+| **JOIN (eager load)** | Fetch parent + children in 1 query | 1 |
+| **Batch (DataLoader)** | Collect IDs, issue `WHERE id IN (...)` | 2 |
+| **ORM includes** | `Post.includes(:author)` | 1–2 |
+| **Query cache (Redis)** | Cache result of expensive query | 0 (cache hit) |
+
+- **Key number**: N+1 at N=100 posts = 101 DB queries × 1ms = **101ms** extra latency; JOIN reduces to 1 query
+- **Decision**: JOIN for simple parent-child; DataLoader for GraphQL resolvers that can't be restructured; Redis query cache for expensive aggregation queries repeated across requests
+- **Trap**: PgBouncer transaction mode disables prepared statements — if using statement caching, use session pooling mode or switch to Pgpool-II
+- → [Full article](../12-interview-prep/question-bank/caching-performance/database-query-caching)
+
+---
+
+### Cache Stampede / Thundering Herd
+**Cache stampede** — preventing DB overload when a popular key expires
+
+| Solution | Latency | Complexity | Guarantee |
+|----------|---------|-----------|----------|
+| **Redis mutex (SETNX)** | Adds wait for locked requests | Low | One rebuilder, others wait |
+| **Probabilistic early expiry (XFetch)** | None | Medium | No locks; spreads recomputation |
+| **Stale-while-revalidate** | None (serves stale) | Low | Always fast response |
+| **Background refresh** | None | Medium | Serve stale briefly |
+
+- **Key number**: 10K req/sec on one key → cache expiry triggers 10K simultaneous DB queries in **~5ms** before any can repopulate; at 500ms DB query time, exhausts connection pool instantly
+- **Decision**: Redis mutex for exact consistency; probabilistic early expiry for zero-lock high-traffic scenarios; stale-while-revalidate for UIs where brief staleness is fine
+- **Trap**: Stampede fix with no jitter on TTL — if 100 keys all set TTL=60s at the same time, they all expire simultaneously and cause a coordinated herd; add random jitter: `TTL = 60 + rand(0,10)`
+- → [Full article](../12-interview-prep/question-bank/caching-performance/cache-stampede-thundering-herd)
+
+---
+
+### Application-Layer Caching
+**Application caching patterns** — cache-aside, read-through, write-through comparison
+
+| Pattern | Cache population | Consistency | Latency | Use for |
+|---------|----------------|------------|--------|--------|
+| **Cache-aside** | App on miss | Eventual (stale for TTL) | Fast reads | General CRUD |
+| **Read-through** | Cache layer on miss | Strong reads | Fast reads | ORM L2 caches |
+| **Write-through** | App on every write | Strong | Slower writes | Read-heavy critical data |
+| **Write-behind** | Cache (async to DB) | Eventual | Fastest writes | High-throughput metrics |
+
+- **Key number**: Write-behind can sustain **10–100× higher write throughput** vs write-through by removing DB from critical write path
+- **Decision**: Cache-aside for most apps; write-through when read consistency is critical; write-behind for high-throughput non-critical writes (counters, analytics)
+- **Trap**: Caching auth state with passive TTL — a revoked JWT cached for 15 min still grants access; store session in Redis with explicit `DEL` on logout
+- → [Full article](../12-interview-prep/question-bank/caching-performance/application-layer-caching)
+
+---
+
+### Cache Sizing & Eviction
+**Cache sizing and eviction** — choosing the right eviction policy and memory allocation
+
+| Policy | Best for | Weakness |
+|--------|---------|---------|
+| **LRU** | General workloads with temporal locality | Scan pollution — batch reads evict hot items |
+| **LFU** | Hot-item workloads, ML feature stores | High-freq cold item may persist after cooling |
+| **ARC** | Mixed/unknown access patterns | More complex; used in ZFS |
+| **TTL** | Time-sensitive data | Stale data served until TTL |
+
+- **Key number**: ARC (Adaptive Replacement Cache) achieves **10–30% better hit ratio** than pure LRU/LFU on mixed workloads
+- **Decision**: LRU (`allkeys-lru`) for most Redis caches; LFU (`allkeys-lfu`) for popularity-heavy workloads (trending content, ML features); always set `maxmemory` explicitly
+- **Trap**: Redis `maxmemory-policy: noeviction` for a cache — Redis returns OOM errors when full instead of evicting; only use `noeviction` for queues/streams, NOT caches
+- → [Full article](../12-interview-prep/question-bank/caching-performance/cache-sizing-eviction)
+
+---
+
+### Write-Behind vs Write-Through
+**Write-behind vs write-through** — durability vs throughput trade-off
+
+| | Write-Through | Write-Behind |
+|-|--------------|-------------|
+| **Write latency** | DB latency (~5–20ms) | Cache latency (~1ms) |
+| **Durability** | Full (every write in DB) | Risk of data loss on crash |
+| **Write throughput** | DB-limited | **10–100× higher** |
+| **Use when** | Payments, user data, critical writes | Metrics, counters, analytics |
+
+- **Key number**: Write-through latency = ~5–20ms (DB); write-behind latency = ~1ms (cache only) — **10–20× faster writes**
+- **Decision**: Write-through for anything where data loss is unacceptable; write-behind for high-throughput where losing seconds of data is tolerable
+- **Trap**: Write-behind without Redis AOF persistence — cache crash loses all unwritten data; enable AOF `appendfsync everysec` for near-full durability with write-behind
+- → [Full article](../12-interview-prep/question-bank/caching-performance/write-behind-write-through)
+
+---
+
+### Multi-Level Caching
+**Multi-level caching** — layered cache hierarchy from CPU to CDN
+
+| Level | Latency | Capacity | Scope |
+|-------|--------|---------|-------|
+| CPU L1 | 0.5 ns | 32–64 KB | Per core |
+| CPU L3 | 10–30 ns | 8–64 MB | Shared |
+| In-process (LRU) | <0.1 ms | 100 MB–2 GB | Per server |
+| Redis (distributed) | 0.3–2 ms | 100 GB–TB | Cluster-wide |
+| CDN edge | <10 ms | TB+ | Global |
+
+- **Key number**: In-process cache serves hottest **0.01% of traffic** with <0.1ms latency; Redis handles cluster-wide shared state
+- **Decision**: L1 in-process for top 1K hot keys (feature flags, config, top-N items); Redis for all other shared cached state; CDN for public static + API responses
+- **Trap**: In-process cache with no TTL on a multi-instance deployment — each server has a different version of the data; always set short TTL (1–30s) for in-process caches to limit divergence
+- → [Full article](../12-interview-prep/question-bank/caching-performance/multi-level-caching)
+
+---
+
+### Cache Warming Strategies
+**Cache warming** — preventing cold-start DB overload after deploys or failovers
+
+| Strategy | Best for | Limitation |
+|----------|---------|-----------|
+| **Preload from DB** | Known hot working set (top products, config) | Need to know what to preload |
+| **Traffic replay** | Warm exact access pattern from prod logs | Requires log capture infrastructure |
+| **Gradual rollout** | Canary/blue-green — warm new instance before full traffic | Slower deployment |
+| **Lazy warm with request coalescing** | Unknown working set | Slow warm-up period with DB load |
+
+- **Key number**: At 10K req/sec and 95% eventual hit ratio — cold cache forces DB to absorb **10K rps** instead of 500 rps (**20× overload**) until warm
+- **Decision**: Preload from DB for known hot sets (top-N products, feature flags, user sessions for active users); canary rollout to let new instances warm before receiving full traffic
+- **Trap**: `FLUSHALL` in production without a warming plan — same as cold start but mid-traffic at peak; always use key-level invalidation (`DEL key`) instead of full flush
+- → [Full article](../12-interview-prep/question-bank/caching-performance/cache-warming-strategies)

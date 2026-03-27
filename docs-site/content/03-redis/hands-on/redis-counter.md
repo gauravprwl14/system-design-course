@@ -10,10 +10,7 @@ related_problems:
   - problems-at-scale/concurrency/counter-race
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/concurrency/counter-race
-  - system-design/case-studies/unique-id-generator
-  - system-design/case-studies/youtube
+linked_from: []
 tags:
   - redis
   - counter

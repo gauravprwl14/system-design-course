@@ -21,14 +21,10 @@ see_poc:
   - interview-prep/practice-pocs/kafka-streams-real-time-processing
   - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
 linked_from:
-  - interview-prep/practice-pocs/kafka-basics-producer-consumer
-  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
-  - interview-prep/practice-pocs/kafka-exactly-once-semantics
-  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
-  - interview-prep/practice-pocs/kafka-streams-real-time-processing
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - system-design/scalability/event-driven-architecture
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq
 tags:
   - kafka
   - rabbitmq

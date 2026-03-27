@@ -1,14 +1,60 @@
 ---
-title: "Connection Pool Starvation: When Your App Freezes at Deploy Time"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["performance", "database", "infrastructure"]
-personas: ["Senior Engineer", "Tech Lead"]
-tags: ["connection-pool", "pgbouncer", "rds-proxy", "postgresql", "kubernetes", "max-connections", "pool-exhaustion", "database-connections"]
-description: "Deployments at your company take 10 minutes. Not because of build time or tests. Because every deploy freezes the app for 8 minutes while every request times out waiting for a database connection that never comes."
-reading_time: "17 min"
-difficulty: "senior"
-status: "published"
+title: 'Connection Pool Starvation: When Your App Freezes at Deploy Time'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - performance
+  - database
+  - infrastructure
+personas:
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - connection-pool
+  - pgbouncer
+  - rds-proxy
+  - postgresql
+  - kubernetes
+  - max-connections
+  - pool-exhaustion
+  - database-connections
+description: >-
+  Deployments at your company take 10 minutes. Not because of build time or
+  tests. Because every deploy freezes the app for 8 minutes while every request
+  times out waiting for a database connection that never comes.
+reading_time: 17 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/failures/database-hotspots
+  - 01-databases/failures/memory-leak-long-running
+  - 01-databases/failures/n-plus-one-query
+  - 01-databases/hands-on/connection-leak-detection
+  - 01-databases/hands-on/connection-pool-sizing
+  - 01-databases/hands-on/database-connection-pooling
+  - 01-databases/hands-on/postgresql-connection-pooling-replication
+  - 03-redis/hands-on/redis-monitoring-performance
+  - 06-scalability/concepts/scaling-basics
+  - 07-api-design/concepts/rest-graphql-grpc
+  - 08-security/concepts/authentication-at-scale
+  - 09-observability/concepts/connection-pool-management
+  - 09-observability/concepts/observability-slos
+  - 09-observability/failures/thread-pool-exhaustion
+  - 10-architecture/concepts/timeouts-backpressure
+  - 10-architecture/failures/timeout-domino-effect
+  - 11-real-world/netflix
+  - 11-real-world/spotify
+  - 11-real-world/youtube
+  - 12-interview-prep/quick-reference/caching/performance-bottlenecks
+  - 12-interview-prep/quick-reference/databases/connection-pooling
+  - 12-interview-prep/system-design/fundamentals/api-gateway-pattern
+  - 12-interview-prep/system-design/fundamentals/high-concurrency-api
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/video-conferencing
+  - 12-interview-prep/system-design/real-time-systems/websocket-architecture
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/observability-monitoring
 ---
 
 # Connection Pool Starvation: When Your App Freezes at Deploy Time

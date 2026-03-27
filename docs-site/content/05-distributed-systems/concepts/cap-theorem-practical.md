@@ -1,15 +1,33 @@
 ---
-title: "CAP Theorem in Practice: Partition Tolerance, Trade-offs, and PACELC"
-date: "2026-03-18"
-category: "system-design-playbook"
-subcategories: ["consistency", "distributed-systems", "availability"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead", "Staff Engineer", "Principal Engineer"]
-tags: ["cap-theorem", "pacelc", "partition-tolerance", "consistency", "availability", "distributed-systems"]
-description: "CAP is not a dial you turn — partitions happen whether you want them or not. You only choose what to sacrifice when they do."
-reading_time: "22 min"
-difficulty: "staff+"
-status: "published"
-featured_image: "/assets/diagrams/cap-theorem-practical.png"
+title: 'CAP Theorem in Practice: Partition Tolerance, Trade-offs, and PACELC'
+date: '2026-03-18'
+category: system-design-playbook
+subcategories:
+  - consistency
+  - distributed-systems
+  - availability
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+  - Principal Engineer
+tags:
+  - cap-theorem
+  - pacelc
+  - partition-tolerance
+  - consistency
+  - availability
+  - distributed-systems
+description: >-
+  CAP is not a dial you turn — partitions happen whether you want them or not.
+  You only choose what to sacrifice when they do.
+reading_time: 22 min
+difficulty: staff+
+status: published
+featured_image: /assets/diagrams/cap-theorem-practical.png
+linked_from:
+  - 05-distributed-systems/concepts/disaster-recovery-design
 ---
 
 # CAP Theorem in Practice: Partition Tolerance, Trade-offs, and PACELC

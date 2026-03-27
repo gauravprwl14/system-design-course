@@ -18,14 +18,7 @@ case_studies:
   - system-design/case-studies/payment-system
   - system-design/case-studies/uber-backend
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/timeout-configuration
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/performance/connection-pool-starvation
-  - problems-at-scale/performance/thread-pool-exhaustion
-  - system-design/patterns/circuit-breaker
-  - system-design/patterns/microservices-communication
-  - system-design/patterns/timeouts-backpressure
+linked_from: []
 tags:
   - availability
   - timeout

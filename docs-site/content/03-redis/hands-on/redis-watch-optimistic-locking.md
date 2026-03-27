@@ -11,11 +11,7 @@ related_problems:
   - problems-at-scale/concurrency/double-booking
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/ticket-booking-system
-  - problems-at-scale/availability/split-brain
-  - problems-at-scale/consistency/cache-invalidation-race
-  - system-design/consistency/distributed-consensus
+linked_from: []
 tags:
   - redis
   - watch

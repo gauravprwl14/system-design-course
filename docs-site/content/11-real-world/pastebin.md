@@ -17,7 +17,7 @@ see_poc:
   - interview-prep/practice-pocs/database-crud
   - interview-prep/practice-pocs/database-full-text-search
 linked_from:
-  - interview-prep/system-design/cms-design
+  - 12-interview-prep/system-design/messaging-and-streaming/cms-design
 tags:
   - pastebin
   - object-storage

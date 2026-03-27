@@ -9,8 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/scalability/microservices-architecture
+linked_from: []
 tags:
   - integration-testing
   - docker

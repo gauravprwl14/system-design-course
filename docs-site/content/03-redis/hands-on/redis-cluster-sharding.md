@@ -13,12 +13,7 @@ related_problems:
   - problems-at-scale/availability/split-brain
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/database-sharding
-  - interview-prep/system-design/search-engine-architecture
-  - problems-at-scale/scalability/database-hotspots
-  - problems-at-scale/scalability/hot-partition
-  - system-design/scalability/multi-region
+linked_from: []
 tags:
   - redis
   - cluster

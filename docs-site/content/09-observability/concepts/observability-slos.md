@@ -18,17 +18,9 @@ see_poc:
   - interview-prep/practice-pocs/distributed-tracing
   - interview-prep/practice-pocs/health-check-patterns
 linked_from:
-  - interview-prep/aws-cloud/cloudwatch-monitoring
-  - interview-prep/caching-cdn/api-metrics
-  - interview-prep/practice-pocs/canary-releases
-  - interview-prep/practice-pocs/distributed-tracing
-  - interview-prep/practice-pocs/kafka-performance-tuning-monitoring
-  - interview-prep/practice-pocs/load-testing-k6
-  - interview-prep/practice-pocs/redis-lua-performance-benchmarks
-  - interview-prep/practice-pocs/redis-monitoring-performance
-  - interview-prep/practice-pocs/slo-dashboard
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/observability-monitoring
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/observability-monitoring
 tags:
   - observability
   - slo

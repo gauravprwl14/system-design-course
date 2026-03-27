@@ -364,3 +364,143 @@ graph LR
 [Deep dive: Load Balancers →](../12-interview-prep/quick-reference/aws-cloud/load-balancer)
 [Deep dive: Route 53 & DNS →](../12-interview-prep/quick-reference/aws-cloud/route53-dns)
 [Deep dive: CloudFront CDN →](../12-interview-prep/quick-reference/aws-cloud/cloudfront-cdn)
+
+---
+
+## 11. Question-Bank: APIs & Networking Deep Dives
+
+### REST API Design Principles
+**REST API design** — resource-oriented, stateless, HTTP-semantic APIs
+
+| Anti-pattern | Fix |
+|-------------|-----|
+| Verbs in URL: `POST /createUser` | Nouns + HTTP verbs: `POST /users` |
+| `200 OK` with error in body | Use correct HTTP status codes (400/404/500) |
+| No idempotency on POST | Add idempotency key header; make PUT idempotent |
+| Inconsistent naming: `userId`, `user_id`, `uid` | Pick one convention (camelCase or snake_case), enforce it |
+
+- **Key number**: REST constraint — stateless means each request carries ALL info; server holds NO session state between requests
+- **Decision**: GET for reads (cacheable); POST for creates; PUT/PATCH for updates (PUT = full replace, PATCH = partial); DELETE for deletes
+- **Trap**: Returning HTTP 200 with `{ "success": false }` in body — breaks monitoring, retry logic, and every HTTP client library; use proper 4xx/5xx status codes
+- → [Full article](../12-interview-prep/question-bank/apis-networking/rest-api-design-principles)
+
+---
+
+### GraphQL Design Patterns
+**GraphQL** — flexible query language for complex client data needs
+
+| | REST | GraphQL |
+|-|------|---------|
+| **Fetching** | Fixed endpoints, fixed response shape | Client specifies exactly what fields it needs |
+| **Over-fetching** | Yes (returns all fields) | No (client-driven selection) |
+| **Under-fetching** | Multiple requests for related data | Single query with nested resolvers |
+| **Caching** | HTTP cache per URL | No built-in HTTP caching (query-based) |
+| **Use when** | Simple CRUD, caching important | Complex queries, mobile (bandwidth), many clients |
+
+- **Key number**: N+1 problem — 100 posts × 1 author query each = **101 DB queries**; DataLoader batches into 2 queries
+- **Decision**: REST for simple CRUD with caching; GraphQL when clients have very different data shape requirements or bandwidth is a concern (mobile)
+- **Trap**: Not implementing DataLoader for nested resolvers — every nested field becomes a separate DB query (N+1); DataLoader is mandatory in production GraphQL
+- → [Full article](../12-interview-prep/question-bank/apis-networking/graphql-design-patterns)
+
+---
+
+### gRPC & Protobuf
+**gRPC + Protocol Buffers** — typed, binary, high-performance service-to-service communication
+
+| | REST/JSON | gRPC/Protobuf |
+|-|----------|--------------|
+| **Payload size** | Verbose (text JSON) | **5–10× smaller** (binary) |
+| **Serialization** | Slow (parse text) | **3–5× faster** |
+| **Typing** | Runtime (weak) | Compile-time (strong, from .proto) |
+| **Streaming** | No | Bidirectional |
+| **Browser support** | Full | Limited (needs gRPC-Web proxy) |
+
+- **Key number**: Protobuf is **5–10× smaller** than JSON and **3–5× faster** to serialize — critical for high-throughput microservices
+- **Decision**: gRPC for internal microservice-to-microservice; REST/JSON for public APIs or browser-facing endpoints
+- **Trap**: Using gRPC for browser clients without gRPC-Web — browsers cannot send HTTP/2 trailers required by gRPC; add Envoy proxy or use gRPC-Web client
+- → [Full article](../12-interview-prep/question-bank/apis-networking/grpc-and-protobuf)
+
+---
+
+### WebSockets & Long Polling
+**Real-time communication** — choosing between long polling, SSE, and WebSocket
+
+| | Long Polling | SSE | WebSocket |
+|-|-------------|-----|-----------|
+| **Direction** | Server→Client (simulated) | Server→Client | **Bidirectional** |
+| **Protocol** | HTTP/1.1 | HTTP/1.1 or HTTP/2 | WS upgrade |
+| **Proxy/firewall** | ✅ Safe | ✅ Safe | ⚠️ May be blocked |
+| **Use when** | Legacy environments | Notifications, feed updates | Chat, collaboration, gaming |
+
+- **Key number**: WebSocket server tuned for 1M concurrent connections — requires `ulimit -n 1048576` (1M file descriptors); default OS limit = **1,024/process**
+- **Decision**: WebSocket for bidirectional real-time (chat, gaming); SSE for server-only push (notifications, live feeds); long polling for legacy browsers or strict firewall environments
+- **Trap**: Stateful WebSocket without centralized pub/sub — user A connects to Server 1, user B connects to Server 2; messages don't cross servers; use Redis Pub/Sub to broadcast across servers
+- → [Full article](../12-interview-prep/question-bank/apis-networking/websockets-long-polling)
+
+---
+
+### API Versioning Strategies
+**API versioning** — managing breaking changes without breaking clients
+
+| Strategy | Example | CDN-friendly | Visibility | Used by |
+|----------|---------|-------------|-----------|--------|
+| **URL path** | `/v1/users`, `/v2/users` | ✅ | High | Most APIs |
+| **Header** | `API-Version: 2024-01-01` | ❌ (needs `Vary`) | Low | Stripe |
+| **Query param** | `?version=2` | ✅ | Medium | Some legacy APIs |
+| **Content negotiation** | `Accept: application/vnd.api.v2+json` | ❌ | Low | REST purists |
+
+- **Key number**: Stripe uses date-based versioning — each API key pins to a specific version date; provides ~**2 years** of backwards compatibility guarantees
+- **Decision**: URL path versioning for simplicity and CDN cacheability; header versioning for clean URLs and Stripe-style date pinning
+- **Trap**: Trying to make every API change backwards compatible — not all changes are; define "breaking change" explicitly (removing fields, changing types, renaming endpoints) and version on breaking changes only
+- → [Full article](../12-interview-prep/question-bank/apis-networking/api-versioning-strategies)
+
+---
+
+### API Gateway Patterns
+**API gateway patterns** — BFF, aggregation, Lambda cold start mitigation
+
+| Pattern | Problem solved | Trade-off |
+|---------|---------------|-----------|
+| **BFF (Backend for Frontend)** | Each client type (mobile/web/TV) needs different data shape | More backends to maintain |
+| **Request aggregation** | Client needs data from 3 services in 1 call | Gateway becomes coupling point |
+| **Auth offloading** | JWT verify in every service | Gateway = single point for auth failures |
+| **Circuit breaker** | Upstream service slowness cascades | Gateway adds latency on healthy paths |
+
+- **Key number**: Lambda cold start: Java = **2–5s**; Node.js/Python = **100–500ms**; use Provisioned Concurrency to eliminate cold start for latency-sensitive API Gateway endpoints
+- **Decision**: BFF when different client types have significantly different data needs (mobile vs web vs third-party); avoid BFF if all clients share the same data model
+- **Trap**: API gateway becomes a distributed monolith — aggregating too much business logic in the gateway makes it a bottleneck and single point of failure; keep gateway as thin pass-through
+- → [Full article](../12-interview-prep/question-bank/apis-networking/api-gateway-patterns)
+
+---
+
+### HTTP Internals
+**HTTP versions** — understanding multiplexing, HOL blocking, and header compression
+
+| Version | Transport | Multiplexing | HOL Blocking | Header compression |
+|---------|---------|-------------|-------------|------------------|
+| **HTTP/1.1** | TCP | ❌ (1 req/connection) | At HTTP layer | ❌ (repeated text) |
+| **HTTP/2** | TCP | ✅ (streams) | Fixed at HTTP, still at TCP | ✅ HPACK |
+| **HTTP/3** | QUIC (UDP) | ✅ (streams) | ✅ Eliminated | ✅ QPACK |
+| **gRPC** | HTTP/2 | ✅ | Fixed at HTTP | ✅ HPACK |
+
+- **Key number**: HTTP/2 HPACK compression — `Cookie: session=abc` at 500 bytes, sent 1K times/sec = **500KB/s wasted** in HTTP/1.1; HPACK compresses repeat headers to ~0 bytes after first request
+- **Decision**: HTTP/2 for all modern web traffic (supported by all modern browsers and CDNs); HTTP/3 for mobile/high-latency connections where packet loss is common
+- **Trap**: Enabling HTTP/2 server push aggressively — push is often counterproductive as browsers already have the resources cached; use `<link rel="preload">` instead
+- → [Full article](../12-interview-prep/question-bank/apis-networking/http-internals)
+
+---
+
+### DNS & Load Balancing
+**DNS internals** — resolution hierarchy, TTL, and load balancing strategies
+
+| Record type | Purpose | CDN/LB use |
+|------------|---------|-----------|
+| **A** | IPv4 address | Direct IP routing |
+| **CNAME** | Alias (cannot use at apex) | Services with dynamic IPs |
+| **Alias (Route 53)** | AWS alias — free, supports apex | ALB, CloudFront, S3 endpoints |
+| **MX** | Mail server | Email routing |
+
+- **Key number**: DNS "48 hour propagation" is a myth — modern resolvers respect TTL; with TTL=60s, propagation = **60–120 seconds** globally; use low TTL (60s) before planned changes
+- **Decision**: Alias record (not CNAME) for all Route 53 → ALB/CloudFront/S3 mappings — free query pricing and supports apex domain; CNAME cannot be used at root domain
+- **Trap**: High TTL before a planned IP change — if TTL=86400s and you need to failover, clients keep hitting old IP for up to 24 hours; lower TTL to 60s at least 48h before any planned change
+- → [Full article](../12-interview-prep/question-bank/apis-networking/dns-load-balancing)

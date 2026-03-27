@@ -18,17 +18,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/payment-system
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/api-gateway-rate-limiting
-  - interview-prep/practice-pocs/rate-limiting-algorithms
-  - interview-prep/practice-pocs/redis-lua-rate-limiting
-  - interview-prep/practice-pocs/redis-rate-limiting
-  - interview-prep/practice-pocs/retry-backoff
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/rate-limiting
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/circuit-breaker-failure
-  - problems-at-scale/availability/thundering-herd
+linked_from: []
 tags:
   - availability
   - retry

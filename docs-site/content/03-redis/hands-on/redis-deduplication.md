@@ -11,11 +11,7 @@ related_problems:
   - problems-at-scale/data-integrity/duplicate-event-processing
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/concurrency/duplicate-orders
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/api-design/idempotency
-  - system-design/case-studies/google-drive
+linked_from: []
 tags:
   - redis
   - deduplication

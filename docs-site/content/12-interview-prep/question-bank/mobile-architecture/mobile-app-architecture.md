@@ -3,12 +3,12 @@ title: "Mobile App Architecture"
 layer: interview-q
 section: interview-prep/question-bank/mobile-architecture
 difficulty: advanced
-tags: [mobile, ios, android, react-native, performance, architecture]
+tags: [mobile, react-native, performance, push-notifications, security, keychain, pagination]
 ---
 
 # Mobile App Architecture
 
-6 questions covering mobile architecture from frame budgets to Spotify's background audio preloading strategy.
+6 questions covering mobile app architecture from the 16ms frame budget to Spotify's audio preloading with WorkManager.
 
 ---
 
@@ -16,117 +16,129 @@ tags: [mobile, ios, android, react-native, performance, architecture]
 
 **Role:** Mid | **Difficulty:** 🟡 | **Priority:** P0 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you understand the 60fps rendering target and the main thread work that causes dropped frames.
+> **What the interviewer is testing:** Whether you understand the rendering pipeline budget, what blocks it, and how to profile and fix jank.
 
 ### Answer in 60 seconds
-- **16ms budget:** A 60fps display renders a new frame every 16.67ms. If the UI thread takes longer than 16ms to produce a frame, the frame is dropped — the display shows the previous frame again. Users perceive this as "jank" (stutter, lag).
-- **The main thread:** All UI work runs on a single main thread (UI thread). This includes: measure, layout, draw, input event handling, and (in most mobile frameworks) JavaScript execution (React Native) or activity lifecycle callbacks (Android).
-- **What causes jank:**
-  - **Expensive measure/layout:** Complex view hierarchies require many measure + layout passes. A `RecyclerView` with deeply nested `ConstraintLayout` items can take 8ms per item — easily exceeding 16ms.
-  - **Overdraw:** Rendering pixels multiple times (background behind a background behind a view). Each overdraw layer costs GPU time. More than 3× overdraw on complex screens is a warning sign.
-  - **Main thread I/O:** Reading from a file or database on the main thread blocks the UI thread. Even 1ms of I/O can cause a dropped frame at peak.
-  - **GC pauses:** Java/Kotlin Android apps experience GC pauses of 5–50ms. React Native's JavaScript engine has its own GC. GC during animation = dropped frames.
-  - **Synchronous bitmaps decode:** Loading a bitmap synchronously on the main thread blocks for 10–100ms. Always load images off-thread (Glide, Picasso, Coil on Android; SDWebImage on iOS).
-- **90fps and 120fps displays:** Modern devices (iPhone 15 Pro, Pixel 8 Pro) have 120Hz ProMotion/LTSPO displays. Frame budget: 8.3ms at 120fps. Jank thresholds are proportionally stricter.
+- **60fps requirement:** Modern displays render at 60 frames per second. Each frame has 1000ms / 60 = **16.67ms** to complete all work before the display needs the next frame.
+- **Frame budget breakdown:** Layout (measure + layout pass) + Draw (canvas operations) + Composite (GPU layer composition) + any main-thread code must fit within 16ms. If any frame exceeds 16ms, it is dropped — the user sees a "jank" (stutter).
+- **Main thread work is the killer:** Any synchronous operation on the main (UI) thread blocks rendering. Network I/O, database queries, JSON parsing, image decoding — all must run on background threads. If they run on main thread, every frame they touch is dropped.
+- **Measure/layout thrashing:** Alternating reads and writes to layout properties forces the browser/OS to recalculate layout multiple times per frame. Example (web): read `offsetHeight`, set `height`, read `offsetHeight` again — layout calculated 3 times. On mobile: avoid calling `measure()` inside `layout()`.
+- **Overdraw:** Drawing pixels that are immediately covered by other pixels. A pixel drawn 5 times costs 5x the GPU fill rate. Android Debug GPU Overdraw shows overdraw in red. Fix: remove unnecessary background colors from nested views.
+- **60fps is the floor; 120fps displays (ProMotion) need 8ms budget** — increasingly important for premium devices.
 
 ### Diagram
 
 ```mermaid
 graph TD
-  Frame["Frame N — 16ms window"]
+  subgraph FramePipeline["16ms Frame Budget (60fps)"]
+    App["App Code — main thread\nEvent handlers, state updates\nTarget: < 4ms"]
+    Layout["Measure + Layout\nCalculate sizes and positions\nTarget: < 6ms"]
+    Draw["Draw\nCanvas operations\nTarget: < 4ms"]
+    Composite["Composite\nGPU combines layers\nTarget: < 2ms"]
+    Total["Total: must be under 16.67ms\nIf any single frame exceeds: DROPPED FRAME = jank"]
+    App --> Layout --> Draw --> Composite --> Total
+  end
 
-  Frame --> Input["Input handling: 1ms\n(tap, gesture recognition)"]
-  Frame --> JS["JS execution (React Native): 3ms\n(business logic, state update)"]
-  Frame --> Measure["Measure + Layout: 5ms\n(compute view dimensions)"]
-  Frame --> Draw["Draw: 4ms\n(canvas commands to GPU)"]
-  Frame --> GPU["GPU rasterise: 3ms\n(render to screen buffer)"]
+  subgraph Causes["Common Jank Causes"]
+    C1["Main-thread I/O:\nFile read, DB query, network in UI thread\nBudget impact: blocks entire pipeline for 50-500ms"]
+    C2["Layout thrashing:\nAlternating read+write of layout props\nForces multiple layout passes per frame"]
+    C3["Overdraw:\n5x overdraw = 5x GPU fill rate\nFills budget on GPU composite step"]
+    C4["Synchronous image decode:\nDecoding JPEG/PNG on main thread\nBlocks 10-100ms per image"]
+  end
+```
 
-  Total["Total: 16ms ✅ — frame delivered"]
-  Input & JS & Measure & Draw & GPU --> Total
+### Android Jank Profiling
 
-  Jank["If any step takes longer:\n→ Total > 16ms\n→ Frame dropped\n→ User sees jank"]
-
-  ExpensiveMeasure["Example jank: Measure takes 14ms\n(too many nested views)\n→ Total 28ms → 1 frame dropped every cycle"]
-  Jank --> ExpensiveMeasure
+```mermaid
+graph LR
+  Tools["Profiling Tools"]
+  Tools --> Systrace["Systrace — Android\nShows frame timing, thread activity\nIdentifies dropped frames with red indicators"]
+  Tools --> Choreographer["Choreographer.FrameCallback\nCount dropped frames in production code\nLog if frame > 16ms for real-user monitoring"]
+  Tools --> Inspector["Android Studio Layout Inspector\nVisualizes view hierarchy overdraw\nIdentifies unnecessary background layers"]
+  Tools --> Instruments["Instruments — iOS\nTime Profiler: main thread CPU usage\nCore Animation: frame rate and GPU workload"]
 ```
 
 ### Pitfalls
-- ❌ **Assuming 60fps is guaranteed on all devices:** Low-end Android devices with 1GB RAM and a slow CPU may budget only 33ms (30fps). Always profile on low-end devices, not just flagship hardware.
-- ❌ **Main thread work disguised as "lightweight":** `SharedPreferences.getInt()` on Android reads from disk on the main thread by default. Even a "simple" preferences read can block for 2–5ms if storage is slow. Use `DataStore` (async).
-- ❌ **Not using hardware acceleration:** Most Android drawing is hardware-accelerated (GPU) by default. Disabling it (`setLayerType(LAYER_TYPE_SOFTWARE)`) reverts to software rasterisation — 10× slower. Never disable hardware acceleration without profiling.
+- ❌ **JSON parsing on main thread:** A 1MB API response parsed on the main thread takes 50–200ms — 3–12 dropped frames. Always parse JSON on a background thread, post result to main thread.
+- ❌ **RecyclerView / ListView creating views not recycling:** Creating new view objects in `getView()` / `onCreateViewHolder()` for every item is expensive. The recycling mechanism in RecyclerView exists to reuse view objects — never bypass it.
+- ❌ **Large Bitmaps loaded at full resolution:** Loading a 4K image (8MB decoded) to display in a 100x100dp thumbnail wastes memory and causes GC pauses. Downsample to display size using `BitmapFactory.Options.inSampleSize` before loading into memory.
 
 ### Concept Reference
-→ [Mobile Performance](../../../mobile/concepts/mobile-performance)
+→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
-## Q2: Why does cursor-based pagination beat offset-based for infinite scroll at scale?
+## Q2: Cursor-based pagination for infinite scroll — why offset fails at 1M+ items?
 
 **Role:** Mid | **Difficulty:** 🟡 | **Priority:** P0 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you understand the performance and consistency problems with OFFSET-based pagination and the cursor alternative.
+> **What the interviewer is testing:** Whether you understand the performance and consistency problems with OFFSET-based pagination at scale and can implement cursor-based pagination.
 
 ### Answer in 60 seconds
-- **Offset-based pagination:** `SELECT * FROM posts ORDER BY created_at DESC LIMIT 20 OFFSET 1000`. Page 1 is offset 0, page 2 is offset 20, page N is offset N×20.
-- **Problems with offset at scale:**
-  - **Performance:** `OFFSET 1000` causes PostgreSQL to scan and discard 1000 rows before returning 20. At `OFFSET 100000`, the DB scans 100,020 rows to return 20 — latency grows linearly with offset.
-  - **Consistency:** If a new post is inserted while the user is scrolling, all subsequent pages shift down by 1 — the user sees a duplicate item (the row that was on page N is now on page N-1).
-- **Cursor-based pagination:** Use the last item's unique, ordered field (e.g., `created_at` + `id`) as a cursor. Next page query: `SELECT * FROM posts WHERE (created_at, id) < (cursor_created_at, cursor_id) ORDER BY created_at DESC, id DESC LIMIT 20`.
-- **Why cursor is better:**
-  - **Performance:** Index lookup at the cursor position — O(log N) regardless of how deep in the list. Page 1M is as fast as page 1.
-  - **Consistency:** Cursor anchors to a specific position in the data — new inserts don't shift the cursor. No duplicates on scroll.
-  - **Trade-off:** Cannot jump to arbitrary page (no "go to page 50"). Suitable for infinite scroll (sequential access); not suitable for "jump to page N."
-- **Implementation:** Encode cursor as base64-encoded JSON: `{"created_at":"2026-01-01T10:00:00Z","id":12345}`. Pass as query parameter: `?cursor=base64string`.
+- **OFFSET pagination:** `SELECT * FROM posts ORDER BY created_at DESC LIMIT 20 OFFSET 200`. Returns rows 201–220. Simple but has two critical problems at scale.
+- **Problem 1 — Performance:** `OFFSET 200` scans and discards the first 200 rows even though they are not returned. At `OFFSET 10000` (user scrolled to page 500), the DB scans 10,020 rows to return 20. At 1M items, deep pages require scanning millions of rows — query time: O(offset).
+- **Problem 2 — Consistency during scroll:** User loads page 1 (posts 1–20). A new post is inserted. User loads page 2 (OFFSET 20) — but now row 1 has shifted to row 2, so page 2 shows post 1 again (duplicate) or skips post 21.
+- **Cursor-based pagination:** Instead of OFFSET, use the last-seen item's unique identifier as the cursor. `SELECT * FROM posts WHERE id < :cursor ORDER BY id DESC LIMIT 20`. The cursor (last seen id) is returned with each response and included in the next request.
+- **Performance:** Cursor query uses the indexed `id` column — O(log N) B-tree lookup regardless of position. `id < cursor` with an index scan returns 20 rows in 2ms whether the feed has 1K or 100M items.
+- **Consistency:** New posts inserted at the top do not shift the cursor position. Infinite scroll never shows duplicates.
 
 ### Diagram
 
 ```mermaid
 graph TD
-  subgraph Offset["Offset Pagination (problematic)"]
-    O1["User loads page 1: OFFSET 0 LIMIT 20\n→ Returns posts 1-20"]
-    O2["New post inserted (post 0.5 — between 0 and 1)"]
-    O3["User loads page 2: OFFSET 20 LIMIT 20\n→ Returns posts 21-40\nBUT post 1 is now shifted to position 2\n→ Post 1 appears AGAIN (duplicate on scroll)"]
+  subgraph OffsetProblem["OFFSET Pagination — Problems at Scale"]
+    O1["Page 1: SELECT * ORDER BY id DESC LIMIT 20 OFFSET 0\nScans: 20 rows — fast (2ms)"]
+    O2["Page 500: SELECT * ORDER BY id DESC LIMIT 20 OFFSET 10000\nScans: 10020 rows — slow (200ms)"]
+    O3["Page 5000 (100M items): OFFSET 100000\nScans: 100020 rows — very slow (2000ms)"]
+    O4["New post inserted between page 1 and 2 load:\nOFFSET 20 now returns post that was at offset 19\nDuplicate shown to user in infinite scroll"]
     O1 --> O2 --> O3
+    O1 -.->|"Insert during scroll"| O4
+    style O3 fill:#f88
+    style O4 fill:#f88
   end
 
-  subgraph Cursor["Cursor Pagination (correct)"]
-    C1["User loads page 1: WHERE created_at > ... LIMIT 20\n→ Returns posts 1-20, cursor=post_20"]
-    C2["New post inserted (any position)"]
-    C3["User loads page 2: WHERE id < cursor_id LIMIT 20\n→ Always returns the 20 posts AFTER post_20\n→ No duplicates, no skips"]
-    C1 --> C2 --> C3
+  subgraph CursorSolution["Cursor Pagination — Consistent + Fast"]
+    C1["Page 1: SELECT * ORDER BY id DESC LIMIT 20\nReturns: posts [1000, 999, ..., 981]\nCursor returned: 981"]
+    C2["Page 2: SELECT * WHERE id < 981 ORDER BY id DESC LIMIT 20\nUses index: O(log N) regardless of depth\nReturns: posts [980, 979, ..., 961]\nCursor returned: 961"]
+    C3["New post inserted:\nGets id=1001\nDoes NOT affect cursor chain\nNo duplicates — cursor anchored to id=981"]
+    C1 --> C2
+    C1 -.->|"Insert during scroll"| C3
+    style C2 fill:#8f8
+    style C3 fill:#8f8
   end
-
-  style Offset fill:#f88,stroke:#900
-  style Cursor fill:#8f8,stroke:#090
 ```
 
+| Dimension | OFFSET Pagination | Cursor Pagination |
+|-----------|------------------|------------------|
+| Query performance | O(offset) — degrades with depth | O(log N) — constant regardless of depth |
+| Consistency during inserts | Duplicates or skips | Stable — anchored to cursor |
+| Jump to arbitrary page | Yes (`OFFSET = page * size`) | No (must traverse from beginning) |
+| Implementation complexity | Simple | Moderate (return cursor with each response) |
+| Infinite scroll suitability | Poor at depth | Excellent |
+
 ### Pitfalls
-- ❌ **Compound cursor without consistent ordering:** Cursor requires a stable total order. Using only `created_at` as cursor fails when two rows have the same timestamp (tie-breaking undefined). Always use `(created_at, id)` as a compound cursor where `id` is the tiebreaker.
-- ❌ **Exposing raw database IDs in cursors:** `cursor=12345` reveals your database's sequential ID, information about record count, and allows enumeration. Encode cursors: `cursor=base64(json({created_at, id}))`. Or use opaque tokens.
-- ❌ **Not indexing the cursor column:** `WHERE (created_at, id) < (X, Y)` requires a composite index on `(created_at DESC, id DESC)`. Without the index, cursor pagination degrades to a full table scan — slower than offset.
+- ❌ **Using cursor on non-unique columns:** If cursor is on `created_at` (not unique), two posts with the same timestamp cause the cursor to skip one. Always use a unique column (id, uuid) as cursor, or composite (created_at, id) for time-ordered feeds.
+- ❌ **Exposing database IDs as cursors:** If cursor = database auto-increment id, users can enumerate your entire dataset. Encode cursor as `base64(id + timestamp)` or use opaque tokens.
+- ❌ **Not returning `hasNextPage` flag:** Mobile UI needs to know when to stop showing "load more" — when the last page returns fewer than `limit` items, or when the API returns `hasNextPage: false`. Without this, the app may show an infinite spinner on the last page.
 
 ### Concept Reference
-→ [Mobile Performance](../../../mobile/concepts/mobile-performance)
+→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
-## Q3: How do APNs (iOS) and FCM (Android) deliver push notifications?
+## Q3: Push notification architecture — APNs (iOS) and FCM (Android) delivery flow
 
-**Role:** Mid | **Difficulty:** 🟡 | **Priority:** P1 | **Format:** Quick Answer
+**Role:** Senior | **Difficulty:** 🟡 | **Priority:** P1 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you understand the two-tier push notification architecture and the flow from your server to the end user's device.
+> **What the interviewer is testing:** Whether you understand the end-to-end push notification pipeline for both platforms and the reliability considerations.
 
 ### Answer in 60 seconds
-- **The two-tier model:** Your backend server does not connect directly to devices. It connects to Apple's APNs (Apple Push Notification service) or Google's FCM (Firebase Cloud Messaging), which maintain persistent connections to all registered devices.
-- **iOS APNs flow:**
-  1. App registers with APNs → receives a device token (unique per app+device, rotates periodically).
-  2. App sends device token to your backend server.
-  3. To send a push: your server sends an HTTP/2 request to `api.push.apple.com` with the device token + notification payload (JSON, max 4KB).
-  4. APNs delivers to the device over a persistent TLS connection maintained by iOS.
-  5. Device receives notification even if app is in background (iOS manages the APNs connection at OS level).
-- **Android FCM flow:** Similar — app gets an FCM registration token, sends to your backend, backend sends notification to `fcm.googleapis.com` with token + payload.
-- **Silent push (background fetch trigger):** APNs and FCM both support "silent" notifications (no visible notification) that wake the app in the background. Used to trigger data sync without user-visible alert. iOS: `content-available: 1`. Android: `data` payload without `notification`.
-- **Token management:** Device tokens change on app reinstall, OS upgrade, and periodically for privacy. Always update your backend token on each app launch and handle APNs/FCM error codes that indicate invalid tokens (UNREGISTERED → delete from your database).
+- **Why platform push services exist:** Apps cannot maintain persistent TCP connections on mobile — it drains battery. Apple (APNs) and Google (FCM) maintain a single platform-level persistent connection from each device. Your server routes through them.
+- **iOS APNs flow:** App registers with APNs → APNs returns a device token (64-byte hex) → app sends token to your backend → your server sends push payload to APNs API → APNs delivers to device.
+- **Android FCM flow:** App registers with FCM → FCM returns a registration token → app sends token to backend → server sends to FCM API → FCM delivers to device.
+- **Token management:** Tokens can change (app reinstall, factory reset). Backend must update tokens on each app launch, and handle `InvalidRegistrationToken` response from FCM/APNs by deleting the stale token.
+- **Silent push (background data):** Both platforms support silent pushes — notifications with no visible alert that wake the app for 30 seconds to sync data. iOS: `content-available: 1` APNs payload. Android: `data` payload only (no `notification` key).
+- **Reliability:** APNs and FCM are best-effort. Firebase FCM provides a `collapse_key` to merge queued notifications and tracks delivery receipts.
 
 ### Diagram
 
@@ -136,262 +148,298 @@ sequenceDiagram
   participant APNs as APNs / FCM
   participant Backend as Your Backend Server
 
+  Note over App: App first launch
   App->>APNs: Register for push notifications
-  APNs-->>App: Device token (unique per device+app)
-  App->>Backend: POST /register-device {token: "abc123", platform: "ios"}
-  Backend->>Backend: Store token in database (user_id=42 → token=abc123)
+  APNs-->>App: Device Token: abc123...
+  App->>Backend: POST /devices {token: "abc123...", platform: "ios"}
+  Backend->>Backend: Store token in devices table
 
-  Note over Backend: New message for user 42
+  Note over Backend: Server-side event (new message)
+  Backend->>APNs: POST https://api.push.apple.com/3/device/abc123\nPayload: {aps: {alert: "New message", sound: "default"}}\nHeaders: Authorization: Bearer <JWT>
+  APNs->>App: Deliver push notification
+  App->>App: Display notification or handle silently
 
-  Backend->>APNs: POST api.push.apple.com/3/device/abc123\n{aps: {alert: "New message from Alice", badge: 1}}
-  APNs->>App: Deliver notification (persistent OS-level connection)
-  App-->>App: Show notification in system tray
+  Note over App: App reinstalled — token changes
+  App->>APNs: Re-register — new token: xyz789...
+  App->>Backend: POST /devices {token: "xyz789...", platform: "ios"}
+  Backend->>Backend: Update token in devices table
+```
 
-  Note over Backend: Token becomes invalid (app reinstalled)
+```mermaid
+graph TD
+  subgraph Reliability["Push Notification Reliability"]
+    Stored["APNs stores notification for device offline:\nDefault: 0 seconds (discard if device offline)\nMax: 30 days with apns-expiration header\nUse case: important alerts need 24h retention"]
 
-  APNs-->>Backend: Error 410 (UNREGISTERED) in APNs response
-  Backend->>Backend: Remove token abc123 from database\n(stop sending to this token)
+    Collapse["FCM collapse_key:\nMessages with same collapse_key replace each other\nDevice offline: only latest notification delivered\nUse case: 'You have N unread messages' — only show current count"]
+
+    Receipt["Delivery receipts:\nFCM: returns per-message success/failure\nAPNs: 410 Gone = device unregistered (delete token)\nAPNs: 400 BadDeviceToken = invalid token (delete token)"]
+  end
 ```
 
 ### Pitfalls
-- ❌ **Sending individual push per user in a loop:** If you need to notify 1M users, a serial loop of 1M HTTP requests to APNs takes hours. Use batch notification APIs: FCM supports up to 500 tokens per batch request. For APNs, use HTTP/2 multiplexing — multiple concurrent streams on one connection.
-- ❌ **Not handling APNs certificate expiry:** APNs authentication uses either a certificate (expires annually) or a token-based authentication with a private key (doesn't expire — preferred). Certificate expiry at 3 AM stops all iOS push notifications until renewed. Use token-based auth.
-- ❌ **Sending notifications during Doze on Android:** FCM delivers notifications via a high-priority flag that wakes the device. Overusing high-priority (marking all notifications as high-priority to bypass Doze) violates Google Play policy and trains the OS to throttle your app's notifications.
+- ❌ **Storing push tokens indefinitely:** Tokens from uninstalled apps return `410 Gone` (APNs) or `NotRegistered` (FCM). If not deleted, your backend wastes API calls to dead tokens. Delete on first 410/NotRegistered response.
+- ❌ **Sending full payload in silent push:** Silent pushes have a 4KB payload limit (APNs) and are rate-limited (30 per hour for background fetch). Silent push should contain only a notification type and a minimal ID — the app fetches the full content from your API on wake.
+- ❌ **Not handling notification permission denied:** iOS 12+ requires explicit permission prompt for push. If user denies, your app silently never receives notifications. Must check `UNNotificationSettings.authorizationStatus` and offer a re-prompt flow when appropriate.
 
 ### Concept Reference
-→ [Mobile Architecture](../../../mobile/concepts/mobile-architecture)
+→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
-## Q4: What are the performance bottlenecks in React Native's bridge architecture?
+## Q4: React Native bridge — JS thread vs native thread, serialization overhead, new JSI architecture
 
 **Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Deep Dive
 
-> **What the interviewer is testing:** Whether you understand React Native's historical bridge bottleneck, the serialisation overhead, and the new JSI (JavaScript Interface) architecture that replaces it.
+> **What the interviewer is testing:** Whether you understand React Native's threading model, the bottleneck of the old bridge, and how the new architecture (JSI) addresses it.
 
 ### Problem Constraints
 | Dimension | Value |
 |-----------|-------|
-| Architecture | React Native (Legacy Bridge architecture) |
-| Performance bottleneck | JavaScript ↔ Native bridge serialisation |
-| Impact | Animations at <60fps, list scroll jank, gesture delay |
-| New architecture | JSI (JavaScript Interface) — removes serialisation |
+| React Native context | JavaScript runs in a JS engine (Hermes); native UI renders on the main thread |
+| Old bridge bottleneck | All data between JS and native must be JSON-serialized — async, batched, cannot share memory |
+| Impact | Animation at 60fps requires 60 JS→native calls/sec; each crossing the bridge adds 2–10ms |
+| New architecture | JSI — JavaScript Interface — enables direct synchronous native method calls without serialization |
 
-### Legacy Bridge Architecture (Bottleneck)
-
-```mermaid
-graph TD
-  JS["JavaScript thread\n(Single-threaded V8/Hermes engine)\nAll business logic, React render tree, state management"]
-
-  Bridge["Asynchronous Bridge\n(serialise to JSON → pass as string → deserialise)\nLatency: 0.5–5ms per message\nNo shared memory — everything serialised"]
-
-  Native["Native thread\n(iOS Main Thread / Android Main Thread)\nActual view rendering, animations, gestures"]
-
-  JS -->|"JSON: { type: 'setStyle', style: { x: 150 } }"| Bridge
-  Bridge -->|"Deserialise + apply"| Native
-
-  Problem["Problem:\nAnimation: update position 60 times/sec\n= 60 bridge messages/sec × 2ms = 120ms overhead\n→ Frame budget consumed by serialisation alone\n→ Animation jank inevitable"]
-  Bridge --> Problem
-
-  style Problem fill:#f88,stroke:#900
-```
-
-### JSI Architecture (New — React Native 0.68+)
+### Old Bridge Architecture
 
 ```mermaid
 graph TD
-  JSI["JSI: JavaScript Interface\nShared memory between JS and Native\nNo serialisation — direct C++ function calls"]
+  subgraph OldBridge["Old React Native Bridge"]
+    JS["JavaScript Thread\n(Hermes engine)\nComponent rendering\nBusiness logic\nState management"]
 
-  JSEngine["JS Engine (Hermes)\nDirect pointer to native objects\nCall native functions synchronously if needed"]
+    Bridge["Bridge\nAsync message queue\nJSON serialization/deserialization\nBatching: collects messages, sends every frame\nBottleneck at ~1000 messages/sec\nNo shared memory — all data copied"]
 
-  Fabric["Fabric (New Rendering Engine)\nSync rendering on UI thread\nNo bridge round-trip for layout"]
+    Shadow["Shadow Thread\nYoga layout engine\nComputes layout from JS props\nResults sent back to JS thread"]
 
-  TurboModules["TurboModules\nLazy native module loading\nDirect JSI calls — 10x faster than bridge"]
+    Native["Main Thread (Native)\nActual UI rendering\nNative module calls (camera, GPS, etc.)"]
 
-  JSEngine --> JSI
-  JSI --> Fabric
-  JSI --> TurboModules
+    JS -->|"JSON serialize: {type: 'UPDATE', id: 1, style: {...}}"| Bridge
+    Bridge -->|"JSON deserialize"| Shadow
+    Shadow -->|"Layout result (JSON)"| Bridge
+    Bridge -->|"Apply to native views"| Native
+  end
 
-  Improvement["Improvement:\nAnimation: Reanimated 3 runs entirely on UI thread\nNo bridge — direct C++ shared values\n120fps animations possible on capable devices"]
-
-  Fabric & TurboModules --> Improvement
-
-  style Improvement fill:#8f8,stroke:#090
+  style Bridge fill:#f88,stroke:#900
 ```
 
-| Dimension | Legacy Bridge | JSI (New Architecture) |
-|-----------|--------------|----------------------|
-| Communication | Async JSON serialisation | Synchronous C++ calls via shared memory |
-| Latency | 0.5–5ms per message | <0.1ms (same-thread access) |
-| Animation | Jank at 60fps (bridge overhead) | 120fps capable (Reanimated 3) |
-| Module loading | All modules loaded at startup | Lazy (TurboModules) |
-| Thread model | 3 threads (JS, Bridge, Native) | Concurrent rendering (Fabric) |
+### New Architecture — JSI (JavaScript Interface)
 
-### Recommended Answer
-React Native's legacy bridge is the primary performance bottleneck: all communication between JavaScript and native code is serialised to JSON, passed as a string across the bridge, and deserialised on the other side. At 60fps, an animation updating a single value (x position) requires 60 bridge messages per second, each adding 0.5–5ms of overhead — consuming the entire 16ms frame budget in serialisation alone.
+```mermaid
+graph TD
+  subgraph NewArch["New Architecture — JSI + Fabric + TurboModules"]
+    JSEngine["Hermes JS Engine\nDirect C++ binding via JSI\nNo message queue\nNo serialization"]
 
-**Workarounds (legacy):** `react-native-reanimated` v1/v2 moved animation logic into a separate worklet that runs on the UI thread — no bridge for the animation values themselves, only for configuration. `Animated` with `useNativeDriver: true` offloads specific animations to native directly.
+    JSI["JSI — JavaScript Interface\nC++ layer\nExposes native objects to JS as JavaScript objects\nNo JSON serialization — share memory references\nSynchronous calls possible"]
 
-**JSI (New Architecture):** React Native 0.68+ introduces JSI (JavaScript Interface) which gives the JS engine a direct pointer to native C++ objects. No serialisation — calling a native function is a direct C++ call with shared memory. Reanimated 3 uses JSI shared values to update animations at 120fps without any JS thread involvement during the animation.
+    Fabric["Fabric — New Renderer\nC++ core (shared with Hermes)\nDirect JSI calls for view updates\nNo bridge — synchronous when needed\n60fps animations without JS thread involvement"]
 
-**Startup time:** Legacy bridge loads all native modules at startup (100+ modules × registration overhead). TurboModules (JSI-based) loads modules lazily on first use — startup time reduced by 30–50%.
+    TurboModules["TurboModules\nLazy-loaded native modules\nOnly loaded when first called\nJSI direct binding — synchronous\nCodegen generates TypeScript types automatically"]
+
+    JSEngine --> JSI
+    JSI --> Fabric
+    JSI --> TurboModules
+  end
+
+  style JSI fill:#8f8,stroke:#090
+  style Fabric fill:#8f8,stroke:#090
+```
+
+| Dimension | Old Bridge | New Architecture (JSI) |
+|-----------|-----------|------------------------|
+| Communication | Async, batched JSON | Synchronous, direct C++ |
+| Serialization | JSON on every call | No serialization (memory refs) |
+| Animation performance | Limited to bridge throughput | Synchronous — no bridge crossing |
+| Module initialization | All modules loaded on startup | Lazy load via TurboModules |
+| Type safety | Manual — TypeScript not enforced | Codegen generates types from spec |
+| Memory sharing | Not possible — all data copied | Possible — JSI references |
 
 ### What a great answer includes
-- [ ] Bridge bottleneck: JSON serialisation latency (0.5–5ms per message)
-- [ ] Animation impact: 60 messages/sec × bridge latency = frame budget exceeded
-- [ ] `useNativeDriver: true` as legacy workaround
-- [ ] JSI: shared memory, no serialisation, direct C++ function calls
-- [ ] Reanimated 3 on JSI: 120fps animations with zero bridge involvement
+- [ ] JS thread runs business logic; main thread renders native UI — separate threads
+- [ ] Old bridge: async message queue with JSON serialization — bottleneck at high-frequency updates
+- [ ] Animation problem: 60fps = 60 JS→native calls/sec; each bridge crossing adds latency
+- [ ] JSI: C++ layer that exposes native objects directly to JS as JavaScript objects
+- [ ] Fabric + TurboModules: synchronous rendering and lazy-loaded modules via JSI
 
 ### Pitfalls
-- ❌ **"React Native is slow":** React Native's performance problem is specifically the legacy bridge. With JSI + Fabric + Reanimated 3, React Native can achieve near-native performance for most UI interactions. The statement "React Native is slow" is 2018-era advice.
-- ❌ **Not knowing that JSI is production-ready:** JSI / New Architecture is stable and production-ready as of React Native 0.73 (2023). Recommending "just use Flutter/native" without knowing about JSI shows outdated knowledge.
-- ❌ **Treating all React Native operations as bridge-constrained:** The JavaScript rendering and state logic runs at full JS engine speed. Only native API calls and view property updates go through the bridge. Heavy JSON processing or algorithm work is a JS thread problem, not a bridge problem.
+- ❌ **Doing complex JS computation on the animation frame:** Even with JSI, JS-driven animations that require recalculating positions on every frame (JS → native 60x/sec) can stutter if JS thread is busy. Use Animated API with `useNativeDriver: true` to run animations entirely on native thread.
+- ❌ **Large data across the bridge on every render:** Passing large objects (user feed, image data) from JS to native on every render floods even the new JSI layer. Compute heavy objects once and pass references.
+- ❌ **Not migrating to new architecture:** React Native 0.74+ defaults to the new architecture. Old bridge code that relies on legacy module initialization order may break. Migration guide required when upgrading.
 
 ### Concept Reference
-→ [Mobile Performance](../../../mobile/concepts/mobile-performance)
+→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
-## Q5: How do you securely store tokens — iOS Keychain vs Android Keystore vs SharedPreferences?
+## Q5: Secure token storage — iOS Keychain vs Android Keystore vs SharedPreferences
 
 **Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Quick Answer
 
-> **What the interviewer is testing:** Whether you know the correct secure storage mechanism on each platform and why naïve approaches (AsyncStorage, SharedPreferences) are insecure.
+> **What the interviewer is testing:** Whether you know the security properties of each storage mechanism and why SharedPreferences is insecure for secrets.
 
 ### Answer in 60 seconds
-- **iOS Keychain:** The only correct place for secrets (tokens, passwords, certificates) on iOS. Keychain items are encrypted at rest using the device's hardware Secure Enclave key. Protected by the device passcode. Can be configured with accessibility levels: `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` (most secure — accessible only when device unlocked, not backed up to iCloud). Keychain items survive app reinstall (unlike React Native AsyncStorage or NSUserDefaults). Access via Security framework: `SecItemAdd`, `SecItemCopyMatching`.
-- **Android Keystore:** Android equivalent of Keychain. Stores cryptographic keys backed by hardware (TEE or Secure Element on Android 6+). The key never leaves the Keystore — you use the key for crypto operations but cannot export the raw bytes. For storing tokens: encrypt the token with a Keystore key, store the ciphertext in EncryptedSharedPreferences. Android Jetpack: `EncryptedSharedPreferences` wraps Keystore transparently.
-- **SharedPreferences (without encryption):** Stores data as plaintext XML files in the app's internal storage. On a rooted Android device, these files are readable. Never use for secrets. Use only for non-sensitive preferences (dark mode, language setting).
-- **React Native:** No native Keychain/Keystore API. Use `react-native-keychain` library (wraps iOS Keychain + Android Keystore). Do NOT use `AsyncStorage` for tokens — it stores in plaintext SQLite.
+- **What to store securely:** OAuth access tokens, refresh tokens, API keys, encryption keys. These grant access to user data — compromising them is equivalent to compromising the user's account.
+- **iOS Keychain:** Hardware-backed secure storage managed by the iOS security enclave. Data encrypted with AES-256 using a key derived from the device passcode and hardware UID. Survives app reinstall (optional). Accessible only to app with matching bundle ID. Jailbroken device bypasses most protections except Secure Enclave keys.
+- **Android Keystore:** Hardware-backed key storage (available since Android 6 with hardware backing). Cryptographic operations (sign, encrypt) happen inside the secure hardware — the key material never leaves the hardware. Applications can generate keys and use them, but cannot extract the raw key bytes.
+- **SharedPreferences / UserDefaults:** Plain XML/property list files stored in the app's data directory. Encrypted only by Android file system encryption (not key-specific encryption). On a rooted Android device: `cat /data/data/com.app/shared_prefs/*.xml` exposes all values. On iOS UserDefaults: stored in plain plist — extractable via iCloud backup or jailbreak.
+- **Rule:** Anything that must survive app uninstall and is security-sensitive → Keychain/Keystore. Non-sensitive user preferences → SharedPreferences/UserDefaults.
 
 ### Diagram
 
 ```mermaid
 graph TD
-  Secret["Sensitive data: JWT access token, refresh token, API key"]
+  subgraph StorageComparison["Secure Storage Comparison"]
+    Keychain["iOS Keychain\nEncryption: AES-256, hardware-backed\nKey stored in: Secure Enclave\nAccess control: per item (biometric gate possible)\nExtractable by: not extractable from hardware\nProtected from: jailbreak (for Secure Enclave items)\nUse for: OAuth tokens, passwords, keys"]
 
-  subgraph iOS_OK["iOS — Secure"]
-    KC["Keychain\nHardware-backed encryption\nSecure Enclave\nkSecAttrAccessibleWhenUnlockedThisDeviceOnly"]
+    Keystore["Android Keystore\nEncryption: AES-256/RSA, hardware-backed (API 23+)\nKey operations: done in TEE (Trusted Execution Environment)\nKey bytes: never leave hardware\nAccess control: per key (biometric gate possible)\nUse for: encryption keys, signing keys\nNote: store encrypted data in SharedPrefs, decrypt with Keystore key"]
+
+    SharedPrefs["SharedPreferences / UserDefaults\nEncryption: NONE (plain text XML)\nProtection: only app sandbox (file permissions)\nExtractable by: root/jailbreak trivially\nDo NOT use for: tokens, passwords, API keys\nUse for: UI preferences, non-sensitive settings"]
   end
 
-  subgraph Android_OK["Android — Secure"]
-    ESP["EncryptedSharedPreferences\n(backed by Android Keystore)\nKey stored in hardware TEE\nCiphertext in XML file"]
-  end
-
-  subgraph Bad["Insecure — Never Use for Secrets"]
-    NSU["NSUserDefaults (iOS)\nPlaintext plist — readable on jailbroken device"]
-    SP["SharedPreferences (Android)\nPlaintext XML — readable on rooted device"]
-    AS["AsyncStorage (React Native)\nPlaintext SQLite — accessible without root on many devices"]
-  end
-
-  Secret -->|"Store securely"| iOS_OK & Android_OK
-  Secret -->|"NEVER store here"| Bad
-
-  style Bad fill:#f88,stroke:#900
-  style iOS_OK fill:#8f8,stroke:#090
-  style Android_OK fill:#8f8,stroke:#090
+  style Keychain fill:#8f8
+  style Keystore fill:#8f8
+  style SharedPrefs fill:#f88
 ```
 
+```mermaid
+sequenceDiagram
+  participant App as Mobile App
+  participant KS as Android Keystore
+  participant SP as SharedPreferences
+
+  Note over App: Store OAuth refresh token securely
+
+  App->>KS: generateKey("refresh_token_key", AES-256, requireAuthentication=false)
+  KS-->>App: Key handle (not the key bytes)
+
+  App->>KS: encrypt("refresh_token_key", tokenBytes)
+  KS-->>App: Encrypted token bytes (hardware-encrypted)
+
+  App->>SP: store("encrypted_refresh_token", encryptedBytes)
+  Note over SP: SharedPrefs stores encrypted bytes\nUseless without Keystore key\nKeystore key never leaves hardware
+
+  Note over App: Retrieve token
+  App->>SP: get("encrypted_refresh_token") → encryptedBytes
+  App->>KS: decrypt("refresh_token_key", encryptedBytes)
+  KS-->>App: tokenBytes (decrypted inside hardware)
+```
+
+| Storage | iOS | Android | Security Level | Survives Reinstall |
+|---------|-----|---------|----------------|---------------------|
+| Keychain | ✓ (native) | N/A | Hardware-backed | Optional |
+| Keystore | N/A | ✓ (native) | Hardware-backed | Yes |
+| EncryptedSharedPreferences | N/A | ✓ (Jetpack Security) | Software (key in Keystore) | No |
+| SharedPreferences / UserDefaults | N/A / ✓ | ✓ | None | Yes |
+
 ### Pitfalls
-- ❌ **Storing tokens in AsyncStorage in React Native:** A common mistake in tutorials. AsyncStorage is unencrypted SQLite — accessible via `adb shell` on a debuggable build or on rooted devices. Use `react-native-keychain` for all secrets.
-- ❌ **iOS Keychain without proper accessibility flags:** `kSecAttrAccessibleAlways` means the token is accessible even when the device is locked and when backed up to iCloud. Use `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` for auth tokens — accessible only when device is unlocked, never backed up.
-- ❌ **Treating EncryptedSharedPreferences as equally secure on all Android devices:** Android Keystore hardware-backing requires API level 18+ (TEE) or 23+ (mandatory hardware). On devices without a hardware TEE, keys are stored in software — still better than plaintext, but not hardware-backed. Check `KeyInfo.isInsideSecureHardware()`.
+- ❌ **Storing access tokens in AsyncStorage (React Native):** AsyncStorage is unencrypted and accessible on rooted devices. Use `react-native-keychain` or `expo-secure-store` which wrap platform Keychain/Keystore.
+- ❌ **Not setting Keychain accessibility options correctly:** Default iOS Keychain item accessibility `kSecAttrAccessibleAlways` means data is accessible even when device is locked. Use `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` for sensitive tokens.
+- ❌ **Forgetting token rotation:** Even securely stored tokens can be exfiltrated via runtime memory inspection or screenshot exploits. Implement short-lived access tokens (15 min) and long-lived refresh tokens (90 days with rotation). Refresh token rotation means a stolen refresh token becomes invalid after first use.
 
 ### Concept Reference
-→ [Mobile Security](../../../mobile/concepts/mobile-security)
+→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)
 
 ---
 
-## Q6: How does Spotify preload 30 seconds of audio while conserving battery?
+## Q6: Spotify preloads 30s audio while conserving battery — WorkManager constraints and foreground service lifecycle
 
 **Role:** Staff | **Difficulty:** ⚫ | **Priority:** P2 | **Format:** Deep Dive
 
-> **What the interviewer is testing:** Whether you understand how a media-intensive app balances aggressive prefetching with battery and data constraints on both iOS and Android.
+> **What the interviewer is testing:** Whether you understand how to build a battery-efficient background worker with platform constraints for a high-value use case like media prefetching.
 
 ### Problem Constraints
 | Dimension | Value |
 |-----------|-------|
-| Goal | Preload next track's first 30 seconds before current track ends |
-| Constraint | Do not drain battery on background preload |
-| Constraint | Respect user's data limits (no large preload on cellular) |
-| Constraint | iOS background execution limits (App Nap, background time budget) |
-| Android | Foreground service required for background audio + work |
+| Goal | Preload next track's first 30 seconds while user is listening to current track |
+| Constraint 1 | Cannot drain battery — user complains if Spotify causes excessive drain |
+| Constraint 2 | Android Doze blocks network in background — must work despite it |
+| Constraint 3 | App may be backgrounded during preload — process must survive |
+| Preload size | 30s × 320kbps MP3 = ~1.2MB per track preload |
 
-### iOS Preload Architecture
-
-```mermaid
-graph TD
-  Playing["Current track playing (foreground)\nSpotify has foreground audio session"]
-
-  Preload_iOS["Preload triggers at 80% through current track\n(30s before end at 128kbps = ~3.75MB)"]
-
-  URLSession["URLSession background download task\n(BTBackgroundMode: audio declared in Info.plist)\nOS can complete download even if app moves to background\nCompletion handler called when download finishes"]
-
-  Check["Constraint checks:\nif reachability.isOnWiFi → preload 30s\nif reachability.isCellular AND user.allowCellularStreaming → preload 15s\nif reachability.isCellular AND !user.allowCellularStreaming → no preload"]
-
-  Storage["Store preloaded segment in temp cache directory\n(NSURLCache or custom on-disk LRU)\nEvict old segments when disk cache > 150MB"]
-
-  Playing --> Preload_iOS
-  Preload_iOS --> Check
-  Check -->|"WiFi"| URLSession
-  URLSession --> Storage
-```
-
-### Android Foreground Service Architecture
+### Architecture
 
 ```mermaid
 graph TD
-  Service["MusicPlayerService (Android Foreground Service)\nType: mediaPlayback\nPersistent notification required\nSystem allows: network, CPU, audio focus"]
+  subgraph Preload["Spotify Preload Architecture"]
+    Player["Music Player — Foreground Service\nKeeps app process alive\nActive even when app is background\nShows persistent notification (required by Android)\nHolds WakeLock during audio playback"]
 
-  Preload_AND["Preload WorkManager Job\nConstraints: NetworkType.UNMETERED (WiFi only by default)\nRunPriority.HIGH (not BATTERY_SAVER)\nTriggered: 30s before track end via broadcast"]
+    Predictor["Next Track Predictor\nWhen current track at 70% completion\nPredict next track (playlist order or recommendation)\nSchedule preload WorkRequest"]
 
-  ExoPlayer["ExoPlayer CacheDataSource\nBuilt-in preloading support\npreCache(uri, bytesToCache=3_750_000)\nHandles partial cache, resuming partial downloads"]
+    WorkRequest["PreloadWorkRequest\nConstraints:\n  requiresNetwork: UNMETERED or CONNECTED\n  requiresBatteryNotLow: true (optional)\nType: OneTimeWorkRequest with INPUT_DATA trackId\nBackoff: EXPONENTIAL 30s minimum\nTag: preload-{trackId}"]
 
-  DiskCache["LRU disk cache\n(maxSize: 200MB)\nEvicts oldest segments when full\nSpotify typically caches 3-5 tracks ahead"]
+    Worker["PreloadWorker — coroutine-based\nDownload first 30 seconds of audio\nWrite to disk cache (ExoPlayer cache)\nReport progress via WorkInfo\nCancellable — user skips track = cancel worker"]
 
-  Service --> Preload_AND
-  Preload_AND --> ExoPlayer
-  ExoPlayer --> DiskCache
+    Cache["ExoPlayer Download Cache\nLRU eviction: max 500MB\nCacheDataSource reads from cache first\nSeamless playback even if worker cancelled mid-download"]
+  end
 
-  StateCheck["Preload state machine:\nPlaying → preload next track segment\nPaused > 5min → cancel pending preloads (battery)\nShuffle → preload top-3 probability next tracks\nLow battery (<20%) → no preload"]
-
-  DiskCache --> StateCheck
+  Player -->|"onTrackProgress(70%)"| Predictor
+  Predictor --> WorkRequest
+  WorkRequest --> Worker
+  Worker --> Cache
+  Player -->|"CacheDataSource"| Cache
 ```
 
-| Dimension | Aggressive preload | Conservative (Spotify's approach) |
-|-----------|---------------------|----------------------------------|
-| Preload trigger | Start at beginning of track | 30 seconds before end |
-| WiFi | Full track | 30-second segment |
-| Cellular | Full track | 15s or user-configurable |
-| Low battery (<20%) | Continue | Stop preloading |
-| Foreground/background | Background preload | Background via foreground service |
-| Disk cache | Unbounded | 200MB LRU |
+### Foreground Service for Continuous Playback
 
-### Recommended Answer
-Spotify's preloading strategy balances seamless playback (no buffering) with battery and data frugality through intelligent scheduling:
+```mermaid
+sequenceDiagram
+  participant App as Spotify App
+  participant FS as Foreground Service
+  participant OS as Android OS
+  participant WM as WorkManager
 
-**Preload trigger:** Not at track start — at 80% through the current track (typically ~30 seconds before end). Earlier preloading wastes resources if the user skips; later risks buffering if the network is slow.
+  App->>FS: startForeground(notification="Spotify — Song Title")
+  Note over FS: Foreground service started\nPersistent notification shown\nProcess protected from termination\nDoze does NOT kill foreground services
 
-**iOS implementation:** `URLSession` with background configuration (`URLSessionConfiguration.background(withIdentifier:)`) allows the OS to complete the download even if the app moves to background. Spotify declares `audio` background mode in Info.plist (required for background audio). The background session persists across app kills.
+  FS->>WM: enqueue PreloadWorkRequest(constraints=NetworkConnected)
+  Note over WM: WorkManager checks constraints\nDevice connected to WiFi — constraint met
 
-**Android implementation:** ExoPlayer's built-in `CacheDataSourceFactory` with `SimpleCache` handles the prefetch. The `MediaSessionService` (foreground service) keeps the process alive during playback — preload work runs on this process's threads without triggering Doze restrictions. `WorkManager` is used for non-real-time prefetch (e.g., podcast episode downloads) but not for the next-track preload (requires lower latency than WorkManager provides).
+  WM->>WM: Run PreloadWorker in background thread
+  WM->>WM: Download 1.2MB in ~2 seconds on WiFi
 
-**Network constraints:** Check WiFi vs cellular before preloading. WiFi: preload 30-second segment (~3.75MB at 128kbps). Cellular: respect user's "Download over Wi-Fi only" setting. Never preload if cellular unless explicitly allowed.
+  Note over OS: User locks screen, Doze mode after 30min
+  Note over FS: Foreground service exempt from Doze\nContinues playback uninterrupted
+  Note over WM: WorkManager workers respect Doze\nBut preload already complete before Doze activated
 
-**Battery optimisation:** Cancel active preloads when battery < 20% (use `BatteryManager.getBatteryProperty(BATTERY_PROPERTY_REMAINING_ENERGY)`). Resume preloading when battery returns above 30% (hysteresis to prevent oscillation).
+  App->>FS: User opens new track — cancel previous preload
+  FS->>WM: cancelAllWorkByTag("preload-old-track-id")
+  WM->>WM: Cancel running PreloadWorker
+  FS->>WM: enqueue PreloadWorkRequest for new next track
+```
+
+### Battery Optimization Strategy
+
+```mermaid
+graph TD
+  subgraph Battery["Battery Conservation Decisions"]
+    NetConstraint["Network constraint: UNMETERED (WiFi) preferred\nFallback: CONNECTED (any) if user on cellular plan\nCan be user-configurable in settings: WiFi only / any network"]
+
+    BatteryConstraint["Battery constraint: requiresBatteryNotLow\nSkip preload if battery < 15%\nUser on 10% battery listening to music does not expect preloads\nSave bandwidth AND battery"]
+
+    Timing["Timing: preload at 70% of current track\nNot at start of track (user might skip immediately)\nNot at 99% (too late — track ends before preload complete)\n70% = 3-4 minutes preload time for 5-min tracks"]
+
+    WifiOnly["WiFi-only preload: 1.2MB on WiFi = 0.03% battery\n1.2MB on LTE = 0.2% battery (6x more)\nDefault: WiFi only for preload\nUser toggle: allow cellular preload"]
+  end
+```
+
+| Feature | Implementation | Battery Impact |
+|---------|----------------|----------------|
+| Playback continuity | Foreground Service | Required — cannot optimize |
+| Next track preload | WorkManager + Network constraint | Minimal — WiFi only, 1.2MB |
+| Album art prefetch | Glide / Coil disk cache | Tiny — JPEGs < 50KB |
+| Lyrics prefetch | WorkManager, low priority | Tiny — text < 10KB |
+| Offline download | WorkManager, charging preferred | High — full track, user-initiated |
 
 ### What a great answer includes
-- [ ] Trigger at 80% through current track (not start) — balance between preparedness and waste
-- [ ] iOS: URLSession background download task (OS manages completion)
-- [ ] Android: ExoPlayer CacheDataSource + foreground service (avoids Doze)
-- [ ] Network constraint: WiFi full preload, cellular limited or disabled
-- [ ] Battery constraint: stop preloading at <20%, resume at >30% (hysteresis)
+- [ ] Foreground Service required for continuous audio playback — exempt from Doze
+- [ ] WorkManager for preload: constraint-based (network), guaranteed execution, cancellable
+- [ ] Trigger preload at 70% of current track — gives enough time before end without wasting resources on skipped tracks
+- [ ] WiFi-only constraint by default — reduces battery/data impact 6x vs LTE
+- [ ] ExoPlayer cache for preloaded audio — seamless playback uses cache-first data source
 
 ### Pitfalls
-- ❌ **Using WorkManager for next-track preload on Android:** WorkManager is designed for deferrable tasks. The OS may delay a WorkManager task by seconds or minutes. For "preload next track in the next 30 seconds," this is too unpredictable. Use direct async coroutines within the foreground service instead.
-- ❌ **No disk cache eviction:** Preloading 3 tracks ahead at 128kbps = ~30MB. Over 24 hours of listening = 900MB. Without LRU eviction, the preload cache fills the device. Always set a maximum cache size and evict least-recently-accessed segments.
-- ❌ **Preloading when Airplane Mode is on:** Attempting network requests in Airplane Mode fails and wastes battery retrying. Always check `ConnectivityManager.getActiveNetwork()` before initiating preload. Subscribe to network callbacks to resume preloading when connectivity is restored.
+- ❌ **Using background Service (not Foreground) for audio playback:** A regular background Service is killed by Android when memory is needed. Audio stops mid-song. Foreground Service with visible notification is required for continuous background audio on Android 8+.
+- ❌ **Not cancelling preload on track skip:** User skips the track. If the old PreloadWorker is not cancelled, it continues downloading the preloaded track that will never be played — wasting bandwidth and battery. Always cancel workers by tag when track changes.
+- ❌ **Preloading too aggressively:** Preloading 10 tracks ahead wastes 12MB of data per session. Users on metered connections or low-storage devices will have a bad experience. Preload only the next 1 track; expand to 3 tracks if user is on WiFi and has 200MB+ free storage.
 
 ### Concept Reference
-→ [Mobile Architecture](../../../mobile/concepts/mobile-architecture)
+→ [Mobile Architecture Patterns](../../../mobile-architecture/concepts/mobile-patterns)

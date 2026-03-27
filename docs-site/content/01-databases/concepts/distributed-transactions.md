@@ -1,15 +1,37 @@
 ---
-title: "Distributed Transactions: 2PC, Saga, and TCC at Production Scale"
-date: "2026-03-18"
-category: "system-design-playbook"
-subcategories: ["Distributed Transactions", "Saga Pattern", "2PC", "TCC", "Microservices"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead", "Staff Engineer", "Principal Engineer"]
-tags: ["distributed-transactions", "two-phase-commit", "saga", "tcc", "consistency", "microservices", "xa"]
-description: "When 2PC is an acceptable trade-off vs when Saga is the only viable option — with coordinator failure modes, TCC semantics, and production failure post-mortems."
-reading_time: "26 min"
-difficulty: "staff+"
-status: "published"
-featured_image: "/assets/diagrams/distributed-transactions.png"
+title: 'Distributed Transactions: 2PC, Saga, and TCC at Production Scale'
+date: '2026-03-18'
+category: system-design-playbook
+subcategories:
+  - Distributed Transactions
+  - Saga Pattern
+  - 2PC
+  - TCC
+  - Microservices
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+  - Principal Engineer
+tags:
+  - distributed-transactions
+  - two-phase-commit
+  - saga
+  - tcc
+  - consistency
+  - microservices
+  - xa
+description: >-
+  When 2PC is an acceptable trade-off vs when Saga is the only viable option —
+  with coordinator failure modes, TCC semantics, and production failure
+  post-mortems.
+reading_time: 26 min
+difficulty: staff+
+status: published
+featured_image: /assets/diagrams/distributed-transactions.png
+linked_from:
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
 ---
 
 # Distributed Transactions: 2PC, Saga, and TCC at Production Scale

@@ -19,14 +19,8 @@ see_poc:
   - interview-prep/practice-pocs/redis-session-management
   - interview-prep/practice-pocs/rbac-implementation
 linked_from:
-  - interview-prep/practice-pocs/api-key-management
-  - interview-prep/practice-pocs/jwt-authentication
-  - interview-prep/practice-pocs/oauth-flows
-  - interview-prep/practice-pocs/rbac-implementation
-  - interview-prep/security-encryption/jwt-vs-session
-  - interview-prep/security-encryption/mitm-prevention
-  - interview-prep/security-encryption/rsa-vs-aes
-  - interview-prep/system-design/api-gateway-pattern
+  - 08-security/concepts/compliance-architecture
+  - 12-interview-prep/system-design/fundamentals/api-gateway-pattern
 tags:
   - authentication
   - jwt

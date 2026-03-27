@@ -10,8 +10,7 @@ related_problems:
   - problems-at-scale/concurrency/duplicate-orders
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/case-studies/unique-id-generator
+linked_from: []
 tags:
   - postgresql
   - sequences

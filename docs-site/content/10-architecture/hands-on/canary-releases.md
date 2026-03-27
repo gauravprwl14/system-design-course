@@ -11,9 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/kubernetes-basics
-  - system-design/scalability/auto-scaling
+linked_from: []
 tags:
   - deployment
   - canary

@@ -10,12 +10,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/observability-monitoring
-  - problems-at-scale/availability/circuit-breaker-failure
-  - problems-at-scale/scalability/memory-leak-long-running
-  - system-design/monitoring/observability-slos
+linked_from: []
 tags:
   - slo
   - sla

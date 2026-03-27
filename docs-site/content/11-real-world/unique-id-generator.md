@@ -16,8 +16,7 @@ see_poc:
   - interview-prep/practice-pocs/database-sequences
   - interview-prep/practice-pocs/redis-counter
   - interview-prep/practice-pocs/redis-atomic-inventory
-linked_from:
-  - system-design/databases/sharding-strategies
+linked_from: []
 tags:
   - distributed-systems
   - unique-id

@@ -12,9 +12,7 @@ related_problems:
   - problems-at-scale/consistency/message-out-of-order
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/event-driven-architecture
-  - system-design/queues/kafka-vs-rabbitmq
+linked_from: []
 tags:
   - kafka
   - streams

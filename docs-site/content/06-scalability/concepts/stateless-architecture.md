@@ -17,23 +17,16 @@ see_poc:
   - interview-prep/practice-pocs/jwt-authentication
   - interview-prep/practice-pocs/load-balancer-round-robin
 linked_from:
-  - interview-prep/practice-pocs/jwt-authentication
-  - interview-prep/practice-pocs/redis-session-management
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/kubernetes-basics
-  - interview-prep/system-design/load-balancing-strategies
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/pdf-converter
-  - interview-prep/system-design/rate-limiting
-  - interview-prep/system-design/service-discovery
-  - interview-prep/system-design/video-conferencing
-  - interview-prep/system-design/websocket-architecture
-  - system-design/case-studies/chat-system
-  - system-design/case-studies/pastebin
-  - system-design/case-studies/url-shortener
-  - system-design/load-balancing/load-balancing-strategies
-  - system-design/scalability/auto-scaling
-  - system-design/security/authentication-at-scale
+  - 12-interview-prep/system-design/fundamentals/load-balancing-strategies
+  - 12-interview-prep/system-design/fundamentals/rate-limiting
+  - 12-interview-prep/system-design/messaging-and-streaming/pdf-converter
+  - >-
+    12-interview-prep/system-design/real-time-systems/collaborative-editing-google-docs
+  - 12-interview-prep/system-design/real-time-systems/online-gaming-backend
+  - 12-interview-prep/system-design/real-time-systems/video-conferencing
+  - 12-interview-prep/system-design/real-time-systems/websocket-architecture
+  - 12-interview-prep/system-design/scale-and-reliability/kubernetes-basics
+  - 12-interview-prep/system-design/scale-and-reliability/service-discovery
 tags:
   - stateless
   - sessions

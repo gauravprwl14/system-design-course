@@ -15,16 +15,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/uber-backend
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/redis-cluster-sharding
-  - interview-prep/practice-pocs/redis-persistence-strategies
-  - interview-prep/system-design/database-replication
-  - problems-at-scale/consistency/stale-read-after-write
-  - system-design/consistency/distributed-consensus
-  - system-design/databases/replication-basics
-  - system-design/scalability/chaos-engineering
-  - system-design/scalability/high-availability
-  - system-design/scalability/multi-region
+linked_from: []
 tags:
   - availability
   - split-brain

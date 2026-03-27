@@ -16,37 +16,11 @@ see_poc:
   - interview-prep/practice-pocs/database-crud
   - interview-prep/practice-pocs/postgresql-connection-pooling-replication
 linked_from:
-  - interview-prep/practice-pocs/database-check-constraints
-  - interview-prep/practice-pocs/database-crud
-  - interview-prep/practice-pocs/database-ctes
-  - interview-prep/practice-pocs/database-foreign-keys
-  - interview-prep/practice-pocs/database-read-replicas
-  - interview-prep/practice-pocs/database-sequences
-  - interview-prep/practice-pocs/database-testing
-  - interview-prep/practice-pocs/database-transactions
-  - interview-prep/practice-pocs/database-triggers
-  - interview-prep/practice-pocs/database-vacuum
-  - interview-prep/practice-pocs/database-views
-  - interview-prep/practice-pocs/database-window-functions
-  - interview-prep/practice-pocs/event-store-implementation
-  - interview-prep/practice-pocs/outbox-pattern
-  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
-  - interview-prep/system-design/database-replication
-  - interview-prep/system-design/database-sharding
-  - problems-at-scale/availability/split-brain
-  - problems-at-scale/concurrency/double-booking
-  - problems-at-scale/concurrency/race-condition-inventory
-  - problems-at-scale/data-integrity/orphaned-records
-  - problems-at-scale/performance/connection-pool-starvation
-  - system-design/case-studies/pastebin
-  - system-design/case-studies/url-shortener
-  - system-design/consistency/distributed-consensus
-  - system-design/databases/indexing-strategies
-  - system-design/databases/read-replicas
-  - system-design/databases/sharding-strategies
-  - system-design/performance/connection-pool-management
-  - system-design/scalability/high-availability
-  - system-design/scalability/multi-region
+  - 01-databases/concepts/write-ahead-log
+  - 12-interview-prep/system-design/storage-and-databases/database-replication
+  - 12-interview-prep/system-design/storage-and-databases/database-sharding
+  - >-
+    12-interview-prep/system-design/storage-and-databases/distributed-file-system
 tags:
   - databases
   - replication

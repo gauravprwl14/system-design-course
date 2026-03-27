@@ -23,29 +23,18 @@ see_poc:
   - interview-prep/practice-pocs/outbox-pattern
   - interview-prep/practice-pocs/redis-streams-event-sourcing
 linked_from:
-  - interview-prep/practice-pocs/cqrs-pattern
-  - interview-prep/practice-pocs/event-sourcing-basics
-  - interview-prep/practice-pocs/event-store-implementation
-  - interview-prep/practice-pocs/kafka-streams-real-time-processing
-  - interview-prep/practice-pocs/outbox-pattern
-  - interview-prep/practice-pocs/redis-lua-workflows
-  - interview-prep/practice-pocs/redis-pubsub
-  - interview-prep/practice-pocs/redis-pubsub-patterns
-  - interview-prep/practice-pocs/redis-streams
-  - interview-prep/practice-pocs/redis-streams-event-sourcing
-  - interview-prep/practice-pocs/saga-pattern
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/cqrs-pattern
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/saga-pattern
-  - interview-prep/system-design/social-media-feed
-  - problems-at-scale/concurrency/stock-order-matching-race
-  - problems-at-scale/consistency/message-out-of-order
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/scalability/cqrs
+  - 12-interview-prep/system-design/business-and-advanced/cqrs-pattern
+  - 12-interview-prep/system-design/business-and-advanced/saga-pattern
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
+  - >-
+    12-interview-prep/system-design/real-time-systems/collaborative-editing-google-docs
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices
 tags:
   - event-driven
   - kafka

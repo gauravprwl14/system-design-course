@@ -1,15 +1,36 @@
 ---
-title: "Saga Pattern: Choreography vs Orchestration for Distributed Transactions"
-date: "2026-03-18"
-category: "system-design-playbook"
-subcategories: ["distributed-systems", "microservices", "transactions", "patterns"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead", "Staff Engineer", "Principal Engineer"]
-tags: ["saga", "distributed-transactions", "choreography", "orchestration", "compensating-transactions", "microservices", "eventual-consistency"]
-description: "Distributed transactions without 2PC: how to choose between choreography and orchestration sagas, design compensating transactions, and avoid the tracing nightmare at 10+ services."
-reading_time: "22 min"
-difficulty: "staff+"
-status: "published"
-featured_image: "/assets/diagrams/saga-pattern-deep-dive.png"
+title: 'Saga Pattern: Choreography vs Orchestration for Distributed Transactions'
+date: '2026-03-18'
+category: system-design-playbook
+subcategories:
+  - distributed-systems
+  - microservices
+  - transactions
+  - patterns
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+  - Principal Engineer
+tags:
+  - saga
+  - distributed-transactions
+  - choreography
+  - orchestration
+  - compensating-transactions
+  - microservices
+  - eventual-consistency
+description: >-
+  Distributed transactions without 2PC: how to choose between choreography and
+  orchestration sagas, design compensating transactions, and avoid the tracing
+  nightmare at 10+ services.
+reading_time: 22 min
+difficulty: staff+
+status: published
+featured_image: /assets/diagrams/saga-pattern-deep-dive.png
+linked_from:
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
 ---
 
 # Saga Pattern: Choreography vs Orchestration for Distributed Transactions

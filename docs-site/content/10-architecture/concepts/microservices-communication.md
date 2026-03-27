@@ -18,13 +18,11 @@ see_poc:
   - interview-prep/practice-pocs/kafka-basics-producer-consumer
   - interview-prep/practice-pocs/service-discovery
 linked_from:
-  - interview-prep/practice-pocs/contract-testing
-  - interview-prep/practice-pocs/grpc-protocol-buffers
-  - interview-prep/practice-pocs/service-discovery
-  - interview-prep/system-design/api-design-rest-graphql-grpc
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/service-discovery
+  - 12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices
+  - 12-interview-prep/system-design/scale-and-reliability/service-discovery
 tags:
   - microservices
   - grpc

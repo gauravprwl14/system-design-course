@@ -12,20 +12,7 @@ related_problems:
   - problems-at-scale/concurrency/race-condition-inventory
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/caching-cdn/redis-fundamentals
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/ticket-booking-system
-  - problems-at-scale/availability/split-brain
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/concurrency/double-booking
-  - problems-at-scale/concurrency/double-charge-payment
-  - problems-at-scale/concurrency/race-condition-inventory
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/ticket-booking
-  - system-design/case-studies/uber-backend
-  - system-design/consistency/distributed-consensus
+linked_from: []
 tags:
   - redis
   - distributed-lock

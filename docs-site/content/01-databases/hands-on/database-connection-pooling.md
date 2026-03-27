@@ -10,12 +10,7 @@ related_problems:
   - problems-at-scale/performance/connection-pool-starvation
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/database-storage/connection-pooling
-  - interview-prep/system-design/high-concurrency-api
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/connection-pool-starvation
-  - system-design/performance/connection-pool-management
+linked_from: []
 tags:
   - postgresql
   - connection-pooling

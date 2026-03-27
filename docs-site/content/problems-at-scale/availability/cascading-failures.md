@@ -1,14 +1,78 @@
 ---
-title: "Cascading Failures: When One Slow Service Takes Down 23"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["availability", "resilience"]
-personas: ["Senior Engineer", "Tech Lead", "Staff Engineer"]
-tags: ["cascading failures", "circuit breaker", "bulkhead", "thread pool", "timeout", "resilience", "microservices"]
-description: "A single slow database query in Recommendation Service started a chain reaction. By 2:19 AM, 23 microservices were down. Understand why thread pools are the transmission mechanism of failure — and how to stop the cascade."
-reading_time: "22 min"
-difficulty: "senior"
-status: "published"
+title: 'Cascading Failures: When One Slow Service Takes Down 23'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - availability
+  - resilience
+personas:
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+tags:
+  - cascading failures
+  - circuit breaker
+  - bulkhead
+  - thread pool
+  - timeout
+  - resilience
+  - microservices
+description: >-
+  A single slow database query in Recommendation Service started a chain
+  reaction. By 2:19 AM, 23 microservices were down. Understand why thread pools
+  are the transmission mechanism of failure — and how to stop the cascade.
+reading_time: 22 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/failures/connection-pool-starvation
+  - 01-databases/failures/memory-leak-long-running
+  - 04-messaging/concepts/message-queue-basics
+  - 04-messaging/hands-on/backpressure-queues
+  - 05-distributed-systems/concepts/disaster-recovery-design
+  - 06-scalability/concepts/high-availability
+  - 06-scalability/hands-on/nginx-load-balancer
+  - 06-scalability/hands-on/service-discovery
+  - 09-observability/concepts/observability-slos
+  - 09-observability/failures/thread-pool-exhaustion
+  - 09-observability/hands-on/distributed-tracing
+  - 09-observability/hands-on/health-check-patterns
+  - 09-observability/hands-on/slo-dashboard
+  - 10-architecture/concepts/async-processing
+  - 10-architecture/concepts/backpressure
+  - 10-architecture/concepts/chaos-engineering
+  - 10-architecture/concepts/circuit-breaker
+  - 10-architecture/concepts/event-driven-architecture
+  - 10-architecture/concepts/microservices-architecture
+  - 10-architecture/concepts/microservices-communication
+  - 10-architecture/concepts/timeouts-backpressure
+  - 10-architecture/failures/circuit-breaker-failure
+  - 10-architecture/failures/retry-storm
+  - 10-architecture/failures/split-brain
+  - 10-architecture/failures/thundering-herd
+  - 10-architecture/failures/timeout-domino-effect
+  - 10-architecture/hands-on/blue-green-deployment
+  - 10-architecture/hands-on/canary-releases
+  - 10-architecture/hands-on/chaos-engineering
+  - 10-architecture/hands-on/circuit-breaker
+  - 10-architecture/hands-on/graceful-degradation
+  - 10-architecture/hands-on/retry-backoff
+  - 10-architecture/hands-on/timeout-configuration
+  - 11-real-world/netflix
+  - 11-real-world/notification-system
+  - 11-real-world/uber-backend
+  - 12-interview-prep/quick-reference/aws-cloud/sqs-sns-eventbridge
+  - 12-interview-prep/system-design/fundamentals/api-gateway-pattern
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
+  - 12-interview-prep/system-design/fundamentals/high-concurrency-api
+  - 12-interview-prep/system-design/real-time-systems/video-conferencing
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - 12-interview-prep/system-design/scale-and-reliability/kubernetes-basics
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/observability-monitoring
+  - 12-interview-prep/system-design/scale-and-reliability/service-discovery
 ---
 
 # Cascading Failures: When One Slow Service Takes Down 23

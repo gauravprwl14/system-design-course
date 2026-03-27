@@ -12,9 +12,7 @@ related_problems:
   - problems-at-scale/performance/thread-pool-exhaustion
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - system-design/queues/kafka-vs-rabbitmq
+linked_from: []
 tags:
   - kafka
   - performance

@@ -15,10 +15,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/connection-leak-detection
-  - interview-prep/system-design/kubernetes-basics
-  - system-design/scalability/stateless-architecture
+linked_from: []
 tags:
   - scalability
   - memory-leak

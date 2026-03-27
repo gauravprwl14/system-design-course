@@ -19,10 +19,7 @@ see_poc:
   - interview-prep/practice-pocs/event-sourcing-basics
   - interview-prep/practice-pocs/database-materialized-views
 linked_from:
-  - interview-prep/practice-pocs/cqrs-pattern
-  - interview-prep/practice-pocs/event-sourcing-basics
-  - interview-prep/practice-pocs/event-store-implementation
-  - interview-prep/system-design/cqrs-pattern
+  - 12-interview-prep/system-design/business-and-advanced/cqrs-pattern
 tags:
   - cqrs
   - event-sourcing

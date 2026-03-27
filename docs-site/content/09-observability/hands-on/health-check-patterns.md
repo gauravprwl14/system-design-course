@@ -11,19 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/kubernetes-basics
-  - interview-prep/system-design/observability-monitoring
-  - interview-prep/system-design/service-discovery
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/circuit-breaker-failure
-  - problems-at-scale/scalability/memory-leak-long-running
-  - system-design/monitoring/observability-slos
-  - system-design/scalability/auto-scaling
-  - system-design/scalability/chaos-engineering
-  - system-design/scalability/high-availability
-  - system-design/scalability/microservices-architecture
+linked_from: []
 tags:
   - health-checks
   - kubernetes

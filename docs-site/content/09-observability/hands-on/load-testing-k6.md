@@ -11,9 +11,7 @@ related_problems:
   - problems-at-scale/availability/thundering-herd
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/scalability/auto-scaling
-  - system-design/scalability/scaling-basics
+linked_from: []
 tags:
   - load-testing
   - k6

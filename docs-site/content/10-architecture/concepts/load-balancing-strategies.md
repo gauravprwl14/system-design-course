@@ -20,30 +20,18 @@ see_poc:
   - interview-prep/practice-pocs/load-balancer-consistent-hashing
   - interview-prep/practice-pocs/nginx-load-balancer
 linked_from:
-  - interview-prep/aws-cloud/load-balancer
-  - interview-prep/practice-pocs/api-gateway-rate-limiting
-  - interview-prep/practice-pocs/blue-green-deployment
-  - interview-prep/practice-pocs/canary-releases
-  - interview-prep/practice-pocs/health-check-patterns
-  - interview-prep/practice-pocs/kafka-consumer-groups-load-balancing
-  - interview-prep/practice-pocs/load-balancer-consistent-hashing
-  - interview-prep/practice-pocs/load-balancer-least-connections
-  - interview-prep/practice-pocs/load-balancer-round-robin
-  - interview-prep/practice-pocs/nginx-load-balancer
-  - interview-prep/system-design/api-gateway-pattern
-  - interview-prep/system-design/audio-streaming-spotify
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/high-concurrency-api
-  - interview-prep/system-design/kubernetes-basics
-  - interview-prep/system-design/load-balancing-strategies
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/service-discovery
-  - interview-prep/system-design/video-conferencing
-  - interview-prep/system-design/websocket-architecture
-  - system-design/case-studies/news-feed
-  - system-design/case-studies/uber-backend
-  - system-design/case-studies/url-shortener
-  - system-design/scalability/high-availability
+  - 12-interview-prep/system-design/fundamentals/api-gateway-pattern
+  - 12-interview-prep/system-design/fundamentals/high-concurrency-api
+  - 12-interview-prep/system-design/fundamentals/load-balancing-strategies
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/audio-streaming-spotify
+  - 12-interview-prep/system-design/real-time-systems/online-gaming-backend
+  - 12-interview-prep/system-design/real-time-systems/video-conferencing
+  - 12-interview-prep/system-design/real-time-systems/websocket-architecture
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
+  - 12-interview-prep/system-design/scale-and-reliability/kubernetes-basics
+  - 12-interview-prep/system-design/scale-and-reliability/service-discovery
 tags:
   - load-balancing
   - nginx

@@ -10,11 +10,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/caching-cdn/redis-fundamentals
-  - interview-prep/security-encryption/jwt-vs-session
-  - system-design/scalability/stateless-architecture
-  - system-design/security/authentication-at-scale
+linked_from: []
 tags:
   - redis
   - sessions

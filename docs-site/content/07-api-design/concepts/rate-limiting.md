@@ -19,16 +19,9 @@ see_poc:
   - interview-prep/practice-pocs/api-gateway-rate-limiting
   - interview-prep/practice-pocs/redis-lua-rate-limiting
 linked_from:
-  - interview-prep/practice-pocs/api-gateway-rate-limiting
-  - interview-prep/practice-pocs/api-key-management
-  - interview-prep/practice-pocs/rate-limiting-algorithms
-  - interview-prep/practice-pocs/redis-lua-rate-limiting
-  - interview-prep/practice-pocs/redis-rate-limiting
-  - interview-prep/system-design/api-design-rest-graphql-grpc
-  - interview-prep/system-design/api-gateway-pattern
-  - interview-prep/system-design/rate-limiting
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/rate-limiter
+  - 12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc
+  - 12-interview-prep/system-design/fundamentals/api-gateway-pattern
+  - 12-interview-prep/system-design/fundamentals/rate-limiting
 tags:
   - rate-limiting
   - api-protection
