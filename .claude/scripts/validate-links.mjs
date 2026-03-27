@@ -224,14 +224,21 @@ async function validateMarkdownLinks() {
 // ─── main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
+  // --meta-only: only validate _meta.js keys (used in prebuild — these cause actual build failures)
+  // --strict:    validate everything and exit 1 on any error (default for standalone run)
+  // default:     validate everything, warn on markdown links, exit 1 only on _meta.js errors
+  const args = process.argv.slice(2);
+  const metaOnly = args.includes('--meta-only');
+  const strict = args.includes('--strict');
+
   console.log('Validating internal links in docs-site/content/ ...\n');
 
-  const [metaResult, linkResult] = await Promise.all([
-    validateMetaFiles(),
-    validateMarkdownLinks(),
-  ]);
+  const metaResult = await validateMetaFiles();
+  const linkResult = metaOnly ? { errors: [], count: 0 } : await validateMarkdownLinks();
 
-  const allErrors = [...metaResult.errors, ...linkResult.errors];
+  const metaErrors = metaResult.errors;
+  const linkErrors = linkResult.errors;
+  const allErrors = [...metaErrors, ...linkErrors];
 
   if (allErrors.length > 0) {
     for (const err of allErrors) {
@@ -241,11 +248,16 @@ async function main() {
   }
 
   const broken = allErrors.length;
+  const mode = metaOnly ? ' [meta-only mode]' : strict ? ' [strict mode]' : '';
   console.log(
-    `✓ ${linkResult.count} files checked, ${metaResult.count} _meta.js files checked, ${broken} broken links found`
+    `✓ ${linkResult.count} files checked, ${metaResult.count} _meta.js files checked, ${broken} broken links found${mode}`
   );
 
-  process.exit(broken > 0 ? 1 : 0);
+  // In prebuild (meta-only): only fail on _meta.js errors (these break the Next.js build)
+  // In strict mode: fail on any error
+  // Default standalone: warn on markdown link errors, fail only on _meta.js errors
+  const fatalCount = strict ? broken : metaErrors.length;
+  process.exit(fatalCount > 0 ? 1 : 0);
 }
 
 main().catch((err) => {

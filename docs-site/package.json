@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "validate-links": "node ../.claude/scripts/validate-links.mjs",
-    "prebuild": "npm run validate-links",
+    "validate-links:strict": "node ../.claude/scripts/validate-links.mjs --strict",
+    "prebuild": "node ../.claude/scripts/validate-links.mjs --meta-only",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
     "build:clean": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
     "postbuild": "pagefind --site .next/server/app && sudo cp -r .next/server/app/pagefind/. /var/www/html/system-design-pagefind/ && sudo chmod -R 755 /var/www/html/system-design-pagefind/",
