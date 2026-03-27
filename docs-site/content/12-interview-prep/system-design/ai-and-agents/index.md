@@ -3,6 +3,8 @@ title: "AI Agents & LLM Systems — Interview Questions"
 description: "System design interview questions covering AI agent architectures, RAG systems, tool-calling APIs, and LLM-powered applications"
 ---
 
+[← Interview Prep](/12-interview-prep) / [System Design](/12-interview-prep/system-design) / AI Agents & LLM Systems
+
 # AI Agents & LLM Systems — Interview Overview
 
 AI agent and LLM questions are increasingly common in system design interviews at top tech companies. Teams building products on top of large language models face novel engineering challenges that traditional system design frameworks don't fully address: non-determinism, prompt drift, token-based cost models, and safety requirements around autonomous actions.
@@ -46,15 +48,15 @@ graph TD
 
 ## Questions at a Glance
 
-| # | Question | Article | Difficulty |
-|---|----------|---------|-----------|
-| 1 | Design a system where an AI agent can autonomously complete multi-step tasks | [Agent Loop Design](./agent-loop-design) | 🔴 Advanced |
-| 2 | Design the tool-calling layer for an AI agent that can call APIs, read files, and execute code | [Tool Calling Patterns](./tool-calling-patterns) | 🟡 Intermediate |
-| 3 | Design a system where multiple AI agents coordinate to complete a complex research task | [Multi-Agent Coordination](./multi-agent-coordination) | 🔴 Advanced |
-| 4 | Design a system that lets users ask questions about a 10-million-document knowledge base | [RAG Architecture](./rag-architecture) | 🟡 Intermediate |
-| 5 | Design the API layer for a product that serves 1M daily users making LLM-powered requests | [Designing APIs on LLMs](./llm-api-design) | 🟡 Intermediate |
-| 6 | How do you monitor and evaluate an AI agent in production? | [Agent Observability & Evals](./agent-observability) | 🟡 Intermediate |
-| 7 | Your AI agent reads user emails and takes actions. How do you prevent prompt injection? | [Prompt Injection Defense](./prompt-injection-defense) | 🔴 Advanced |
+| # | Question | Article | Difficulty | Why It Matters |
+|---|----------|---------|-----------|---------------|
+| 1 | Design a system where an AI agent can autonomously complete multi-step tasks | [Agent Loop Design](./agent-loop-design) | 🔴 Advanced | Core pattern behind every autonomous AI product |
+| 2 | Design the tool-calling layer for an AI agent that can call APIs, read files, and execute code | [Tool Calling Patterns](./tool-calling-patterns) | 🔴 Advanced | Sandboxing & idempotency separate safe from dangerous agents |
+| 3 | Design a system where multiple AI agents coordinate to complete a complex research task | [Multi-Agent Coordination](./multi-agent-coordination) | ⚫ Senior | Orchestrator/worker topology is now a standard architecture question |
+| 4 | Design a system that lets users ask questions about a 10-million-document knowledge base | [RAG Architecture](./rag-architecture) | 🔴 Advanced | Most common LLM system design question in 2024–2026 |
+| 5 | Design the API layer for a product that serves 1M daily users making LLM-powered requests | [Designing APIs on LLMs](./llm-api-design) | 🔴 Advanced | Cost and latency management at scale is non-trivial |
+| 6 | How do you monitor and evaluate an AI agent in production? | [Agent Observability & Evals](./agent-observability) | ⚫ Senior | LLM systems need evals, not just metrics — a common gap |
+| 7 | Your AI agent reads user emails and takes actions. How do you prevent prompt injection? | [Prompt Injection Defense](./prompt-injection-defense) | 🔴 Advanced | Top security risk for any agent with real-world write access |
 
 ---
 
@@ -138,3 +140,7 @@ If you have limited time, prioritize in this order:
 5. [Multi-Agent Coordination](./multi-agent-coordination) — for senior/staff roles
 6. [Agent Observability](./agent-observability) — for SRE / reliability-focused roles
 7. [Prompt Injection Defense](./prompt-injection-defense) — for security-focused or autonomous agent roles
+
+---
+
+← [Business & Advanced Patterns](../business-and-advanced) | ↑ [System Design](../)
