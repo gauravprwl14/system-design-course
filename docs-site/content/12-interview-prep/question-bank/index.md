@@ -16,17 +16,17 @@ title: "Interview Question Bank — Master Index"
 
 | Topic | Files | Questions (est.) | Key Areas |
 |-------|-------|-----------------|-----------|
-| [System Design](./system-design/) | 20 | ~120 | URL shortener, chat, payment, video, ride sharing, news feed, crawler, monitoring |
-| [Databases](./databases/) | 15 | ~90 | SQL vs NoSQL, sharding, replication, indexing, ACID, migrations, multi-tenancy |
-| [Distributed Systems](./distributed-systems/) | 12 | ~70 | CAP theorem, consensus, saga, 2PC, event sourcing, gossip, vector clocks |
-| [Caching & Performance](./caching-performance/) | 10 | ~60 | Invalidation, Redis patterns, CDN, stampede, eviction, write-behind, warming |
-| [APIs & Networking](./apis-networking/) | 8 | ~50 | REST, GraphQL, gRPC, WebSockets, versioning, gateway, HTTP, DNS |
-| [Security & Auth](./security-auth/) | 7 | ~45 | Authentication, RBAC/ABAC, OAuth2, JWT, encryption, API security, zero trust |
-| [AI/ML Systems](./ai-ml-systems/) | 8 | ~50 | ML pipelines, LLM design, RAG, vector DBs, model serving, feature stores, agents |
-| [Cloud & DevOps](./cloud-devops/) | 7 | ~40 | Kubernetes, CI/CD, AWS, IaC, blue-green, containers, cost optimization |
-| [Algorithms & Patterns](./algorithms-patterns/) | 6 | ~35 | Consistent hashing, Bloom filters, rate limiting, top-K, search, approximation |
-| [Observability & SRE](./observability-sre/) | 5 | ~35 | Tracing, metrics, logs, SLOs, incident response |
-| [Mobile Architecture](./mobile-architecture/) | 2 | ~12 | Offline-first, sync, performance, push notifications |
+| [System Design](/12-interview-prep/question-bank/system-design) | 20 | ~120 | URL shortener, chat, payment, video, ride sharing, news feed, crawler, monitoring |
+| [Databases](/12-interview-prep/question-bank/databases) | 15 | ~90 | SQL vs NoSQL, sharding, replication, indexing, ACID, migrations, multi-tenancy |
+| [Distributed Systems](/12-interview-prep/question-bank/distributed-systems) | 12 | ~70 | CAP theorem, consensus, saga, 2PC, event sourcing, gossip, vector clocks |
+| [Caching & Performance](/12-interview-prep/question-bank/caching-performance) | 10 | ~60 | Invalidation, Redis patterns, CDN, stampede, eviction, write-behind, warming |
+| [APIs & Networking](/12-interview-prep/question-bank/apis-networking) | 8 | ~50 | REST, GraphQL, gRPC, WebSockets, versioning, gateway, HTTP, DNS |
+| [Security & Auth](/12-interview-prep/question-bank/security-auth) | 7 | ~45 | Authentication, RBAC/ABAC, OAuth2, JWT, encryption, API security, zero trust |
+| [AI/ML Systems](/12-interview-prep/question-bank/ai-ml-systems) | 8 | ~50 | ML pipelines, LLM design, RAG, vector DBs, model serving, feature stores, agents |
+| [Cloud & DevOps](/12-interview-prep/question-bank/cloud-devops) | 7 | ~40 | Kubernetes, CI/CD, AWS, IaC, blue-green, containers, cost optimization |
+| [Algorithms & Patterns](/12-interview-prep/question-bank/algorithms-patterns) | 6 | ~35 | Consistent hashing, Bloom filters, rate limiting, top-K, search, approximation |
+| [Observability & SRE](/12-interview-prep/question-bank/observability-sre) | 5 | ~35 | Tracing, metrics, logs, SLOs, incident response |
+| [Mobile Architecture](/12-interview-prep/question-bank/mobile-architecture) | 2 | ~12 | Offline-first, sync, performance, push notifications |
 
 **Total: 100 topic files · ~600+ individual questions**
 
@@ -54,32 +54,32 @@ title: "Interview Question Bank — Master Index"
 ## Top P0 Questions by Topic
 
 ### System Design (Scenario Format)
-1. [Design a URL Shortener](./system-design/design-url-shortener) — 100M URLs, 10K redirects/sec
-2. [Design a Notification System](./system-design/design-notification-system) — 10M push/email/SMS/day
-3. [Design a Rate Limiter](./system-design/design-rate-limiter) — 10K req/sec, sliding window
-4. [Design a Chat System](./system-design/design-chat-system) — 1M concurrent users, WebSocket
-5. [Design a News Feed](./system-design/design-news-feed) — Instagram/Twitter at 500M users
+1. [Design a URL Shortener](/12-interview-prep/question-bank/system-design/design-url-shortener) — 100M URLs, 10K redirects/sec
+2. [Design a Notification System](/12-interview-prep/question-bank/system-design/design-notification-system) — 10M push/email/SMS/day
+3. [Design a Rate Limiter](/12-interview-prep/question-bank/system-design/design-rate-limiter) — 10K req/sec, sliding window
+4. [Design a Chat System](/12-interview-prep/question-bank/system-design/design-chat-system) — 1M concurrent users, WebSocket
+5. [Design a News Feed](/12-interview-prep/question-bank/system-design/design-news-feed) — Instagram/Twitter at 500M users
 
 ### Distributed Systems (Deep Dive Format)
-1. [CAP Theorem Real World](./distributed-systems/cap-theorem-real-world) — CP vs AP in production
-2. [Consensus Algorithms](./distributed-systems/consensus-algorithms) — Paxos vs Raft
-3. [Saga Pattern](./distributed-systems/saga-pattern) — distributed transactions for microservices
-4. [Idempotency at Scale](./distributed-systems/idempotency-at-scale) — payment dedup, Stripe
-5. [Event Sourcing & CQRS](./distributed-systems/event-sourcing-cqrs) — audit log, temporal queries
+1. [CAP Theorem Real World](/12-interview-prep/question-bank/distributed-systems/cap-theorem-real-world) — CP vs AP in production
+2. [Consensus Algorithms](/12-interview-prep/question-bank/distributed-systems/consensus-algorithms) — Paxos vs Raft
+3. [Saga Pattern](/12-interview-prep/question-bank/distributed-systems/saga-pattern) — distributed transactions for microservices
+4. [Idempotency at Scale](/12-interview-prep/question-bank/distributed-systems/idempotency-at-scale) — payment dedup, Stripe
+5. [Event Sourcing & CQRS](/12-interview-prep/question-bank/distributed-systems/event-sourcing-cqrs) — audit log, temporal queries
 
 ### Databases (Quick Answer + Deep Dive)
-1. [SQL vs NoSQL Decisions](./databases/sql-vs-nosql-decisions) — decision matrix with numbers
-2. [Database Sharding Deep Dive](./databases/database-sharding-deep-dive) — consistent hashing, hot spots
-3. [Indexing Strategies](./databases/indexing-strategies) — B-tree, hash, GIN, partial, covering
-4. [Transactions & ACID](./databases/transactions-acid-base) — isolation levels, phantom reads
-5. [Database Replication Patterns](./databases/database-replication-patterns) — sync vs async, lag
+1. [SQL vs NoSQL Decisions](/12-interview-prep/question-bank/databases/sql-vs-nosql-decisions) — decision matrix with numbers
+2. [Database Sharding Deep Dive](/12-interview-prep/question-bank/databases/database-sharding-deep-dive) — consistent hashing, hot spots
+3. [Indexing Strategies](/12-interview-prep/question-bank/databases/indexing-strategies) — B-tree, hash, GIN, partial, covering
+4. [Transactions & ACID](/12-interview-prep/question-bank/databases/transactions-acid-base) — isolation levels, phantom reads
+5. [Database Replication Patterns](/12-interview-prep/question-bank/databases/database-replication-patterns) — sync vs async, lag
 
 ### Security & Auth (Quick Answer)
-1. [Authentication Patterns](./security-auth/authentication-patterns) — bcrypt, MFA, WebAuthn
-2. [JWT vs Sessions vs Cookies](./security-auth/jwt-sessions-cookies) — stateless trade-offs, CSRF
-3. [OAuth2 & OIDC](./security-auth/oauth2-oidc) — 4 flows, PKCE, token refresh
-4. [Encryption At Rest & In Transit](./security-auth/encryption-at-rest-transit) — TLS 1.3, KMS, envelope
-5. [API Security Patterns](./security-auth/api-security-patterns) — SQL injection, XSS, OWASP
+1. [Authentication Patterns](/12-interview-prep/question-bank/security-auth/authentication-patterns) — bcrypt, MFA, WebAuthn
+2. [JWT vs Sessions vs Cookies](/12-interview-prep/question-bank/security-auth/jwt-sessions-cookies) — stateless trade-offs, CSRF
+3. [OAuth2 & OIDC](/12-interview-prep/question-bank/security-auth/oauth2-oidc) — 4 flows, PKCE, token refresh
+4. [Encryption At Rest & In Transit](/12-interview-prep/question-bank/security-auth/encryption-at-rest-transit) — TLS 1.3, KMS, envelope
+5. [API Security Patterns](/12-interview-prep/question-bank/security-auth/api-security-patterns) — SQL injection, XSS, OWASP
 
 ---
 
