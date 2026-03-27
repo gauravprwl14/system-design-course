@@ -19,6 +19,7 @@ import { glob } from 'glob';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '../../');
 const CONTENT_DIR = join(REPO_ROOT, 'docs-site/content');
+const BASE_PATH = '/system-design';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -164,6 +165,7 @@ function resolveMarkdownUrl(url, sourceFilePath) {
 
 async function validateMarkdownLinks() {
   const errors = [];
+  const warnings = [];
   const mdFiles = await glob('docs-site/content/**/*.md', {
     cwd: REPO_ROOT,
     absolute: true,
@@ -181,6 +183,7 @@ async function validateMarkdownLinks() {
     // Remove code blocks to avoid false positives on code like (**params) or [key](value)
     const content = stripCodeBlocks(rawContent);
     const lines = content.split('\n');
+    const isIndexFile = filePath.endsWith('/index.md');
 
     let inInlineCode = false; // simple per-line inline code tracking
 
@@ -201,6 +204,15 @@ async function validateMarkdownLinks() {
 
         if (shouldSkipUrl(rawUrl)) continue;
 
+        // Gap 2: detect links that embed the basePath prefix
+        if (rawUrl.startsWith(BASE_PATH + '/') || rawUrl === BASE_PATH) {
+          const relSource = relative(REPO_ROOT, filePath);
+          errors.push(
+            `[link] BROKEN: ${relSource}:${currentLineNum} → ${rawUrl} — link embeds basePath prefix (use ${rawUrl.slice(BASE_PATH.length) || '/'} instead)`
+          );
+          continue;
+        }
+
         const resolvedPath = resolveMarkdownUrl(rawUrl, filePath);
         if (!resolvedPath) continue;
 
@@ -213,12 +225,28 @@ async function validateMarkdownLinks() {
           errors.push(
             `[link] BROKEN: ${relSource}:${currentLineNum} → ${rawUrl} (resolved: ${relResolved}.md)`
           );
+        } else if (isIndexFile && rawUrl.startsWith('./')) {
+          // Gap 1: relative ./subdir links in index pages are risky at runtime
+          // The browser resolves ./ relative to the URL, which for index pages
+          // (served without a trailing slash) means the PARENT directory, causing double-path 404s.
+          const afterDotSlash = rawUrl.slice(2).split('/')[0].split('#')[0].split('?')[0];
+          if (afterDotSlash) {
+            // Check if the segment is a subdirectory (not a sibling file in same dir)
+            const fileDir = dirname(filePath);
+            const potentialSubdir = join(fileDir, afterDotSlash);
+            if (isDirSync(potentialSubdir)) {
+              const relSource = relative(REPO_ROOT, filePath);
+              warnings.push(
+                `[warn] RISKY: ${relSource}:${currentLineNum} → ${rawUrl} — relative link in index page may 404 at runtime (use absolute path instead)`
+              );
+            }
+          }
         }
       }
     }
   }
 
-  return { errors, count: mdFiles.length };
+  return { errors, warnings, count: mdFiles.length };
 }
 
 // ─── main ─────────────────────────────────────────────────────────────────────
@@ -234,10 +262,11 @@ async function main() {
   console.log('Validating internal links in docs-site/content/ ...\n');
 
   const metaResult = await validateMetaFiles();
-  const linkResult = metaOnly ? { errors: [], count: 0 } : await validateMarkdownLinks();
+  const linkResult = metaOnly ? { errors: [], warnings: [], count: 0 } : await validateMarkdownLinks();
 
   const metaErrors = metaResult.errors;
   const linkErrors = linkResult.errors;
+  const linkWarnings = linkResult.warnings;
   const allErrors = [...metaErrors, ...linkErrors];
 
   if (allErrors.length > 0) {
@@ -247,10 +276,18 @@ async function main() {
     console.log('');
   }
 
+  if (linkWarnings.length > 0) {
+    for (const w of linkWarnings) {
+      console.log(w);
+    }
+    console.log('');
+  }
+
   const broken = allErrors.length;
+  const riskyCount = linkWarnings.length;
   const mode = metaOnly ? ' [meta-only mode]' : strict ? ' [strict mode]' : '';
   console.log(
-    `✓ ${linkResult.count} files checked, ${metaResult.count} _meta.js files checked, ${broken} broken links found${mode}`
+    `✓ ${linkResult.count} files checked, ${metaResult.count} _meta.js files checked, ${broken} broken links found, ${riskyCount} risky relative links (warnings)${mode}`
   );
 
   // In prebuild (meta-only): only fail on _meta.js errors (these break the Next.js build)
