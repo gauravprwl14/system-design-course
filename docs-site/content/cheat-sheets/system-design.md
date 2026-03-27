@@ -1168,4 +1168,110 @@ flowchart TD
 
 ---
 
+---
+
+## 16. Question-Bank: Algorithms & Patterns Deep Dives
+
+### Consistent Hashing
+**Consistent hashing** — minimizing key remapping when nodes are added/removed
+
+| | Modulo hashing (`key % N`) | Consistent hashing |
+|-|--------------------------|-------------------|
+| **Keys moved on node change** | ~(N-1)/N ≈ 90% | ~**1/N** ≈ 10% |
+| **Complexity** | O(1) | O(log N) with virtual nodes |
+| **Hot spots** | Uneven on hash collisions | Virtual nodes fix skew |
+| **Used by** | Simple caches | Cassandra, DynamoDB, Redis Cluster, Akamai |
+
+- **Key number**: Removing 1 of 10 nodes with modulo hashing moves **~90% of keys**; consistent hashing moves **~10%** — 9× less disruption
+- **Decision**: Always use consistent hashing (or virtual nodes variant) for distributed caches and data stores; modulo hashing only for toy projects
+- **Trap**: Consistent hashing without virtual nodes — non-uniform distribution causes hot spots; use 100–200 virtual nodes per physical node to even out the ring
+- → [Full article](../12-interview-prep/question-bank/algorithms-patterns/consistent-hashing)
+
+---
+
+### Bloom Filters & HyperLogLog
+**Probabilistic data structures** — set membership and cardinality estimation with tiny memory
+
+| Structure | Use case | Error type | Memory (1B elements) |
+|-----------|---------|-----------|---------------------|
+| **Bloom filter** | "Is X in the set?" | False positives only (no false negatives) | ~1.2 GB at 1% FPR |
+| **HyperLogLog** | "How many distinct X?" | ~0.81% estimation error | **<1.5 KB** |
+| **Count-Min Sketch** | "How often does X appear?" | Overcount only (bounded) | ~40 KB |
+
+- **Key number**: HyperLogLog estimates cardinality of **1 billion unique IPs** using **<1.5 KB** vs 4 GB for a HashSet — **1 million× smaller**
+- **Decision**: Bloom filter for "definitely not in DB" guard (skip expensive lookup); HyperLogLog for unique visitor count; Count-Min Sketch for top-N frequency estimation
+- **Trap**: Bloom filter false negatives are impossible, but false positives are tunable — a 1% FPR bloom filter at 1B elements still gives **10M false positives**; size the filter for your acceptable FPR
+- → [Full article](../12-interview-prep/question-bank/algorithms-patterns/bloom-filters-hyperloglog)
+
+---
+
+### Rate Limiting Algorithms
+**Rate limiting algorithms** — preventing API abuse with correct boundary handling
+
+| Algorithm | Memory | Boundary burst | Smoothness | Use when |
+|-----------|--------|---------------|-----------|---------|
+| **Fixed window** | O(1) | Yes (2× rate at boundary) | No | Simple, low-stakes rate limits |
+| **Sliding window log** | O(N requests) | No | Yes | Accurate per-user limits |
+| **Sliding window counter** | O(1) approx | Minimal | Yes | High-throughput approximation |
+| **Token bucket** | O(1) | Allows burst up to bucket | Bursty | APIs with burst tolerance |
+| **Leaky bucket** | O(queue) | No (fixed output) | Smooth | Strict rate enforcement |
+
+- **Key number**: Fixed window boundary attack — 100 req/min limit → 100 at 11:59:59 + 100 at 12:00:01 = **200 requests in 2 seconds** without triggering the limit
+- **Decision**: Token bucket for user-facing APIs where burst is acceptable; sliding window log for strict per-second enforcement; leaky bucket for upstream rate smoothing
+- **Trap**: Fixed window at scale — attackers exploit the window boundary to double their rate; use sliding window counter (Redis ZADD + ZREMRANGEBYSCORE) for accurate enforcement
+- → [Full article](../12-interview-prep/question-bank/algorithms-patterns/rate-limiting-algorithms)
+
+---
+
+### Data Structures at Scale
+**Data structures for system design** — choosing the right structure for in-memory sorted sets and top-K
+
+| Structure | Search | Insert | Range query | Best for |
+|-----------|--------|--------|------------|---------|
+| **Skip list** | O(log N) | O(log N) | O(log N + K) | In-memory sorted sets (Redis ZADD) |
+| **B-tree** | O(log N) | O(log N) | O(log N + K) | Disk-based sorted indexes (InnoDB) |
+| **Min-heap (top-K)** | O(1) min | O(log K) | N/A | Top-K from N elements: O(N log K) |
+| **Trie** | O(L) | O(L) | O(prefix) | Autocomplete, IP routing |
+
+- **Key number**: Top-K with heap — O(N log K) vs O(N log N) sort; at N=1M, K=100: **3× faster** than sort; Redis uses skip list for sorted sets
+- **Decision**: Skip list for in-memory sorted sets (simpler concurrent modification vs B-tree); min-heap for streaming top-K; B-tree for disk-based indexes
+- **Trap**: Using a max-heap for top-K smallest elements — use a min-heap of size K; evict the min when a new element exceeds it; max-heap requires sorting the entire dataset first
+- → [Full article](../12-interview-prep/question-bank/algorithms-patterns/data-structures-at-scale)
+
+---
+
+### Search Algorithms & Systems
+**Search systems** — inverted index, TF-IDF, BM25, and Elasticsearch internals
+
+| Concept | Detail |
+|---------|--------|
+| **Inverted index** | term → [(doc_id, tf, positions)] posting list; stored sorted by doc_id for efficient merge |
+| **TF-IDF** | TF(term in doc) × IDF(log(N/docs_with_term)); rewards rare terms in specific docs |
+| **BM25** | Industry standard (Elasticsearch default); adds document length normalization over TF-IDF |
+| **Delta encoding** | Store differences between consecutive doc_ids (not absolute) — 10× compression |
+
+- **Key number**: Elasticsearch shard = one Lucene index; max **2.1B documents per shard** (~50GB per shard recommended); too-large shards → slow GC, slow recovery
+- **Decision**: TF-IDF for simple implementations; BM25 for production (outperforms TF-IDF on all standard benchmarks); semantic search (vector ANN) for meaning-based retrieval
+- **Trap**: Not applying stopword removal and stemming before indexing — "the", "and", "is" appear in every document, creating massive posting lists with IDF ≈ 0 (useless for ranking); always filter stopwords
+- → [Full article](../12-interview-prep/question-bank/algorithms-patterns/search-algorithms-systems)
+
+---
+
+### Approximation Algorithms
+**Approximation algorithms** — trading exact answers for massive memory savings in distributed systems
+
+| Algorithm | Problem | Error bound | Memory |
+|-----------|---------|------------|--------|
+| **Count-Min Sketch** | Frequency estimation | Overcount ≤ ε × total_events | ~40 KB (W=1K, D=7) |
+| **HyperLogLog** | Cardinality estimation | ~0.81% std error | <1.5 KB |
+| **Reservoir sampling** | Stream sampling | Exact uniform (probabilistic) | O(K) for K samples |
+| **Bloom filter** | Set membership | FPR tunable (typically 1%) | ~1.2 GB at 1B, 1% FPR |
+
+- **Key number**: Count-Min Sketch at W=1000, D=7 — at 1M total events, overcount ≤ **1,000** with 99.9% probability; memory = **40KB** vs 8MB for exact HashMap
+- **Decision**: Count-Min Sketch for top-N frequency in high-cardinality streams (ad clicks, trending topics); reservoir sampling for uniform sampling when stream size is unknown; Bloom filter for "not in set" guards
+- **Trap**: Count-Min Sketch only overcounts (never undercounts) — set W large enough so the overcount bound is acceptable; for ad billing use exact counters; for rate limiting use Count-Min Sketch
+- → [Full article](../12-interview-prep/question-bank/algorithms-patterns/approximation-algorithms)
+
+---
+
 *Last updated: 2026-03-27*

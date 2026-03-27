@@ -504,3 +504,89 @@ graph LR
 - **Decision**: Alias record (not CNAME) for all Route 53 → ALB/CloudFront/S3 mappings — free query pricing and supports apex domain; CNAME cannot be used at root domain
 - **Trap**: High TTL before a planned IP change — if TTL=86400s and you need to failover, clients keep hitting old IP for up to 24 hours; lower TTL to 60s at least 48h before any planned change
 - → [Full article](../12-interview-prep/question-bank/apis-networking/dns-load-balancing)
+
+---
+
+## 12. Question-Bank: Observability & SRE Deep Dives
+
+### Distributed Tracing
+**Distributed tracing** — following a request across all microservices to find latency bottlenecks
+
+| Signal | Shows | Cannot show |
+|--------|-------|------------|
+| **Logs** | What happened in one service | Which service caused end-to-end slowness |
+| **Metrics** | Aggregated rates and latency | Which specific request was slow |
+| **Traces** | Full request journey, per-hop latency | Aggregate trends across requests |
+
+- **Key number**: A trace = one globally unique `trace_id` (128-bit UUID) propagated across all services via HTTP headers (`traceparent` W3C standard or `X-B3-TraceId` Zipkin)
+- **Decision**: Logs for debugging single-service errors; traces for diagnosing latency in multi-service call chains; metrics for alerting on aggregate trends (4 Golden Signals)
+- **Trap**: 100% trace sampling in production — tracing overhead is ~1ms per span + network/storage cost; use head-based sampling at 1–10% or tail-based sampling (keep traces for slow/error requests)
+- → [Full article](../12-interview-prep/question-bank/observability-sre/distributed-tracing)
+
+---
+
+### Metrics & Alerting Design
+**4 Golden Signals** — Google SRE's complete health model for any service
+
+| Signal | SLI example | Alert threshold |
+|--------|------------|----------------|
+| **Latency** | p99 response time | >500ms p99 for 5 min |
+| **Traffic** | HTTP requests/sec | >2× baseline for 10 min |
+| **Errors** | HTTP 5xx / total requests | >0.1% error rate |
+| **Saturation** | CPU%, connection pool usage | >80% CPU for 5 min |
+
+- **Key number**: Prometheus Gorilla compression — 1.2 GB/day raw → **~120 MB/day** after compression; scrape interval default = **15 seconds**
+- **Decision**: Counter (monotonically increasing) for events — use `rate()` for per-second rate; Gauge for current state (CPU%, queue depth); Histogram for latency percentiles (p50/p99)
+- **Trap**: Alerting on CPU > 80% with no duration window — single spikes are normal; alert on `avg_over_time(cpu[5m]) > 0.80` to require sustained saturation before paging
+- → [Full article](../12-interview-prep/question-bank/observability-sre/metrics-alerting-design)
+
+---
+
+### Log Aggregation Systems
+**Log aggregation** — ELK/EFK stack, structured logging, and log pipeline design
+
+| Component | Role | Resource |
+|-----------|------|---------|
+| **Filebeat** | Lightweight log shipper (agent) | ~10 MB RAM |
+| **Logstash** | Parse + transform pipeline | ~500 MB RAM; can be bottleneck |
+| **Elasticsearch** | Index + search logs (inverted index) | Cluster; 50 GB per shard recommended |
+| **Kibana** | Query UI + dashboards | Query layer only |
+
+- **Key number**: Filebeat footprint = **~10 MB RAM** vs Logstash **~500 MB RAM** — use Filebeat on every host; Logstash only for complex parsing needs
+- **Decision**: Structured JSON logs (not free-form strings) from the start — enables `log.level=ERROR` filtering vs regex-parsing free text which breaks on format changes
+- **Trap**: Storing all logs in Elasticsearch at full resolution forever — Elasticsearch costs ~$0.25/GB/month; implement tiered storage: hot (7 days ES), warm (30 days compressed), cold (S3 Glacier for compliance)
+- → [Full article](../12-interview-prep/question-bank/observability-sre/log-aggregation-systems)
+
+---
+
+### SLO, SLA & Error Budgets
+**SLIs, SLOs, SLAs, and error budgets** — defining and managing reliability targets
+
+| Concept | Owner | Purpose |
+|---------|-------|---------|
+| **SLI** (Service Level Indicator) | Engineering | Measured metric (99.2% success rate) |
+| **SLO** (Service Level Objective) | Engineering | Internal target (≥99.9% over 30 days) |
+| **SLA** (Service Level Agreement) | Product/Legal | External contract with financial consequence |
+| **Error budget** | Engineering | Budget = 1 - SLO; governs deploy risk |
+
+- **Key number**: 99.9% SLO = **43.8 min/month** downtime budget; 99.99% = **4.38 min/month**; 99.999% = **26.3 sec/month**; SLA always looser than SLO (buffer for contract breach protection)
+- **Decision**: Freeze non-critical deploys when error budget is exhausted; resume when budget refreshes at next window — error budget is the policy tool that aligns engineering incentives with reliability
+- **Trap**: Setting SLO = SLA — no buffer between internal target and customer contract; breach the SLO once and you automatically breach the SLA; always set SLO at least 0.1–0.5% stricter than SLA
+- → [Full article](../12-interview-prep/question-bank/observability-sre/slo-sla-error-budgets)
+
+---
+
+### Incident Response Systems
+**Incident response** — severity classification, roles, and postmortem process
+
+| Severity | Impact | Response time | On-call action |
+|----------|--------|--------------|---------------|
+| **P0** | Full outage, revenue loss | ACK <5 min, mitigate <15 min | Page immediately |
+| **P1** | Major degradation, majority affected | ACK <15 min, mitigate <30 min | Page on-call |
+| **P2** | Partial feature, subset affected | Next business hours | Slack notification |
+| **P3** | Cosmetic/minor | Backlog | Ticket |
+
+- **Key number**: P0 status page update within **10 min**; stakeholder notification within **15 min**; postmortem published within **48–72 hours** of resolution
+- **Decision**: Incident Commander (IC) = coordinator, not the technical debugger — most senior engineer should be debugging, not coordinating; IC time-boxes decisions ("10 min to diagnose, then rollback")
+- **Trap**: IC is also the person debugging — no one is coordinating communication, status page, and role assignments; the technical lead becomes the IC and the incident sprawls; designate IC separately from technical lead at declaration
+- → [Full article](../12-interview-prep/question-bank/observability-sre/incident-response-systems)

@@ -692,4 +692,129 @@ graph TD
 
 ---
 
-*Last updated: 2026-03-20*
+---
+
+## 17. Question-Bank: Cloud & DevOps Deep Dives
+
+### Kubernetes Architecture
+**Kubernetes** — container orchestration, control plane components, and workload objects
+
+| Control plane component | Role | Scale |
+|------------------------|------|-------|
+| **kube-apiserver** | Single entry point; validates + persists to etcd | ~10K rps in large clusters |
+| **etcd** | Cluster state store; Raft consensus | 3 or 5 nodes for HA; <100MB state |
+| **kube-scheduler** | Scores nodes, binds Pods | ~1ms per Pod scheduling |
+| **kube-controller-manager** | 30+ reconcile loops (Deployment, ReplicaSet, Node) | One process per cluster |
+
+- **Key number**: Pod → ReplicaSet (N replicas) → Deployment (rolling updates + rollback); Deployment keeps **10 revisions** by default for rollback
+- **Decision**: Use Deployment for stateless apps (99% of cases); StatefulSet for DBs/Kafka (stable network identity + ordered rolling updates); DaemonSet for node-level agents
+- **Trap**: Deleting a Pod directly — it's recreated immediately by the ReplicaSet; to remove a Pod permanently, scale the Deployment to 0 or delete the Deployment
+- → [Full article](../12-interview-prep/question-bank/cloud-devops/kubernetes-architecture)
+
+---
+
+### CI/CD Pipeline Design
+**CI/CD pipelines** — automated build, test, and deploy for fast, safe delivery
+
+| Stage | Target time | Gate |
+|-------|------------|------|
+| Build (compile + Docker) | <2 min | Fails on compile error |
+| Unit tests | <2 min | 0 failures |
+| Static analysis + secret scan | <1 min | No high CVEs, no secrets |
+| Integration tests (Docker Compose) | <5 min | 0 failures |
+| Container CVE scan (Trivy) | <1 min | Fail on Critical/High CVEs |
+| Publish to registry | <2 min | Immutable tag (`git-sha`) |
+
+- **Key number**: Total pipeline target = **<10 min** feedback loop; Continuous Deployment requires >80% branch coverage and automated canary analysis
+- **Decision**: CD (delivery, manual gate) for most teams; CD (deployment, fully automated) only with exceptional test coverage + feature flags + automated rollback
+- **Trap**: Mutable Docker tags (`:latest`) in production — if the image is overwritten, rollback redeploys a different image than intended; always use immutable `git-sha` tags
+- → [Full article](../12-interview-prep/question-bank/cloud-devops/cicd-pipeline-design)
+
+---
+
+### AWS Core Services
+**AWS compute options** — EC2, Lambda, ECS, EKS — when to use each
+
+| Service | Cold start | Best for | Cost model |
+|---------|-----------|---------|-----------|
+| **EC2** | 30–60s | Full OS control, GPU, long-running | Per hour (RI saves 40–60%) |
+| **Lambda** | 100ms–3s | Event-driven, <15 min, webhooks | Per invocation (1M free/mo) |
+| **ECS Fargate** | ~30s | Docker without K8s complexity | Per vCPU+memory-second |
+| **EKS** | ~30s | Full K8s, custom operators, large teams | Control plane $0.10/hr + nodes |
+
+- **Key number**: Lambda cold start: Node.js/Python = **100–500ms**; Java = **1–3s**; use Provisioned Concurrency to pre-warm for latency-sensitive endpoints
+- **Decision**: Lambda for async/event-driven ≤15 min; ECS Fargate for containerized services without K8s complexity; EKS for large teams with existing K8s expertise
+- **Trap**: Lambda + RDS without RDS Proxy — each Lambda cold start creates a new DB connection; 100 concurrent Lambdas = 100 new connections; RDS Proxy is mandatory with Lambda + RDS
+- → [Full article](../12-interview-prep/question-bank/cloud-devops/aws-core-services)
+
+---
+
+### Infrastructure as Code
+**IaC** — managing infrastructure via code in version control (Terraform, CDK, CloudFormation)
+
+| Tool | Language | Cloud | State | Best for |
+|------|---------|-------|-------|---------|
+| **Terraform** | HCL | Multi-cloud | S3 + DynamoDB lock | **Most widely used** (85% of IaC job postings) |
+| **CloudFormation** | YAML/JSON | AWS only | AWS-managed | AWS-native, no state file to manage |
+| **CDK** | TypeScript/Python | AWS only | CloudFormation | AWS shops wanting programming language |
+| **Pulumi** | TS/Python/Go | Multi-cloud | Pulumi Cloud | Complex logic (loops, conditions) |
+
+- **Key number**: Terraform remote state requires S3 bucket + DynamoDB table for state locking to prevent concurrent apply conflicts; Terraform manages **3,000+** providers
+- **Decision**: Terraform for multi-cloud or greenfield; CloudFormation/CDK for AWS-only where deep AWS integration (drift detection, stack events) is valuable
+- **Trap**: Storing Terraform state locally — team members overwrite each other's state; always use remote backend (S3 + DynamoDB lock) from day 1
+- → [Full article](../12-interview-prep/question-bank/cloud-devops/infrastructure-as-code)
+
+---
+
+### Blue-Green & Canary Deployments
+**Deployment strategies** — zero-downtime releases with controlled blast radius
+
+| Strategy | Traffic shift | Rollback speed | Cost | Use when |
+|----------|-------------|---------------|------|---------|
+| **Blue-Green** | Instant (all-or-nothing) | <1s (LB rule) | 2× capacity | Infrastructure changes, dependency upgrades |
+| **Canary** | Gradual (1% → 10% → 100%) | Re-route traffic | Normal | High-risk features, payment flows |
+| **Rolling** | Pod-by-pod | Minutes (re-deploy) | Normal | Low-risk updates, stateless services |
+
+- **Key number**: Canary bake period = **10–30 min** before proceeding; Blue-Green rollback = <1s (load balancer listener rule change); DNS rollback = ~60s (TTL-dependent)
+- **Decision**: Blue-Green when you need instant atomic switch and have 2× capacity; Canary when limiting blast radius is more important than speed; Rolling for routine updates
+- **Trap**: Blue-Green with database schema changes — if new code uses a new schema and old code doesn't, you can't roll back without a DB migration rollback; database changes must be backwards-compatible before any code swap
+- → [Full article](../12-interview-prep/question-bank/cloud-devops/blue-green-canary-deployments)
+
+---
+
+### Container Orchestration
+**Containers vs VMs** — Docker internals, layer caching, and multi-stage builds
+
+| | VM | Container |
+|-|-------|---------|
+| **Startup** | 30–60s | **100–500ms** |
+| **Overhead** | 256MB–1GB per VM | Few MB |
+| **Isolation** | Strong (separate kernel) | Namespace + cgroups |
+| **Portability** | OS-dependent | Runs on any Linux host |
+
+- **Key number**: Containers start **60–100× faster** than VMs; multi-stage Docker builds reduce final image from 500MB to **~50MB** (no dev tools in final stage)
+- **Decision**: Layer order matters — rarely-changing instructions first (OS deps, npm install), frequently-changing last (COPY . .); any change invalidates all downstream layers
+- **Trap**: `COPY . .` at the top of Dockerfile — every code change invalidates all cache layers including `npm install`; reorder: copy `package.json` first, `npm install`, then `COPY . .`
+- → [Full article](../12-interview-prep/question-bank/cloud-devops/container-orchestration)
+
+---
+
+### Cloud Cost Optimization
+**Cloud cost optimization** — EC2 pricing models and waste elimination
+
+| Pricing model | Discount vs on-demand | Commitment | Use for |
+|--------------|----------------------|-----------|--------|
+| **On-Demand** | 0% | None | Unpredictable, testing |
+| **Reserved (1yr)** | **40%** | 1 year | Stable 24/7 baseline |
+| **Reserved (3yr)** | **60%** | 3 years | Long-term stable workloads |
+| **Savings Plans (Compute)** | **66%** | 1–3 year | Flexible (any instance family/region) |
+| **Spot** | **70–90%** | None | Batch jobs, CI runners, ML training |
+
+- **Key number**: Orphaned Elastic IPs = **$3.65/month each**; idle NAT Gateway = **$33/month** even at 0 traffic; unattached EBS = **$0.10/GB/month**
+- **Decision**: Spot for stateless batch (CI, ML training, data processing); Reserved/Savings Plans for predictable 24/7 baseline; On-Demand for everything else
+- **Trap**: Spot instances without graceful shutdown handling — 2-minute termination warning must be caught (EC2 metadata endpoint) to drain connections; without it, in-flight requests are dropped
+- → [Full article](../12-interview-prep/question-bank/cloud-devops/cloud-cost-optimization)
+
+---
+
+*Last updated: 2026-03-27*
