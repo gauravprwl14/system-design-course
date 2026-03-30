@@ -3,6 +3,15 @@ title: "Security & Auth Cheat Sheet"
 description: "Authentication, authorization, encryption, and security patterns quick reference"
 ---
 
+> **📅 Spaced Repetition Schedule**
+> Use this cheat sheet on a 4-interval cycle for maximum retention:
+> - **Day 0** — Read it fully (20–30 min)
+> - **Day 3** — Skim headers, cover answers, test yourself
+> - **Day 10** — Quiz yourself on the "Trap" entries without looking
+> - **Day 30** — Quick scan for gaps; revisit any you missed
+
+---
+
 # Security & Auth Cheat Sheet
 
 > Key concepts for security rounds and general system design interviews. Facts and decision rules only.
