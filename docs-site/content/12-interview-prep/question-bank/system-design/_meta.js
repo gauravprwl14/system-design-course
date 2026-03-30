@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "design-url-shortener": "URL Shortener",
   "design-notification-system": "Notification System",
   "design-rate-limiter": "Rate Limiter",

@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "kubernetes-architecture": "Kubernetes Architecture",
   "cicd-pipeline-design": "CI/CD Pipeline Design",
   "aws-core-services": "AWS Core Services",

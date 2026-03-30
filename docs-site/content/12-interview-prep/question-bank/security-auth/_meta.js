@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "authentication-patterns": "Authentication Patterns",
   "authorization-rbac-abac": "Authorization: RBAC vs ABAC",
   "oauth2-oidc": "OAuth2 & OIDC",

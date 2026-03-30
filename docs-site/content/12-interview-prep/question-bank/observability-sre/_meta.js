@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "distributed-tracing": "Distributed Tracing",
   "metrics-alerting-design": "Metrics & Alerting",
   "log-aggregation-systems": "Log Aggregation",

@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "cache-invalidation-strategies": "Cache Invalidation",
   "redis-advanced-patterns": "Redis Advanced Patterns",
   "cdn-caching-strategies": "CDN Caching",

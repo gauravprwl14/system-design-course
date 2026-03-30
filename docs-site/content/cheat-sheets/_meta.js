@@ -18,6 +18,9 @@ export default {
   // --- Security ---
   security: "🔒 Security & Auth",
 
+  // --- AI & Agents ---
+  "ai-agents": "🤖 AI Agents & LLMs",
+
   // --- Mobile ---
   mobile: "📱 Mobile Architecture",
 }

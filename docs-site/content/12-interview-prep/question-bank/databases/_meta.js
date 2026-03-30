@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "sql-vs-nosql-decisions": "SQL vs NoSQL Decisions",
   "database-sharding-deep-dive": "Database Sharding",
   "database-replication-patterns": "Replication Patterns",

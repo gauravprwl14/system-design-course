@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "consistent-hashing": "Consistent Hashing",
   "bloom-filters-hyperloglog": "Bloom Filters & HyperLogLog",
   "rate-limiting-algorithms": "Rate Limiting Algorithms",

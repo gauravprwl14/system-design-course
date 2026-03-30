@@ -1,4 +1,5 @@
 export default {
+  "index": "📋 Overview",
   "cap-theorem-real-world": "CAP Theorem",
   "consensus-algorithms": "Consensus Algorithms",
   "distributed-transactions": "Distributed Transactions",
