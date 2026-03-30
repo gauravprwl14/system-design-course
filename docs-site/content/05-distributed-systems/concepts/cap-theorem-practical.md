@@ -8,6 +8,8 @@ tags: ["cap-theorem", "pacelc", "partition-tolerance", "consistency", "availabil
 description: "CAP is not a dial you turn — partitions happen whether you want them or not. You only choose what to sacrifice when they do."
 reading_time: "22 min"
 difficulty: "staff+"
+readTime: "15 min"
+fastPath: true
 status: "published"
 featured_image: "/assets/diagrams/cap-theorem-practical.png"
 ---

@@ -8,6 +8,8 @@ tags: ["consistent-hashing", "virtual-nodes", "vnodes", "rehashing", "hot-spots"
 description: "Master consistent hashing from basic ring mechanics to virtual nodes, rehashing cost math, and hot spot avoidance at production scale."
 reading_time: "22 min"
 difficulty: "staff+"
+readTime: "20 min"
+fastPath: true
 status: "published"
 featured_image: "/assets/diagrams/consistent-hashing-deep-dive.png"
 ---

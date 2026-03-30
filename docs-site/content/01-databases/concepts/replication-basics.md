@@ -3,6 +3,8 @@ title: Database Replication Basics
 layer: concept
 section: system-design/databases
 difficulty: beginner
+readTime: "20 min"
+fastPath: true
 prerequisites: []
 solves_with: []
 related_problems:
