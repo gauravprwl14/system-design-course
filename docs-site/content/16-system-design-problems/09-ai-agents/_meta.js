@@ -9,4 +9,12 @@ export default {
   'document-processing-agent': { title: '📄 Document Processing Agent' },
   'content-moderation-agent': { title: '🛡️ Content Moderation Agent' },
   'autonomous-testing-agent': { title: '🧪 Autonomous Testing Agent' },
+  'data-analysis-agent': { title: '📊 Data Analysis Agent' },
+  'workflow-automation-agent': { title: '⚙️ Workflow Automation Agent' },
+  'ai-travel-planning-agent': { title: '✈️ AI Travel Planning Agent' },
+  'security-monitoring-agent': { title: '🔐 Security Monitoring Agent' },
+  'personal-finance-agent': { title: '💰 Personal Finance Agent' },
+  'sales-development-agent': { title: '📧 Sales Development Agent' },
+  'medical-triage-agent': { title: '🏥 Medical Triage Agent' },
+  'autonomous-trading-agent': { title: '📈 Autonomous Trading Agent' },
 }

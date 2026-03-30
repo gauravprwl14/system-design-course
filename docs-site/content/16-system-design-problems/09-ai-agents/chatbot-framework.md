@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Chatbot System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "chatbot architecture" — intent routing and scalability |
+| [Intercom Engineering: Building AI Chatbots](https://www.intercom.com/blog/engineering-ai-chatbot/) | 📖 Blog | Production chatbot architecture with intent classification and escalation |
+| [Lilian Weng — Task-Oriented Dialogue Systems](https://lilianweng.github.io/posts/2020-11-30-task-oriented-dialogue/) | 📖 Blog | Deep dive into dialogue management and slot-filling for structured conversations |
+| [Sam Witteveen — Production Chatbot Patterns](https://www.youtube.com/@samwitteveenai) | 📺 YouTube | Real-world LangChain patterns for chatbot context management |
+| [Anthropic — Claude for Customer Support](https://www.anthropic.com/research) | 📚 Docs | Safety and reliability considerations for deployed conversational AI |

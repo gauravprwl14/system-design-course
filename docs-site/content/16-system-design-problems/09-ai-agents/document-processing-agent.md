@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [AWS Textract: Document Processing at Scale](https://aws.amazon.com/blogs/machine-learning/automatically-extract-text-and-structured-data-from-documents-with-amazon-textract/) | 📖 Blog | Production OCR and structured extraction pipeline |
+| [Google Document AI Architecture](https://cloud.google.com/document-ai/docs/overview) | 📚 Docs | Layout-aware document understanding with ML |
+| [Sam Witteveen — Document Processing with LLMs](https://www.youtube.com/@samwitteveenai) | 📺 YouTube | Extracting structured data from PDFs and invoices using LLM agents |
+| [Lilian Weng — Generative Models for Structured Data](https://lilianweng.github.io/posts/2023-01-27-the-transformer-family-v2/) | 📖 Blog | Transformer architectures relevant to document understanding |
+| [ByteByteGo — Design a Document Storage System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "document storage" — relevant infrastructure for large-scale document processing |

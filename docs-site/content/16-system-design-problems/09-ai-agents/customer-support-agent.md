@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [Zendesk AI: How We Built Answer Bot](https://www.zendesk.com/blog/zendesk-ai-answer-bot/) | 📖 Blog | Production architecture for AI-assisted ticket resolution |
+| [Salesforce Einstein: AI for Service Cloud](https://www.salesforce.com/blog/einstein-ai-service-cloud/) | 📖 Blog | LLM-powered agent assist and auto-resolution patterns |
+| [Sam Witteveen — Customer Support Agent with LangChain](https://www.youtube.com/@samwitteveenai) | 📺 YouTube | End-to-end customer support agent with RAG and tool calling |
+| [Lilian Weng — LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/) | 📖 Blog | Tool-use and memory patterns for customer support context |
+| [Anthropic — Claude for Enterprise Support](https://www.anthropic.com/research) | 📚 Docs | Safety constraints and guardrails for customer-facing AI agents |

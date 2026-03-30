@@ -98,3 +98,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [Meta's Approach to Content Moderation at Scale](https://ai.meta.com/blog/hateful-memes-challenge-and-data-set/) | 📖 Blog | How Meta handles multimodal harmful content detection |
+| [YouTube's Three-Stage Moderation Pipeline](https://blog.youtube/inside-youtube/our-ongoing-work-to-tackle-harassment/) | 📖 Blog | How YouTube combines ML and human review at 500 hours of video/minute |
+| [Anthropic — Constitutional AI and Harmlessness](https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback) | 📖 Blog | AI-assisted content policy enforcement and calibration |
+| [AI Explained — Content Moderation Systems](https://www.youtube.com/@AIExplained-official) | 📺 YouTube | Overview of ML approaches to automated content policy enforcement |
+| [Trust & Safety Engineering at Twitter/X](https://blog.twitter.com/engineering/en_us/topics/insights/2023/twitter-recommendation-algorithm) | 📖 Blog | Signals and ranking used for content safety decisions at scale |

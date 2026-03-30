@@ -97,3 +97,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [OpenAI Deep Research System Card](https://openai.com/research) | 📚 Docs | How OpenAI's deep research agent plans and executes multi-step web research |
+| [Perplexity Engineering: Building an Answer Engine](https://blog.perplexity.ai/blog/introducing-pplx-api) | 📖 Blog | Search-augmented generation pipeline at production scale |
+| [Lilian Weng — LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/) | 📖 Blog | Planning, memory, and tool-use patterns for research agents |
+| [AI Explained — Deep Research Agent Breakdown](https://www.youtube.com/@AIExplained-official) | 📺 YouTube | Analysis of multi-step research agent architectures and limitations |
+| [Sam Witteveen — Building Research Agents](https://www.youtube.com/@samwitteveenai) | 📺 YouTube | Practical implementation of iterative web search + synthesis agents |

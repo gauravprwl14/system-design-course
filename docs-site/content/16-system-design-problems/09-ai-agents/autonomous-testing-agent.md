@@ -97,3 +97,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [GitHub Copilot: AI-Powered Code Suggestions](https://github.blog/2023-06-20-how-github-copilot-is-getting-better-at-understanding-your-code/) | 📖 Blog | How GitHub approaches AI code generation and test synthesis |
+| [Meta's Automated Test Generation at Scale](https://engineering.fb.com/2023/05/09/developer-tools/automated-test-generation/) | 📖 Blog | How Meta generates thousands of tests automatically with AI |
+| [Sam Witteveen — Code Generation Agents](https://www.youtube.com/@samwitteveenai) | 📺 YouTube | Building AI agents that write and validate code |
+| [Lilian Weng — LLM Powered Autonomous Agents](https://lilianweng.github.io/posts/2023-06-23-agent/) | 📖 Blog | Tool-use patterns applicable to test runner feedback loops |
+| [ByteByteGo — Design a Code Deployment System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "CI/CD pipeline design" — context for where test agents fit |
