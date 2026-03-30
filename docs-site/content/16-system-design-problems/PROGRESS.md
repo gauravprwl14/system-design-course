@@ -6,27 +6,28 @@ description: "Live status of all problems from the Codemania problem set"
 # Progress Tracker — 163 System Design Problems
 
 **Last updated**: 2026-03-30
-**Fully Implemented**: 17 / 76 navigable problems
-**Stub Coverage**: 76 / 76 (all navigation links working, 59 quality stubs)
-**Full Deep-Dives**: 17 articles with Mermaid diagrams, trade-off tables, failure modes
+**Codemania Coverage**: 162 dedicated articles + 1 shared = **163 / 163 problems covered** ✅
+**Full Deep-Dives**: 18 articles with 600+ lines, Mermaid diagrams, trade-off tables, failure modes
+**Quality Articles**: ~90 articles with 250-500 lines, architecture diagrams, capacity estimates
+**Reference Tables**: All articles have YouTube + blog reference links in tabular format
 
-> Legend: ✅ Full Article | 📄 Quality Stub | ⬜ Not Started
+> Legend: ✅ Full Article (600+ lines) | 📖 Deep Content (250-500 lines) | 📄 Stub | ⬜ Not Started
 
 ## Summary by Category
 
-| Category | Total | Full Article | Stub |
-|----------|-------|-------------|------|
-| ⚙️ Data Processing | 10 | 2 | 8 |
-| 📱 Social Platforms | 6 | 2 | 4 |
-| 💬 Communication | 8 | 2 | 6 |
-| 📅 Reservation & Scheduling | 10 | 3 | 7 |
-| 🔧 Infrastructure | 12 | 4 | 8 |
-| 🗂️ Storage & Files | 3 | 1 | 2 |
-| 🔒 Security & Payments | 6 | 0 | 6 |
-| 🔍 Search & Discovery | 5 | 1 | 4 |
-| 🤖 AI & Agents | 9 | 3 | 6 |
-| 🎯 Object-Oriented Design | 7 | 0 | 7 |
-| **Total** | **76** | **18** | **58** |
+| Category | Articles | Highlights |
+|----------|---------|------------|
+| ⚙️ Data Processing | 25 | Stock trading, log pipeline, graph search, event lifecycle |
+| 📱 Social Platforms | 11 | Instagram (full), VR streaming, competitive programming |
+| 💬 Communication | 12 | P2P network, smart home, collaboration tool |
+| 📅 Reservation & Scheduling | 22 | Flash sale, automated trading, airport baggage, grocery |
+| 🔧 Infrastructure | 31 | Container orchestration, DNS, serverless, disaster recovery |
+| 🗂️ Storage & Files | 3 | Dropbox (full), file sharing, collaborative spreadsheet |
+| 🔒 Security & Payments | 9 | Blockchain, network security monitoring, QR codes |
+| 🔍 Search & Discovery | 9 | Visual search, e-commerce recommendation, geospatial |
+| 🤖 AI & Agents | 17 | RAG, code gen, multi-agent (all full), 8 more agents |
+| 🎯 Object-Oriented Design | 23 | Banking, file system, calendar, ECS, game state |
+| **Total** | **162** | **163/163 codemania problems covered** |
 
 ---
 
