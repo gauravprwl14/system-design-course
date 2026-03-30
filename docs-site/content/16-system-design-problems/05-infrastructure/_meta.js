@@ -1,0 +1,15 @@
+export default {
+  index: { title: '🔧 Infrastructure' },
+  'rate-limiter': { title: '🚦 API Rate Limiter' },
+  'key-value-store': { title: '🗝️ Key-Value Store' },
+  'distributed-messaging': { title: '📬 Distributed Messaging' },
+  'distributed-file-system': { title: '📁 Distributed File System' },
+  'load-balancer': { title: '⚖️ Load Balancer' },
+  'cdn': { title: '🌐 Content Delivery Network' },
+  'distributed-counter': { title: '🔢 Distributed Counter' },
+  'distributed-locking': { title: '🔐 Distributed Locking' },
+  'distributed-tracing': { title: '🔍 Distributed Tracing' },
+  'unique-id-generator': { title: '🆔 Unique ID Generator' },
+  'metrics-alerting': { title: '📈 Metrics & Alerting' },
+  'code-deployment': { title: '🚀 Code Deployment' },
+}
