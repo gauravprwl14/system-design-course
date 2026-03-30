@@ -28,7 +28,7 @@ graph LR
 | 🟢 Junior | [microservices-architecture](./concepts/microservices-architecture) | Understand microservices vs monolith trade-offs |
 | 🟡 Mid-level | [circuit-breaker](./concepts/circuit-breaker) + [api-gateway](/07-api-design/concepts/api-gateway-deep-dive) | Build resilient distributed systems |
 | 🔴 Senior / TL | [saga-pattern-deep-dive](./concepts/saga-pattern-deep-dive) + [cqrs](./concepts/cqrs) | Design complex event-driven architectures |
-| 🏆 Interview prepping | [business-and-advanced questions](../../12-interview-prep/system-design/business-and-advanced) | Advanced architecture interview patterns |
+| 🏆 Interview prepping | [business-and-advanced questions](../12-interview-prep/system-design/business-and-advanced) | Advanced architecture interview patterns |
 
 ## What You'll Learn
 
@@ -47,13 +47,13 @@ graph LR
 
 | Topic | 📖 Concept | 🔬 Hands-On | ⚠️ Failures | 🎯 Interview |
 |-------|-----------|------------|------------|-------------|
-| Circuit Breaker | [circuit-breaker](./concepts/circuit-breaker) | [circuit-breaker](./hands-on/circuit-breaker) | [cascading-failures](./failures/cascading-failures), [circuit-breaker-failure](./failures/circuit-breaker-failure) | [fundamentals](../../12-interview-prep/system-design/fundamentals) |
-| Microservices Architecture | [microservices-architecture](./concepts/microservices-architecture) | — | — | [scale-and-reliability](../../12-interview-prep/system-design/scale-and-reliability) |
+| Circuit Breaker | [circuit-breaker](./concepts/circuit-breaker) | [circuit-breaker](./hands-on/circuit-breaker) | [cascading-failures](./failures/cascading-failures), [circuit-breaker-failure](./failures/circuit-breaker-failure) | [fundamentals](../12-interview-prep/system-design/fundamentals) |
+| Microservices Architecture | [microservices-architecture](./concepts/microservices-architecture) | — | — | [scale-and-reliability](../12-interview-prep/system-design/scale-and-reliability) |
 | Microservices Communication | [microservices-communication](./concepts/microservices-communication) | — | — | — |
 | Timeouts & Backpressure | [timeouts-backpressure](./concepts/timeouts-backpressure), [backpressure](./concepts/backpressure) | [retry-backoff](./hands-on/retry-backoff), [timeout-configuration](./hands-on/timeout-configuration) | [timeout-domino-effect](./failures/timeout-domino-effect) | — |
-| Saga Pattern | [saga-pattern-deep-dive](./concepts/saga-pattern-deep-dive) | [saga-pattern](./hands-on/saga-pattern) | — | [saga-pattern](../../12-interview-prep/system-design/business-and-advanced/saga-pattern) |
-| CQRS | [cqrs](./concepts/cqrs) | [cqrs-pattern](./hands-on/cqrs-pattern) | — | [cqrs-pattern](../../12-interview-prep/system-design/business-and-advanced/cqrs-pattern) |
-| Event-Driven Architecture | [event-driven-architecture](./concepts/event-driven-architecture) | — | — | [messaging-and-streaming](../../12-interview-prep/system-design/messaging-and-streaming) |
+| Saga Pattern | [saga-pattern-deep-dive](./concepts/saga-pattern-deep-dive) | [saga-pattern](./hands-on/saga-pattern) | — | [saga-pattern](../12-interview-prep/system-design/business-and-advanced/saga-pattern) |
+| CQRS | [cqrs](./concepts/cqrs) | [cqrs-pattern](./hands-on/cqrs-pattern) | — | [cqrs-pattern](../12-interview-prep/system-design/business-and-advanced/cqrs-pattern) |
+| Event-Driven Architecture | [event-driven-architecture](./concepts/event-driven-architecture) | — | — | [messaging-and-streaming](../12-interview-prep/system-design/messaging-and-streaming) |
 | Bulkhead Pattern | [bulkhead-pattern](./concepts/bulkhead-pattern) | — | — | — |
 | Strangler Fig Migration | [strangler-fig-migration](./concepts/strangler-fig-migration) | — | — | — |
 | Service Mesh | [service-mesh-architecture](./concepts/service-mesh-architecture) | — | — | — |
