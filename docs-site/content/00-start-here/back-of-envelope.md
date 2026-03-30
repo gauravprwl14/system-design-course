@@ -1,3 +1,8 @@
+---
+readTime: "15 min"
+fastPath: true
+---
+
 # Back-of-Envelope Estimation
 
 System design interviews expect you to estimate scale. Memorize these numbers — they are the building blocks of every estimation.

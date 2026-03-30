@@ -3,6 +3,8 @@ title: Scaling Basics
 layer: concept
 section: system-design/scalability
 difficulty: beginner
+readTime: "12 min"
+fastPath: true
 prerequisites: []
 solves_with: []
 related_problems:

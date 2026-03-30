@@ -3,6 +3,8 @@ title: Database Sharding Strategies
 layer: concept
 section: system-design/databases
 difficulty: intermediate
+readTime: "22 min"
+fastPath: true
 prerequisites:
   - system-design/databases/replication-basics
   - system-design/databases/read-replicas
