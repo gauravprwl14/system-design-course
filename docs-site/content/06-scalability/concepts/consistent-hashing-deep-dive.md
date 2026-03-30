@@ -471,3 +471,60 @@ Stage 4 (1B+ keys, multi-region):
 
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*
+
+---
+
+## 🧠 Test Your Understanding
+
+*Don't re-read before attempting. The goal is retrieval, not recognition.*
+
+<details>
+<summary>Q1 — Surface Check: What is the core problem that consistent hashing solves over naive modulo hashing?</summary>
+
+**Answer**: When you add or remove a node in naive modulo hashing, nearly all keys remap to different nodes (typically (N-1)/N ≈ 75% for 4→5 nodes). Consistent hashing limits remapping to ~1/N of keys per node change — only the keys between the removed node and its predecessor on the ring need to move.
+
+</details>
+
+<details>
+<summary>Q2 — Failure Scenario: Node 3 in your 4-node consistent hash ring fails at 2am. Cache miss rate jumps from 5% to 40% within 10 minutes. Trace the full cause-and-effect chain.</summary>
+
+**Answer**: Node 3 fails → All keys that were mapped to Node 3 now route to Node 4 (its successor on the ring) → Node 4 has no cached values for those keys (cold cache) → Every request for those keys misses cache and hits the database → Database load spikes → If the database slows under load, more requests pile up, potentially cascading.
+
+The 40% miss rate comes from Node 3 holding ~25% of keys (uniform distribution on 4 nodes), and those keys being cold on Node 4. **What reduces blast radius**: virtual nodes (so each physical node holds many small arcs, not one large one), and pre-warming the successor node on failure.
+
+</details>
+
+<details>
+<summary>Q3 — Cross-Concept: Consistent hashing solves the rebalancing problem. But your cache cluster still has one node getting 3x more traffic than others. Why doesn't consistent hashing prevent hot partitions?</summary>
+
+**Answer**: Consistent hashing distributes *keys* uniformly — but not *request frequency*. If 10% of keys are accessed 90% of the time (Zipf distribution — true of most real workloads), the node holding those hot keys gets disproportionate traffic regardless of how keys are distributed on the ring.
+
+**Connection to CAP**: A hot node that becomes overloaded starts returning errors or slow responses. You now face an availability problem caused by a load problem — consistent hashing alone can't save you. **Fix**: virtual nodes + consistent hashing ensures even key distribution; a separate **local cache** (e.g., in-process LRU) at the application layer absorbs hot key traffic before it reaches the distributed cache.
+
+</details>
+
+<details>
+<summary>Q4 — Trade-off Challenge: Your CTO says "just use consistent hashing everywhere — routing tables, databases, caches." Name one scenario where consistent hashing is the wrong tool.</summary>
+
+**Answer** (multiple valid answers):
+
+- **Range queries on databases**: Consistent hashing distributes by hash value, which destroys sort order. A query like `WHERE created_at BETWEEN X AND Y` would require scanning all nodes. Range-based sharding (where shard 1 = Jan–Mar, shard 2 = Apr–Jun) is better for time-series or ordered data.
+- **Small cluster sizes**: With 2-3 nodes, consistent hashing's overhead (virtual node management, ring maintenance) isn't worth it — simple round-robin or modulo is operationally simpler with acceptable rebalancing cost.
+- **Write-heavy workloads needing strong consistency**: Consistent hashing is designed for stateless or eventually-consistent workloads. If you need linearizable writes across shards, you need a consensus protocol (Raft, Paxos) — consistent hashing doesn't address this.
+
+</details>
+
+---
+
+## 📚 Ready for Interview Level?
+
+You just tested your understanding with 4 application questions. The interview versions require connecting consistent hashing with celebrity hotspots, cross-shard joins, and the limits of ring-based distribution.
+
+**Curated questions from the interview bank (do these in order):**
+
+| Question | Tests | Level |
+|----------|-------|-------|
+| [Compare range vs hash vs directory-based sharding strategies](../../12-interview-prep/question-bank/databases/database-sharding-deep-dive) | Sharding strategy selection with trade-offs | 🟡 Mid |
+| [Your shard key is user_id with consistent hashing. Top 0.1% of users generate 30% of writes. Does consistent hashing solve this?](../../12-interview-prep/question-bank/databases/database-sharding-deep-dive) | Cross-concept: consistent hashing + write hotspot | ⚫ Staff |
+
+> The Staff question (⚫) requires understanding write skew vs key distribution. This article covers key distribution — the hotspot question reveals its limits.
