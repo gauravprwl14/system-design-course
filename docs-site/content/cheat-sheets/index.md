@@ -3,6 +3,17 @@ title: "Cheat Sheets — Quick Reference Hub"
 description: "Scannable one-page references for system design interviews and AWS certification"
 ---
 
+## How to Use These Cheat Sheets
+
+Cheat sheets are for **review, not first learning**. Read the full article first, then return here to:
+- Test yourself before interviews (cover the sheet, recall each entry)
+- Run your spaced repetition cycle (schedule shown at the top of each sheet)
+- Do a rapid pre-interview scan (5 min per sheet)
+
+Each entry has: a key number to memorize · a decision rule · a trap to avoid.
+
+---
+
 # Cheat Sheets
 
 > **Designed for quick learners.** Scan each cheat sheet to get the critical facts, numbers, and decision rules. Then click through to the full articles for deeper understanding.
