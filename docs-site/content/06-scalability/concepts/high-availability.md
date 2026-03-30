@@ -3,6 +3,8 @@ title: High Availability
 layer: concept
 section: system-design/scalability
 difficulty: intermediate
+readTime: "15 min"
+fastPath: true
 prerequisites:
   - system-design/scalability/scaling-basics
   - system-design/databases/replication-basics

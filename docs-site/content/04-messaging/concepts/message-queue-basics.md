@@ -3,6 +3,8 @@ title: Message Queue Basics
 layer: concept
 section: system-design/queues
 difficulty: beginner
+readTime: "18 min"
+fastPath: true
 prerequisites: []
 solves_with: []
 related_problems:
