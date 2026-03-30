@@ -3,6 +3,15 @@ title: "Caching & Redis Cheat Sheet"
 description: "Cache strategies, Redis patterns, CDN caching, and common pitfalls quick reference"
 ---
 
+> **📅 Spaced Repetition Schedule**
+> Use this cheat sheet on a 4-interval cycle for maximum retention:
+> - **Day 0** — Read it fully (20–30 min)
+> - **Day 3** — Skim headers, cover answers, test yourself
+> - **Day 10** — Quiz yourself on the "Trap" entries without looking
+> - **Day 30** — Quick scan for gaps; revisit any you missed
+
+---
+
 # Caching & Redis Cheat Sheet
 
 > Scan time: ~5 min. Every line is interview-relevant.
