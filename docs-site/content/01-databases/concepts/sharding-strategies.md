@@ -805,9 +805,9 @@ class ReshardingOrchestrator {
 
 ## 🔗 Next Steps
 
-- [Hot Partition Problem](./10-hot-partition.md) - Handling skewed data
-- [Multi-Region Databases](./07-multi-region-setup.md) - Geographic sharding
-- [Distributed Transactions](./11-distributed-transactions.md) - Cross-shard operations
+- [Hot Partition Problem](/01-databases/failures/hot-partition) - Handling skewed data
+- [Multi-Region Databases](/01-databases/concepts/replication-basics) - Geographic sharding
+- [Distributed Transactions](/01-databases/concepts/distributed-transactions) - Cross-shard operations
 
 ## 📚 Further Reading
 

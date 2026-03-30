@@ -89,7 +89,7 @@ graph TD
 
 ## Related Concepts
 
-- [Bloom Filters and probabilistic data structures](../../../05-distributed-systems/concepts/bloom-filters)
+- [Bloom Filters and probabilistic data structures](../../../14-algorithms/concepts/bloom-filter)
 - [Kafka partitioning for parallel stream processing](../05-infrastructure/distributed-messaging)
 
 ---

@@ -771,7 +771,7 @@ class ErrorHandling {
 
 ## 🔗 Related Questions
 
-- [Design Rate Limiting](./02-rate-limiting.md)
-- [Design Flash Sale System](./03-flash-sales.md)
-- [Message Queue Patterns](../../07-messaging/02-kafka-failures.md)
-- [S3 Best Practices](../../02-aws-cloud/03-s3-tps.md)
+- [Design Rate Limiting](../../system-design/fundamentals/rate-limiting)
+- [Design Flash Sale System](../../system-design/business-and-advanced/flash-sales)
+- [Message Queue Patterns](../../../../04-messaging/concepts/kafka-exactly-once-semantics)
+- [S3 Best Practices](../../quick-reference/aws-cloud/s3-tps-limits)

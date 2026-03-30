@@ -166,7 +166,7 @@ Alerts published to SNS → fan-out to push notifications, SMS, emergency alert 
 
 ## Related Concepts
 
-- [Database Scaling](../../01-databases/concepts/database-scaling) — TimescaleDB hypertable sharding
+- [Database Scaling](../../01-databases/concepts/sharding-strategies) — TimescaleDB hypertable sharding
 - [Message Queue Basics](../../04-messaging/concepts/message-queue-basics) — Kafka for sensor data pipeline
 
 ---

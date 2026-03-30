@@ -49,7 +49,7 @@ graph TD
 - ❌ **Not resetting on clock boundary for fixed window:** If the counter reset logic runs at 00:01:00 but requests are allowed through between 00:00:59.5 and the reset — the window overlaps. Ensure atomic increment-and-check with precise window boundary.
 
 ### Concept Reference
-→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting)
+→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting-algorithms)
 
 ---
 
@@ -96,7 +96,7 @@ graph TD
 - ❌ **Setting capacity = refill_rate:** This disallows all bursting — every second the user gets exactly 1 token and can send exactly 1 request/sec. Token bucket's burst capability is its primary feature; if you don't want bursting, use leaky bucket.
 
 ### Concept Reference
-→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting)
+→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting-algorithms)
 
 ---
 
@@ -141,7 +141,7 @@ graph TD
 - ❌ **Setting queue capacity too small:** If the bucket fills in 100ms of normal burst traffic, legitimate requests are dropped. Size the queue as: `capacity = leak_rate × acceptable_burst_duration`. For 100 req/sec leak and 5-second acceptable burst: `capacity = 500`.
 
 ### Concept Reference
-→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting)
+→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting-algorithms)
 
 ---
 
@@ -241,7 +241,7 @@ Use a Redis Lua script for atomicity. Lua scripts execute atomically in Redis's 
 - ❌ **Not returning `Retry-After` header:** Without `Retry-After`, rate-limited clients retry immediately — creating a denial-of-service retry storm. Always include `Retry-After: N` (seconds until next request allowed).
 
 ### Concept Reference
-→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting)
+→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting-algorithms)
 
 ---
 
@@ -317,7 +317,7 @@ sequenceDiagram
 - ❌ **Fixed batch size for all users:** Active users exhaust batches in milliseconds; inactive users hold pre-allocated tokens indefinitely. Use adaptive batch size: `batch = max(1, last_request_rate × 0.1s)`.
 
 ### Concept Reference
-→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting)
+→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting-algorithms)
 
 ---
 
@@ -410,4 +410,4 @@ Stripe's rate limiting uses two token buckets layered in series (confirmed from 
 - ❌ **Rate limiting by IP in a multi-tenant shared NAT environment:** Corporate offices and cloud environments share NAT IPs. Rate limiting by IP penalises all users behind the same IP. Rate limit by API key or authenticated user ID.
 
 ### Concept Reference
-→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting)
+→ [Rate Limiting Patterns](../../../06-scalability/concepts/rate-limiting-algorithms)

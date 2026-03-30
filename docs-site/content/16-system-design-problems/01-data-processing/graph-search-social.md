@@ -162,7 +162,7 @@ The trick: Facebook indexes only immediate friends' attributes (not friends-of-f
 
 ## Related Concepts
 
-- [Consistent Hashing](../../05-distributed-systems/concepts/consistent-hashing-deep-dive) — Routing queries to the correct shard
+- [Consistent Hashing](../../14-algorithms/concepts/consistent-hashing-deep-dive) — Routing queries to the correct shard
 - [Caching Fundamentals](../../02-caching/concepts/caching-fundamentals) — TAO tiered cache architecture
 
 ---

@@ -322,4 +322,4 @@ Even with consistent hashing, **hot spots are still possible**: if 80% of traffi
 
 - 📖 [Amazon DynamoDB Architecture](https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html) — Werner Vogels, 2007. The paper that popularized consistent hashing in production distributed databases.
 - 📖 [Consistent Hashing and Random Trees](https://www.cs.princeton.edu/courses/archive/fall09/cos518/papers/chash.pdf) — Karger et al., 1997. The original academic paper.
-- 📚 [See full concept deep-dive](../concepts/consistent-hashing-deep-dive) — explains virtual nodes, replication factor, and production tuning parameters.
+- 📚 [See full concept deep-dive](/14-algorithms/concepts/consistent-hashing-deep-dive) — explains virtual nodes, replication factor, and production tuning parameters.

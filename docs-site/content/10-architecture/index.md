@@ -26,7 +26,7 @@ graph LR
 | I am... | Start here | Goal |
 |---------|-----------|------|
 | 🟢 Junior | [microservices-architecture](./concepts/microservices-architecture) | Understand microservices vs monolith trade-offs |
-| 🟡 Mid-level | [circuit-breaker](./concepts/circuit-breaker) + [api-gateway](./concepts/api-gateway) | Build resilient distributed systems |
+| 🟡 Mid-level | [circuit-breaker](./concepts/circuit-breaker) + [api-gateway](/07-api-design/concepts/api-gateway-deep-dive) | Build resilient distributed systems |
 | 🔴 Senior / TL | [saga-pattern-deep-dive](./concepts/saga-pattern-deep-dive) + [cqrs](./concepts/cqrs) | Design complex event-driven architectures |
 | 🏆 Interview prepping | [business-and-advanced questions](../../12-interview-prep/system-design/business-and-advanced) | Advanced architecture interview patterns |
 

@@ -724,9 +724,9 @@ graph TD
 
 ## 🔗 Next Steps
 
-- [Dead Letter Queues](./05-dead-letter-queue.md) - Handle failed messages
-- [Pub/Sub Pattern](./06-pub-sub.md) - Event-driven architecture
-- [Retry Strategies](./09-retry-strategies.md) - Exponential backoff
+- [Dead Letter Queues](/04-messaging/concepts/dead-letter-queue-design) - Handle failed messages
+- [Pub/Sub Pattern](/03-redis/concepts/redis-pub-sub-vs-streams) - Event-driven architecture
+- [Retry Strategies](/10-architecture/hands-on/retry-backoff) - Exponential backoff
 
 ## 📚 Further Reading
 

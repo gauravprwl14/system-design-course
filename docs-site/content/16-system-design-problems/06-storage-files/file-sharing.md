@@ -93,7 +93,7 @@ graph TD
 
 ## Related Concepts
 
-- [Dropbox for persistent file sync comparison](../06-storage-files/index)
+- [Dropbox for persistent file sync comparison](../06-storage-files)
 - [Pastebin for similar short-link generation patterns](../02-social-platforms/pastebin)
 
 ---

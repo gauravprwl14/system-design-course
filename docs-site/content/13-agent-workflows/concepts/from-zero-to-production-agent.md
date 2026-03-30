@@ -252,7 +252,7 @@ Before you go live, read all five failure mode articles:
 - [LLM Hallucination in Agents](../failures/hallucination-in-agents) — agents confidently hallucinate tool arguments
 - [Context Window Overflow](../failures/context-overflow) — sessions silently degrade as context fills
 - [Infinite Loops](../failures/infinite-loops) — agents that never decide they're done
-- [Prompt Injection](../failures/prompt-injection) — adversarial inputs hijack the agent's behavior
+- [Prompt Injection](../failures/prompt-injection-agents) — adversarial inputs hijack the agent's behavior
 
 ### Stage 4 Milestone
 

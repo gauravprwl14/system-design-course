@@ -712,9 +712,9 @@ Cost Drivers:
 
 ## Related Resources
 
-- [URL Shortener Design](./url-shortener.md) - Similar short URL generation
-- [Key-Value Store Design](./key-value-store.md) - Storage patterns
-- [Rate Limiting Strategies](../api-design/rate-limiting.md) - Abuse prevention
+- [URL Shortener Design](/11-real-world/url-shortener) - Similar short URL generation
+- [Key-Value Store Design](/16-system-design-problems/05-infrastructure/key-value-store) - Storage patterns
+- [Rate Limiting Strategies](/07-api-design/concepts/rate-limiting) - Abuse prevention
 
 ---
 

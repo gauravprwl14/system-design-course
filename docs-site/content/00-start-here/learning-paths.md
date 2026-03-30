@@ -131,4 +131,4 @@ You want deep expertise in distributed systems, not just interview prep.
 5. [Notification System](../16-system-design-problems/03-communication/notification-system) — Event-driven AI pipelines
 6. [Distributed Messaging](../16-system-design-problems/05-infrastructure/distributed-messaging) — Kafka for AI workloads
 
-**After this track**: Check the [AI Agents section](../16-system-design-problems/09-ai-agents/index) for 9 more AI problem walkthroughs.
+**After this track**: Check the [AI Agents section](../16-system-design-problems/09-ai-agents) for 9 more AI problem walkthroughs.

@@ -178,7 +178,7 @@ This creates reciprocal incentive: to download fast, you must also upload.
 
 ## Related Concepts
 
-- [Consistent Hashing](../../05-distributed-systems/concepts/consistent-hashing-deep-dive) — XOR-distance routing in Kademlia is conceptually similar
+- [Consistent Hashing](/14-algorithms/concepts/consistent-hashing-deep-dive) — XOR-distance routing in Kademlia is conceptually similar
 - [Message Queue Basics](../../04-messaging/concepts/message-queue-basics) — Message passing without central broker
 
 ---

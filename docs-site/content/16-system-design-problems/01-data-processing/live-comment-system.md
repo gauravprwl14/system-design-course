@@ -89,8 +89,8 @@ graph TD
 
 ## Related Concepts
 
-- [WebSocket vs SSE vs Long Polling trade-offs](../../../07-api-design/concepts/real-time-protocols)
-- [Redis Pub/Sub for real-time messaging](../../../03-redis/concepts/pubsub)
+- [WebSocket vs SSE vs Long Polling trade-offs](../../../07-api-design/concepts/realtime-api-patterns)
+- [Redis Pub/Sub for real-time messaging](../../../03-redis/concepts/redis-pub-sub-vs-streams)
 
 ---
 

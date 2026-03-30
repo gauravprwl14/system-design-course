@@ -201,7 +201,7 @@ SELECT * FROM audit_snapshots(
 ## Related Concepts
 
 - [Message Queue Basics](../../04-messaging/concepts/message-queue-basics) — Kafka as durable change event stream
-- [Database Scaling](../../01-databases/concepts/database-scaling) — PostgreSQL WAL and replication architecture
+- [Database Scaling](../../01-databases/concepts/sharding-strategies) — PostgreSQL WAL and replication architecture
 
 ---
 

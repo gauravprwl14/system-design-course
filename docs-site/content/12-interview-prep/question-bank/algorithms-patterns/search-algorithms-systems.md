@@ -57,7 +57,7 @@ graph TD
 - ❌ **Inverted index stores full documents:** Inverted index stores only term metadata (doc_id, tf, position). Full documents are in a separate document store. The index is for lookup; the store is for retrieval.
 
 ### Concept Reference
-→ [Search Systems](../../../07-api-design/concepts/search-fundamentals)
+→ [Search Systems](../../../12-interview-prep/question-bank/algorithms-patterns/search-algorithms-systems)
 
 ---
 
@@ -101,7 +101,7 @@ graph TD
 - ❌ **Not knowing Elasticsearch uses BM25 by default:** Elasticsearch switched from TF-IDF to BM25 as the default similarity in version 5.0 (2016). Saying "Elasticsearch uses TF-IDF" in a 2025 interview is outdated.
 
 ### Concept Reference
-→ [Search Systems](../../../07-api-design/concepts/search-fundamentals)
+→ [Search Systems](../../../12-interview-prep/question-bank/algorithms-patterns/search-algorithms-systems)
 
 ---
 
@@ -178,7 +178,7 @@ For 10K req/sec with p99 < 50ms, use a two-tier approach:
 - ❌ **Not considering prefix-key explosion:** Indexing all prefixes of "application" (a, ap, app, appl, appli, applic, applica, applicat, applicati, applicatio, application = 11 entries). 1M terms × 8 avg chars = 8M Redis keys. Memory: 8M × 50 bytes = 400MB — manageable but must be planned.
 
 ### Concept Reference
-→ [Search Systems](../../../07-api-design/concepts/search-fundamentals)
+→ [Search Systems](../../../12-interview-prep/question-bank/algorithms-patterns/search-algorithms-systems)
 
 ---
 
@@ -266,7 +266,7 @@ Vector similarity search finds semantically similar items using dense embedding 
 - ❌ **Confusing embedding dimensions with document length:** A 768-dimensional vector encodes semantic meaning — it is not the word count. Documents of 10 words and 10,000 words both produce 768-dim embeddings.
 
 ### Concept Reference
-→ [Search Systems](../../../07-api-design/concepts/search-fundamentals)
+→ [Search Systems](../../../12-interview-prep/question-bank/algorithms-patterns/search-algorithms-systems)
 
 ---
 
@@ -311,7 +311,7 @@ graph TD
 - ❌ **Recommending Elasticsearch without considering OpenSearch:** Since Elastic changed its licensing (SSPL) in 2021, many organisations use OpenSearch (AWS fork of Elasticsearch 7.x). In AWS environments, OpenSearch Service is the managed choice.
 
 ### Concept Reference
-→ [Search Systems](../../../07-api-design/concepts/search-fundamentals)
+→ [Search Systems](../../../12-interview-prep/question-bank/algorithms-patterns/search-algorithms-systems)
 
 ---
 
@@ -398,4 +398,4 @@ Google's search handles 8.5B/day (100K queries/sec) through a distributed archit
 - ❌ **Not knowing PageRank is one of thousands of signals:** "Google uses PageRank" is technically true but severely incomplete. Modern Google Search uses thousands of ranking signals including BERT (query understanding), user behaviour, freshness, authority, and many others. PageRank is one component.
 
 ### Concept Reference
-→ [Search Systems](../../../07-api-design/concepts/search-fundamentals)
+→ [Search Systems](../../../12-interview-prep/question-bank/algorithms-patterns/search-algorithms-systems)

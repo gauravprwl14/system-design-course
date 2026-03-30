@@ -46,7 +46,7 @@
 | # | Concept | Status | Article |
 |---|---------|--------|---------|
 | 18 | Retrieval-Augmented Generation (RAG) | ✅ | [RAG Deep Dive](./concepts/rag-deep-dive) |
-| 19 | Vector Databases | ✅ | [Vector Database Concepts](../15-vector-databases/concepts/vector-db-concepts) |
+| 19 | Vector Databases | ✅ | [Vector Database Concepts](../15-vector-databases/concepts/similarity-search) |
 | 20 | Semantic Search | ✅ | [Similarity Search](../15-vector-databases/concepts/similarity-search) |
 | 21 | Chunking Strategies | ✅ | [RAG Deep Dive](./concepts/rag-deep-dive) |
 | 22 | Hybrid Search | ✅ | [Hybrid Search](../15-vector-databases/concepts/hybrid-search) |

@@ -587,4 +587,4 @@ You just tested your understanding with 4 application questions. The interview v
 | [When is it time to shard? And how do you do it without downtime?](../../12-interview-prep/question-bank/databases/database-sharding-deep-dive) | Sharding strategy + migration planning | 🔴 Senior |
 | [Cross-shard join: orders and users on different shard keys — what are your options?](../../12-interview-prep/question-bank/databases/database-sharding-deep-dive) | Cross-concept: sharding + CQRS + query design | ⚫ Staff |
 
-> The Staff question (⚫) requires understanding CQRS. Read [Event Sourcing & CQRS](../../05-distributed-systems/concepts/cqrs) if you haven't.
+> The Staff question (⚫) requires understanding CQRS. Read [Event Sourcing & CQRS](../../10-architecture/concepts/cqrs) if you haven't.

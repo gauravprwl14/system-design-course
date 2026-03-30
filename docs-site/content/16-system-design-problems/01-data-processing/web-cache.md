@@ -89,7 +89,7 @@ graph TD
 ## Related Concepts
 
 - [CDN Architecture and PoP placement](../05-infrastructure/cdn)
-- [Cache eviction policies and trade-offs](../../../02-caching/concepts/eviction-policies)
+- [Cache eviction policies and trade-offs](../../../03-redis/concepts/redis-eviction-policies)
 
 ---
 

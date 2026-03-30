@@ -1155,7 +1155,7 @@ URL shortener covers a surprising breadth of system design fundamentals. These q
 **Related concepts in this knowledge base:**
 - Caching strategies → [02-caching](/02-caching/concepts/caching-strategies)
 - Database replication → [01-databases](/01-databases/concepts/replication-basics)
-- Consistent hashing → [05-distributed-systems](/05-distributed-systems/concepts/consistent-hashing)
+- Consistent hashing → [05-distributed-systems](/05-distributed-systems/poc/consistent-hashing-poc)
 - Hot partition problem → [problems-at-scale/scalability/hot-partition](/problems-at-scale/scalability/hot-partition)
 
 ---

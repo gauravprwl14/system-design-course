@@ -837,9 +837,9 @@ breaker.on('stateChange', ({ name, to }) => {
 
 ## 🔗 Next Steps
 
-- [Retry Pattern](./02-retry-pattern.md) - Exponential backoff for transient failures
-- [Bulkhead Pattern](./04-bulkhead.md) - Isolate failures to pools
-- [Timeout Pattern](./03-timeout-pattern.md) - Fail fast on slow services
+- [Retry Pattern](/10-architecture/hands-on/retry-backoff) - Exponential backoff for transient failures
+- [Bulkhead Pattern](/10-architecture/concepts/bulkhead-pattern) - Isolate failures to pools
+- [Timeout Pattern](/10-architecture/hands-on/timeout-configuration) - Fail fast on slow services
 
 ## 📚 Further Reading
 

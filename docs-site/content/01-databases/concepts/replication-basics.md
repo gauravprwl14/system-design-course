@@ -512,9 +512,9 @@ SELECT * FROM pg_stat_replication;
 
 ## 🔗 Next Steps
 
-- [Read Replicas Explained](./02-read-replicas.md) - Deep dive into scaling reads
-- [Database Failover Mechanisms](./08-failover-mechanisms.md) - Handle master failures
-- [Multi-Region Databases](./07-multi-region-setup.md) - Global replication
+- [Read Replicas Explained](/01-databases/concepts/read-replicas) - Deep dive into scaling reads
+- [Database Failover Mechanisms](/01-databases/concepts/replication-basics) - Handle master failures
+- [Multi-Region Databases](/01-databases/concepts/replication-basics) - Global replication
 
 ## 📚 Further Reading
 

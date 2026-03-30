@@ -89,8 +89,8 @@ graph TD
 
 ## Related Concepts
 
-- [Bloom Filters for approximate deduplication](../../../05-distributed-systems/concepts/bloom-filters)
-- [Consistent Hashing for distributing URL frontier across workers](../../../05-distributed-systems/concepts/consistent-hashing)
+- [Bloom Filters for approximate deduplication](../../../14-algorithms/concepts/bloom-filter)
+- [Consistent Hashing for distributing URL frontier across workers](../../../14-algorithms/concepts/consistent-hashing-deep-dive)
 
 ---
 

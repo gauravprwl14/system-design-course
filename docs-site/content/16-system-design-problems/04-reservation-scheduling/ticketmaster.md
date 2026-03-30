@@ -1381,14 +1381,14 @@ Map each common interview question to the specific mechanism in this system.
 
 | Topic | Why It's Relevant |
 |-------|-------------------|
-| [Race Conditions](/problems-at-scale/concurrency/race-conditions) | The fundamental problem Ticketmaster solves — Lost Update pattern |
+| [Race Conditions](/problems-at-scale/concurrency/race-condition-inventory) | The fundamental problem Ticketmaster solves — Lost Update pattern |
 | [Double Booking](/problems-at-scale/concurrency/double-booking) | Same problem in hotel/airline context — same Redis TTL solution |
-| [Distributed Locking](/05-distributed-systems/concepts/distributed-locks) | Redis SETNX mechanics, Redlock for multi-node safety |
-| [Saga Pattern](/10-architecture/patterns/saga-pattern) | Payment + booking coordination without two-phase commit |
-| [Redis Data Structures](/03-redis/concepts/data-structures) | Sorted sets for queues, bitmaps for seat maps, strings for locks |
-| [Database Partitioning](/01-databases/concepts/partitioning) | Why partitioning by section reduces hot-spot contention |
+| [Distributed Locking](/03-redis/concepts/redis-distributed-locking) | Redis SETNX mechanics, Redlock for multi-node safety |
+| [Saga Pattern](/10-architecture/concepts/saga-pattern-deep-dive) | Payment + booking coordination without two-phase commit |
+| [Redis Data Structures](/03-redis/concepts/redis-data-structures-deep-dive) | Sorted sets for queues, bitmaps for seat maps, strings for locks |
+| [Database Partitioning](/01-databases/concepts/sharding-strategies) | Why partitioning by section reduces hot-spot contention |
 | [Idempotency](/07-api-design/concepts/idempotency) | Why booking_id must be generated before the payment call |
-| [Virtual Queues](/06-scalability/patterns/queue-based-load-leveling) | Drip-rate pattern for onsale load management |
+| [Virtual Queues](/04-messaging/hands-on/backpressure-queues) | Drip-rate pattern for onsale load management |
 
 ---
 

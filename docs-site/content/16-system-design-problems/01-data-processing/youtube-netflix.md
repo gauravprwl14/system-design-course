@@ -1295,7 +1295,7 @@ YouTube aggressively pushes VP9 and AV1:
 
 ## Related Concepts
 
-- [Hot Partition Problem](/system-design-problems/01-data-processing/url-shortener) — View count sharding uses the same technique as avoiding hot partitions in databases
+- [Hot Partition Problem](/16-system-design-problems/01-data-processing/url-shortener) — View count sharding uses the same technique as avoiding hot partitions in databases
 - [CDN & Caching Strategies](/02-caching) — Deep dive on CDN cache eviction, TTL tuning, and cache invalidation
 - [Message Queues (Kafka)](/04-messaging) — How the view count analytics pipeline and transcoding job queue work
 - [Distributed Systems at Scale](/05-distributed-systems) — CAP theorem and consistency trade-offs relevant to view count accuracy

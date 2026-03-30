@@ -687,10 +687,10 @@ app.use((req, res, next) => {
 
 ## Related Resources
 
-- [Stateless Architecture](./stateless-architecture.md) - Enable horizontal scaling
-- [High Availability](./high-availability.md) - Eliminate single points of failure
-- [Database Scaling](../databases/scaling.md) - Replicas and sharding
-- [Load Balancing Strategies](../load-balancing/strategies.md) - Distribute traffic
+- [Stateless Architecture](/06-scalability/concepts/stateless-architecture) - Enable horizontal scaling
+- [High Availability](/06-scalability/concepts/high-availability) - Eliminate single points of failure
+- [Database Scaling](/01-databases/concepts/sharding-strategies) - Replicas and sharding
+- [Load Balancing Strategies](/06-scalability/hands-on/load-balancer-round-robin) - Distribute traffic
 
 ---
 

@@ -173,7 +173,7 @@ Risk checks run in parallel with a timeout — if they don't complete in 5 micro
 ## Related Concepts
 
 - [Message Queue Basics](../../04-messaging/concepts/message-queue-basics) — Kafka as the event log backbone
-- [Consistent Hashing](../../05-distributed-systems/concepts/consistent-hashing-deep-dive) — Sharding order books across symbols
+- [Consistent Hashing](/14-algorithms/concepts/consistent-hashing-deep-dive) — Sharding order books across symbols
 
 ---
 

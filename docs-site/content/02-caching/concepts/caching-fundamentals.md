@@ -648,9 +648,9 @@ async function updateUser(userId, updates) {
 
 ## 🔗 Next Steps
 
-- [Cache-Aside Pattern](./02-cache-aside.md) - Most common caching strategy
-- [Cache Invalidation](./05-cache-invalidation.md) - Keeping cache fresh
-- [Distributed Caching with Redis](./06-redis-distributed.md) - Scale across servers
+- [Cache-Aside Pattern](/02-caching/concepts/caching-strategies) - Most common caching strategy
+- [Cache Invalidation](/02-caching/concepts/cache-invalidation-strategies) - Keeping cache fresh
+- [Distributed Caching with Redis](/02-caching/concepts/distributed-cache-design) - Scale across servers
 
 ## 📚 Further Reading
 

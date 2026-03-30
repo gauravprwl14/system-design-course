@@ -753,9 +753,9 @@ This is only possible with stateless architecture.
 
 ## Related Resources
 
-- [Scaling Basics](./scaling-basics.md) - Vertical vs horizontal scaling
-- [High Availability](./high-availability.md) - Eliminate single points of failure
-- [Connection Pool Management](../performance/connection-pool-management.md) - External connection state
+- [Scaling Basics](/06-scalability/concepts/scaling-basics) - Vertical vs horizontal scaling
+- [High Availability](/06-scalability/concepts/high-availability) - Eliminate single points of failure
+- [Connection Pool Management](/01-databases/concepts/connection-pooling-deep-dive) - External connection state
 
 ---
 

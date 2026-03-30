@@ -701,9 +701,9 @@ async weeklyMaintenance() {
 
 ## 🔗 Next Steps
 
-- [Connection Pooling](./05-connection-pooling.md) - Manage database connections
-- [Query Optimization](./06-performance/02-query-optimization.md) - Advanced query tuning
-- [Database Monitoring](./10-monitoring/03-database-monitoring.md) - Track performance
+- [Connection Pooling](/01-databases/concepts/connection-pooling-deep-dive) - Manage database connections
+- [Query Optimization](/12-interview-prep/question-bank/databases/query-optimization) - Advanced query tuning
+- [Database Monitoring](/09-observability/concepts/database-query-performance) - Track performance
 
 ## 📚 Further Reading
 

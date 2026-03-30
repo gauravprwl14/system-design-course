@@ -92,7 +92,7 @@ graph TD
 ## Related Concepts
 
 - [Document processing agent for reading and extracting from sources](./document-processing-agent)
-- [Multi-agent orchestration for parallelizing research subtasks](../09-ai-agents/index)
+- [Multi-agent orchestration for parallelizing research subtasks](/16-system-design-problems/09-ai-agents)
 
 ---
 

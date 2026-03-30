@@ -900,9 +900,9 @@ If the answer is "the pager goes off but service continues":
 
 ## Related Resources
 
-- [Scaling Basics](./scaling-basics.md) - Vertical vs horizontal scaling
-- [Stateless Architecture](./stateless-architecture.md) - Enable easy failover
-- [Circuit Breaker Pattern](../patterns/circuit-breaker.md) - Handle dependency failures
+- [Scaling Basics](/06-scalability/concepts/scaling-basics) - Vertical vs horizontal scaling
+- [Stateless Architecture](/06-scalability/concepts/stateless-architecture) - Enable easy failover
+- [Circuit Breaker Pattern](/10-architecture/concepts/circuit-breaker) - Handle dependency failures
 
 ---
 

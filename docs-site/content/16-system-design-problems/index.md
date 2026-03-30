@@ -52,7 +52,7 @@ Every article cross-links to foundational concepts. The most frequently referenc
 
 - [Caching Strategies](/02-caching/concepts/caching-strategies) — appears in 40+ problems
 - [Database Replication](/01-databases/concepts/replication-basics) — appears in 30+ problems
-- [Message Queues](/04-messaging/concepts/message-queue-fundamentals) — appears in 25+ problems
+- [Message Queues](/04-messaging/concepts/message-queue-basics) — appears in 25+ problems
 - [Rate Limiting](/07-api-design/concepts/rate-limiting) — appears in 20+ problems
-- [Consistent Hashing](/05-distributed-systems/concepts/consistent-hashing) — appears in 15+ problems
-- [CAP Theorem](/05-distributed-systems/concepts/cap-theorem) — appears in every distributed problem
+- [Consistent Hashing](/05-distributed-systems/poc/consistent-hashing-poc) — appears in 15+ problems
+- [CAP Theorem](/05-distributed-systems/concepts/cap-theorem-practical) — appears in every distributed problem

@@ -91,7 +91,7 @@ graph TD
 ## Related Concepts
 
 - [AI Customer Support Agent for production deployment](./customer-support-agent)
-- [RAG QA agent for knowledge-base grounded responses](../09-ai-agents/index)
+- [RAG QA agent for knowledge-base grounded responses](../09-ai-agents)
 
 ---
 

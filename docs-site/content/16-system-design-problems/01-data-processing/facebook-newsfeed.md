@@ -89,8 +89,8 @@ graph TD
 
 ## Related Concepts
 
-- [Consistent Hashing for cache sharding](../../../05-infrastructure/concepts/consistent-hashing)
-- [Redis Sorted Sets for feed storage](../../../03-caching/concepts/redis-data-structures)
+- [Consistent Hashing for cache sharding](../../../14-algorithms/concepts/consistent-hashing-deep-dive)
+- [Redis Sorted Sets for feed storage](../../../03-redis/concepts/redis-data-structures-deep-dive)
 
 ---
 

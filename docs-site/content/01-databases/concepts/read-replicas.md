@@ -721,9 +721,9 @@ Benefit: Handle 20% more traffic
 
 ## 🔗 Next Steps
 
-- [Database Sharding Strategies](./03-sharding-strategies.md) - Scale writes
-- [Connection Pooling](./05-connection-pooling.md) - Manage connections efficiently
-- [Multi-Region Databases](./07-multi-region-setup.md) - Global read replicas
+- [Database Sharding Strategies](/01-databases/concepts/sharding-strategies) - Scale writes
+- [Connection Pooling](/01-databases/concepts/connection-pooling-deep-dive) - Manage connections efficiently
+- [Multi-Region Databases](/01-databases/concepts/replication-basics) - Global read replicas
 
 ## 📚 Further Reading
 

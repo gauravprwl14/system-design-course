@@ -89,7 +89,7 @@ graph TD
 ## Related Concepts
 
 - [Top-K analysis using similar counting techniques](../01-data-processing/top-k-analysis)
-- [Redis data structures for counting operations](../../../03-redis/concepts/redis-data-structures)
+- [Redis data structures for counting operations](../../../03-redis/concepts/redis-data-structures-deep-dive)
 
 ---
 

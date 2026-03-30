@@ -579,5 +579,5 @@ graph TD
 
 ### Concept Reference
 → [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — shard key selection is the root cause of cross-shard join problems
-→ [Event Sourcing & CQRS](../../distributed-systems/event-sourcing-cqrs) — CQRS is the production-grade answer for cross-shard read queries
+→ [Event Sourcing & CQRS](../../question-bank/distributed-systems/event-sourcing-cqrs) — CQRS is the production-grade answer for cross-shard read queries
 → [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — read replicas + separate read model vs sharding trade-offs
