@@ -538,3 +538,53 @@ Stage 4 (100k+ QPS):
 
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*
+
+---
+
+## 🧠 Test Your Understanding
+
+*Don't re-read before attempting. The goal is retrieval, not recognition.*
+
+<details>
+<summary>Q1 — Surface Check: Name the two main approaches to scaling database reads and state when you reach for each.</summary>
+
+**Answer**: (1) Read replicas: copy all data to additional nodes, route reads there. Reach for this when reads >> writes and latency is caused by DB load (not data volume). Works until replica lag or replication throughput becomes the bottleneck. (2) Sharding (horizontal partitioning): split data across multiple databases by a shard key. Reach for this when data volume exceeds a single node's capacity or when write throughput exceeds what one primary can handle. Much higher operational complexity — use read replicas first, shard only when necessary.
+
+</details>
+
+<details>
+<summary>Q2 — Failure Scenario: You have a primary + 3 read replicas. You add a 4th replica to handle increasing read traffic. Read latency is unchanged. What are the two most likely causes?</summary>
+
+**Answer**: (1) All reads still route to primary — your application/ORM/connection pool is not configured to use replicas. Check the connection string and load balancer config. PgBouncer or RDS Proxy can route SELECTs to replicas automatically. (2) The bottleneck isn't DB CPU — it's query inefficiency. If queries are doing full table scans or missing indexes, more replicas each do the same slow scan. `EXPLAIN ANALYZE` is your diagnostic tool. Check buffer cache hit rate (should be 99%+) and look for sequential scans on large tables.
+
+</details>
+
+<details>
+<summary>Q3 — Cross-Concept: A user updates their shipping address. Immediately after, they see their old address when viewing their profile. Your system uses 3 read replicas. Explain exactly what happened and give two fixes.</summary>
+
+**Answer**: Read-your-writes violation caused by replication lag. Write went to primary → primary acknowledged → user immediately read → read routed to replica → replica hasn't yet received the write (replication lag was 100ms, but the read happened in 20ms) → replica returned old address. Fix 1: route all reads immediately following a user-initiated write to the primary for N seconds (set a session flag after writes, middleware checks it). Fix 2: for critical reads (profile page after save), always read from primary. Use replicas only for reads where staleness is acceptable (e.g., analytics, leaderboards). This connects to CAP: read replicas are an AP optimization — you trade strict consistency for availability and throughput.
+
+</details>
+
+<details>
+<summary>Q4 — Trade-off Challenge: At what point does adding more read replicas start hurting performance? Explain the mechanism.</summary>
+
+**Answer**: When replication from primary saturates primary I/O. Each replica consumes a replication stream from the primary — this is disk reads (WAL) + network sends. At high replica counts (typically 10+), the primary spends significant I/O serving replicas rather than user queries. Also: if write volume is high, replicas spend most of their CPU applying WAL (write-ahead log) and permanently lag behind. Reads from lagging replicas are increasingly stale. The right fix at this point is not more replicas — it's sharding (splitting to multiple primaries). Instagram hit this at ~12 replicas per primary, with replication lag exceeding 60 seconds under peak write load. They then sharded Postgres.
+
+</details>
+
+---
+
+## 📚 Ready for Interview Level?
+
+You just tested your understanding with 4 application questions. The interview versions go deeper on replication lag, cross-shard queries, and the point where sharding becomes necessary.
+
+**Curated questions from the interview bank (do these in order):**
+
+| Question | Tests | Level |
+|----------|-------|-------|
+| [What are leader-follower, multi-master, and synchronous replication patterns?](../../12-interview-prep/question-bank/databases/database-replication-patterns) | Replication topology trade-offs | 🟡 Mid |
+| [When is it time to shard? And how do you do it without downtime?](../../12-interview-prep/question-bank/databases/database-sharding-deep-dive) | Sharding strategy + migration planning | 🔴 Senior |
+| [Cross-shard join: orders and users on different shard keys — what are your options?](../../12-interview-prep/question-bank/databases/database-sharding-deep-dive) | Cross-concept: sharding + CQRS + query design | ⚫ Staff |
+
+> The Staff question (⚫) requires understanding CQRS. Read [Event Sourcing & CQRS](../../05-distributed-systems/concepts/cqrs) if you haven't.
