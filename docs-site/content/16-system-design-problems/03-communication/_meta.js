@@ -1,0 +1,11 @@
+export default {
+  index: { title: '💬 Communication' },
+  'whatsapp-messenger': { title: '💬 WhatsApp / Messenger' },
+  'facebook-messenger': { title: '💬 Facebook Messenger' },
+  'google-docs': { title: '📄 Google Docs' },
+  'push-notification-service': { title: '🔔 Push Notification Service' },
+  'video-conferencing': { title: '📹 Video Conferencing' },
+  'scalable-email-service': { title: '📧 Scalable Email Service' },
+  'webhook-notification': { title: '🔗 Webhook Notifications' },
+  'notification-system': { title: '🔔 Notification System' },
+}
