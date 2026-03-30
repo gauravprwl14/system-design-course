@@ -8,4 +8,8 @@ export default {
   'scalable-email-service': { title: '📧 Scalable Email Service' },
   'webhook-notification': { title: '🔗 Webhook Notifications' },
   'notification-system': { title: '🔔 Notification System' },
+  'peer-to-peer-network': { title: '🌐 Peer-to-Peer Network' },
+  'smart-home-system': { title: '🏠 Smart Home IoT System' },
+  'online-presence-indicator': { title: '🟢 Online Presence Indicator' },
+  'collaboration-tool': { title: '💼 Team Collaboration Tool' },
 }
