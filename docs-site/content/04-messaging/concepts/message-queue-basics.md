@@ -734,3 +734,53 @@ graph TD
 - RabbitMQ Tutorials: https://www.rabbitmq.com/getstarted.html
 - AWS SQS: https://docs.aws.amazon.com/sqs/
 - Apache Kafka: https://kafka.apache.org/documentation/
+
+---
+
+## 🧠 Test Your Understanding
+
+*Don't re-read before attempting. The goal is retrieval, not recognition.*
+
+<details>
+<summary>Q1 — Surface Check: What problem does a message queue solve that a direct HTTP call between services cannot? Give a specific failure scenario.</summary>
+
+**Answer**: A message queue decouples producer availability from consumer availability. With direct HTTP: if the email service is down, the order service call fails → the user's order either fails or the order service must implement retry logic. With a queue: order service writes to queue → returns success immediately → email service processes when it's available → user gets email eventually. The specific failure scenario solved: consumer downtime doesn't propagate to the producer. The user's order succeeds even if the email service is down for 2 hours.
+
+</details>
+
+<details>
+<summary>Q2 — Failure Scenario: A message is redelivered to your consumer 50 times. Each time, the consumer crashes before acknowledging it. What is this called, what causes it, and what are two production-safe fixes?</summary>
+
+**Answer**: This is a poison pill message (or dead letter scenario). Cause: the message contains data that consistently crashes the consumer before it can ACK — so the queue redelivers indefinitely. Fix 1: Dead Letter Queue (DLQ) — configure the queue to move messages to a DLQ after N failed deliveries (typically 3-5). The DLQ holds problematic messages for inspection without blocking the main queue. Fix 2: Defensive consumer code that wraps all processing in try-catch — if processing fails, explicitly send a NACK with no-requeue (rather than crashing), log the error, and move on. Without a DLQ, a single bad message can permanently block a queue.
+
+</details>
+
+<details>
+<summary>Q3 — Cross-Concept: Your payment service publishes "payment.created" events to a queue. Your fulfillment service consumes them and ships orders. Network partition causes the payment service to publish the same payment event twice. Without idempotency, what exactly goes wrong in the fulfillment service?</summary>
+
+**Answer**: Fulfillment processes the event twice → ships the order twice → double shipment (financial loss + inventory error). This is the at-least-once delivery guarantee exposing itself. At-least-once means duplicates are possible during network issues. Fix: idempotency key on the consumer. Fulfillment stores `payment_id` in a processed_payments table (unique index). Before processing: check if `payment_id` exists. If yes → skip (already processed). If no → process + insert. This makes the consumer idempotent — processing the same event N times has the same effect as processing it once. Connect to CAP: the idempotency store itself must be CP (consistent) or you can still double-ship.
+
+</details>
+
+<details>
+<summary>Q4 — Trade-off Challenge: Your queue has 1M unprocessed messages. New messages arrive at 1,200/sec. Consumers process at 1,000/sec. The backlog grows 200/sec. Your first instinct is to add more consumer instances. Name two scenarios where adding consumers would NOT solve the problem.</summary>
+
+**Answer**: (1) **Downstream bottleneck**: if consumers write to a database that's already at max throughput (say 1,000 writes/sec), adding consumers causes more write contention → all consumers slow down → net throughput doesn't increase. You'd need to shard the database or batch writes first. (2) **Single-partition queue**: if all 1.2M messages are in one Kafka partition (single shard), only one consumer can read from it at a time — adding consumers does nothing. You must increase partition count first so consumers can parallelize. Root cause matters: adding consumers is only the right fix when the bottleneck is consumer compute, not I/O downstream or queue architecture.
+
+</details>
+
+---
+
+## 📚 Ready for Interview Level?
+
+You just tested your understanding with 4 application questions. The interview versions connect message queues to distributed transactions, idempotency at scale, and event-driven architecture patterns.
+
+**Curated questions from the interview bank (do these in order):**
+
+| Question | Tests | Level |
+|----------|-------|-------|
+| [What is idempotency and how do you implement it at the consumer?](../../12-interview-prep/question-bank/distributed-systems/idempotency-at-scale) | Exactly-once semantics in practice | 🟡 Mid |
+| [Saga pattern: choreography vs orchestration trade-offs](../../12-interview-prep/question-bank/distributed-systems/saga-pattern) | Distributed transactions via messaging | 🔴 Senior |
+| [Is Kafka CP or AP? Prove it with acks and min.insync.replicas.](../../12-interview-prep/question-bank/distributed-systems/cap-theorem-real-world) | Cross-concept: CAP theorem applied to message queues | ⚫ Staff |
+
+> The Staff question (⚫) requires knowing CAP theorem. Read [CAP Theorem Practical](../../05-distributed-systems/concepts/cap-theorem-practical) first if you haven't.
