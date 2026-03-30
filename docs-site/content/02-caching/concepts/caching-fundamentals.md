@@ -657,3 +657,53 @@ async function updateUser(userId, updates) {
 - Redis Documentation: https://redis.io/documentation
 - Memcached: https://memcached.org/
 - AWS ElastiCache: https://aws.amazon.com/elasticache/
+
+---
+
+## 🧠 Test Your Understanding
+
+*Don't re-read before attempting. The goal is retrieval, not recognition.*
+
+<details>
+<summary>Q1 — Surface Check: What problem does caching solve, and name the two main eviction policies?</summary>
+
+**Answer**: Caching solves latency and database load by storing frequently accessed data in fast memory. Main eviction policies: LRU (Least Recently Used — evicts the item not accessed longest) and LFU (Least Frequently Used — evicts the item accessed fewest times). LRU works well for recency-biased access; LFU works better for stable hot sets.
+
+</details>
+
+<details>
+<summary>Q2 — Failure Scenario: Your cache hit rate drops from 95% to 60% after you scale from 10M to 100M users. The cache size hasn't changed. Explain what most likely happened and how you'd diagnose it.</summary>
+
+**Answer**: The working set grew beyond the cache. At 10M users, the top 5% of data (500K items) drives 95% of reads — that fits in cache. At 100M users, the hot 5% is now 5M items, exceeding cache capacity. Diagnosis: check cache memory usage (likely hitting the limit), check hit rate per key range, check eviction rate (high eviction = working set exceeds capacity). Fix: increase cache size, or switch to LFU if access patterns are skewed (most popular items stay, less popular get evicted first).
+
+</details>
+
+<details>
+<summary>Q3 — Cross-Concept: Your cache uses LRU eviction. Your database is a Postgres read replica. During a 2-hour traffic spike, cache eviction rate spikes and replica lag increases from 50ms to 8 seconds. Are these events related? Walk through the connection.</summary>
+
+**Answer**: Yes, directly related. High eviction → cache misses → DB queries that would have been cached now hit the replica → replica write throughput spikes (it must process both real writes AND the cache-miss reads) → replica lag increases. The connection: caching offloads read replicas. When the cache fails to offload, replica falls behind. If replica lag exceeds 8 seconds, users may see stale data — a consistency violation driven by a performance problem. Fix: the cache is the bottleneck, not the replica. Increase cache size or improve eviction policy.
+
+</details>
+
+<details>
+<summary>Q4 — Trade-off Challenge: Your CTO says "just cache everything for 24 hours — we'll have near-100% hit rate." Name two specific scenarios where a 24-hour TTL would cause visible user-facing bugs.</summary>
+
+**Answer**: (1) **User profile changes**: user updates their email → 24 hours later they still see old email. Any feature using cached profile (notifications, billing, security) shows wrong data. (2) **Inventory or pricing**: e-commerce item goes out of stock → still shows "in stock" for up to 24 hours. Users order unavailable items. (3) **Permission changes**: user's account is suspended → cached authorization says "allowed" for 24 hours. Security boundary is broken. The TTL must match the staleness tolerance of the data, not a uniform "longer = better" policy.
+
+</details>
+
+---
+
+## 📚 Ready for Interview Level?
+
+You just tested your understanding with 4 application questions. The interview versions are harder — they require connecting caching with CAP theorem, replica lag, and traffic patterns simultaneously.
+
+**Curated questions from the interview bank (do these in order):**
+
+| Question | Tests | Level |
+|----------|-------|-------|
+| [What are the 3 main techniques to prevent cache stampede?](../../12-interview-prep/question-bank/caching-performance/cache-stampede-thundering-herd) | Prevention options + context-appropriate selection | 🟡 Mid |
+| [Write-behind node crash: what data is lost and how to prevent it?](../../12-interview-prep/question-bank/caching-performance/write-behind-write-through) | Durability trade-offs of async writes | 🔴 Senior |
+| [Redis cluster loses 2 of 5 nodes → thundering herd cascade](../../12-interview-prep/question-bank/caching-performance/cache-stampede-thundering-herd) | Cross-concept: CAP theorem + caching failure cascade | ⚫ Staff |
+
+> The Staff question (⚫) requires knowing CAP theorem. Read [CAP Theorem Practical](../../05-distributed-systems/concepts/cap-theorem-practical) first if you haven't.
