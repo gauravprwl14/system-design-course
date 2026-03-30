@@ -6,4 +6,7 @@ export default {
   'identity-management': { title: '🪪 Identity Management' },
   'captcha-system': { title: '🤖 CAPTCHA System' },
   'voting-system': { title: '🗳️ Voting System' },
+  'blockchain': { title: '⛓️ Blockchain System' },
+  'network-security-monitoring': { title: '🛡️ Network Security Monitoring' },
+  'qr-code-system': { title: '📱 QR Code System' },
 }
