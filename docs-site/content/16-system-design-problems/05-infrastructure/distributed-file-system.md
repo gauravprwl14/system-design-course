@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a distributed file storage system like Dropbox |
+| [ByteByteGo — Design a Distributed File System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "distributed file system design" — chunking, replication, metadata |
+| [Google File System Paper](https://research.google/pubs/pub51/) | 📖 Blog | The foundational distributed file system paper that inspired HDFS |
+| [HDFS Architecture Guide](https://hadoop.apache.org/docs/r1.2.1/hdfs_design.html) | 📚 Docs | How Hadoop HDFS handles chunk storage, replication, and namenode |
+| [Amazon S3 Architecture and Durability](https://aws.amazon.com/blogs/storage/amazon-s3-update-strong-read-after-write-consistency/) | 📚 Docs | How S3 achieves 11 nines of durability with erasure coding |

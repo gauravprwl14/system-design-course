@@ -97,3 +97,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Calendar System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "calendar system design" — recurring events, timezone handling, and sync |
+| [Google Calendar API Design Patterns](https://developers.google.com/calendar/api/guides/concepts) | 📚 Docs | Recurring event representation, conflict resolution, and attendee management |
+| [Outlook Calendar Architecture](https://techcommunity.microsoft.com/t5/exchange-team-blog/) | 📖 Blog | How Exchange/Outlook handles calendar sync across millions of mailboxes |
+| [iCalendar RFC 5545 Specification](https://datatracker.ietf.org/doc/html/rfc5545) | 📚 Docs | The standard for calendar data interchange — RRULE for recurring events |
+| [Calendly Engineering: Timezone Handling](https://calendly.com/blog/engineering-timezone-detection) | 📖 Blog | The complexity of timezone-aware scheduling at scale |

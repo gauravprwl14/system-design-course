@@ -814,3 +814,13 @@ Result: Order status is "paid" in client's view, but lost from the store.
 - [Distributed Locking](./distributed-locking) — Built on top of key-value stores (Redlock algorithm)
 - [Distributed Counter](./distributed-counter) — CRDT-based counters in key-value stores
 - [Consistent Hashing](../../13-agent-workflows/concepts/llm-caching) — Core technique for partitioning
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing a key-value store — hashing, replication, consistency |
+| [ByteByteGo — Design a Key-Value Store](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Walkthrough of consistent hashing, LSM trees, and replication factor |
+| [Amazon DynamoDB: Paper and Architecture](https://www.usenix.org/conference/atc22/presentation/elhemali) | 📖 Blog | How DynamoDB achieves single-digit millisecond latency at any scale |
+| [Redis Architecture and Data Structures](https://redis.io/docs/data-types/) | 📚 Docs | In-memory key-value store — persistence modes, replication, clustering |
+| [Apache Cassandra: Distributed KV Design](https://cassandra.apache.org/doc/latest/cassandra/architecture/overview.html) | 📚 Docs | Wide-column key-value store with tunable consistency |

@@ -894,3 +894,13 @@ If `origin_device == myDeviceId`, skip the notification. This prevents Client A 
 - [Key-Value Store](../05-infrastructure/key-value-store) — Chunk index and session state use distributed KV stores
 - [Unique ID Generator](../05-infrastructure/unique-id-generator) — Every file and chunk needs a globally unique identifier
 - [Rate Limiter](../05-infrastructure/rate-limiter) — Upload/download bandwidth limiting per user
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a cloud file storage system like Dropbox or Google Drive |
+| [ByteByteGo — Design Dropbox](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Dropbox design" — chunking, delta sync, S3 integration |
+| [Dropbox Engineering: How Dropbox Works](https://dropbox.tech/infrastructure/magic-pocket-infrastructure) | 📖 Blog | Magic Pocket — Dropbox's custom-built exabyte-scale storage system |
+| [Dropbox Engineering: Sync Protocol](https://dropbox.tech/infrastructure/rewriting-the-heart-of-our-sync-engine) | 📖 Blog | How Dropbox rewrote their sync engine for better reliability and performance |
+| [Amazon S3 for File Storage](https://aws.amazon.com/s3/faqs/) | 📚 Docs | Object storage architecture — multipart upload, presigned URLs, lifecycle |

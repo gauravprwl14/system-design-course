@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Distributed Tracing System Design](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "distributed tracing design" — trace propagation, sampling, storage |
+| [Google Dapper: Distributed Systems Tracing](https://research.google/pubs/pub36356/) | 📖 Blog | The foundational distributed tracing paper from Google |
+| [Jaeger Architecture](https://www.jaegertracing.io/docs/1.6/architecture/) | 📚 Docs | OpenTracing-compatible distributed tracing with Cassandra storage |
+| [OpenTelemetry: Vendor-Neutral Observability](https://opentelemetry.io/docs/concepts/) | 📚 Docs | The emerging standard for distributed tracing, metrics, and logs |
+| [Uber Engineering: Jaeger Distributed Tracing](https://eng.uber.com/distributed-tracing/) | 📖 Blog | How Uber built and open-sourced Jaeger for microservices observability |

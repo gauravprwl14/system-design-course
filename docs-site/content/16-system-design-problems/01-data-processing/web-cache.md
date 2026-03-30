@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing a key-value store / cache |
+| [ByteByteGo — Design a Cache System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "cache design" — eviction policies, consistency, and distributed caching |
+| [Facebook Engineering: Memcached at Scale](https://research.facebook.com/publications/scaling-memcache-at-facebook/) | 📖 Blog | How Facebook scaled Memcached to handle billions of requests/sec |
+| [Redis Documentation: Caching Patterns](https://redis.io/docs/manual/patterns/) | 📚 Docs | Cache-aside, write-through, and write-behind patterns with code examples |
+| [Netflix Tech Blog: EVCache](https://netflixtechblog.com/caching-for-a-global-netflix-7bcc457012f1) | 📖 Blog | Netflix's global distributed caching infrastructure |

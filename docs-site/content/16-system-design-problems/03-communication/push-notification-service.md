@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Push Notification Service Design](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "push notification design" — FCM/APNs integration and fan-out |
+| [Airship Engineering: Push at 15 Billion Notifications/Day](https://docs.airship.com/platform/mobile/push-notifications/) | 📚 Docs | Production-scale push infrastructure from a leading push platform |
+| [iOS Push Notification Best Practices](https://developer.apple.com/documentation/usernotifications/sending_notifications_to_apple_devices) | 📚 Docs | APNs connection, token management, and failure handling |
+| [Google Firebase FCM Architecture](https://firebase.google.com/docs/cloud-messaging/concept-options) | 📚 Docs | FCM message delivery types, QoS, and TTL behavior |
+| [High Scalability: Push Notification Architecture](http://highscalability.com) | 📖 Blog | Case studies on delivering billions of push notifications reliably |

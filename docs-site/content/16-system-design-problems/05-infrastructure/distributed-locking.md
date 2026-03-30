@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Distributed Locking](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "distributed locking" — Redlock algorithm and fencing tokens |
+| [Redis Distributed Locks (Redlock)](https://redis.io/docs/manual/patterns/distributed-locks/) | 📚 Docs | Official Redis documentation on the Redlock distributed locking algorithm |
+| [Martin Kleppmann: How to do Distributed Locking](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html) | 📖 Blog | Critical analysis of Redlock and when distributed locks are safe to use |
+| [Google Chubby: Distributed Lock Service](https://research.google/pubs/pub27897/) | 📖 Blog | Google's production distributed lock service powering Google's infrastructure |
+| [Apache Zookeeper: Distributed Coordination](https://zookeeper.apache.org/doc/r3.1.2/recipes.html) | 📚 Docs | ZooKeeper-based distributed lock implementation patterns |

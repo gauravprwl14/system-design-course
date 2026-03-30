@@ -734,3 +734,13 @@ if self.sequence == 0:  # overflow
 - [Key-Value Store](./key-value-store) — IDs are often used as keys in distributed KV stores
 - [Distributed Locking](./distributed-locking) — Machine ID registration uses distributed locking patterns
 - [Rate Limiter](./rate-limiter) — Rate limiters use per-user IDs as Redis keys
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing a unique ID generator — Snowflake, UUID, and database sequences |
+| [ByteByteGo — Design a Unique ID Generator](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Walkthrough of Twitter Snowflake, UUID v7, and distributed ID strategies |
+| [Twitter Engineering: Snowflake ID Generation](https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake) | 📖 Blog | Twitter's Snowflake algorithm generating 10,000+ IDs/sec per node |
+| [Instagram Engineering: Sharding IDs](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c) | 📖 Blog | How Instagram generates globally unique, sortable IDs across shards |
+| [UUID v7: Time-Ordered Unique Identifiers](https://www.rfc-editor.org/rfc/rfc9562) | 📚 Docs | RFC 9562 — the modern standard for time-ordered UUID generation |

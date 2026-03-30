@@ -97,3 +97,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on hotel reservation system design |
+| [ByteByteGo — Design a Hotel Booking System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "hotel booking design" — inventory management and double-booking prevention |
+| [Booking.com Engineering: Availability Search](https://medium.com/booking-com-development/how-we-re-improving-our-booking-system-8b4d54a34e2f) | 📖 Blog | How Booking.com handles 28M+ bookings/day with inventory consistency |
+| [Airbnb Engineering: Listing Availability](https://medium.com/airbnb-engineering/scaling-airbnbs-architecture-cba7f28fef84) | 📖 Blog | How Airbnb manages calendar availability and booking conflicts |
+| [Two-Phase Commit for Booking Transactions](https://docs.yugabyte.com/preview/explore/transactions/distributed-transactions-ysql/) | 📚 Docs | Distributed transaction patterns for cross-service booking operations |

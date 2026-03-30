@@ -114,3 +114,13 @@ classDiagram
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design an Elevator System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "elevator system design" — scheduling algorithms, state management |
+| [Grokking Object-Oriented Design](https://www.educative.io/courses/grokking-the-object-oriented-design-interview) | 📚 Book | Elevator system OOD — dispatch algorithm and class hierarchy |
+| [SCAN Algorithm for Elevator Scheduling](https://www.geeksforgeeks.org/scan-elevator-disk-scheduling-algorithms/) | 📖 Blog | Elevator (SCAN) algorithm — the standard disk and elevator scheduling approach |
+| [Strategy Design Pattern](https://refactoring.guru/design-patterns/strategy) | 📚 Docs | Pluggable scheduling algorithm using the Strategy pattern |
+| [Observer Pattern for Event-Driven Systems](https://refactoring.guru/design-patterns/observer) | 📚 Docs | How to model elevator button presses as events |

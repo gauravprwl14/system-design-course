@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on ad click event aggregation pipeline design |
+| [ByteByteGo — Ad Click Aggregation System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "ad click aggregation" — detailed walkthrough of the design |
+| [Apache Flink: Stateful Stream Processing](https://flink.apache.org/2020/02/24/stateful-stream-processing-real-time-analytics-and-event-driven-applications.html) | 📖 Blog | Windowed aggregation and exactly-once processing in stream systems |
+| [Twitter Engineering: Real-Time Analytics at Scale](https://blog.twitter.com/engineering/en_us/a/2015/building-distributedlog-twitter-s-high-performance-replicated-log-service) | 📖 Blog | How Twitter handles high-volume event stream aggregation |
+| [High Scalability: Ad Tech Architecture](http://highscalability.com) | 📖 Blog | Search "ad tech" — real-world ad click pipeline case studies |

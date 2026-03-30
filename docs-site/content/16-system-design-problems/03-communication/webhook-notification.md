@@ -97,3 +97,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Webhook Delivery System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "webhook system design" — retry, delivery guarantees, and fan-out |
+| [Stripe Engineering: Building a Reliable Webhook System](https://stripe.com/blog/webhooks) | 📖 Blog | How Stripe delivers billions of webhooks with at-least-once guarantees |
+| [Shopify Engineering: Webhook Infrastructure](https://shopify.engineering/how-shopify-scales-up-its-server-side-change-data-capture-pipeline) | 📖 Blog | Webhook delivery at Shopify scale — CDC-driven event emission |
+| [Standard Webhooks Specification](https://www.standardwebhooks.com/) | 📚 Docs | Emerging standard for webhook security, signing, and retry behavior |
+| [Svix: Webhook Infrastructure Architecture](https://www.svix.com/blog/why-webhook-delivery-is-harder-than-you-think/) | 📖 Blog | Why webhook delivery is harder than it looks — ordering, retries, security |

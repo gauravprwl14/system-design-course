@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a search engine |
+| [ByteByteGo — How Google Search Works](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Google search design" — crawling, indexing, ranking pipeline |
+| [Google: The Anatomy of a Large-Scale Web Search Engine](https://research.google/pubs/pub334/) | 📖 Blog | Original Google architecture paper by Brin & Page |
+| [Google BigTable: Storing the Web](https://research.google/pubs/pub27898/) | 📖 Blog | How BigTable stores and indexes crawled web content |
+| [Elasticsearch Architecture](https://www.elastic.co/guide/en/elasticsearch/reference/current/scalability.html) | 📚 Docs | Inverted index, sharding, and relevance scoring at scale |

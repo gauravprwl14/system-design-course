@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on Top-K heavy hitters problem and stream processing approaches |
+| [ByteByteGo — Top K Frequent Elements](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "top K heavy hitters" — Count-Min Sketch and distributed approaches |
+| [Twitter Engineering: Trending Topics Architecture](https://blog.twitter.com/engineering/en_us/a/2015/building-a-distributed-strict-priority-queue) | 📖 Blog | How Twitter computes trending topics at billions of events/day |
+| [Count-Min Sketch Paper](https://ieeexplore.ieee.org/document/1532925) | 📖 Blog | The probabilistic data structure behind approximate Top-K computation |
+| [Apache Kafka Streams Documentation](https://kafka.apache.org/documentation/streams/) | 📚 Docs | Stream processing with windowed aggregation for Top-K use cases |

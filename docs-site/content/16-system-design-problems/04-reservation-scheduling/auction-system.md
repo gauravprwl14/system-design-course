@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design an Auction System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "auction system design" — bidding consistency, concurrency, and real-time updates |
+| [eBay Engineering: Bidding Architecture](https://tech.ebay.com/designing-ebay-s-bidding-experience/) | 📖 Blog | How eBay handles concurrent bids with strong consistency guarantees |
+| [Google Ads Auction Architecture](https://research.google/pubs/pub47998/) | 📖 Blog | Real-time ad auction at billions of queries per day |
+| [Redis SETNX for Distributed Locking](https://redis.io/docs/manual/patterns/distributed-locks/) | 📚 Docs | Redlock algorithm for preventing concurrent bid acceptance |
+| [High Scalability: Real-Time Bidding Architecture](http://highscalability.com) | 📖 Blog | Search "real-time bidding" — RTB auction infrastructure case studies |

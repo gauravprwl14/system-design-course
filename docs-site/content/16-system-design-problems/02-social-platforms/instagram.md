@@ -786,3 +786,13 @@ Instagram uses **option A** (filter at read time) for its simplicity and O(1) wr
 - [Notification System](../03-communication/notification-system) — Instagram notifications (likes, comments, follows) share the multi-channel delivery architecture
 - [Rate Limiter](../05-infrastructure/rate-limiter) — Instagram's upload API uses token bucket rate limiting per user (60 uploads/hour)
 - [Design WhatsApp](../03-communication/whatsapp-messenger) — Direct messaging architecture overlaps with Instagram DMs
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing Instagram — photo storage, news feed, search |
+| [ByteByteGo — Design Instagram](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Instagram system design" — feed, storage, and CDN architecture |
+| [Instagram Engineering: What Powered Instagram](https://instagram-engineering.com/what-powers-instagram-hundreds-of-millions-of-users-1cdbe8a58e7b) | 📖 Blog | Original architecture post — PostgreSQL, Redis, and early scaling decisions |
+| [Instagram Engineering: Sharding at Scale](https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c) | 📖 Blog | How Instagram generates unique IDs and shards data across thousands of servers |
+| [High Scalability: Instagram Architecture](http://highscalability.com/instagram-architecture-14-million-users-terabytes-photos-hundreds-of-instances-dozens-of-technologies) | 📖 Blog | Detailed Instagram architecture breakdown from early scaling phase |

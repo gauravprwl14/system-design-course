@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design an Email Service](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "email service design" — SMTP, storage, and deliverability at scale |
+| [Mailchimp Engineering: Scaling Email Delivery](https://mailchimp.com/developer/transactional/docs/smtp-integration/) | 📚 Docs | Transactional email best practices and deliverability considerations |
+| [SendGrid Architecture: Delivering 100B Emails/Month](https://sendgrid.com/blog/building-sendgrid/) | 📖 Blog | Infrastructure behind one of the world's largest email delivery platforms |
+| [Gmail Architecture: IMAP at Scale](https://research.google/pubs/pub39977/) | 📖 Blog | Google's approach to scalable email storage and retrieval |
+| [Email Deliverability: SPF, DKIM, DMARC](https://support.google.com/a/answer/81126) | 📚 Docs | DNS-based authentication requirements for high-deliverability email |

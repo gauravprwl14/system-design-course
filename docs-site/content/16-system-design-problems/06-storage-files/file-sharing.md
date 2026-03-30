@@ -99,3 +99,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a File Sharing System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "file sharing design" — presigned URLs, access control, CDN delivery |
+| [AWS S3 Presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html) | 📚 Docs | Secure temporary access to private S3 objects without exposing credentials |
+| [WeTransfer Engineering: Large File Transfer](https://engineering.wetransfer.com/) | 📖 Blog | How WeTransfer handles large file uploads and temporary sharing at scale |
+| [Multipart Upload Architecture](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html) | 📚 Docs | Handling large file uploads reliably with resumable multipart transfers |
+| [Box Engineering: File Permissions at Scale](https://medium.com/box-tech-blog) | 📖 Blog | Enterprise file sharing — folder hierarchies, permission propagation, audit logs |

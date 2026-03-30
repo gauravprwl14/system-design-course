@@ -115,3 +115,13 @@ classDiagram
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Parking Lot](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "parking lot design" — spot types, ticket management, payment |
+| [Grokking Object-Oriented Design](https://www.educative.io/courses/grokking-the-object-oriented-design-interview) | 📚 Book | Parking lot — a classic OOD interview question with full class design |
+| [Factory Pattern for Vehicle Types](https://refactoring.guru/design-patterns/factory-method) | 📚 Docs | Using Factory pattern to create different vehicle type objects |
+| [Strategy Pattern for Pricing Models](https://refactoring.guru/design-patterns/strategy) | 📚 Docs | Pluggable pricing strategies — hourly, daily, EV charging rates |
+| [Composite Pattern for Multi-Level Parking](https://refactoring.guru/design-patterns/composite) | 📚 Docs | Modeling multi-floor parking structures with Composite pattern |

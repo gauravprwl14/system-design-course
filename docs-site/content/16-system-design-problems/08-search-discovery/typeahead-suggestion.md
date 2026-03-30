@@ -727,3 +727,13 @@ Production recommendation:
 - [Design Google Search](./google-search) — Typeahead is just the autocomplete layer; full search involves crawling, indexing, and ranking
 - [Rate Limiter](../05-infrastructure/rate-limiter) — The typeahead API needs IP-based rate limiting to prevent prefix enumeration attacks (scrapers trying every 2-char prefix)
 - [Design Yelp / Nearby](./yelp-nearby) — Location-aware typeahead adds geo-prefix ranking on top of frequency ranking
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing a typeahead suggestion system |
+| [ByteByteGo — Design Typeahead Suggestion](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "typeahead design" — trie data structure, caching, and offline processing |
+| [Google Search Autocomplete Engineering](https://research.google/pubs/pub34162/) | 📖 Blog | How Google's autocomplete handles 3.5 billion queries/day with < 100ms latency |
+| [Redis Sorted Sets for Leaderboard and Autocomplete](https://redis.io/docs/data-types/sorted-sets/) | 📚 Docs | Using Redis ZADD/ZRANGEBYLEX for real-time typeahead prefix matching |
+| [Facebook Search: Aggregated Typeahead](https://engineering.fb.com/2010/05/17/web/the-life-of-a-typeahead-query/) | 📖 Blog | How Facebook's typeahead aggregates results from multiple sources |

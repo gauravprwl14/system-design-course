@@ -111,3 +111,13 @@ classDiagram
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Fitness Tracker](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "fitness app design" — sensor data processing, goals, notifications |
+| [Fitbit Engineering: Wearable Data Architecture](https://dev.fitbit.com/build/guides/activity/) | 📚 Docs | Fitbit API design for syncing and querying fitness data |
+| [HealthKit Architecture: Apple Health Platform](https://developer.apple.com/documentation/healthkit) | 📚 Docs | How HealthKit aggregates and stores health data from multiple sources |
+| [Observer Pattern for Activity Events](https://refactoring.guru/design-patterns/observer) | 📚 Docs | Using Observer pattern for fitness goal notifications and alerts |
+| [Time-Series Database for Sensor Data](https://www.influxdata.com/time-series-database/) | 📚 Docs | Why time-series DBs outperform relational DBs for fitness sensor data |

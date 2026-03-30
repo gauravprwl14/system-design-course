@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Code Deployment System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "code deployment design" — CI/CD pipeline, canary deployments, rollback |
+| [Google Engineering: SRE Book — Release Engineering](https://sre.google/sre-book/release-engineering/) | 📚 Docs | Production release engineering practices at Google scale |
+| [Etsy Engineering: Continuous Deployment](https://www.etsy.com/codeascraft/continuous-deployment-at-etsy/) | 📖 Blog | 50 deploys per day — how Etsy approaches continuous deployment safely |
+| [Netflix Engineering: Spinnaker for CD](https://netflixtechblog.com/the-evolution-of-continuous-delivery-at-netflix-9010f81c7800) | 📖 Blog | Netflix's continuous delivery platform managing thousands of microservices |
+| [GitHub Actions Architecture](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions) | 📚 Docs | How GitHub Actions pipelines work for CI/CD automation |

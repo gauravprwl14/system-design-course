@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Video Conferencing System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "video conferencing design" — WebRTC, TURN/STUN, SFU/MCU |
+| [Zoom Engineering: How Zoom's Architecture Scales](https://medium.com/zoom-developer-blog/zoom-on-zoom-52d73b32dd28) | 📖 Blog | How Zoom handles 300M+ daily meetings with their custom UDP protocol |
+| [WebRTC Architecture and Standards](https://webrtc.org/getting-started/peer-connections) | 📚 Docs | The browser-native protocol enabling peer-to-peer video conferencing |
+| [Discord Engineering: WebRTC for Voice/Video](https://discord.com/blog/how-discord-handles-two-and-half-million-concurrent-voice-users-using-webrtc) | 📖 Blog | How Discord scales WebRTC to millions of concurrent voice channels |
+| [Livekit: SFU Architecture for WebRTC](https://livekit.io/docs) | 📚 Docs | Open-source SFU implementation — how Selective Forwarding Units work |

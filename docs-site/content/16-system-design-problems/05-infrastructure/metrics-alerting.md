@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Metrics Monitoring System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "metrics monitoring design" — time-series storage, alerting, dashboards |
+| [Prometheus Architecture](https://prometheus.io/docs/introduction/overview/) | 📚 Docs | Pull-based metrics collection with PromQL and Alertmanager |
+| [Uber Engineering: M3 Metrics Platform](https://eng.uber.com/m3/) | 📖 Blog | How Uber built their own metrics platform handling 500M samples/sec |
+| [Netflix Engineering: Atlas Metrics](https://netflixtechblog.com/introducing-atlas-netflixs-primary-telemetry-platform-bd31f4d8ed9a) | 📖 Blog | Netflix's time-series monitoring platform for operational visibility |
+| [Grafana Architecture and Scaling](https://grafana.com/docs/grafana/latest/introduction/) | 📚 Docs | Metrics visualization and alerting at scale |

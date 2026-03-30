@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design Twitter Search](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Twitter search design" — real-time indexing, relevance, and scale |
+| [Twitter Engineering: Earlybird Real-Time Search](https://blog.twitter.com/engineering/en_us/a/2011/the-engineering-behind-twitter-s-new-search-experience) | 📖 Blog | How Twitter built Earlybird for real-time tweet search at 400M tweets/day |
+| [Twitter Engineering: Search Infrastructure](https://blog.twitter.com/engineering/en_us/topics/infrastructure/2016/the-infrastructure-behind-twitter-scale) | 📖 Blog | Twitter's search stack evolution over 10+ years |
+| [Apache Lucene Architecture](https://lucene.apache.org/core/documentation.html) | 📚 Docs | The search engine library powering Elasticsearch and Solr |
+| [Bleve: Full-Text Search in Go](https://blevesearch.com/docs/Getting-Started/) | 📚 Docs | Understanding inverted indexes and BM25 ranking |

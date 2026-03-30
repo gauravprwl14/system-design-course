@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing a news feed system |
+| [ByteByteGo — Design a News Feed System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "news feed system design" — fan-out on write vs read |
+| [Facebook Engineering: How News Feed Works](https://engineering.fb.com/2021/04/14/open-source/future-of-news-feed/) | 📖 Blog | Inside Facebook's ranking, storage, and delivery pipeline |
+| [Instagram Engineering: Scaling News Feed](https://instagram-engineering.com/what-powers-instagram-hundreds-of-millions-of-users-1cdbe8a58e7b) | 📖 Blog | How Instagram scales feed generation for 1B+ users |
+| [High Scalability: Real World Architectures](http://highscalability.com) | 📖 Blog | Search "news feed" — production case studies from major platforms |

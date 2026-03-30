@@ -97,3 +97,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design an Identity Management System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "identity management design" — SSO, OAuth 2.0, multi-tenancy |
+| [OAuth 2.0 RFC 6749](https://datatracker.ietf.org/doc/html/rfc6749) | 📚 Docs | The authorization framework standard — flows, tokens, and scopes |
+| [Auth0 Architecture: Identity as a Service](https://auth0.com/blog/auth0-architecture-running-in-multiple-cloud-providers-and-regions/) | 📖 Blog | How Auth0 runs identity infrastructure at 99.99% across multiple clouds |
+| [Okta Engineering: SSO at Scale](https://developer.okta.com/blog/2019/10/21/illustrated-guide-to-oauth-and-oidc) | 📖 Blog | Illustrated guide to OAuth and OIDC — foundational identity protocols |
+| [NIST: Digital Identity Guidelines](https://pages.nist.gov/800-63-3/) | 📚 Docs | NIST 800-63 — authoritative guidance on authentication assurance levels |

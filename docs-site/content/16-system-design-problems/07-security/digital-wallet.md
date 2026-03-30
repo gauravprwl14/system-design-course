@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a digital wallet / payment system |
+| [ByteByteGo — Design a Digital Wallet](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "digital wallet design" — balance management, transfers, fraud prevention |
+| [Stripe Engineering: Financial Infrastructure](https://stripe.com/blog/idempotency) | 📖 Blog | Idempotent API design for payment operations — critical for wallet reliability |
+| [PayPal Engineering: Money Movement](https://medium.com/paypal-tech) | 📖 Blog | How PayPal handles multi-currency wallets and cross-border transfers |
+| [PCI DSS Compliance Requirements](https://www.pcisecuritystandards.org/merchants/what_is_pci_compliance.php) | 📚 Docs | Security standards for storing, processing, and transmitting payment card data |

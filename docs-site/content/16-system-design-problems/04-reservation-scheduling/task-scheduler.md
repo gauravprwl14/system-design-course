@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Task Scheduler](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "task scheduler design" — distributed job queues and exactly-once execution |
+| [Airflow Architecture: DAG-Based Task Scheduling](https://airflow.apache.org/docs/apache-airflow/stable/concepts/overview.html) | 📚 Docs | Production workflow scheduler used at thousands of companies |
+| [AWS SQS and Lambda for Task Processing](https://aws.amazon.com/blogs/compute/new-for-aws-lambda-sqs-fifo-as-an-event-source/) | 📚 Docs | Cloud-native approach to task queue and scheduled execution |
+| [Temporal: Durable Task Execution](https://temporal.io/blog/workflow-orchestration) | 📖 Blog | Fault-tolerant task scheduling with guaranteed execution and retry |
+| [Uber Cadence: Distributed Task Scheduling](https://eng.uber.com/cadence-workflow/) | 📖 Blog | How Uber built their distributed task orchestration platform |

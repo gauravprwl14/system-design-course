@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design Google Docs](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Google Docs design" — OT, CRDT, and real-time collaboration |
+| [Google Engineering: Operational Transformation](https://drive.googleblog.com/2010/09/whats-different-about-new-google-docs.html) | 📖 Blog | How Google Docs implemented Operational Transformation for concurrent editing |
+| [CRDT: Conflict-Free Replicated Data Types](https://crdt.tech/) | 📚 Docs | The data structure powering offline-first collaborative editing (Figma, Notion) |
+| [Figma Engineering: CRDTs for Collaborative Design](https://www.figma.com/blog/how-figmas-multiplayer-technology-works/) | 📖 Blog | How Figma implements real-time collaboration using CRDTs |
+| [High Scalability: Collaborative Editing Design](http://highscalability.com) | 📖 Blog | Search "collaborative editing" — OT vs CRDT trade-offs at scale |

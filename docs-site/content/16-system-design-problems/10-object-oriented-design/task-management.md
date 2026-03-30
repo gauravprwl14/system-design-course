@@ -111,3 +111,13 @@ classDiagram
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Task Management System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "task management design" — CRUD operations, assignments, notifications |
+| [Jira Architecture: Issue Tracking at Scale](https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/) | 📚 Docs | Jira's data model for projects, issues, workflows, and permissions |
+| [Linear Engineering: Modern Issue Tracking](https://linear.app/blog/how-we-built-linear-a-better-way-to-track-issues) | 📖 Blog | How Linear built a fast, real-time task management app |
+| [Observer Pattern for Task Notifications](https://refactoring.guru/design-patterns/observer) | 📚 Docs | Event-driven notifications when task status changes |
+| [Command Pattern for Undo/Redo](https://refactoring.guru/design-patterns/command) | 📚 Docs | Implementing undo/redo for task edits using the Command pattern |

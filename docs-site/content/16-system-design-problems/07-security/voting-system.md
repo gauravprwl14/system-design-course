@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Voting System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "voting system design" — idempotency, audit trails, fraud prevention |
+| [MIT: E2E Verifiable Voting](https://people.csail.mit.edu/rivest/voting/papers/rivest-Scratch_and_Vote.pdf) | 📖 Blog | Cryptographic approaches to verifiable voting systems |
+| [US NIST: Voting System Guidelines](https://www.nist.gov/topics/voting) | 📚 Docs | Federal guidelines for electronic voting system reliability and security |
+| [Stack Overflow Voting Architecture](https://stackexchange.com/performance) | 📖 Blog | How Stack Exchange handles votes with fraud prevention at scale |
+| [Reddit Karma System Architecture](https://redditblog.com/2017/05/24/view-counting-at-reddit/) | 📖 Blog | Vote counting with fraud detection and approximate vs exact counts |

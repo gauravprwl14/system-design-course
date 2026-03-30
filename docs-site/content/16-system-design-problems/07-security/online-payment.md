@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a payment system with exactly-once guarantees |
+| [ByteByteGo — Design a Payment System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "payment system design" — idempotency, double-spending, reconciliation |
+| [Stripe Engineering: Idempotent APIs](https://stripe.com/blog/idempotency) | 📖 Blog | How Stripe uses idempotency keys to make payment APIs retry-safe |
+| [Braintree Engineering: Payment Processing](https://articles.braintreepayments.com/reference/security/data-security) | 📚 Docs | Payment card data security — tokenization and vault architecture |
+| [Visa Architecture: Payment Network at Scale](https://developer.visa.com/pages/working-with-visa/visa-developer-program) | 📚 Docs | How Visa processes 76,000 transactions per second globally |

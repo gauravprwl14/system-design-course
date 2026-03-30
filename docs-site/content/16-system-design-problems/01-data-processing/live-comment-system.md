@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Live Comment System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "live comment system" — WebSocket, fan-out, and ordering challenges |
+| [YouTube Engineering: Live Streaming at Scale](https://www.youtube.com/watch?v=x-KFdEbqIco) | 📺 YouTube | How YouTube handles real-time comments during live events |
+| [Twitch Engineering: Chat at Scale](https://blog.twitch.tv/en/2015/12/18/twitch-engineering-an-introduction-and-overview-1a00c5c3d1bb/) | 📖 Blog | How Twitch handles millions of concurrent chat messages per channel |
+| [Redis Pub/Sub Documentation](https://redis.io/docs/manual/pubsub/) | 📚 Docs | Redis Pub/Sub patterns for real-time message broadcasting |
+| [High Scalability: Live Streaming Architecture](http://highscalability.com) | 📖 Blog | Real-world live streaming system case studies |

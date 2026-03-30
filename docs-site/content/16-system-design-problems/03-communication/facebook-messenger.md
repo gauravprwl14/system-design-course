@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing a chat system — message storage, delivery, and presence |
+| [ByteByteGo — Design a Chat System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "chat system design" — WebSocket, message queues, read receipts |
+| [Facebook Engineering: Building Real-Time Messaging](https://engineering.fb.com/2011/08/12/ios/building-facebook-messenger/) | 📖 Blog | Original Messenger architecture — MQTT, online presence, push delivery |
+| [Erlang in Messaging at WhatsApp](https://www.erlang-factory.com/upload/presentations/558/efsf2012-whatsapp-scaling.pdf) | 📖 Blog | How WhatsApp handles 2 billion users with Erlang actors |
+| [Discord Engineering: How Discord Stores Billions of Messages](https://discord.com/blog/how-discord-stores-billions-of-messages) | 📖 Blog | Cassandra for message storage — write-heavy, time-series access patterns |

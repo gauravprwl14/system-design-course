@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Web Analytics System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "web analytics design" — event tracking, aggregation, and reporting pipeline |
+| [Mixpanel Engineering: Analytics at Scale](https://engineering.mixpanel.com/) | 📖 Blog | How Mixpanel handles petabytes of behavioral event data |
+| [Segment Architecture: Customer Data Platform](https://segment.com/blog/rebuilding-our-infrastructure/) | 📖 Blog | How Segment rebuilt their data collection infrastructure at scale |
+| [Clickhouse for Real-Time Analytics](https://clickhouse.com/blog/real-time-analytics-at-scale) | 📚 Docs | Column-store analytics DB used by Cloudflare, ByteDance for analytics at scale |
+| [High Scalability: Analytics Platform Case Studies](http://highscalability.com) | 📖 Blog | Real-world analytics infrastructure at major companies |

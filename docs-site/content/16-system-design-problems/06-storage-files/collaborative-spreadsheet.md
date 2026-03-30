@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design Google Sheets](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "collaborative spreadsheet design" — formula evaluation, real-time sync, conflict resolution |
+| [Google Sheets Engineering: Collaborative Editing](https://drive.googleblog.com/2010/09/whats-different-about-new-google-docs.html) | 📖 Blog | Operational Transformation for real-time multi-user spreadsheet editing |
+| [Figma Engineering: Multiplayer Architecture](https://www.figma.com/blog/how-figmas-multiplayer-technology-works/) | 📖 Blog | CRDT-based real-time collaboration — applicable to spreadsheet design |
+| [Excel Online Architecture](https://techcommunity.microsoft.com/t5/excel-blog/excel-online/ba-p/267588) | 📖 Blog | How Microsoft handles formula computation and collaboration in Excel Online |
+| [CRDT: Sequence CRDTs for Text and Cells](https://crdt.tech/) | 📚 Docs | Mathematical foundations of conflict-free replicated data structures |

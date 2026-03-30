@@ -95,3 +95,13 @@ stateDiagram-v2
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — ATM System Design](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "ATM system design" — state machine, transaction flow, error handling |
+| [Grokking Object-Oriented Design](https://www.educative.io/courses/grokking-the-object-oriented-design-interview) | 📚 Book | Chapter on ATM system — classes, responsibilities, and state transitions |
+| [ISO 8583: Financial Transaction Card Messages](https://en.wikipedia.org/wiki/ISO_8583) | 📖 Blog | The standard protocol powering ATM and POS transactions globally |
+| [ACID Transactions for Financial Systems](https://fauna.com/blog/database-transaction-acid-properties) | 📖 Blog | Why ATM systems require strict ACID compliance for balance operations |
+| [State Machine Design Pattern](https://refactoring.guru/design-patterns/state) | 📚 Docs | Implementing the State pattern — applicable to ATM transaction flow |

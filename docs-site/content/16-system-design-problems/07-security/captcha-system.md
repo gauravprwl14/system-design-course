@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a CAPTCHA System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "CAPTCHA design" — bot detection, challenge types, accessibility |
+| [Google reCAPTCHA v3 Architecture](https://developers.google.com/recaptcha/docs/v3) | 📚 Docs | Risk score-based bot detection without user friction |
+| [Cloudflare Turnstile: CAPTCHA Alternative](https://blog.cloudflare.com/turnstile-ga/) | 📖 Blog | How Cloudflare built a privacy-preserving CAPTCHA replacement |
+| [hCaptcha Architecture and Privacy Design](https://www.hcaptcha.com/post/hcaptcha-now-the-largest-independent-captcha-service) | 📖 Blog | Alternative CAPTCHA with privacy-first approach and revenue sharing |
+| [Machine Learning for Bot Detection](https://research.google/pubs/pub36834/) | 📖 Blog | How ML models replace traditional CAPTCHA challenges for risk scoring |

@@ -93,3 +93,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a video streaming service like YouTube |
+| [ByteByteGo — Design a Video Streaming Service](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "video streaming design" — transcoding, CDN, adaptive bitrate |
+| [Netflix Technology Blog: Adaptive Streaming](https://netflixtechblog.com/streaming-quality-at-netflix-c7d8a4960bec) | 📖 Blog | How Netflix implements ABR streaming and quality optimization |
+| [Twitch Engineering: Live Video Infrastructure](https://blog.twitch.tv/en/2022/04/26/twitch-engineering-an-introduction-and-overview/) | 📖 Blog | Ultra-low latency live streaming architecture at Twitch |
+| [High Scalability: Video Platform Architectures](http://highscalability.com) | 📖 Blog | Search "video streaming" — production case studies |

@@ -95,3 +95,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design Reddit](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Reddit system design" — voting, feed ranking, and real-time comments |
+| [Reddit Engineering: Lessons Learned from 5 Billion Pageviews](https://redditblog.com/2017/12/06/how-we-built-rplace/) | 📖 Blog | Reddit's approach to scaling real-time collaborative features |
+| [Reddit on Cassandra for Vote Storage](https://redditblog.com/2010/05/11/and-we-are-live/) | 📖 Blog | How Reddit migrated vote counts to Cassandra for write scalability |
+| [HN: Reddit Architecture Discussion](https://news.ycombinator.com/item?id=9498805) | 📖 Blog | Reddit engineers discuss their architecture evolution |
+| [High Scalability: Reddit Architecture](http://highscalability.com/blog/2010/5/17/7-lessons-learned-while-building-reddit-to-270-million-page.html) | 📖 Blog | Scaling lessons from Reddit's growth from 0 to 270M page views |

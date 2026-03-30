@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Distributed Counter](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "distributed counter" — CRDT counters, Redis INCR, and consistency trade-offs |
+| [Redis INCR and Rate Limiting Patterns](https://redis.io/docs/manual/patterns/rate-limiting/) | 📚 Docs | Atomic counter operations and sliding window rate limiting |
+| [Facebook Engineering: CRDT-Based Counters](https://engineering.fb.com/2020/03/17/data-infrastructure/scribe/) | 📖 Blog | Eventual consistency for high-volume counting at Facebook scale |
+| [Google's Bigtable: Atomic Counters](https://research.google/pubs/pub27898/) | 📖 Blog | Atomic read-modify-write operations in distributed storage |
+| [CRDTs for Distributed Counting](https://crdt.tech/) | 📚 Docs | G-Counters and PN-Counters for eventually consistent distributed incrementing |

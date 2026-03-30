@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Payment Gateway](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "payment gateway design" — routing, settlement, and fraud detection |
+| [Stripe Engineering: How Stripe Works](https://stripe.com/blog) | 📖 Blog | Inside Stripe's payment infrastructure — routing, retries, and SLA guarantees |
+| [Adyen Engineering: Payment Processing](https://www.adyen.com/knowledge-hub/payment-processing) | 📖 Blog | How Adyen routes payments to maximize authorization rates globally |
+| [PCI DSS PCI Compliance Guide](https://www.pcisecuritystandards.org/) | 📚 Docs | Mandatory security standards for payment gateway operators |
+| [Square Engineering: Developer Platform](https://developer.squareup.com/blog/) | 📖 Blog | Building a developer-friendly payment API with strong consistency |

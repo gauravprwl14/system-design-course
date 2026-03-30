@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — How Load Balancers Work](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "load balancer design" — L4 vs L7, algorithms, health checks |
+| [NGINX Load Balancing Guide](https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/) | 📚 Docs | Production load balancing configuration with upstream health checks |
+| [HAProxy Architecture and Features](https://www.haproxy.org/download/1.8/doc/architecture.txt) | 📚 Docs | How HAProxy handles millions of connections with minimal CPU overhead |
+| [AWS Application Load Balancer Design](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) | 📚 Docs | L7 load balancing in cloud — path-based routing, sticky sessions, WAF |
+| [Cloudflare: Global Load Balancing](https://www.cloudflare.com/learning/cdn/glossary/global-server-load-balancing-gslb/) | 📖 Blog | Anycast-based global load balancing for latency minimization |

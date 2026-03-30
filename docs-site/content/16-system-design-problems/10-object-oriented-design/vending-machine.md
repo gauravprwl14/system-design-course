@@ -96,3 +96,13 @@ stateDiagram-v2
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Vending Machine](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "vending machine design" — state machine, inventory management, payment |
+| [Grokking Object-Oriented Design](https://www.educative.io/courses/grokking-the-object-oriented-design-interview) | 📚 Book | Vending machine OOD — states, transitions, and inventory tracking |
+| [State Design Pattern](https://refactoring.guru/design-patterns/state) | 📚 Docs | Implementing finite state machines — perfectly suited to vending machine design |
+| [Singleton Pattern for Inventory Manager](https://refactoring.guru/design-patterns/singleton) | 📚 Docs | Single instance inventory manager shared across all machine states |
+| [Template Method Pattern for Payment Processing](https://refactoring.guru/design-patterns/template-method) | 📚 Docs | Defining the skeleton payment flow with different implementations per payment type |

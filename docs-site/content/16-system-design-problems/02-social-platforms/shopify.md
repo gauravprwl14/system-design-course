@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [Shopify Engineering: Scaling for Flash Sales](https://shopify.engineering/e-commerce-at-scale-inside-shopifys-tech-stack) | 📖 Blog | How Shopify handles Black Friday traffic spikes — 75k req/sec |
+| [ByteByteGo — Design an E-Commerce System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "e-commerce system design" — product catalog, cart, checkout |
+| [Shopify Engineering: Database Architecture](https://shopify.engineering/horizontally-scaling-the-rails-backend-of-shop-app-with-vitess) | 📖 Blog | How Shopify uses Vitess to horizontally scale MySQL for millions of stores |
+| [Shopify Engineering: Caching at Scale](https://shopify.engineering/building-stateful-rails-applications-at-scale) | 📖 Blog | Multi-tier caching strategy for high-read e-commerce workloads |
+| [High Scalability: E-Commerce Architecture](http://highscalability.com) | 📖 Blog | Search "e-commerce" — case studies on product search and checkout scaling |

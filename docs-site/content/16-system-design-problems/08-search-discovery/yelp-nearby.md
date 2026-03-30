@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a proximity/nearby search service |
+| [ByteByteGo — Design Yelp or Nearby Service](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Yelp system design" — geospatial indexing, search, and review aggregation |
+| [Yelp Engineering: Local Search Architecture](https://engineeringblog.yelp.com/) | 📖 Blog | How Yelp handles geospatial search, ranking, and review processing |
+| [Geohash for Proximity Queries](https://www.movable-type.co.uk/scripts/geohash.html) | 📖 Blog | Geohash encoding for efficient geospatial proximity searches |
+| [Quadtrees for Spatial Indexing](https://en.wikipedia.org/wiki/Quadtree) | 📖 Blog | Spatial partitioning for efficient range and proximity queries |

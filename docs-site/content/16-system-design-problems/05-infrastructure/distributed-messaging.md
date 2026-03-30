@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview Vol 2 — Alex Xu](https://www.amazon.com/System-Design-Interview-Insiders-Guide/dp/1736049119) | 📚 Book | Chapter on designing a distributed message queue |
+| [ByteByteGo — Design a Message Queue](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "message queue design" — partitioning, consumer groups, ordering guarantees |
+| [Apache Kafka Architecture Deep Dive](https://developer.confluent.io/learn-kafka/apache-kafka/get-started/) | 📚 Docs | How Kafka achieves 1M+ msgs/sec per broker with log-structured storage |
+| [LinkedIn Engineering: Kafka Origins](https://engineering.linkedin.com/blog/2016/04/kafka-ecosystem-at-linkedin) | 📖 Blog | Why LinkedIn built Kafka and how it evolved to handle 7 trillion messages/day |
+| [Uber Engineering: Kafka at Scale](https://eng.uber.com/kafka/) | 📖 Blog | Uber's Kafka deployment handling 1T+ messages per day |

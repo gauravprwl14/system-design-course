@@ -94,3 +94,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [Spotify Engineering: Backend Infrastructure](https://engineering.atspotify.com/) | 📖 Blog | How Spotify handles 600M+ users with microservices and Kafka |
+| [ByteByteGo — Design Spotify](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Spotify system design" — music streaming, search, and recommendations |
+| [Spotify Engineering: Event Delivery at Scale](https://engineering.atspotify.com/2016/03/06/spotifys-event-delivery-the-road-to-the-cloud-part-i/) | 📖 Blog | How Spotify handles 100 billion+ events per day for recommendations |
+| [Spotify Engineering: Discover Weekly](https://engineering.atspotify.com/2015/03/16/radio-music-generation/) | 📖 Blog | Inside the recommendation system powering personalized playlists |
+| [High Scalability: Music Streaming Architecture](http://highscalability.com) | 📖 Blog | Real-world music streaming platform architecture case studies |

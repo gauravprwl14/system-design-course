@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on CDN design — caching, geo-routing, and push vs pull |
+| [ByteByteGo — How CDN Works](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "CDN system design" — PoP placement, anycast routing, cache invalidation |
+| [Cloudflare Engineering: How a CDN Works](https://blog.cloudflare.com/how-cloudflares-architecture-allows-us-to-scale-to-stop-the-biggest-attacks-in-history/) | 📖 Blog | Anycast routing and attack mitigation at 200+ Cloudflare PoPs |
+| [Akamai: CDN at 2.5 Trillion Daily Interactions](https://www.akamai.com/blog/performance/the-internet-of-things-is-good-for-cdns) | 📖 Blog | How Akamai handles the world's largest content delivery network |
+| [Netflix Open Connect: Custom CDN Architecture](https://netflixtechblog.com/how-netflix-works-with-isps-around-the-globe-to-deliver-a-great-viewing-experience-56867cde49da) | 📖 Blog | Netflix's dedicated CDN appliances embedded in ISP networks |

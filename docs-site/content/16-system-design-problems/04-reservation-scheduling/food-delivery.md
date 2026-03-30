@@ -97,3 +97,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Food Delivery App](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "food delivery design" — order matching, driver dispatch, real-time tracking |
+| [DoorDash Engineering: Real-Time Dispatch](https://doordash.engineering/2020/02/28/next-generation-optimization-for-dasher-dispatch-at-doordash/) | 📖 Blog | ML-driven driver dispatch optimization at DoorDash |
+| [Uber Eats Engineering: Order Reliability](https://eng.uber.com/uber-eats-order-reliability/) | 📖 Blog | How Uber Eats ensures order reliability across complex multi-party workflows |
+| [Geospacial Indexing for Driver Matching](https://www.uber.com/blog/engineering/geofences/) | 📖 Blog | H3 hexagonal geospatial indexing used for driver proximity queries |
+| [High Scalability: Ride-Sharing Architecture](http://highscalability.com) | 📖 Blog | Real-world food delivery and ride-sharing platform architectures |

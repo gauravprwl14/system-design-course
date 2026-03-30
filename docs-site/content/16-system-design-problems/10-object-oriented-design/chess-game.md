@@ -114,3 +114,13 @@ classDiagram
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design a Chess Game](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "chess game design" — board representation, piece hierarchy, move validation |
+| [Grokking Object-Oriented Design](https://www.educative.io/courses/grokking-the-object-oriented-design-interview) | 📚 Book | OOD interview approach with UML and class design |
+| [Lichess Open Source Chess Platform](https://lichess.org/source) | 📖 Blog | Open-source chess platform — real production codebase to study |
+| [Stockfish Chess Engine: Open Source](https://github.com/official-stockfish/Stockfish) | 📖 Blog | World's strongest open-source chess engine — study move generation algorithms |
+| [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page) | 📚 Docs | Comprehensive resource on board representation, move generation, and search algorithms |

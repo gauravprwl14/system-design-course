@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [ByteByteGo — Design Uber Backend](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "Uber backend design" — driver matching, geospatial queries, surge pricing |
+| [Uber Engineering: Geofencing at Scale](https://www.uber.com/blog/engineering/geofences/) | 📖 Blog | How Uber uses H3 hexagonal indexing for efficient geospatial driver lookup |
+| [Uber Engineering: Surge Pricing Architecture](https://eng.uber.com/engineering-an-efficient-route/) | 📖 Blog | Dynamic pricing system that adjusts rates in real-time based on supply/demand |
+| [Uber Engineering: Dispatch System](https://eng.uber.com/dispatch/) | 📖 Blog | The optimization algorithm powering driver-rider matching |
+| [High Scalability: Uber Architecture Overview](http://highscalability.com/blog/2015/9/14/how-uber-scales-their-real-time-market-platform.html) | 📖 Blog | Detailed breakdown of Uber's real-time market platform architecture |

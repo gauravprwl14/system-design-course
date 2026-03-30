@@ -96,3 +96,13 @@ graph TD
 ---
 
 *📚 Full deep-dive with multiple approaches, trade-off tables, and pseudocode coming soon.*
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing Pastebin — URL shortener variant with text storage |
+| [ByteByteGo — Design a URL Shortener](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Search "URL shortener design" — relevant for the short URL generation in Pastebin |
+| [Consistent Hashing for Key Generation](https://www.toptal.com/big-data/consistent-hashing) | 📖 Blog | How to generate unique keys for paste IDs without collision |
+| [S3 for Object Storage at Scale](https://aws.amazon.com/blogs/storage/amazon-s3-performance-tips-and-tricks-seattle-aws-summit/) | 📚 Docs | Using S3 as the backing store for large text/binary paste content |
+| [High Scalability: Key-Value Service Design](http://highscalability.com) | 📖 Blog | Architecture patterns for simple read-heavy key-value services |

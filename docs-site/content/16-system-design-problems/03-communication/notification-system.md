@@ -830,3 +830,13 @@ Result: Zero duplicate sends for push (dedup layer). < 0.001% duplicate rate for
 - [Design Instagram](../02-social-platforms/instagram) — Instagram's notification system (likes, comments) is a subset of this general-purpose notification system
 - [Rate Limiter](../05-infrastructure/rate-limiter) — The per-user rate limiting (max 10 push/hour) and per-provider rate limiting (1K emails/sec) both use token bucket algorithm
 - [Design Twitter](../02-social-platforms/twitter) — Twitter notifications (mentions, retweets) use same fan-out + notification pipeline pattern
+
+## 📚 Resources & References
+
+| Resource | Type | What You'll Learn |
+|----------|------|------------------|
+| [System Design Interview — Alex Xu](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) | 📚 Book | Chapter on designing a notification system — push, email, SMS fan-out |
+| [ByteByteGo — Design a Notification System](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Comprehensive walkthrough of multi-channel notification delivery |
+| [Uber Engineering: Real-Time Notifications](https://www.uber.com/blog/uberevents/) | 📖 Blog | How Uber delivers time-critical notifications to millions of drivers and riders |
+| [Firebase Cloud Messaging Architecture](https://firebase.google.com/docs/cloud-messaging/server) | 📚 Docs | Google's push notification infrastructure and delivery guarantees |
+| [Apple Push Notification Service (APNs) Best Practices](https://developer.apple.com/documentation/usernotifications) | 📚 Docs | APNs delivery modes, certificate management, and reliability |
