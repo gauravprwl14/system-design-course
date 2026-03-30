@@ -42,6 +42,9 @@ graph TD
 - ❌ **Not defining a shard key first:** The shard key determines everything — cross-shard join frequency, hotspot risk, re-shard difficulty
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -117,6 +120,9 @@ graph TD
 - ❌ **Hash sharding when range queries are frequent:** "Get all orders for user in last 30 days" hits all N shards if orders are hashed by order_id instead of user_id
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -152,6 +158,9 @@ graph TD
 - ❌ **Ignoring read hotspots:** Read replicas help for read-heavy hot shards, but write hotspots require re-sharding or key redesign
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -219,6 +228,9 @@ Design shard keys to **co-locate related data** — all of a user's data on the 
 - ❌ **Joining across shards in application layer:** Fetching 10K rows from shard A then 10K from shard B and joining in memory is an N+1 at scale — use co-location or denormalization
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -251,6 +263,9 @@ graph TD
 - ❌ **Not pre-allocating logical shards:** Physical re-sharding requires data movement; logical-to-physical remapping only updates a routing table — plan for this from day 1
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -284,6 +299,9 @@ graph TD
 - ❌ **Too few logical shards:** Instagram uses 2048 logical shards for 100 physical machines; if they used 100 logical shards, future splits require data movement
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -356,6 +374,9 @@ Avoid distributed transactions across shards where possible — redesign data mo
 - ❌ **Saga without idempotent compensations:** If the compensation step is retried, double-refund is worse than the original failure
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -389,6 +410,9 @@ graph LR
 - ❌ **Ignoring hot virtual nodes:** A virtual node handling a celebrity user's data still creates a hotspot — consistent hashing distributes shards, not traffic
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -424,6 +448,9 @@ graph TD
 - ❌ **Ignoring VSchema design:** VSchema must match your access patterns — wrong shard key in VSchema is as bad as wrong shard key in native sharding
 
 ### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range, hash, directory-based with trade-off analysis
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how Cassandra and DynamoDB shard without re-hashing
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — try read replicas before sharding
 
 ---
 
@@ -485,3 +512,72 @@ graph TD
 | Backfill job crashes | Partial migration | Idempotent backfill with checkpoint; restart from last checkpoint |
 | Shard 1 primary fails | 33% of writes fail | Automated failover to replica in <30s; use Patroni or RDS Multi-AZ |
 
+---
+
+## Q11: Your shard key is `user_id` and you're using consistent hashing with 150 virtual nodes per shard. Your top 0.1% of users generate 30% of all writes. Does consistent hashing solve your hotspot problem? What does?
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P0 | **Format:** Synthesis (Sharding + Consistent Hashing + Hotspot)
+
+> **What the interviewer is testing:** Whether you understand that consistent hashing solves *distribution of keys* across shards, but does NOT solve *skewed write volume* within a shard. These are different problems. Many candidates conflate them.
+
+### Answer in 60 seconds
+- **What consistent hashing actually solves:** When you add or remove a shard, only ~1/N of keys need to migrate. It does NOT guarantee that each shard receives equal write volume — it only guarantees that each shard receives approximately equal numbers of keys.
+- **The hotspot is invisible to hashing:** Consistent hashing assigns keys uniformly. But if user_id=42 (a celebrity with 100M followers) generates 30% of all writes, they get assigned to one shard — and that shard receives 30% of total write load regardless of how many virtual nodes you have.
+- **Consistent hashing solves distribution inequality. It cannot solve volume inequality.**
+- **Solutions for write hotspots on a shard:**
+  1. **Shard splitting:** Split the hot shard into 2 shards. The celebrity user now lives on one of the two; their writes are still on one shard (not fixed).
+  2. **Application-level fan-out:** Write the celebrity's data to multiple shards simultaneously, read from all and merge. Expensive but eliminates the write hotspot.
+  3. **Write buffering:** Queue celebrity writes in a message queue, batch-apply to the DB at a controlled rate.
+  4. **Separate celebrity tier:** Instagram's approach — detect accounts over a follower threshold and treat them as a special case with dedicated infrastructure.
+- **Detection:** A shard's P99 write latency climbing while others are healthy is the signal. Monitor per-shard write TPS, not just aggregate.
+
+### Diagram
+
+```mermaid
+graph TD
+  A[Write: user_id=42] -->|hash mod N| B[Shard 3]
+  C[Write: user_id=9] -->|hash mod N| D[Shard 1]
+  E[Write: user_id=17] -->|hash mod N| F[Shard 2]
+  G[Write: user_id=42 - 2nd write] -->|hash mod N| B
+  H[Write: user_id=42 - 3rd write] -->|hash mod N| B
+  B --> I[30% of all writes → CPU 95%]
+  D --> J[35% of all writes → CPU 35%]
+  F --> K[35% of all writes → CPU 35%]
+  style B fill:#f88,stroke:#900
+  style I fill:#f88,stroke:#900
+```
+
+### Pitfalls
+- ❌ **"Add more virtual nodes":** Virtual nodes improve key distribution uniformity. They do not change which shard owns user_id=42. The celebrity is still on one shard.
+- ❌ **"Re-shard to spread the load":** Re-sharding moves keys between shards. The celebrity's user_id will land on a different shard after re-sharding — but still only ONE shard. The hotspot follows them.
+- ❌ **Treating this as a rare edge case:** Instagram, Twitter, and Reddit all hit this exact problem with celebrity accounts. Any user-generated-content platform with power-law user distribution will experience this.
+
+### Concept Reference
+→ [Consistent Hashing Deep Dive](../../../06-scalability/concepts/consistent-hashing-deep-dive) — how the ring works, why it solves re-sharding but not write skew
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — range vs hash vs directory: which handles celebrity accounts better?
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — monitoring patterns for detecting per-shard skew before it causes an outage
+
+---
+
+## Q12: You need to run a query that joins two tables sharded on different keys: `orders` (sharded by `order_id`) and `users` (sharded by `user_id`). The query is "get all orders for user X." What are your options?
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Synthesis (Sharding + Query Design)
+
+> **What the interviewer is testing:** Whether you understand that sharding breaks SQL's implicit assumption of co-located data. Cross-shard joins are one of the primary hidden costs of sharding, and good candidates enumerate options with trade-offs rather than pretending the problem doesn't exist.
+
+### Answer in 60 seconds
+- **The problem:** `orders` are on Shard A (based on order_id). The user's record is on Shard B (based on user_id). A standard SQL JOIN runs at the DB layer — but the DB only sees its own shard, not the other.
+- **Option 1 — Re-shard orders by user_id:** Change the shard key for orders to user_id. Now all orders for user X are on the same shard as user X. This enables the join. Cost: one-time re-sharding migration (expensive, requires dual-write period). Best long-term if this query is your primary access pattern.
+- **Option 2 — Scatter-gather at the application layer:** Query all shards in parallel asking "orders for user_id=X", collect results in the application, join in memory. Works but scales poorly: O(shards) queries per user lookup. At 100 shards, every profile page load makes 100 DB queries.
+- **Option 3 — Denormalization with user_id on the orders table:** Store user_id on every order row. Index it. Scatter-gather on shard key hash of user_id to find the right shard. Reduces to O(1) shard lookup at the cost of data duplication.
+- **Option 4 — Separate read model (CQRS):** Maintain a read-optimized store (e.g. Elasticsearch or a reporting DB) that aggregates orders by user_id. Primary DB stays write-optimized, sharded by order_id. Sync via CDC or event stream.
+- **Interview answer:** Option 1 if you can re-shard. Option 4 if the query is analytics-oriented and eventual consistency is acceptable. Option 3 as a pragmatic middle ground.
+
+### Pitfalls
+- ❌ **"Just use a distributed JOIN":** Distributed JOINs exist (CockroachDB, Spanner) but are expensive — they require network round trips to co-locate data before joining. At high QPS this is latency-prohibitive.
+- ❌ **Defaulting to scatter-gather without mentioning the scaling problem:** Scatter-gather is easy to implement but quadratic in cost as you add shards. Mention this trade-off.
+
+### Concept Reference
+→ [Sharding Strategies](../../../01-databases/concepts/sharding-strategies) — shard key selection is the root cause of cross-shard join problems
+→ [Event Sourcing & CQRS](../../distributed-systems/event-sourcing-cqrs) — CQRS is the production-grade answer for cross-shard read queries
+→ [Database Read Scaling](../../../06-scalability/concepts/database-read-scaling) — read replicas + separate read model vs sharding trade-offs

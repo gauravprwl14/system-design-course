@@ -46,6 +46,9 @@ graph TD
 - ❌ **Ignoring latency:** PACELC shows that even without partitions, there's a latency vs consistency trade-off.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -85,6 +88,9 @@ graph LR
 - ❌ **Forgetting consistency levels:** Cassandra can be CP with `QUORUM` reads — CP/AP is a setting, not a fixed property.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -160,6 +166,9 @@ Hinted handoff stores writes for unreachable nodes for up to 3 hours (configurab
 - ❌ **Forgetting hinted handoff expiry:** Hints older than `max_hint_window` (3 hours default) are discarded. Long partitions cause permanent divergence.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -199,6 +208,9 @@ graph LR
 - ❌ **"Our timeout is 1ms so we detect immediately":** Very short timeouts cause false positives — healthy nodes appear partitioned under load spikes.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -238,6 +250,9 @@ sequenceDiagram
 - ❌ **Ignoring CP during leader election:** Leader election itself takes 100–2000ms. During this window, ZooKeeper is unavailable for writes — use etcd (300–500ms elections) for latency-sensitive use cases.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -310,6 +325,9 @@ Design separate degradation strategies for reads vs writes:
 - ❌ **Ignoring cache warming:** A cold cache during a partition provides zero benefit. Ensure cache TTL > expected partition duration.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -346,6 +364,9 @@ graph TD
 - ❌ **Assuming EL and EC are binary:** They exist on a spectrum. Cassandra's QUORUM gives EC at 2x the EL latency.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -381,6 +402,9 @@ graph LR
 - ❌ **Strong reads on DynamoDB Global Tables:** Not supported. Cross-region replication lag is 1–2 seconds, and strong reads revert to eventual.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -454,6 +478,9 @@ Discord migrated from Cassandra to ScyllaDB in 2023, reducing p99 read latency f
 - ❌ **Ignoring application-level ordering:** Without Snowflake IDs, Cassandra's LWW would produce incorrect message ordering under clock skew.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
 
 ---
 
@@ -488,3 +515,73 @@ graph TD
 - ❌ **Confusing CA with "high availability":** HA means multi-node redundancy — which reintroduces CAP. True CA is single-node, which is a SPOF.
 
 ### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — CP vs AP decision framework with real system examples
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — how AP systems reconcile after partition heals
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — AP systems use caching as the consistency buffer
+
+---
+
+## Q11: Kafka claims to be a distributed log. Is Kafka CP or AP? Justify your answer using a real partition scenario.
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Synthesis (CAP + Message Queues)
+
+> **What the interviewer is testing:** Whether you can apply CAP analysis to systems beyond databases. Most candidates only apply CAP to databases. Real senior engineers apply it to every distributed system they evaluate.
+
+### Answer in 60 seconds
+- **Kafka's design choice:** Kafka prioritizes availability (AP) in most default configurations, but can be tuned toward consistency (CP).
+- **Default behavior (AP):** Producers write to the partition leader. If the leader fails, one of the in-sync replicas is elected as the new leader. During the election window (typically 1-30 seconds), the partition is unavailable. However, Kafka accepts writes with `acks=1` (leader only) by default — the leader can acknowledge a write that hasn't reached any replica yet. If that leader crashes before replication, the write is lost. This is an AP trade-off: availability over consistency.
+- **CP mode:** Set `acks=all` (also written `acks=-1`) and `min.insync.replicas=2`. Now a write is only acknowledged after reaching the leader + at least 1 replica. If a network partition means fewer than 2 ISR (in-sync replicas) are reachable, the partition refuses writes — returning an error (unavailability) to maintain consistency. This is CP.
+- **The partition scenario:** 3-broker Kafka cluster, replication factor 3, `min.insync.replicas=2`. Broker 3 falls off the network. Now only 2 of 3 ISR are reachable — the partition continues (2 ≥ min.insync.replicas). Broker 2 also falls off. Now only 1 ISR. With `acks=all` and `min.insync.replicas=2`, the partition rejects all writes. CP — consistency preserved at the cost of availability.
+- **What most candidates miss:** CAP in Kafka is not a global setting — it's per-topic and per-producer. You can have AP topics (audit logs — availability matters, duplicates OK) and CP topics (payment events — no loss acceptable) in the same cluster.
+
+### Diagram
+
+```mermaid
+graph TD
+  P[Producer] -->|acks=all| L[Leader Broker]
+  L --> R1[Replica 1]
+  L --> R2[Replica 2]
+  L -->|write ACK only after| W[min.insync.replicas=2 replicas confirm]
+
+  P2[Producer] -->|acks=1| L2[Leader Broker]
+  L2 -->|ACK immediately| P2
+  L2 -.->|async| R3[Replica — may lag]
+
+  style W fill:#8f8,stroke:#090
+  style R3 fill:#f88,stroke:#900
+```
+
+### Pitfalls
+- ❌ **"Kafka is CP because it has replication":** Replication doesn't determine CP vs AP — the acknowledgment semantics do. With `acks=1`, Kafka is AP (writes acknowledged before durable). With `acks=all`, it's CP (writes blocked until replicated).
+- ❌ **Not mentioning the ISR (in-sync replica) concept:** The ISR list is the mechanism Kafka uses to implement its consistency guarantee. Candidates who say "replicas" without explaining ISR are showing surface knowledge.
+- ❌ **Treating the default as the only mode:** Default Kafka (`acks=1`) is AP. Production Kafka for critical data is CP (`acks=all`, `min.insync.replicas=2`). Always ask about configuration before classifying.
+
+### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — the CP vs AP framework applied to real systems
+→ [Message Queue Basics](../../../04-messaging/concepts/message-queue-basics) — how message queues use replication to provide durability guarantees
+→ [Kafka Exactly-Once Semantics](../../../04-messaging/concepts/kafka-exactly-once-semantics) — the `acks` and `min.insync.replicas` trade-offs in full detail
+
+---
+
+## Q12: Your caching layer is Redis Cluster configured as AP (reads allowed from replicas even if lagging). Your application requires that after a user updates their settings, they immediately see the new settings. How do you reconcile these two requirements?
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Synthesis (CAP + Caching + Consistency)
+
+> **What the interviewer is testing:** Whether you can identify that AP cache + read-your-writes requirement creates a contradiction — and enumerate the engineering options to resolve it without abandoning either the AP cache or the consistency requirement.
+
+### Answer in 60 seconds
+- **The contradiction:** AP Redis means reads may return stale data for up to [replication lag] milliseconds after a write. Read-your-writes requires that a read immediately following a write always returns the new value. These are incompatible in pure AP mode.
+- **Option 1 — Route post-write reads to primary:** After any write, route the next N reads for that user to the Redis primary (not a replica). This guarantees read-your-writes for that user. Implement via: store a flag in the session (`wrote_at = timestamp`) and add middleware that routes to primary for 2 seconds after any write. This is what Stripe does.
+- **Option 2 — Write-through with synchronous replication:** Configure Redis with `WAIT 1 100` after each write — blocks until at least 1 replica has applied the write (100ms timeout). This converts AP → CP for writes, at the cost of write latency. Now reads from any replica are guaranteed to have the data.
+- **Option 3 — Client-side cache for recent writes:** Don't re-read from Redis after a write — cache the new value in the application session or browser. For the next 30 seconds, serve the locally-cached value. Zero Redis reads needed for the user's own data.
+- **Option 4 — Invalidate, don't update:** Instead of writing the new value to the replica, invalidate (delete) the key. All replicas will have a miss on next read, which forces a DB read — which returns the latest value. Slightly slower for first post-write read, but guaranteed consistent.
+- **Interview answer:** Option 1 (primary routing) for user-facing settings where the window is short. Option 3 (client cache) for highest performance. Option 4 (invalidation) as the simplest correct implementation.
+
+### Pitfalls
+- ❌ **"Just use strong consistency mode":** Redis doesn't have a native strong consistency mode — the `WAIT` command is a pragmatic approximation. It fails if replicas are lagging > timeout.
+- ❌ **Ignoring the problem entirely:** Many candidates say "use Redis cache" without acknowledging that AP + read-your-writes is a contradiction. Naming the tension is the first sign of senior-level thinking.
+
+### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — AP systems can implement read-your-writes at the application layer
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — the full pattern library for this consistency model
+→ [Caching Strategies](../../../02-caching/concepts/caching-strategies) — write-through, write-around, and invalidation are the mechanism options

@@ -59,7 +59,8 @@ sequenceDiagram
 - ❌ **Confusing stampede with cache thrashing:** Thrashing is eviction under memory pressure. Stampede is the burst of DB queries on TTL expiry. Both cause DB overload but have different root causes and different fixes.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — write-through, write-back, eviction policies
+→ [Cache Stampede Prevention](../../../02-caching/concepts/cache-stampede-prevention) — XFetch, mutex, background refresh implementations
 
 ---
 
@@ -100,7 +101,8 @@ graph TD
 - ❌ **Probabilistic early expiry with β=0:** Setting beta too low means refresh only happens at expiry time — same as no protection. Tuning β=1 (recomputation time in seconds) is a safe starting point.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — write-through, write-back, eviction policies
+→ [Cache Stampede Prevention](../../../02-caching/concepts/cache-stampede-prevention) — XFetch, mutex, background refresh implementations
 
 ---
 
@@ -194,7 +196,8 @@ For expensive ML inference, **never allow a user request to trigger ML inference
 - ❌ **Forgetting cold start:** On first deployment or cache flush, no cache entries exist. Without a fallback (default recs or popular-items list), all users see errors while ML precomputes.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — write-through, write-back, eviction policies
+→ [Cache Stampede Prevention](../../../02-caching/concepts/cache-stampede-prevention) — XFetch, mutex, background refresh implementations
 
 ---
 
@@ -234,7 +237,8 @@ graph TD
 - ❌ **Too-large jitter violating freshness SLA:** If data must be fresh within 60 seconds, adding 60-second jitter means some clients see 120-second-old data. Keep jitter ≤ 20% of base TTL or within the staleness tolerance.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — write-through, write-back, eviction policies
+→ [Cache Stampede Prevention](../../../02-caching/concepts/cache-stampede-prevention) — XFetch, mutex, background refresh implementations
 
 ---
 
@@ -329,4 +333,80 @@ Facebook's 2013 NSDI paper "Scaling Memcache at Facebook" introduced leases to s
 - ❌ **Not knowing the paper:** Saying "Facebook uses leases" without knowing the mechanism or the paper signals that you are name-dropping rather than understanding. Know the token lifecycle.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — write-through, write-back, eviction policies
+→ [Cache Stampede Prevention](../../../02-caching/concepts/cache-stampede-prevention) — XFetch, mutex, background refresh implementations
+
+---
+
+## Q6: Your Redis cluster loses 2 of 5 nodes due to a network partition. Immediately after, your site experiences a thundering herd. Walk through exactly why and what fails in what order.
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Synthesis (CAP + Caching)
+
+> **What the interviewer is testing:** Whether you can trace a failure cascade across system layers — from infrastructure event (partition) through data layer (cache) to application behavior (stampede). This requires holding CAP theorem and cache stampede mechanics simultaneously.
+
+### Answer in 60 seconds
+- **Step 1 — Partition occurs:** 2 of 5 Redis nodes become unreachable. Your Redis cluster is now in a degraded state. Depending on your cluster config, some key slots are now either unavailable (CP mode) or being served by remaining nodes with potentially stale data (AP mode).
+- **Step 2 — Key eviction cascade:** The 2 lost nodes held ~40% of your keyspace. Those keys are gone. Every request for those keys is now a cache miss — not a TTL expiry miss, a structural miss.
+- **Step 3 — Thundering herd begins:** All concurrent requests for the ~40% missing keys simultaneously hit the database. Unlike a single-key stampede (one popular key expires), this is a multi-key stampede across 40% of your working set. At 50K req/sec, this is ~20K simultaneous DB queries.
+- **Step 4 — Database overwhelmed:** Connection pool exhausted. DB query latency climbs from 5ms to 2 seconds as the queue backs up. Application threads blocking on DB. P99 response time exceeds 30 seconds.
+- **Step 5 — Cascading failure:** HTTP timeouts trigger retries. Retries increase DB load. Circuit breakers (if implemented) trip. Services depending on your service receive 503s.
+- **Prevention:** (1) Redis Cluster with replica promotion — when node fails, replica is promoted within seconds, keys are not lost. (2) Request coalescing at app layer — deduplicate simultaneous misses for the same key before hitting DB. (3) Circuit breaker on DB — shed load intentionally instead of overloading.
+
+### Diagram
+
+```mermaid
+sequenceDiagram
+  participant N as Network
+  participant R as Redis Cluster (5 nodes)
+  participant A as App Servers
+  participant DB as Database
+
+  N->>R: Partition — 2 nodes unreachable
+  Note over R: 40% of keyspace lost
+
+  A->>R: GET key_X (MISS — node gone)
+  A->>R: GET key_Y (MISS — node gone)
+  Note over A: ×20,000 simultaneous misses
+
+  A->>DB: SELECT for key_X
+  A->>DB: SELECT for key_Y
+  Note over DB: 20K simultaneous queries<br/>Connection pool: EXHAUSTED
+
+  DB-->>A: Timeout after 30s
+  A-->>A: Circuit breaker trips
+  Note over A: 503 to all callers
+```
+
+### Pitfalls
+- ❌ **"Just add more replicas":** Replicas help with read scale but don't prevent the stampede — the replica must still be promoted before requests route to it. Promotion takes 5-30 seconds. The stampede starts in millisecond 1.
+- ❌ **"Use write-through to repopulate":** Write-through only repopulates keys on write. Read-heavy keys won't be repopulated until they're written again — which may be never.
+- ❌ **Forgetting the retry amplification:** Clients retrying on timeout multiply the DB load. A circuit breaker is mandatory, not optional, at this scale.
+
+### Concept Reference
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — the partition is a CAP event; your Redis config's CP vs AP choice determines step 2
+→ [Cache Stampede Prevention](../../../02-caching/concepts/cache-stampede-prevention) — the prevention techniques from the single-key case all apply, at 40x scale
+→ [High Availability](../../../06-scalability/concepts/high-availability) — Redis Cluster replica promotion is an HA pattern, not a caching pattern
+
+---
+
+## Q7: You're using probabilistic early expiry (XFetch) to prevent stampede. An interviewer asks: "What happens to XFetch when your traffic drops to near-zero overnight?" Explain the failure and the fix.
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P2 | **Format:** Synthesis (Caching + Traffic Patterns)
+
+> **What the interviewer is testing:** Whether you understand that stampede-prevention techniques have their own failure modes under non-uniform traffic patterns. This is a Staff-level question — it requires identifying second-order effects.
+
+### Answer in 60 seconds
+- **How XFetch works (recap):** Before TTL expires, each cache read has a probability of triggering a background refresh proportional to how close the key is to expiry. Formula: refresh if `current_time - ttl_remaining > -beta * delta * ln(rand())`. At high traffic (1000 req/sec), many requests hit the probabilistic check near expiry → early refresh almost certain to happen.
+- **The failure under low traffic:** At near-zero traffic (1 req/min overnight), there may be only 1-2 requests hitting the check window near expiry. With low request count, the probability of any single request triggering the early refresh is low. The TTL expires without anyone triggering the refresh.
+- **Result:** At 9 AM when traffic ramps up rapidly, the key is already expired. The morning traffic spike hits a cold cache exactly when load is spiking. This is a scheduled thundering herd — worst case because it's predictable but often missed.
+- **Fix 1 — Minimum background refresh:** Use a background job that refreshes popular keys regardless of traffic, on a schedule slightly shorter than TTL.
+- **Fix 2 — Traffic-aware beta:** Increase the XFetch `beta` parameter during known low-traffic windows so even rare requests trigger early refresh more aggressively.
+- **Fix 3 — Cache warming:** Before peak hours, pre-warm the cache with an explicit warming pass (not dependent on traffic).
+
+### Pitfalls
+- ❌ **"XFetch is always correct":** XFetch is probabilistic — it degrades gracefully under high traffic but fails silently under low traffic. Know the failure mode before using it in production.
+- ❌ **Missing the time-of-day pattern:** The failure is predictable — it happens every morning if your TTLs are < 8 hours. Monitor hit rate at traffic ramp-up, not just at steady state.
+
+### Concept Reference
+→ [Cache Stampede Prevention](../../../02-caching/concepts/cache-stampede-prevention) — pre-warming is the fix for low-traffic cold-start scenarios
+→ [Caching Fundamentals](../../../02-caching/concepts/caching-fundamentals) — foundational TTL and eviction model that XFetch extends

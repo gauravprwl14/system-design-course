@@ -53,7 +53,8 @@ sequenceDiagram
 - ❌ **Write-behind without acknowledging to the client that it's async:** If clients assume write-through durability but the system uses write-behind, any data loss scenario becomes a breach of contract. Document and communicate the durability guarantee.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Strategies](../../../02-caching/concepts/caching-strategies) — full comparison of write-through, write-around, write-behind
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — write-through is a CP choice; understand why
 
 ---
 
@@ -109,7 +110,8 @@ sequenceDiagram
 - ❌ **Not invalidating in distributed scenarios:** If 3 app servers each have an in-process L1 cache, invalidating one server's cache does not invalidate the others. Use Redis pub/sub to broadcast invalidation to all app servers.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Strategies](../../../02-caching/concepts/caching-strategies) — full comparison of write-through, write-around, write-behind
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — write-through is a CP choice; understand why
 
 ---
 
@@ -207,7 +209,8 @@ For write-behind caches, the core risk is unacknowledged writes: you've told the
 - ❌ **Not testing crash recovery:** Write-behind crash recovery is complex. Without regular chaos testing (Redis kill during load), the recovery path may be untested and broken when it matters.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Strategies](../../../02-caching/concepts/caching-strategies) — full comparison of write-through, write-around, write-behind
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — write-through is a CP choice; understand why
 
 ---
 
@@ -250,7 +253,8 @@ graph TD
 - ❌ **Flush window too long:** A 5-second flush window means the DB is at most 5 seconds stale, but it also means 5 seconds × 100K writes/sec = 500K writes in the buffer — significant memory consumption and data at risk if the cache crashes.
 
 ### Concept Reference
-→ [Caching Strategies](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Strategies](../../../02-caching/concepts/caching-strategies) — full comparison of write-through, write-around, write-behind
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — write-through is a CP choice; understand why
 
 ---
 
@@ -343,4 +347,51 @@ InnoDB's buffer pool is the canonical production-grade write-behind cache implem
 - ❌ **Not monitoring redo log utilisation:** If `innodb_log_file_size` is too small, the redo log fills quickly → checkpoint pressure → write stalls. Monitor `Innodb_log_waits` counter — any value > 0 indicates log stalls. Target: 0.
 
 ### Concept Reference
-→ [Database Internals](../../../01-databases/concepts/write-ahead-log)
+→ [Caching Strategies](../../../02-caching/concepts/caching-strategies) — full comparison of write-through, write-around, write-behind
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — write-through is a CP choice; understand why
+
+---
+
+## Q6: You're using write-behind caching (cache accepts write, DB updated asynchronously). Your cache node crashes before flushing the write queue to the DB. What data is lost and how do you prevent it?
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P0 | **Format:** Synthesis (Caching + Durability + Failure Modes)
+
+> **What the interviewer is testing:** Whether you understand that write-behind's availability benefit comes with an explicit durability trade-off — and whether you can name the prevention strategies that make write-behind production-safe.
+
+### Answer in 60 seconds
+- **What is lost:** Every write that was acknowledged to the application but not yet flushed to the DB. If the write queue had 500 writes buffered when the node crashed, all 500 are lost. The application received `200 OK` for each of those writes — the data does not exist in the DB.
+- **This is a CP vs AP trade-off:** Write-behind is an AP choice — you prioritize write availability (fast acknowledgment) at the cost of consistency (the DB may lag behind). Write-through is a CP choice — write is only acknowledged after DB confirms.
+- **Prevention Strategy 1 — Persist the write queue to disk (WAL):** Before acknowledging the write, append it to a Write-Ahead Log on disk. If the cache node crashes, replay the WAL on restart. This is how Redis AOF (Append-Only File) mode works. Adds ~1-3ms overhead per write.
+- **Prevention Strategy 2 — Replicate the write queue:** Use a replicated Redis Cluster. The write queue is replicated to N replicas before acknowledgment. If one node crashes, another takes over and continues flushing. Requires `min.insync.replicas ≥ 2` equivalent configuration.
+- **Prevention Strategy 3 — Accept the loss (acceptable for some use cases):** Analytics counters, view counts, activity feeds — if approximate accuracy is acceptable, losing 500 buffered writes is tolerable. Define an RPO (Recovery Point Objective): "we accept up to 30 seconds of write loss."
+- **Production pattern:** Write-behind with WAL for high-write workloads where eventual consistency is acceptable but data loss is not. Write-through for user-visible data where immediate consistency is required.
+
+### Diagram
+
+```mermaid
+sequenceDiagram
+  participant A as Application
+  participant C as Cache (Write-Behind)
+  participant Q as Write Queue
+  participant DB as Database
+
+  A->>C: WRITE user.settings
+  C->>A: ACK (immediate)
+  C->>Q: Enqueue write
+  Note over Q: 500 writes buffered
+
+  Note over C,Q: ⚠️ Cache node crashes
+
+  Note over Q: 500 writes LOST — DB never updated
+  A->>DB: READ user.settings
+  DB-->>A: Returns OLD value (stale)
+```
+
+### Pitfalls
+- ❌ **Using write-behind for financial transactions:** Any data where loss is unacceptable (payments, orders, user credentials) must use write-through or synchronous DB writes. Write-behind is for eventually-consistent data.
+- ❌ **Not knowing your RPO:** "We use write-behind" without knowing the maximum acceptable data loss window is a production risk. Define RPO before choosing write-behind.
+
+### Concept Reference
+→ [Caching Strategies](../../../02-caching/concepts/caching-strategies) — full write strategy comparison with durability trade-offs
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — write-behind is an AP choice; understand the consistency model you're committing to
+→ [High Availability](../../../06-scalability/concepts/high-availability) — WAL and replication are HA patterns applied to the write queue

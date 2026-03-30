@@ -67,6 +67,8 @@ graph TD
 - ❌ **Ignoring clock size growth:** In dynamic systems where nodes join and leave, vector clocks can grow unboundedly. DynamoDB caps them with periodic pruning.
 
 ### Concept Reference
+→ [Vector Clocks & Logical Time](../../../05-distributed-systems/concepts/vector-clocks-logical-time) — happens-before, concurrent events, Lamport clocks comparison
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — vector clocks exist because AP systems need conflict detection
 
 ---
 
@@ -111,6 +113,8 @@ graph TD
 - ❌ **Treating concurrent as an error:** Concurrency is expected in distributed systems. The system must have a defined policy for handling concurrent writes (merge, LWW, or multi-version).
 
 ### Concept Reference
+→ [Vector Clocks & Logical Time](../../../05-distributed-systems/concepts/vector-clocks-logical-time) — happens-before, concurrent events, Lamport clocks comparison
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — vector clocks exist because AP systems need conflict detection
 
 ---
 
@@ -195,6 +199,8 @@ Vector clock entries are pruned when they exceed a maximum count (10 entries) by
 - ❌ **"Pruning vector clocks is safe":** Pruning drops causal history. It can cause the system to treat a causally-ordered pair as concurrent — creating spurious conflicts. It is a correctness trade-off.
 
 ### Concept Reference
+→ [Vector Clocks & Logical Time](../../../05-distributed-systems/concepts/vector-clocks-logical-time) — happens-before, concurrent events, Lamport clocks comparison
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — vector clocks exist because AP systems need conflict detection
 
 ---
 
@@ -234,6 +240,8 @@ graph TD
 - ❌ **"Version vectors require one entry per node in the cluster":** Modern implementations use **dotted version vectors** which are more space-efficient, tracking only nodes that have written the specific key.
 
 ### Concept Reference
+→ [Vector Clocks & Logical Time](../../../05-distributed-systems/concepts/vector-clocks-logical-time) — happens-before, concurrent events, Lamport clocks comparison
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — vector clocks exist because AP systems need conflict detection
 
 ---
 
@@ -326,3 +334,30 @@ Riak stores multiple versions of an object (siblings) when it detects concurrent
 - ❌ **Using LWW for all data types:** LWW is safe for last-valued semantics (user name, profile photo URL) but loses writes for additive operations (shopping cart, like count). Use CRDTs for additive data.
 
 ### Concept Reference
+→ [Vector Clocks & Logical Time](../../../05-distributed-systems/concepts/vector-clocks-logical-time) — happens-before, concurrent events, Lamport clocks comparison
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — vector clocks exist because AP systems need conflict detection
+
+---
+
+## Q6: DynamoDB uses vector clocks to detect conflicts but returns ALL conflicting versions to the client for resolution. Why doesn't DynamoDB resolve conflicts automatically using "last write wins"?
+
+**Role:** Senior | **Difficulty:** 🔴 | **Priority:** P1 | **Format:** Synthesis (Vector Clocks + CAP + Conflict Resolution)
+
+> **What the interviewer is testing:** Whether you understand why automatic conflict resolution is a correctness problem, not just a complexity problem. This requires simultaneously understanding vector clocks (detection) and CAP theorem (why conflicts exist in the first place).
+
+### Answer in 60 seconds
+- **Why conflicts exist in DynamoDB:** DynamoDB is an AP system. During a network partition, both sides accept writes. When the partition heals, two nodes have different values for the same key — each locally valid, each causally unrelated (concurrent writes). Vector clocks detect that these writes are concurrent (neither happened-before the other).
+- **Why "last write wins" (LWW) is incorrect for many data types:** LWW uses wall-clock timestamps to pick a winner. Problem 1: clock skew. Clocks on different nodes can differ by 1-500ms — the "later" timestamp may actually represent an earlier real-world event. Problem 2: LWW is semantically wrong for some data types. Example: a shopping cart. User A removes item X. User B adds item Y. Both happen concurrently. LWW picks one cart — and silently loses the other change. The user sees either: their removal undone, or their addition lost. Both are wrong.
+- **Why application-level resolution is correct:** Only the application knows what "correct" means for its data type. For a shopping cart, the correct merge is: take the union of both carts (keeps both changes). For a counter, the correct merge is: sum both increments. For a user profile, the correct merge might be: show both versions and ask the user. The DB cannot know this — the application must decide.
+- **Amazon's shopping cart insight:** When DynamoDB returns both conflicting cart versions, the application merges them by union. Result: you occasionally see items in your cart you thought you removed — but you never lose items you added. This is the correct trade-off for a shopping cart (false positive > false negative).
+- **When LWW is acceptable:** Metrics, analytics, and non-collaborative data where the latest value is always more correct than any previous value. Use LWW deliberately, not as a default.
+
+### Pitfalls
+- ❌ **"Just use timestamps":** Timestamps are unreliable in distributed systems. Vector clocks exist precisely because timestamps cannot determine causality.
+- ❌ **"The database should resolve this":** If you say this without qualification, it signals you haven't thought about what "correct resolution" means for your data type.
+- ❌ **Not knowing the shopping cart example:** This is the canonical DynamoDB conflict resolution example from Werner Vogels' Dynamo paper. Every Staff-level distributed systems candidate should know it.
+
+### Concept Reference
+→ [Vector Clocks & Logical Time](../../../05-distributed-systems/concepts/vector-clocks-logical-time) — how happens-before is computed and why concurrent events cannot be ordered
+→ [CAP Theorem Practical](../../../05-distributed-systems/concepts/cap-theorem-practical) — conflicts exist because DynamoDB is AP; the conflict resolution is the AP tax
+→ [Eventual Consistency Patterns](../../../05-distributed-systems/concepts/eventual-consistency-patterns) — CRDT data types that resolve conflicts automatically without application logic
