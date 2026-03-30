@@ -6,10 +6,29 @@ description: "Live status of all problems from the Codemania problem set"
 # Progress Tracker — 163 System Design Problems
 
 **Last updated**: 2026-03-30
-**Completed**: 8 / 163
-**In Progress**: 9
+**Fully Implemented**: 17 / 76 navigable problems
+**Stub Coverage**: 76 / 76 (all navigation links working, 59 quality stubs)
+**Full Deep-Dives**: 17 articles with Mermaid diagrams, trade-off tables, failure modes
 
-> Legend: ✅ Done | 🔄 In Progress | ⬜ Pending
+> Legend: ✅ Full Article | 📄 Quality Stub | ⬜ Not Started
+
+## Summary by Category
+
+| Category | Total | Full Article | Stub |
+|----------|-------|-------------|------|
+| ⚙️ Data Processing | 10 | 2 | 8 |
+| 📱 Social Platforms | 6 | 2 | 4 |
+| 💬 Communication | 8 | 2 | 6 |
+| 📅 Reservation & Scheduling | 10 | 3 | 7 |
+| 🔧 Infrastructure | 12 | 4 | 8 |
+| 🗂️ Storage & Files | 3 | 1 | 2 |
+| 🔒 Security & Payments | 6 | 0 | 6 |
+| 🔍 Search & Discovery | 5 | 1 | 4 |
+| 🤖 AI & Agents | 9 | 3 | 6 |
+| 🎯 Object-Oriented Design | 7 | 0 | 7 |
+| **Total** | **76** | **18** | **58** |
+
+---
 
 ---
 
@@ -19,22 +38,22 @@ description: "Live status of all problems from the Codemania problem set"
 |---|---------|-----------|--------|---------|
 | 1 | Designing a Simple URL Shortening Service | 🟢 Easy | ✅ Done | [View](./01-data-processing/url-shortener) |
 | 6 | Design Youtube or Netflix | 🟡 Medium | ✅ Done | [View](./01-data-processing/youtube-netflix) |
-| 11 | Design Facebook's Newsfeed | 🔴 Hard | ⬜ Pending | — |
-| 12 | Design a Web Crawler | 🔴 Hard | ⬜ Pending | — |
-| 19 | Design a Web Cache | 🟡 Medium | ⬜ Pending | — |
-| 40 | Design a Log Collection and Analysis System | 🔴 Hard | ⬜ Pending | — |
-| 50 | Design a Live Video Streaming Platform | 🟡 Medium | ⬜ Pending | — |
-| 57 | Design a Web Analytics Tool | 🟡 Medium | ⬜ Pending | — |
-| 59 | Design a Language Translation Service | 🟡 Medium | ⬜ Pending | — |
-| 65 | Design a Real Time Sports Scoring System | 🟡 Medium | ⬜ Pending | — |
-| 67 | Design a Podcast Hosting Platform | 🟡 Medium | ⬜ Pending | — |
-| 72 | Design a Live Comment System | 🟡 Medium | ⬜ Pending | — |
-| 76 | Design a Nested Comments System | 🟢 Easy | ⬜ Pending | — |
-| 77 | Design a Scheduled Digital Transaction System | 🔴 Hard | ⬜ Pending | — |
-| 100 | Design a Frequently Viewed Products Feature | 🟡 Medium | ⬜ Pending | — |
-| 113 | Design a Top-K Request Analysis System | 🟡 Medium | ⬜ Pending | — |
-| 117 | Design a Video View Count System | 🟢 Easy | ⬜ Pending | — |
-| 146 | Design an Ad Click Aggregation System | 🔴 Hard | ⬜ Pending | — |
+| 11 | Design Facebook's Newsfeed | 🔴 Hard | 📄 Stub | [View](./01-data-processing/facebook-newsfeed) |
+| 12 | Design a Web Crawler | 🔴 Hard | 📄 Stub | [View](./01-data-processing/web-crawler) |
+| 19 | Design a Web Cache | 🟡 Medium | 📄 Stub | [View](./01-data-processing/web-cache) |
+| 40 | Design a Log Collection and Analysis System | 🔴 Hard | ⬜ Not Started | — |
+| 50 | Design a Live Video Streaming Platform | 🟡 Medium | 📄 Stub | [View](./01-data-processing/live-video-streaming) |
+| 57 | Design a Web Analytics Tool | 🟡 Medium | 📄 Stub | [View](./01-data-processing/web-analytics) |
+| 59 | Design a Language Translation Service | 🟡 Medium | ⬜ Not Started | — |
+| 65 | Design a Real Time Sports Scoring System | 🟡 Medium | ⬜ Not Started | — |
+| 67 | Design a Podcast Hosting Platform | 🟡 Medium | ⬜ Not Started | — |
+| 72 | Design a Live Comment System | 🟡 Medium | 📄 Stub | [View](./01-data-processing/live-comment-system) |
+| 76 | Design a Nested Comments System | 🟢 Easy | ⬜ Not Started | — |
+| 77 | Design a Scheduled Digital Transaction System | 🔴 Hard | ⬜ Not Started | — |
+| 100 | Design a Frequently Viewed Products Feature | 🟡 Medium | ⬜ Not Started | — |
+| 113 | Design a Top-K Request Analysis System | 🟡 Medium | 📄 Stub | [View](./01-data-processing/top-k-analysis) |
+| 117 | Design a Video View Count System | 🟢 Easy | ⬜ Not Started | — |
+| 146 | Design an Ad Click Aggregation System | 🔴 Hard | 📄 Stub | [View](./01-data-processing/ad-click-aggregation) |
 
 ---
 
