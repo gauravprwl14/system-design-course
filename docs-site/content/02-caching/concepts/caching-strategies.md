@@ -3,6 +3,8 @@ title: Caching Strategies
 layer: concept
 section: system-design/caching
 difficulty: intermediate
+readTime: "20 min"
+fastPath: true
 prerequisites:
   - system-design/caching/caching-fundamentals
 solves_with: []
