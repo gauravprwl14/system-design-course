@@ -6,8 +6,8 @@ description: "Live status of all problems from the Codemania problem set"
 # Progress Tracker — 163 System Design Problems
 
 **Last updated**: 2026-03-30
-**Completed**: 9 / 163
-**In Progress**: 0
+**Completed**: 8 / 163
+**In Progress**: 9
 
 > Legend: ✅ Done | 🔄 In Progress | ⬜ Pending
 
@@ -43,7 +43,7 @@ description: "Live status of all problems from the Codemania problem set"
 | # | Problem | Difficulty | Status | Article |
 |---|---------|-----------|--------|---------|
 | 3 | Design Twitter | 🟡 Medium | ✅ Done | [View](./02-social-platforms/twitter) |
-| 14 | Design Instagram | 🟡 Medium | ⬜ Pending | — |
+| 14 | Design Instagram | 🟡 Medium | 🔄 In Progress | — |
 | 49 | Design Spotify | 🟡 Medium | ⬜ Pending | — |
 | 53 | Design an Ebook Distribution Platform | 🟡 Medium | ⬜ Pending | — |
 | 78 | Design a Platform Like Reddit | 🟡 Medium | ⬜ Pending | — |
@@ -66,7 +66,7 @@ description: "Live status of all problems from the Codemania problem set"
 | 60 | Design a Smart Home System | 🔴 Hard | ⬜ Pending | — |
 | 98 | Design a Collaboration Tool | 🟡 Medium | ⬜ Pending | — |
 | 99 | Design a Webhook Notification Service | 🟡 Medium | ⬜ Pending | — |
-| 137 | Design a Notification System | 🔴 Hard | ⬜ Pending | — |
+| 137 | Design a Notification System | 🔴 Hard | 🔄 In Progress | — |
 
 ---
 
@@ -94,7 +94,7 @@ description: "Live status of all problems from the Codemania problem set"
 | # | Problem | Difficulty | Status | Article |
 |---|---------|-----------|--------|---------|
 | 5 | Design an API Rate Limiter | 🟡 Medium | ✅ Done | [View](./05-infrastructure/rate-limiter) |
-| 24 | Design a Key Value Store | 🔴 Hard | ⬜ Pending | — |
+| 24 | Design a Key Value Store | 🔴 Hard | 🔄 In Progress | — |
 | 25 | Design a Container Orchestration System | 🔴🔴 Advanced | ⬜ Pending | — |
 | 26 | Design a High-Performance Computing Cluster | 🔴🔴 Advanced | ⬜ Pending | — |
 | 27 | Design a Cloud Based Data Backup Solution | 🔴🔴 Advanced | ⬜ Pending | — |
@@ -114,7 +114,7 @@ description: "Live status of all problems from the Codemania problem set"
 | 80 | Design a Distributed Linked List | 🔴 Hard | ⬜ Pending | — |
 | 83 | Design a Distributed OLTP Database | 🔴🔴 Advanced | ⬜ Pending | — |
 | 84 | Design a Distributed Tracing System | 🔴 Hard | ⬜ Pending | — |
-| 89 | Design a Distributed Unique ID Generator | 🟡 Medium | ⬜ Pending | — |
+| 89 | Design a Distributed Unique ID Generator | 🟡 Medium | 🔄 In Progress | — |
 | 91 | Design a Wide Column Database | 🔴 Hard | ⬜ Pending | — |
 | 93 | Design a Metrics Monitoring and Alerting System | 🔴 Hard | ⬜ Pending | — |
 | 95 | Design a Domain Name System | 🔴🔴 Advanced | ⬜ Pending | — |
@@ -128,7 +128,7 @@ description: "Live status of all problems from the Codemania problem set"
 
 | # | Problem | Difficulty | Status | Article |
 |---|---------|-----------|--------|---------|
-| 7 | Design Dropbox | 🔴 Hard | ⬜ Pending | — |
+| 7 | Design Dropbox | 🔴 Hard | 🔄 In Progress | — |
 | 88 | Design a Database Batch Auditing Service | 🟡 Medium | ⬜ Pending | — |
 | 124 | Design a File Sharing Platform | 🔴 Hard | ⬜ Pending | — |
 | 116 | Design a Collaborative Online Spreadsheet System | 🟡 Medium | ⬜ Pending | — |
@@ -156,7 +156,7 @@ description: "Live status of all problems from the Codemania problem set"
 
 | # | Problem | Difficulty | Status | Article |
 |---|---------|-----------|--------|---------|
-| 8 | Design Typeahead Suggestion | 🟡 Medium | ⬜ Pending | — |
+| 8 | Design Typeahead Suggestion | 🟡 Medium | 🔄 In Progress | — |
 | 10 | Design Yelp or Nearby Friends | 🔴 Hard | ⬜ Pending | — |
 | 13 | Design Twitter Search | 🟡 Medium | ⬜ Pending | — |
 | 15 | Design Google Map | 🔴 Hard | ⬜ Pending | — |
@@ -169,13 +169,13 @@ description: "Live status of all problems from the Codemania problem set"
 | # | Problem | Difficulty | Status | Article |
 |---|---------|-----------|--------|---------|
 | 54 | Design a Chatbot Framework | 🔴 Hard | ⬜ Pending | — |
-| 148 | Design a Code Generation Agent | 🟡 Medium | ⬜ Pending | — |
+| 148 | Design a Code Generation Agent | 🟡 Medium | 🔄 In Progress | — |
 | 149 | Design a Customer Support Agent | 🟡 Medium | ⬜ Pending | — |
 | 150 | Design a Deep Research Agent | 🔴 Hard | ⬜ Pending | — |
 | 151 | Design a Data Analysis Agent | 🟡 Medium | ⬜ Pending | — |
-| 152 | Design a Multi-Agent Orchestration System | 🔴 Hard | ⬜ Pending | — |
+| 152 | Design a Multi-Agent Orchestration System | 🔴 Hard | 🔄 In Progress | — |
 | 153 | Design a Workflow Automation Agent | 🟡 Medium | ⬜ Pending | — |
-| 154 | Design a RAG-Based Q&A Agent | 🟢 Easy | ⬜ Pending | — |
+| 154 | Design a RAG-Based Q&A Agent | 🟢 Easy | 🔄 In Progress | — |
 | 155 | Design an AI Travel Planning Agent | 🟢 Easy | ⬜ Pending | — |
 | 156 | Design a Security Monitoring Agent | 🔴 Hard | ⬜ Pending | — |
 | 157 | Design a Personal Finance Agent | 🟢 Easy | ⬜ Pending | — |

@@ -10,6 +10,8 @@ related_problems:
   - problems-at-scale/scalability/hot-partition
   - problems-at-scale/scalability/database-hotspots
 linked_from: []
+readTime: "35 min"
+fastPath: true
 references:
   - title: "System Design Interview – Alex Xu, Chapter 8"
     url: "https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF"

@@ -73,7 +73,7 @@ You have a system design interview coming up and need to prepare fast.
 - [Message Queue Basics](../04-messaging/concepts/message-queue-basics)
 
 ### Days 4-7: Case Studies
-Work through all 14 [Real-World Systems](../11-real-world) case studies.
+Work through all 14 [Real-World Systems](../11-real-world) case studies, then explore the [163 System Design Problems](../16-system-design-problems) for deeper practice (8 fully implemented, 9 in progress).
 
 ### Days 8-14: Practice Questions
 Work through the [System Design Interview Questions](../12-interview-prep/system-design).
@@ -113,3 +113,22 @@ You want deep expertise in distributed systems, not just interview prep.
 3. [Service Mesh](../10-architecture/concepts/service-mesh-architecture)
 4. [CQRS](../10-architecture/concepts/cqrs)
 5. Study [Failure Modes](../10-architecture/failures)
+
+---
+
+## 🤖 AI System Design Track (New)
+*For engineers building LLM-powered products or preparing for AI-focused interviews*
+
+**Duration**: 2 weeks | **Difficulty**: Advanced
+
+### Week 1 — AI Foundations
+1. [RAG-Based Q&A Agent](../16-system-design-problems/09-ai-agents/rag-qa-agent) — How production RAG works
+2. [Code Generation Agent](../16-system-design-problems/09-ai-agents/code-generation-agent) — Copilot-style systems
+3. [Multi-Agent Orchestration](../16-system-design-problems/09-ai-agents/multi-agent-orchestration) — Agentic workflows
+
+### Week 2 — AI Infrastructure
+4. [Key-Value Store](../16-system-design-problems/05-infrastructure/key-value-store) — Foundation for vector DBs
+5. [Notification System](../16-system-design-problems/03-communication/notification-system) — Event-driven AI pipelines
+6. [Distributed Messaging](../16-system-design-problems/05-infrastructure/distributed-messaging) — Kafka for AI workloads
+
+**After this track**: Check the [AI Agents section](../16-system-design-problems/09-ai-agents/index) for 9 more AI problem walkthroughs.

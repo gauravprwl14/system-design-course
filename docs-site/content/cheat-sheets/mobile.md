@@ -3,6 +3,14 @@ title: "Mobile Architecture Cheat Sheet"
 description: "Quick reference for mobile system design — offline-first sync, 60fps rendering, pagination, and secure storage"
 ---
 
+> **📅 Spaced Repetition Schedule**
+> - **Day 0** (now): Read through once, note 3 things you didn't know
+> - **Day 3**: Redo without looking — what offline sync strategies and performance numbers stick out?
+> - **Day 10**: Quiz yourself on offline-first design and 60fps rendering targets
+> - **Day 30**: Explain delta sync, conflict resolution strategies, and secure storage out loud
+>
+> *If you can teach it, you've learned it. Each pass takes < 10 minutes.*
+
 # Mobile Architecture Cheat Sheet
 
 > Scan this before a mobile system design interview. Key numbers, decisions, and traps only.
