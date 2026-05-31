@@ -11,5 +11,6 @@ export default {
   "write-scaling-patterns": "Write Scaling Patterns",
   "global-distribution-strategy": "Global Distribution Strategy",
   "stateless-architecture": "Stateless Architecture",
-  "multi-region": "Multi-Region Architecture"
+  "multi-region": "Multi-Region Architecture",
+  "capacity-planning-forecasting": "Capacity Planning & Forecasting"
 }

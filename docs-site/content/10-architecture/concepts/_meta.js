@@ -16,5 +16,8 @@ export default {
   "async-processing": "Async Processing",
   backpressure: "Backpressure",
   "chaos-engineering": "Chaos Engineering",
-  "cdn-edge-computing": "CDN & Edge Computing"
+  "cdn-edge-computing": "CDN & Edge Computing",
+  "multi-tenancy-patterns": "Multi-Tenancy Patterns",
+  "platform-engineering": "Platform Engineering (IDP)",
+  "serverless-at-scale": "Serverless Architecture at Scale"
 }

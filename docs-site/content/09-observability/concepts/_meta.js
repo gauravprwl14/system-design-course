@@ -20,5 +20,6 @@ export default {
   "apm-platforms-comparison": "APM Platforms: Datadog vs New Relic",
   "log-aggregation-elk-loki": "Log Aggregation: ELK vs Loki",
   "real-user-monitoring": "Real User Monitoring (RUM)",
-  "synthetic-monitoring": "Synthetic Monitoring"
+  "synthetic-monitoring": "Synthetic Monitoring",
+  "incident-management-postmortem": "Incident Management & Post-Mortems"
 }
