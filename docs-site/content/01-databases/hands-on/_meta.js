@@ -29,5 +29,8 @@ export default {
   "postgresql-explain-analyze-optimization": "PostgreSQL EXPLAIN ANALYZE Optimization",
   "postgresql-partitioning-strategies": "PostgreSQL Partitioning Strategies",
   "connection-leak-detection": "Connection Leak Detection",
-  "connection-pool-sizing": "Connection Pool Sizing"
+  "connection-pool-sizing": "Connection Pool Sizing",
+  "row-level-security-poc": "Row-Level Security POC",
+  "mvcc-transaction-isolation-poc": "MVCC & Isolation Levels POC",
+  "wal-replication-lag-poc": "WAL Replication Lag POC"
 }

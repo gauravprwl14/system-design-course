@@ -8,5 +8,9 @@ export default {
   "backpressure-queues": "Backpressure with Queues",
   "event-sourcing-basics": "Event Sourcing Basics",
   "event-store-implementation": "Event Store Implementation",
-  "outbox-pattern": "Outbox Pattern"
+  "outbox-pattern": "Outbox Pattern",
+  "kafka-compaction-poc": "Log Compaction POC",
+  "kafka-consumer-lag-poc": "Consumer Lag POC",
+  "kafka-schema-registry-poc": "Schema Registry POC",
+  "kafka-connect-cdc-poc": "CDC with Debezium POC"
 }

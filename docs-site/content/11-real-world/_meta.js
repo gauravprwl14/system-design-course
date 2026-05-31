@@ -17,5 +17,7 @@ export default {
   "recommendation-system": "Recommendation System",
   "google-file-system": "Google File System (GFS)",
   "salesforce-architecture": "Salesforce Architecture",
-  "google-ads-auction": "Google Ads Auction"
+  "google-ads-auction": "Google Ads Auction",
+  "stripe-idempotency-poc": "Stripe Idempotency POC",
+  "twitter-timeline-fanout-poc": "Twitter Timeline Fanout POC"
 }

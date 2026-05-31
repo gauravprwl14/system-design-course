@@ -6,5 +6,6 @@ export default {
   "api-versioning-strategies": "API Versioning Strategies",
   "api-gateway-rate-limiting": "API Gateway & Rate Limiting",
   "api-key-management": "API Key Management",
-  "idempotency-keys": "Idempotency Keys"
+  "idempotency-keys": "Idempotency Keys",
+  "graphql-federation-poc": "GraphQL Federation POC"
 }
