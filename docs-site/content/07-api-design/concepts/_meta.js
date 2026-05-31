@@ -9,5 +9,6 @@ export default {
   "realtime-api-patterns": "Realtime API Patterns",
   "api-gateway-deep-dive": "API Gateway Deep Dive",
   "grpc-design-patterns": "gRPC Design Patterns",
-  "graphql-production-patterns": "GraphQL Production Patterns"
+  "graphql-production-patterns": "GraphQL Production Patterns",
+  "webrtc-stun-turn": "WebRTC, STUN & TURN"
 }
