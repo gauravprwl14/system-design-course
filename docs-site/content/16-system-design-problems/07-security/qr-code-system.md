@@ -303,6 +303,288 @@ HMAC secret rotation:
 - **HMAC-SHA256** prevents counterfeiting — without the secret key, modifying any field changes the signature and fails validation
 - **Redis SET NX** is the correct atomic primitive for single-use enforcement — same pattern as coupon system
 - **Static QR for offline, dynamic QR for updateability** — these are complementary, not competing approaches
+- **Constant-time comparison is non-negotiable** — timing attacks on HMAC validation are practical; always use `hmac.compare_digest()` or equivalent
+- **Key versioning in every QR payload** — include `kv=v3` so the validation service knows which KMS key to use, enabling zero-downtime key rotation with a 30-day overlap window
+
+---
+
+---
+
+## Component Deep Dive 1: HMAC Signature Pipeline (Anti-Counterfeiting Engine)
+
+The HMAC signature pipeline is the most critical component because it is the sole security boundary between a valid discount and an infinite-value forgery. If an attacker can forge a QR code signature, they can manufacture a 100%-off coupon for any product. Getting this component wrong invalidates the entire security model.
+
+### How It Works Internally
+
+HMAC-SHA256 (Hash-based Message Authentication Code) is a keyed cryptographic hash. Unlike a plain SHA256 hash — which anyone can compute from the payload — HMAC mixes a secret key into every computation. This means only parties that possess the secret key can produce a valid signature.
+
+The pipeline has two phases: **generation** (at marketing campaign creation time) and **verification** (at POS scan time, < 200ms SLA).
+
+```mermaid
+sequenceDiagram
+    participant Admin as Marketing Admin
+    participant GenSvc as Generation Service
+    participant KMS as AWS KMS
+    participant DB as PostgreSQL
+    participant POS as POS Scanner
+    participant ValSvc as Validation Service
+    participant Redis as Redis (used-codes)
+
+    Admin->>GenSvc: Create coupon (product=12345, discount=20%, expires=2024-03-15)
+    GenSvc->>KMS: RequestSigningKey(key_alias=coupon_v3)
+    KMS-->>GenSvc: secret_key (held in memory only)
+    GenSvc->>GenSvc: payload = "pid=12345&d=20&exp=20240315&uuid=abc-123"
+    GenSvc->>GenSvc: sig = HMAC-SHA256(secret_key, payload)[0:16]
+    GenSvc->>GenSvc: qr_data = payload + "&sig=" + sig + "&kv=v3"
+    GenSvc->>DB: INSERT qr_codes (uuid, payload, sig, key_version, created_at, expires_at)
+    GenSvc-->>Admin: QR image (PNG, Version 5, Level M)
+
+    Note over POS,ValSvc: At checkout — must complete in < 200ms
+
+    POS->>ValSvc: POST /scan {qr_data, store_id, txn_id}
+    ValSvc->>ValSvc: Parse qr_data → extract payload, sig, kv
+    ValSvc->>KMS: GetKey(key_alias=coupon_{kv})
+    KMS-->>ValSvc: secret_key (cached in-process for 5 min)
+    ValSvc->>ValSvc: expected_sig = HMAC-SHA256(secret_key, payload)[0:16]
+    ValSvc->>ValSvc: constant_time_compare(sig, expected_sig) → PASS/FAIL
+    ValSvc->>Redis: SET NX qr:used:{uuid} EX 86400
+    Redis-->>ValSvc: OK (first use) or EXISTS (replay attempt)
+    ValSvc-->>POS: {success: true, discount: 20%, product: "Organic Milk"}
+```
+
+### Why Naive Approaches Fail at Scale
+
+**Plain SHA256 without key**: SHA256("pid=12345&d=90&exp=2099") is trivially computed by any attacker. Changing the discount from 20% to 90% and recomputing the hash takes milliseconds. No protection.
+
+**Asymmetric signatures (RSA/ECDSA)**: RSA-2048 verification takes ~0.3ms on modern hardware, but at 100k scans/day with peaks of 500 scans/sec during Black Friday, RSA creates measurable tail latency. HMAC-SHA256 verification is ~0.01ms — 30x faster. RSA is justified only when the verifier cannot hold the secret key (e.g., an offline device with no secure channel). POS terminals connect to the validation service over HTTPS, so the shared-secret model is safe.
+
+**No replay protection**: HMAC alone proves the code is authentic but does not prevent a customer from scanning the same code at 10 different registers. Redis SET NX (Set if Not eXists) solves this atomically — it is equivalent to a distributed compare-and-set. The NX flag guarantees only one scanner wins the race even if two registers scan simultaneously.
+
+**Timing attacks on signature comparison**: `sig == expected_sig` in most languages short-circuits on the first differing byte. An attacker measuring microsecond response-time differences can binary-search for the correct signature byte-by-byte. `hmac.compare_digest()` (Python) or `crypto.timingSafeEqual()` (Node.js) runs in constant time regardless of where the first mismatch occurs.
+
+### Trade-off Table: Signature Approaches
+
+| Approach | Verify Latency | Key Management | Offline Capable | Recommended For |
+|----------|---------------|----------------|-----------------|-----------------|
+| HMAC-SHA256 (truncated 64-bit) | 0.01ms | Shared secret via KMS | Yes (key pre-loaded) | Grocery POS (this system) |
+| HMAC-SHA256 (full 256-bit) | 0.01ms | Shared secret via KMS | Yes | Higher-value coupons |
+| ECDSA P-256 | 0.2ms | Public key distribution | Yes (public key only) | Consumer mobile wallets |
+| RSA-2048 | 0.3ms | Certificate infrastructure | Yes (public key only) | Regulated industries |
+| JWT (HS256) | 0.05ms | Shared secret | Yes (key pre-loaded) | API tokens; adds overhead for QR |
+
+**Choice for grocery checkout: HMAC-SHA256 with 64-bit truncated signature.** The 64-bit (16 hex char) truncation keeps QR payload short (fitting in Version 5), while still providing 2^64 ≈ 18 quintillion brute-force resistance — effectively unbreakable in this context.
+
+---
+
+## Component Deep Dive 2: Dynamic QR Redirect Service
+
+The redirect service is the bottleneck for dynamic QR codes. When the POS scanner reads a URL-encoded QR (e.g., `https://checkout.store.com/qr/abc123def456`), the scanner must hit this service and receive a discount payload in under 180ms (leaving 20ms for network round-trip). The challenge is not raw throughput (6 scans/sec average) but **tail latency under database contention** during peak periods and **correctness during concurrent updates**.
+
+### Internal Mechanics
+
+A dynamic QR code stores a stable short-key identifier in the QR image. The actual discount data lives in the database. This separation means the QR image (printed once) remains valid even if the promotion changes from "20% off" to "30% off" during a flash sale.
+
+```mermaid
+graph LR
+    subgraph QR Image (immutable)
+        URL["URL: /qr/abc123"]
+    end
+
+    subgraph Redirect Service
+        Router[API Router]
+        Cache[Redis Cache\nTTL: 60s]
+        DB[(PostgreSQL\nqr_redirects)]
+        LockMgr[Redis Lock\nfor atomic updates]
+    end
+
+    subgraph POS
+        Scanner[Camera Scanner]
+        Scanner -->|GET /qr/abc123| Router
+        Router -->|Cache hit ?| Cache
+        Cache -->|Miss| DB
+        Cache -->|Hit| Scanner
+        DB --> Cache
+        DB --> Scanner
+    end
+
+    subgraph Admin
+        Admin[Price Update] -->|PUT /qr/abc123| LockMgr
+        LockMgr -->|Acquire lock| DB
+        DB -->|Invalidate| Cache
+    end
+```
+
+### Scale Behavior at 10x Load
+
+At baseline (6 scans/sec), a single PostgreSQL read replica with connection pooling (PgBouncer) handles the load trivially. Each lookup is a primary-key read (`WHERE short_key = 'abc123'`), taking ~2ms.
+
+At 10x load (60 scans/sec), Redis caching absorbs ~95% of reads (cache hit rate for popular coupons during flash sales). The 5% cache misses still only generate 3 DB queries/sec — negligible.
+
+At 100x load (600 scans/sec) — e.g., a national chain's lunch rush — the concern shifts to cache stampede: when a popular coupon's TTL expires, thousands of scanners simultaneously miss the cache and pile onto the DB. Mitigation: **probabilistic early expiration** (refresh cache at 80% of TTL with 10% probability) and **single-flight deduplication** (one goroutine fetches DB; others wait for the result, not launching their own queries).
+
+| Traffic Level | Cache Hit Rate | DB Queries/sec | P99 Latency | Action Required |
+|---------------|----------------|----------------|-------------|-----------------|
+| 6 scans/sec (baseline) | 90% | 0.6 | 15ms | None |
+| 60 scans/sec (10x) | 95% | 3 | 20ms | Monitor |
+| 600 scans/sec (100x) | 97% | 18 | 35ms | Read replica |
+| 6,000 scans/sec (1000x) | 99% | 60 | 50ms | Shard by short_key prefix |
+
+---
+
+## Component Deep Dive 3: QR Code Generation and Storage
+
+QR code generation is a write-heavy batch operation (campaigns generate thousands of codes at once) but a read-heavy lookup operation (scans outnumber generations 100:1). The storage design must optimize for fast scan validation while supporting bulk generation without overwhelming the database.
+
+### Technical Storage Decisions
+
+The QR image (PNG, ~8KB at 500x500 pixels) and the validation metadata are stored separately. Images go to S3 + CDN because they are immutable after generation — the same 8KB file will be served billions of times. Validation data (HMAC, expiry, redemption status) goes to PostgreSQL because it requires transactional updates and ACID guarantees.
+
+**Key decision: store HMAC in DB or recompute on every scan?**
+
+Option A (store HMAC in DB): Scan validation queries DB, compares stored signature to QR-provided signature. One DB read per scan. Simpler but creates DB dependency in the critical scan path.
+
+Option B (recompute HMAC on scan): Validation service fetches the KMS key (cached in-process), recomputes the expected HMAC from the QR payload, compares. Zero DB reads for HMAC validation. DB is only queried for redemption status (`used` flag). This reduces DB load by 50% and is the preferred approach.
+
+**Redemption status storage in Redis**: The `SET NX qr:used:{uuid} EX 86400` pattern stores only the UUID (16 bytes) in Redis with a 24-hour TTL. At 100k scans/day, Redis memory consumption is `100,000 × 32 bytes ≈ 3MB/day` — trivially small. The Redis approach also handles the race condition where two cashiers scan the same coupon simultaneously better than a DB UPDATE with a read-before-write pattern.
+
+---
+
+## Data Model
+
+### PostgreSQL Schema
+
+```sql
+-- Core coupon/QR code record
+CREATE TABLE qr_codes (
+    uuid            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    short_key       VARCHAR(16) UNIQUE NOT NULL,   -- for dynamic QR URL: /qr/{short_key}
+    product_id      BIGINT NOT NULL,
+    discount_type   VARCHAR(10) NOT NULL CHECK (discount_type IN ('percent', 'fixed', 'bogo')),
+    discount_value  NUMERIC(5,2) NOT NULL,          -- e.g., 20.00 (percent) or 1.50 (fixed $)
+    min_purchase    NUMERIC(8,2) DEFAULT 0,          -- minimum cart value to apply
+    max_discount    NUMERIC(8,2),                    -- cap for percent discounts
+    expires_at      TIMESTAMPTZ NOT NULL,
+    valid_from      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    key_version     VARCHAR(8) NOT NULL DEFAULT 'v3', -- KMS key alias version
+    campaign_id     BIGINT REFERENCES campaigns(id),
+    store_scope     VARCHAR(50),                     -- NULL = all stores; 'region:WEST' = scoped
+    is_single_use   BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_by      BIGINT REFERENCES employees(id)
+);
+
+CREATE INDEX idx_qr_codes_short_key ON qr_codes (short_key);
+CREATE INDEX idx_qr_codes_campaign ON qr_codes (campaign_id);
+CREATE INDEX idx_qr_codes_expires ON qr_codes (expires_at) WHERE expires_at > NOW();
+
+-- Redemption audit log (append-only, never UPDATE)
+CREATE TABLE qr_redemptions (
+    id              BIGSERIAL PRIMARY KEY,
+    qr_uuid         UUID NOT NULL REFERENCES qr_codes(uuid),
+    redeemed_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    store_id        BIGINT NOT NULL,
+    cashier_id      BIGINT NOT NULL,
+    transaction_id  VARCHAR(64) NOT NULL UNIQUE,
+    original_price  NUMERIC(8,2) NOT NULL,
+    discounted_price NUMERIC(8,2) NOT NULL,
+    discount_applied NUMERIC(8,2) NOT NULL
+);
+
+CREATE INDEX idx_redemptions_qr_uuid ON qr_redemptions (qr_uuid);
+CREATE INDEX idx_redemptions_redeemed_at ON qr_redemptions (redeemed_at DESC);
+
+-- Campaign management
+CREATE TABLE campaigns (
+    id              BIGSERIAL PRIMARY KEY,
+    name            VARCHAR(255) NOT NULL,
+    total_codes     INT NOT NULL,
+    codes_redeemed  INT NOT NULL DEFAULT 0,   -- updated via background job
+    max_redemptions INT,                        -- NULL = unlimited
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    starts_at       TIMESTAMPTZ NOT NULL,
+    ends_at         TIMESTAMPTZ NOT NULL
+);
+```
+
+### Redis Key Structure
+
+```
+# Single-use redemption guard (SET NX, TTL = 24h after expiry)
+qr:used:{uuid}  →  "{store_id}:{cashier_id}:{txn_id}:{timestamp}"
+
+# Dynamic QR discount payload cache (TTL = 60s)
+qr:cache:{short_key}  →  JSON "{product_id, discount_type, discount_value, expires_at}"
+
+# Rate limit per store (sliding window, 1-second buckets)
+qr:ratelimit:{store_id}:{unix_second}  →  INT (scan count)
+
+# Campaign redemption counter (incremented on every successful scan)
+qr:campaign:{campaign_id}:count  →  INT (total redeemed, updated atomically via INCR)
+
+# Blocked QR codes (immediate revocation without DB query)
+qr:blocked:{uuid}  →  "1"  (TTL = original expires_at; SET by fraud team via admin tool)
+```
+
+**Why separate Redis keys per concern?** Each key pattern has a different TTL policy and read/write pattern. Mixing them into a single hash per QR code would couple TTLs and make partial invalidation impossible. For example, revoking a specific coupon (blocked key) must not clear the rate-limit counters for the store — they are independent data with independent lifecycles.
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| 10x baseline (60 scans/sec) | Redis single-node | Latency spike if node restarts during flash sale | Redis Sentinel (auto-failover < 30s) |
+| 100x baseline (600 scans/sec) | PostgreSQL read replica | Replication lag > 1s; stale redemption data | Add 2nd read replica; route by campaign_id hash |
+| 1000x baseline (6,000 scans/sec) | KMS API rate limits | HMAC key fetch throttled (AWS KMS: 10k req/sec default) | In-process key cache (5-min TTL); pre-warm at service startup |
+| 10,000x (Black Friday national rollout) | DNS/CDN for dynamic QR URLs | DNS lookup latency spikes; CDN origin overwhelmed | Anycast DNS (< 5ms); pre-signed CDN tokens; regional edge validation nodes |
+| Campaign generation burst (1M codes/10 min) | QR image generation CPU | PNG encoding is CPU-bound; service saturates | Offload to SQS + Lambda workers; 100 concurrent workers = 10k images/min each |
+
+---
+
+## How Walmart Built Their QR Checkout System
+
+Walmart's **Walmart Pay** (launched 2015, now embedded in the Walmart app) processes QR-based mobile payments at 4,700+ US stores, handling peaks of **~2 million transactions per day** during holiday periods. Their engineering choices are well-documented in their Tech Blog and at QCon talks.
+
+**Technology stack**: Walmart Pay uses a dynamic QR code model where the QR encodes a session token, not payment credentials directly. When the customer opens the app, the app calls Walmart's servers to generate a short-lived session QR (valid for 3 minutes). The QR contains a session ID, not a credit card number. This is a critical security decision: **the QR code never contains sensitive payment data** — it is always a pointer to a server-side session. This means even if someone photographs the QR off a customer's screen, they get a session ID that expires in 180 seconds.
+
+**Specific numbers from Walmart's architecture**: Their validation service targets a P99 latency of **120ms** (tighter than the 200ms requirement in this article). To achieve this, they use a tiered caching strategy: in-process JVM HashMap cache (0.1ms) → Redis cluster (2ms) → DynamoDB (8ms). The DynamoDB table is partitioned by session_id with a 3-minute TTL, processing ~14 writes/sec and ~1,400 reads/sec during peak hours.
+
+**Non-obvious architectural decision**: Walmart implemented **QR code rotation** — the QR code displayed in the app refreshes every 30 seconds with a new session token, even before the 3-minute expiry. This reduces the window for shoulder-surfing attacks (photographing someone's phone QR in a crowded store) from 3 minutes to at most 30 seconds. The server maintains both the current and previous session token as valid simultaneously to handle the race condition where the cashier scans just as the app rotates.
+
+**Source**: Walmart Engineering Blog — "Walmart Pay: How We Built It" (2016); QCon SF 2017 talk by Walmart Labs engineering team.
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** The candidate's ability to reason about cryptographic security trade-offs (HMAC vs RSA, truncation trade-offs, replay attacks) alongside distributed systems fundamentals (cache invalidation, atomic operations, graceful degradation).
+
+**Common mistakes candidates make:**
+
+1. **Using a plain hash instead of HMAC**: Saying "we'll SHA256 the payload to create a checksum" misses the fundamental point — SHA256 without a secret key is not authentication. Anyone can recompute the hash after modifying the payload. HMAC is a keyed construction; SHA256 is not.
+
+2. **Forgetting the replay attack**: Many candidates address forgery prevention (HMAC) but forget that a valid, unmodified QR code can be scanned multiple times. A coupon giving 20% off is worth real money — customers will screenshot and reuse. The single-use Redis SET NX pattern must be called out explicitly.
+
+3. **Saying "use a database for single-use enforcement" without addressing the race condition**: If two cashiers scan the same QR simultaneously and both read `used=false` before either writes `used=true`, both scans succeed. The Redis `SET NX` is atomic — it eliminates the race without needing application-level locking. A PostgreSQL `UPDATE WHERE used=false RETURNING id` is also atomic (uses row-level locking) but slower than Redis by ~5x at this scale.
+
+**The insight that separates good from great answers:** Recognizing that **static and dynamic QR codes solve different problems and can coexist in the same system**. Static QR codes (data encoded in the QR itself) enable offline validation at unmanned kiosks and shelf-edge labels. Dynamic QR codes (URL pointer) enable real-time price updates and analytics without reprinting. A great candidate designs the system to support both, with the validation service handling both variants transparently based on the `qr_data` format.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| HMAC-SHA256 verify latency | 0.01ms | 30x faster than RSA verify (0.3ms) |
+| QR Version 5 capacity | 64 alphanumeric chars | Sufficient for product_id + discount + expiry + 16-char HMAC |
+| Level M error correction | Recovers 15% damage | Survives normal coupon wear; Version 5 = 37×37 modules |
+| Redis SET NX latency | 1–2ms | Atomic single-use enforcement; handles 500k ops/sec per node |
+| Target scan-to-discount latency | < 200ms | End-to-end: parse + HMAC + Redis + product lookup + response |
+| Walmart Pay peak throughput | ~23 QR scans/sec | 2M transactions/day across 4,700 stores during holiday peaks |
+| QR image storage | 8KB per image (500×500 PNG) | 10M codes = 80GB total; 1-year retention = ~80GB S3 cost ~$2/mo |
+| KMS key rotation window | 30-day overlap | Accept old + new key versions for 30 days after rotation |
+| Redis memory for single-use tracking | ~3MB/day | 100k scans/day × 32 bytes per UUID entry with 24h TTL |
+| Cache TTL for dynamic QR payload | 60 seconds | Balances freshness (price updates) vs DB load |
 
 ---
 
@@ -314,3 +596,5 @@ HMAC secret rotation:
 | [ByteByteGo — URL Shortener Design](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Dynamic redirect pattern applicable to dynamic QR |
 | [HMAC Security — NIST Guidelines](https://csrc.nist.gov/publications/detail/fips/198/1/final) | 📚 Book | HMAC-SHA256 standard and security properties |
 | [Reed-Solomon Codes Explained](https://highscalability.com) | 📖 Blog | Error correction mathematics in practice |
+| [Walmart Pay Architecture](https://medium.com/walmartglobaltech) | 📖 Blog | Real-world QR payment system design at 4,700 stores |
+| [HMAC Timing Attacks — A Practical Guide](https://codahale.com/a-lesson-in-timing-attacks/) | 📖 Blog | Why constant-time comparison matters for HMAC |
