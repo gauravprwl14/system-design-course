@@ -987,6 +987,64 @@ export function CircuitBreakerDashboard() {
 
 ---
 
+## 🔍 Quick Detection Checklist
+
+**Alert signals**:
+- [ ] Circuit breaker state = OPEN for > 2 minutes on a service that should have recovered
+- [ ] Revenue impact metric (orders/minute) drops to near-zero despite service being technically "healthy" on infrastructure dashboards
+- [ ] `circuit_breaker.state` gauge = 1 (OPEN) while `circuit_breaker.failure_rate` metric drops back to 0% (service recovered but CB stuck)
+- [ ] 100% of requests to a service returning `CallNotPermittedException` (CB open) while health check endpoint returns 200 OK
+- [ ] Circuit thrashing: state transitions OPEN → HALF-OPEN → OPEN cycling every 60 seconds
+
+**Immediate mitigation steps**:
+1. **Check the circuit breaker state and failure rate via monitoring dashboard**: Compare `circuit_breaker.failure_rate` with the actual service health check — if failure rate is 0% but circuit is OPEN, it's stuck.
+2. **Force manual transition to HALF-OPEN** via admin dashboard or API call (`cb.transitionToHalfOpenState()`). This sends test traffic through without fully closing the circuit.
+3. **If service is confirmed healthy** (health check returns 200, actual test requests succeed), force-close the circuit: `cb.transitionToClosedState()`. Log this manual intervention with reason for audit.
+4. **Fix the root cause of stuck state**: Switch sliding window to TIME_BASED, set `minimumNumberOfCalls`, enable `automaticTransitionFromOpenToHalfOpenEnabled(true)`. Deploy the fix and add regression test at low-traffic traffic levels.
+5. **If circuit is stuck CLOSED** (not opening despite failures), check that timeout exceptions and 5xx errors are in the `recordExceptions` list — the most common cause is misconfigured exception whitelisting.
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Circuit Breaker Failures
+
+#### Q1: Your monitoring shows the payment circuit breaker has been OPEN for 30 minutes, but the payment service health check is returning 200. What do you do?
+**What interviewers look for**: Systematic diagnosis over blind action — confirm the hypothesis before acting, then apply a targeted fix.
+
+**Answer framework**:
+1. **Confirm the discrepancy**: Verify the health check is a meaningful deep check (pings DB, checks critical paths) — not just a `return 200` stub. Separately, look at `circuit_breaker.failure_rate` in Prometheus. If failure rate dropped to 0% but circuit is still OPEN, it's definitively stuck.
+2. **Manual half-open transition**: Via admin dashboard, force the circuit to HALF-OPEN. Send 10 test requests. If they succeed, force CLOSE. If they fail, the service is actually still unhealthy despite the health check.
+3. **Root cause the stuck state**: Low traffic at that time of day? Check if the circuit is using count-based windows (needs 10 requests to evaluate, but only 2/minute arriving at 3AM). Fix: switch to TIME_BASED + `minimumNumberOfCalls(3)` + `automaticTransitionFromOpenToHalfOpenEnabled(true)`.
+
+**Key numbers to mention**: At 3AM with 10 requests/minute, a count-based window of "50 failures over 100 requests" never evaluates — it takes 10 minutes to collect 100 requests. A time-based window of "50% over 10 seconds" evaluates in 10 seconds regardless of traffic. See also: [Cascading Failures](/problems-at-scale/availability/cascading-failures).
+
+---
+
+#### Q2: How do you design circuit breaker thresholds for a critical payment service?
+**What interviewers look for**: Practical threshold-setting reasoning — not just repeating "use a circuit breaker" but knowing what numbers to configure and why.
+
+**Answer framework**:
+1. **Baseline from normal P99 latency**: If payment P99 is 200ms normally, set `slowCallDurationThreshold(1000ms)` (5x P99) and `slowCallRateThreshold(50%)`. This means "if 50%+ of calls take > 1s, open the circuit."
+2. **Failure rate threshold**: 50% is a common default, but for payment services consider 30%. You don't want 30-40% of payments failing silently before the circuit trips.
+3. **Open-state duration**: Match to your service's typical recovery time. Database restarts take ~30s; payment provider outages can last minutes. Start with 60s open state, with health-check-based recovery to close faster if the service recovers in 15s.
+
+**Key numbers to mention**: Netflix Hystrix default thresholds: 50% failure rate, 10-second rolling window, 5-second open state. For payment services, be more aggressive: 30% failure rate, 10-second window, 30-second open state. Misconfigured thresholds cost Shopify ~$1M in failed transactions (2020) when the payment CB never opened despite an actual outage.
+
+---
+
+#### Q3: What's the difference between a circuit breaker stuck OPEN vs. stuck CLOSED, and which is more dangerous?
+**What interviewers look for**: Understanding of the asymmetric failure modes and their business impact.
+
+**Answer framework**:
+1. **Stuck OPEN**: Service recovered but circuit rejects all requests. Revenue impact is immediate — users get errors on a working service. Detectable: monitoring shows `circuit_breaker.not_permitted_calls` > 0 while actual service latency is normal.
+2. **Stuck CLOSED**: Service is failing but circuit keeps sending traffic. This is worse — allows cascading failures to develop. Traffic floods a struggling service, causing thread pool exhaustion upstream. Detectable by rising P99 and error rates without a corresponding circuit state change.
+3. **Stuck CLOSED is more dangerous** because it's invisible from the circuit breaker dashboard. The CB looks normal (CLOSED = green) while the system is degrading. Root cause: exception whitelist too narrow (e.g., `TimeoutException` not counted as failure), or `minimumNumberOfCalls` set too high (needs 100 requests before evaluating, during which all 100 may be failing).
+
+**Key numbers to mention**: The Shopify Payments 2020 outage (stuck CLOSED) resulted in 10K failed transactions and $1M in refunds because the payment timeout exception wasn't in `recordExceptions`. The DoorDash 2021 thrashing incident cost $200K because half-open test count was only 3 requests — insufficient to determine health at their traffic level.
+
+---
+
 ## Key Takeaways
 
 1. **Fixed request thresholds cause stuck states** - Use time-based windows, not count-based

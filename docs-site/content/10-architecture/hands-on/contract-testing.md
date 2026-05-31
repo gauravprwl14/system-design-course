@@ -44,6 +44,36 @@ sequenceDiagram
 
 *Consumer owns the contract; provider verifies it — no shared test environment required.*
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal contract definition — copy-paste template
+const contract = new Contract('order-service', 'user-service')
+  .addInteraction({
+    description: 'Get user by ID',
+    request: { method: 'GET', path: '/api/users/123' },
+    response: {
+      status: 200,
+      body: {
+        id: Matchers.uuid(),               // Any valid UUID — not exact value
+        name: Matchers.type('John'),        // Any string
+        email: Matchers.regex(/^.+@.+\..+$/, 'john@example.com')  // Valid email format
+        // Only include fields the consumer actually uses!
+      }
+    }
+  });
+
+// Consumer test: run against mock (no real provider needed)
+const mock = new MockProvider(contract.toJSON());
+const res = mock.handle({ method: 'GET', path: '/api/users/123' });
+assert(res.status === 200);
+
+// Provider test: verify real implementation satisfies the contract
+await verifier.verify(contract.toJSON());  // Runs in provider's CI pipeline
+```
+
+---
+
 ## What You'll Learn
 
 Contract Testing verifies that services communicate correctly by defining and validating API contracts between consumers and providers. This catches integration issues before deployment.
@@ -607,8 +637,138 @@ describe('User Service Contract', () => {
 
 ---
 
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: What is consumer-driven contract testing and how does it differ from traditional API testing?
+
+**What interviewers look for**: Understanding of who owns the contract and why the consumer-driven model catches more integration bugs.
+
+**Answer framework**:
+1. **Traditional testing**: provider writes tests for their own API — they verify what they think consumers need
+2. **Consumer-driven contracts**: each consumer defines the interactions it needs from the provider; the provider runs these consumer-defined tests against its real implementation
+3. Key insight: if OrderService only uses `GET /users/{id}` returning `{id, name, email}`, then UserService breaking the `createdAt` field won't break OrderService — consumer-driven contracts make this explicit
+4. The contract is owned by the consumer, stored in a broker (Pact Broker), and the provider CI downloads and verifies it before every deploy
+
+**Code snippet that impresses**:
+```javascript
+// Consumer writes: "here's what I need from UserService"
+const contract = new Contract('order-service', 'user-service')
+  .addInteraction({
+    description: 'Get user for order',
+    request: { method: 'GET', path: '/api/users/123' },
+    response: {
+      status: 200,
+      body: { id: Matchers.uuid(), name: Matchers.type('John') }
+      // Only fields order-service actually uses — not the full user schema
+    }
+  });
+```
+
+---
+
+#### Q2: How do you handle breaking contract changes? What is semantic versioning for APIs?
+
+**What interviewers look for**: Change management discipline and backward compatibility principles.
+
+**Answer framework**:
+1. **Non-breaking changes** (safe): add optional fields to responses, add new endpoints, add optional request headers
+2. **Breaking changes** (dangerous): remove/rename fields, change field types, change required/optional semantics
+3. **Process**: before removing a field, check if any consumer contract references it — if yes, coordinate with that team
+4. **API versioning**: when breaking changes are necessary, version the API (`/v2/users`) and run both versions in parallel during migration
+
+**Code snippet that impresses**:
+```javascript
+// Provider verification in CI — fails if contract is broken
+// Run: pact-verifier --provider UserService --pact-broker http://broker
+async function verifyContracts(provider, broker) {
+  const contracts = await broker.getContractsFor(provider);
+  const results = [];
+  for (const contract of contracts) {
+    const verificationResults = await verifier.verify(contract);
+    results.push({ consumer: contract.consumer, passed: verificationResults.every(r => r.success) });
+  }
+  if (results.some(r => !r.passed)) {
+    throw new Error('Provider verification failed — breaking contract change detected');
+  }
+}
+```
+
+---
+
+#### Q3: How do you test both sides of a contract independently in CI/CD?
+
+**What interviewers look for**: Understanding of the two-pipeline pattern and how contract tests replace shared integration environments.
+
+**Answer framework**:
+1. **Consumer pipeline**: consumer writes tests → generates contract pact file → publishes to Pact Broker → consumer tests run against mock provider (no real provider needed)
+2. **Provider pipeline**: provider pulls latest contracts from Pact Broker → runs provider verification against real provider code → reports results to broker
+3. Decoupled: neither team needs the other's service running; they communicate through the broker
+4. Can-I-Deploy check: before promoting to production, query the broker `can-i-deploy --pacticipant OrderService --to production` — broker confirms all providers have verified against this consumer version
+
+---
+
+#### Q4: What are Pact Matchers and why do you use them instead of exact value matching?
+
+**What interviewers look for**: Pragmatic test design — avoiding over-specification that makes contracts brittle.
+
+**Answer framework**:
+1. Exact value matching: `{ id: '550e8400-...' }` — breaks if a different valid UUID is returned; creates false failures
+2. Type matchers: `Matchers.type('John')` — validates that `name` is a string, any string value passes
+3. Regex matchers: `Matchers.regex(/^[\w]+@[\w]+\.\w+$/, 'john@example.com')` — validates format without hardcoding a value
+4. Rule of thumb: use exact matching only for status codes and business-critical fields (e.g., a specific error code); use matchers for data values
+
+---
+
+#### Q5: How do you implement contract testing for asynchronous/event-driven services?
+
+**What interviewers look for**: Awareness that contract testing goes beyond REST APIs.
+
+**Answer framework**:
+1. Async contracts define: what event a producer publishes and what structure the consumer expects
+2. Consumer test: mock the message broker; assert that the consumer processes a test message with the expected shape correctly
+3. Producer test: trigger the action that produces the event; assert the published message matches the contract structure
+4. Pact supports async messaging contracts via `MessagePact`; the same broker stores and distributes them
+
+**Code snippet that impresses**:
+```javascript
+// Consumer side — define what event shape I can handle
+const messagePact = new MessageConsumerPact({
+  consumer: 'notification-service',
+  provider: 'order-service'
+});
+
+await messagePact
+  .given('an order was created')
+  .expectsToReceive('an OrderCreated event')
+  .withContent({
+    orderId: Matchers.uuid(),
+    customerId: Matchers.uuid(),
+    total: Matchers.decimal(99.99)
+  })
+  .verify(async (message) => {
+    // Assert that notification-service can process this message
+    await notificationHandler.onOrderCreated(message);
+  });
+```
+
+---
+
 ## Related POCs
 
 - [Integration Testing](/10-architecture/hands-on/integration-testing)
 - [API Versioning](/07-api-design/hands-on/api-versioning-strategies)
 - [gRPC Protocol Buffers](/07-api-design/hands-on/grpc-protocol-buffers)
+
+## Further Reading
+
+**Concept articles:**
+- [Microservices Communication](/10-architecture/concepts/microservices-communication)
+- [Microservices Architecture](/10-architecture/concepts/microservices-architecture)
+
+**Interview prep:**
+- [API Design: REST, GraphQL, gRPC](/12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

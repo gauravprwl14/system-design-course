@@ -479,6 +479,179 @@ Metrics: {
 }
 ```
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal circuit breaker — copy-paste template
+class CircuitBreaker {
+  constructor({ failureThreshold = 5, timeout = 30000, successThreshold = 3 } = {}) {
+    this.state = 'CLOSED';  // CLOSED | OPEN | HALF_OPEN
+    this.failures = 0;
+    this.successes = 0;
+    this.lastFailureTime = null;
+    this.failureThreshold = failureThreshold;
+    this.timeout = timeout;
+    this.successThreshold = successThreshold;
+  }
+
+  async call(fn, fallback) {
+    if (this.state === 'OPEN') {
+      if (Date.now() - this.lastFailureTime < this.timeout) {
+        return fallback ? fallback() : Promise.reject(new Error('Circuit OPEN'));
+      }
+      this.state = 'HALF_OPEN';
+      this.successes = 0;
+    }
+    try {
+      const result = await fn();
+      this._onSuccess();
+      return result;
+    } catch (err) {
+      this._onFailure();
+      throw err;
+    }
+  }
+
+  _onSuccess() {
+    this.failures = 0;
+    if (this.state === 'HALF_OPEN' && ++this.successes >= this.successThreshold) {
+      this.state = 'CLOSED';
+    }
+  }
+
+  _onFailure() {
+    this.lastFailureTime = Date.now();
+    if (this.state === 'HALF_OPEN' || ++this.failures >= this.failureThreshold) {
+      this.state = 'OPEN';
+    }
+  }
+}
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: Write pseudocode for a circuit breaker state machine. What are the three states and the transitions between them?
+
+**What interviewers look for**: Understanding of the state machine design, transition conditions, and thread-safety considerations.
+
+**Answer framework**:
+1. CLOSED → OPEN: when `failures >= failureThreshold`; set `lastFailureTime = now`
+2. OPEN → HALF_OPEN: when `now - lastFailureTime >= timeout`; allow a limited probe batch
+3. HALF_OPEN → CLOSED: when `successes >= successThreshold` in the probe window
+4. HALF_OPEN → OPEN: on any single failure during probing
+
+**Code snippet that impresses**:
+```javascript
+// State transition logic — interviewers love explicit state machines
+execute(fn) {
+  if (this.state === 'OPEN') {
+    if (Date.now() - this.lastFailureTime >= this.timeout) {
+      this.state = 'HALF_OPEN';  // Allow probe requests
+    } else {
+      throw new CircuitOpenError();  // Fast fail — no waiting
+    }
+  }
+  // ... execute fn, call _onSuccess or _onFailure
+}
+```
+
+---
+
+#### Q2: How do you test that a circuit breaker opens correctly without using real external services?
+
+**What interviewers look for**: Ability to write deterministic tests for stateful, time-dependent components.
+
+**Answer framework**:
+1. Inject a fake `fn` that throws a controlled error (no network needed)
+2. Loop `failureThreshold` times to drive state to OPEN
+3. Assert `circuit.state === 'OPEN'` and that subsequent calls are rejected without calling `fn`
+4. For HALF_OPEN testing: manually set `lastFailureTime = Date.now() - timeout - 1` to skip the clock wait
+
+**Code snippet that impresses**:
+```javascript
+// Bypass time dependency — don't sleep in tests
+it('opens after threshold failures', async () => {
+  const cb = new CircuitBreaker({ failureThreshold: 3, timeout: 30000 });
+  const fail = () => Promise.reject(new Error('down'));
+
+  for (let i = 0; i < 3; i++) {
+    await cb.call(fail, () => null);
+  }
+  expect(cb.state).toBe('OPEN');
+
+  // Skip clock: backdate lastFailureTime to simulate timeout elapsed
+  cb.lastFailureTime = Date.now() - 31000;
+  expect(cb.state).toBe('OPEN');  // still OPEN until next call
+  const probe = await cb.call(() => Promise.resolve('ok'), null);
+  expect(cb.state).toBe('HALF_OPEN');
+});
+```
+
+---
+
+#### Q3: What happens when the circuit breaker is in HALF_OPEN and multiple concurrent requests arrive?
+
+**What interviewers look for**: Race condition awareness, thread/async safety, and production-hardening instincts.
+
+**Answer framework**:
+1. Without guards: all concurrent requests pass through — defeating the probe purpose
+2. Solution A: add an atomic `halfOpenCalls` counter with a `halfOpenMaxCalls` cap; reject extras
+3. Solution B: use a semaphore/mutex so only one probe request runs at a time
+4. In Node.js: since the event loop is single-threaded, check-then-increment is safe **if** you do it synchronously before the first `await`
+
+**Code snippet that impresses**:
+```javascript
+// Gate half-open calls atomically (before any await)
+if (this.state === 'HALF_OPEN') {
+  if (this.halfOpenCalls >= this.halfOpenMaxCalls) {
+    return fallback();  // Reject excess probes immediately
+  }
+  this.halfOpenCalls++;  // Increment synchronously — safe in single-threaded JS
+}
+```
+
+---
+
+#### Q4: How would you implement a sliding-window circuit breaker instead of a count-based one?
+
+**What interviewers look for**: Knowledge of production circuit breaker libraries (Netflix Hystrix, Resilience4j) and when count-based thresholds are insufficient.
+
+**Answer framework**:
+1. Count-based: opens after N failures total — can open on a slow trickle over hours
+2. Sliding window (time-based): opens when error rate exceeds X% within the last N seconds
+3. Implementation: keep a ring buffer of `(timestamp, success/fail)` events; on each call, evict events older than the window, then compute error rate
+4. Libraries like Resilience4j use a circular bit array for O(1) time/space updates
+
+**Code snippet that impresses**:
+```javascript
+// Time-based sliding window check
+_shouldOpen() {
+  const windowStart = Date.now() - this.windowMs;
+  this.events = this.events.filter(e => e.ts > windowStart);  // Evict old
+  const errors = this.events.filter(e => !e.success).length;
+  const errorRate = errors / (this.events.length || 1);
+  return this.events.length >= this.minRequests && errorRate > this.errorThreshold;
+}
+```
+
+---
+
+#### Q5: How do you propagate circuit breaker state across multiple instances of a service (e.g., 10 pods)?
+
+**What interviewers look for**: Distributed systems thinking — local in-memory state vs. distributed state.
+
+**Answer framework**:
+1. **Per-instance (default)**: each pod tracks its own circuit; a single bad pod opens its circuit independently — safest and most common
+2. **Shared state via Redis**: all pods read/write circuit state to Redis; risk: Redis becomes a single point of failure for resilience infrastructure
+3. **Gossip/mesh (service mesh approach)**: Istio/Envoy sidecars maintain circuit state at the proxy layer, shared across the mesh without app code changes
+4. **Recommendation**: prefer per-instance for simple cases; use service mesh if you need fleet-wide visibility
+
+---
+
 ## Key Takeaways
 
 1. **Fail fast** - Don't wait for slow services to timeout
@@ -500,3 +673,16 @@ Metrics: {
 - [POC #76: Retry with Backoff](/10-architecture/hands-on/retry-backoff)
 - [POC #71: Connection Pool Sizing](/01-databases/hands-on/connection-pool-sizing)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
+
+## Further Reading
+
+**Concept articles:**
+- [Circuit Breaker — Concept Deep Dive](/10-architecture/concepts/circuit-breaker)
+- [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
+
+**Interview prep:**
+- [Circuit Breaker Pattern — Interview Q&A](/12-interview-prep/system-design/fundamentals/circuit-breaker-pattern)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)
+- [Circuit Breaker Failure Scenarios](/10-architecture/failures/circuit-breaker-failure)

@@ -447,8 +447,154 @@ OPTION 3: Feature Flags
 
 ---
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Blue-green deployment controller — copy-paste template
+class BlueGreenController {
+  constructor(loadBalancer) {
+    this.lb = loadBalancer;
+    this.active = 'blue';   // 'blue' | 'green'
+  }
+
+  inactive() { return this.active === 'blue' ? 'green' : 'blue'; }
+
+  async deploy(version, { minHealthyPct = 80 } = {}) {
+    const target = this.inactive();
+    await this.lb.deploy(target, version);           // Deploy to idle env
+    const health = await this.lb.healthCheck(target); // Check before switch
+    if (health.pct < minHealthyPct) throw new Error(`Health check failed: ${health.pct}%`);
+    this.lb.setActive(target);                        // Atomic traffic switch
+    this.active = target;
+    return { deployed: target, previous: this.inactive() };
+  }
+
+  rollback() {
+    const previous = this.inactive();
+    this.lb.setActive(previous);  // Instant — previous env still running
+    this.active = previous;
+  }
+}
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: How do you implement blue-green deployment with zero-downtime database migrations?
+
+**What interviewers look for**: Understanding that database schema changes are the hardest part of blue-green deployments.
+
+**Answer framework**:
+1. **Expand-contract pattern**: Phase 1 — add the new column (nullable/default), deploy v2 that writes both old and new column; Phase 2 — after all traffic is on v2, drop the old column
+2. Never rename/drop columns in the same release that switches traffic
+3. For data migrations: run as a background job after the deploy, not as part of the deployment itself
+4. Both blue (v1) and green (v2) must be able to read/write the database simultaneously during the cutover window
+
+**Code snippet that impresses**:
+```sql
+-- Phase 1: Add new column (backward-compatible, both v1 and v2 can run)
+ALTER TABLE users ADD COLUMN display_name VARCHAR(255) DEFAULT NULL;
+
+-- v2 app writes both columns during transition:
+-- UPDATE users SET name = $1, display_name = $1 WHERE id = $2
+
+-- Phase 2: After full traffic on v2 (next release)
+ALTER TABLE users DROP COLUMN name;  -- Safe now — no v1 instances left
+```
+
+---
+
+#### Q2: How do you route 10% of traffic to the green environment while keeping 90% on blue?
+
+**What interviewers look for**: Load balancer configuration knowledge and the difference between blue-green (all-or-nothing) and weighted routing.
+
+**Answer framework**:
+1. Pure blue-green is **all-or-nothing** — when you switch, 100% goes to green
+2. Weighted routing (10%/90%) is actually **canary release**, not blue-green
+3. AWS ALB weighted target groups: set blue target group weight=90, green=10 in the listener rule
+4. Nginx upstream: use `weight` parameter in the upstream block
+5. Key distinction: blue-green's value is **instant rollback** (switch back is a single operation), not gradual rollout
+
+**Code snippet that impresses**:
+```nginx
+# Nginx weighted routing (canary approach, not pure blue-green)
+upstream app {
+    server blue-env:8080 weight=90;   # 90% to stable
+    server green-env:8080 weight=10;  # 10% to new version
+}
+
+# Pure blue-green: single upstream, switched atomically
+upstream app {
+    server green-env:8080;  # After switch: 100% green
+}
+```
+
+---
+
+#### Q3: How do you verify a green environment is healthy before switching traffic?
+
+**What interviewers look for**: Health check design, smoke testing, and deployment gates.
+
+**Answer framework**:
+1. **Liveness check**: `/health` returns 200 (process is alive)
+2. **Readiness check**: `/ready` returns 200 only when DB connections are warm and caches are primed
+3. **Smoke tests**: run a small set of critical user journey tests against the green environment using internal routing before exposing to users
+4. **Metric baseline**: let green environment serve a tiny % (like internal employees) and compare error rate to blue before full switch
+
+**Code snippet that impresses**:
+```javascript
+async function waitForHealthy(env, { minHealthy = 0.8, maxWait = 120000 }) {
+  const deadline = Date.now() + maxWait;
+  while (Date.now() < deadline) {
+    const { percentage } = await env.healthCheck();
+    if (percentage >= minHealthy * 100) return true;
+    await sleep(5000);
+  }
+  throw new Error(`${env.name} not healthy after ${maxWait / 1000}s`);
+}
+```
+
+---
+
+#### Q4: What is the biggest risk with blue-green deployment and how do you mitigate it?
+
+**What interviewers look for**: Honest trade-off analysis, not just benefits.
+
+**Answer framework**:
+1. **Database incompatibility**: if green writes data in a format blue can't read, rollback is now dangerous
+2. **Cost**: running two full production environments doubles infrastructure cost — use auto-scaling to minimize standby costs
+3. **Long-lived connections**: WebSocket/gRPC connections to blue don't automatically move to green; need graceful drain
+4. Mitigation: keep blue environment running for at least 1 deployment cycle (typically 24h) before decommissioning
+
+---
+
+#### Q5: How would you automate a blue-green deployment pipeline in CI/CD?
+
+**What interviewers look for**: DevOps knowledge, scripting CI/CD gates, and rollback triggers.
+
+**Answer framework**:
+1. CI pipeline stages: Build → Test → Deploy to inactive env → Health check gate → Switch traffic → Post-deploy smoke tests → (auto-rollback if smoke fails)
+2. The traffic switch should be a single API call to your load balancer (AWS ALB, Route 53, Nginx upstream reload)
+3. Store the previous version in pipeline state — rollback is just calling switch again with the previous env name
+
+---
+
 ## Related POCs
 
 - [Canary Releases](/10-architecture/hands-on/canary-releases)
 - [Feature Flags](/10-architecture/hands-on/feature-flags)
 - [Health Check Patterns](/09-observability/hands-on/health-check-patterns)
+
+## Further Reading
+
+**Concept articles:**
+- [Deployment Strategies Deep Dive](/10-architecture/concepts/deployment-strategies-deep-dive)
+
+**Interview prep:**
+- [Monolith to Microservices (deployment patterns)](/12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

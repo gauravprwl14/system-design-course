@@ -547,8 +547,189 @@ AMAZON ORDER SAGA:
 
 ---
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal saga orchestrator — copy-paste template
+class Saga {
+  constructor(id) {
+    this.id = id;
+    this.steps = [];      // [{ execute, compensate }]
+    this.executed = [];   // steps that ran (for reverse compensation)
+  }
+
+  step(execute, compensate) {
+    this.steps.push({ execute, compensate });
+    return this;
+  }
+
+  async run(ctx) {
+    for (const step of this.steps) {
+      try {
+        const result = await step.execute(ctx);
+        Object.assign(ctx, result);  // Merge step output into shared context
+        this.executed.push(step);
+      } catch (err) {
+        await this._compensate(ctx);  // Roll back all completed steps
+        throw err;
+      }
+    }
+    return ctx;
+  }
+
+  async _compensate(ctx) {
+    for (const step of [...this.executed].reverse()) {
+      try { await step.compensate(ctx); } catch (e) { /* log, alert, DLQ */ }
+    }
+  }
+}
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: Implement a choreography saga for order processing. How does it differ from an orchestration saga?
+
+**What interviewers look for**: Understanding of both saga variants, event-driven design, and when to choose each.
+
+**Answer framework**:
+1. **Orchestration**: a central saga object calls each service in sequence and drives compensation — easier to trace, but the orchestrator is a new service to deploy
+2. **Choreography**: each service listens to domain events and reacts — no central coordinator, but harder to follow the flow across logs
+3. Choreography pseudocode: `OrderCreated` → inventory service listens → emits `InventoryReserved` → payment service listens → emits `PaymentProcessed` → etc.
+4. Key tradeoff: orchestration couples services to the orchestrator; choreography decouples them but creates implicit coupling through shared event contracts
+
+**Code snippet that impresses**:
+```javascript
+// Choreography: each service subscribes to events
+eventBus.on('OrderCreated', async ({ orderId, items }) => {
+  try {
+    await reserveInventory(orderId, items);
+    eventBus.emit('InventoryReserved', { orderId });
+  } catch {
+    eventBus.emit('InventoryReservationFailed', { orderId });
+    // Other services listen to this and compensate their own state
+  }
+});
+```
+
+---
+
+#### Q2: How do you ensure idempotency in saga compensating transactions?
+
+**What interviewers look for**: Understanding of at-least-once delivery and distributed system failure modes.
+
+**Answer framework**:
+1. Compensations can be called multiple times (network retries, crash recovery)
+2. Each compensation must produce the same result whether called once or N times
+3. Pattern: use the `sagaId` + `stepName` as an idempotency key; check if already compensated before acting
+4. Database: use `INSERT ... ON CONFLICT DO NOTHING` with the idempotency key
+
+**Code snippet that impresses**:
+```javascript
+async compensatePayment(sagaId, paymentId) {
+  // Check if already compensated — idempotency guard
+  const existing = await db.query(
+    'SELECT id FROM saga_compensations WHERE saga_id=$1 AND step=$2',
+    [sagaId, 'payment-refund']
+  );
+  if (existing.rows.length > 0) return;  // Already done — skip
+
+  await refundPayment(paymentId);
+  await db.query(
+    'INSERT INTO saga_compensations (saga_id, step) VALUES ($1, $2)',
+    [sagaId, 'payment-refund']
+  );
+}
+```
+
+---
+
+#### Q3: What happens if a saga's compensating transaction itself fails? How do you handle it?
+
+**What interviewers look for**: Production failure handling, dead letter queues, and manual intervention patterns.
+
+**Answer framework**:
+1. A failed compensation leaves the system in an inconsistent state — this is the hardest case in distributed transactions
+2. **Retry with backoff**: compensation failures are usually transient; retry 3-5 times before escalating
+3. **Dead letter queue**: after max retries, push the failed compensation to a DLQ for manual review
+4. **Alerting**: trigger a PagerDuty/Slack alert immediately — a stuck saga means data inconsistency
+5. **Compensate what you can**: log which steps failed, so engineers know exactly what needs manual cleanup
+
+**Code snippet that impresses**:
+```javascript
+async _compensate(ctx) {
+  for (const step of [...this.executed].reverse()) {
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        await step.compensate(ctx);
+        break;
+      } catch (err) {
+        if (--retries === 0) {
+          await deadLetterQueue.send({ sagaId: this.id, step: step.name, ctx, err });
+          alert.trigger(`Saga ${this.id}: compensation failed for ${step.name}`);
+        }
+        await sleep(1000 * (4 - retries));  // backoff
+      }
+    }
+  }
+}
+```
+
+---
+
+#### Q4: How do you implement saga state persistence so a saga survives service restarts?
+
+**What interviewers look for**: Event sourcing for sagas, saga log patterns, and durability under failure.
+
+**Answer framework**:
+1. Store saga state transitions in a `saga_log` table: `(saga_id, step, status, context_json, updated_at)`
+2. On startup, query for `status IN ('running', 'compensating')` and resume from last committed step
+3. Before executing each step, write `step_started`; after success, write `step_completed`
+4. This is the Saga Log pattern — used by Axon Framework, Temporal.io, and AWS Step Functions
+
+**Code snippet that impresses**:
+```javascript
+// Write intent before acting (write-ahead log pattern for sagas)
+async executeStep(step, ctx) {
+  await sagaLog.write({ sagaId, step: step.name, status: 'started', ctx });
+  const result = await step.execute(ctx);
+  await sagaLog.write({ sagaId, step: step.name, status: 'completed', ctx: { ...ctx, ...result } });
+  return result;
+}
+```
+
+---
+
+#### Q5: How would you test a saga end-to-end to verify compensation rolls back correctly?
+
+**What interviewers look for**: Test design for distributed workflows, failure injection, and assertion of side effects.
+
+**Answer framework**:
+1. Integration test: wire all real service mocks (or in-process stubs), configure one to fail at step N
+2. Run the saga, assert it throws and all previously executed steps are compensated
+3. Verify compensations via side-effect checks: inventory count restored, order status = cancelled, payment not created
+4. Test each failure point independently (fail at step 1, step 2, step N)
+
+---
+
 ## Related POCs
 
 - [Event Sourcing Basics](/04-messaging/hands-on/event-sourcing-basics)
 - [CQRS Pattern](/10-architecture/hands-on/cqrs-pattern)
 - [Outbox Pattern](/04-messaging/hands-on/outbox-pattern)
+
+## Further Reading
+
+**Concept articles:**
+- [Saga Pattern Deep Dive](/10-architecture/concepts/saga-pattern-deep-dive)
+- [Event-Driven Architecture](/10-architecture/concepts/event-driven-architecture)
+
+**Interview prep:**
+- [Distributed Transaction Design](/12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

@@ -542,4 +542,64 @@ app.post('/slow-endpoint', requestTimeout(30000), handler);
 
 ---
 
+---
+
+## 🔍 Quick Detection Checklist
+
+**Alert signals**:
+- [ ] P99 latency for an upstream service exceeds its configured timeout threshold, causing downstream errors to spike
+- [ ] Thread pool utilization rises from normal to > 80% over 30–60 seconds without a corresponding traffic spike (threads blocking on downstream)
+- [ ] Latency spike pattern is staircase-shaped: Service C spikes first, then Service B, then Service A — propagating upstream over minutes
+- [ ] Request success rate drops proportionally to how many threads are blocked (e.g., 40 of 100 threads blocked on slow dep = 40% of requests failing)
+- [ ] `active_connections` on the slow dependency is at max; `waiting_connections` queue is growing (DB connection pool exhaustion)
+
+**Immediate mitigation steps**:
+1. **Identify the slow dependency**: In distributed tracing, find the service with the highest latency that isn't being caused by its own dependencies. This is the root-cause slow service — all others are victims.
+2. **Manually open circuit breaker** on the slow dependency at its callers. This immediately frees blocked threads — converts 30-second blocks into 10ms rejections. Upstream services regain thread capacity within seconds.
+3. **Apply bulkhead isolation**: If the slow service doesn't have a dedicated thread pool, temporarily reduce the number of threads allowed for calls to it (via semaphore or connection limit), freeing shared threads for other dependencies.
+4. **Investigate root cause of slowdown**: Common causes are DB query without index (check `EXPLAIN ANALYZE`), connection pool exhaustion (check pool utilization metrics), memory pressure causing GC pauses, or an external API degradation (check vendor status page).
+5. **Verify thread pool recovery**: Watch thread pool utilization drop as circuit breaker takes effect. Should recover to < 50% utilization within 2–3 minutes of opening the circuit.
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Timeout Domino Effect
+
+#### Q1: You're on-call and see a service chain where A calls B calls C. A is returning 504s, B's P99 is 28s, C looks healthy. What's happening and what do you do?
+**What interviewers look for**: Reading the symptom pattern (504 at A, elevated B, healthy C suggests B→C timeout that's blocking B's threads) and applying the right immediate fix.
+
+**Answer framework**:
+1. **What's happening**: C looks healthy in C's own metrics, but B's calls to C are timing out. The "healthy" reading is because C's health endpoint returns 200 — but the actual data queries C handles for B are slow (probably a slow DB query or lock contention). B is accumulating blocked threads waiting 28s each for C.
+2. **Immediate action**: Open the circuit breaker on B's dependency on C. This frees B's threads (converting 28s waits to 10ms rejections). A stops getting 504s within 60 seconds as B's thread pool drains.
+3. **Root cause investigation**: Check C's database query latency (look for queries > 1s), check connection pool utilization on C's DB, check for lock contention in C's DB (`pg_locks` for PostgreSQL, `SHOW PROCESSLIST` for MySQL).
+
+**Key numbers to mention**: At 28s timeout and 100 threads on B, B processes only 100/28 = 3.6 req/sec. Normal capacity is 2,000 req/sec (100 threads × 1,000ms/50ms avg). The domino effect: B's effective throughput drops 550x before anyone opens the circuit. See also: [Cascading Failures](/problems-at-scale/availability/cascading-failures).
+
+---
+
+#### Q2: How do you set timeouts correctly across a microservice call chain?
+**What interviewers look for**: Deadline propagation knowledge — not independent timeouts per hop, but a total budget shared across the chain.
+
+**Answer framework**:
+1. **Naive approach (wrong)**: Each service sets its own independent timeout (Gateway=10s, A=10s, B=10s, C=10s). A user request could wait 40+ seconds before the gateway times out. Users expect < 5s.
+2. **Deadline propagation (correct)**: Set a total budget at the entry point (e.g., 5s). Pass the remaining deadline as a context/header through each hop. Each service checks if the deadline has passed before making the next call. If remaining time < 100ms, return immediately.
+3. **Aggressive service-level timeouts + overall budget**: Internal service timeouts should be 2–3x the P99 latency of the called service (if P99 is 50ms, set timeout to 100–150ms). This catches outliers without blocking for the full 5-second budget.
+
+**Key numbers to mention**: Amazon's timeout strategy: set timeouts at P99 × 2 for internal services, P99 × 5 for external APIs. If a service's P99 is 200ms, timeout at 400–500ms. This ensures 99% of healthy requests succeed while unhealthy requests fail fast.
+
+---
+
+#### Q3: Why is a slow service worse than a dead service in microservices?
+**What interviewers look for**: The thread pool exhaustion explanation — not just "it uses resources" but the specific mathematical reason a slow service cascades and a dead service doesn't.
+
+**Answer framework**:
+1. **Dead service = immediate failure**: Caller gets a connection refused or 503 in < 10ms. Thread is freed immediately. Even if the caller retries 3 times, each failure takes 10ms. Thread pool remains available for other requests.
+2. **Slow service = thread pool exhaustion**: Each call to the slow service holds a thread for 30 seconds waiting for a response. At 100 threads and 30s hold time, the pool can handle only 100/30 = 3.3 req/sec. Normal capacity: 2,000 req/sec. The service is effectively dead but threads are still tied up — nothing can be served.
+3. **The cascade mechanism**: Threads accumulate in the caller (blocked on slow dep). Queue builds up. Health checks start failing (health check also blocks on the slow dep). LB removes the caller from rotation. Remaining callers get more traffic → they also exhaust faster. Entire tier falls within minutes.
+
+**Key numbers to mention**: Netflix coined this: "Latency is the silent killer." A dead dependency fails fast (< 1ms). A slow dependency at 30s: 10,000 requests/second × 30s = 300,000 threads needed. You have 1,000 threads. The service is destroyed in 0.1 seconds of slow responses. This is why circuit breakers are set to open on slow calls, not just errors.
+
+---
+
 **Remember:** A slow service is worse than a dead service. Dead services fail fast; slow services hold resources and cascade failures. Set aggressive timeouts, use circuit breakers, and isolate dependencies with bulkheads. Your system is only as fast as its slowest timeout.

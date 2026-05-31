@@ -681,6 +681,70 @@ Decision guide:
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on CDN and Edge Computing
+
+#### Q1: How does a CDN reduce latency for global users?
+**What interviewers look for**: The ability to explain the physics of latency (speed of light), the PoP caching model, and quantified impact — not just "it caches stuff closer."
+
+**Answer framework**:
+1. **Speed of light is the constraint**: A US-East origin server is 13,500 km from Mumbai. A round-trip takes ~200ms just for photons to travel the fiber route. TCP handshake + TLS + data transfer adds to 700ms+ for first-byte. No amount of software optimization can fix physics.
+2. **CDN PoPs eliminate the distance**: A CDN edge server in Mumbai returns cached responses in ~10ms. The first request (cache MISS) still goes to origin, but subsequent requests (cache HITs) are served locally.
+3. **Cache hit ratio matters**: A CDN delivering 95% cache hit ratio means only 5% of requests reach origin. Netflix Open Connect achieves 95% edge delivery, handling 15% of all internet traffic without overloading origin.
+
+**Key numbers to mention**: CDN reduces P50 latency from ~500ms to ~10ms for global users (50x improvement). Shopify reduced page load from 3.2s to 1.1s with CDN, yielding a 12% conversion rate increase. Amazon's rule: 1% latency increase = 1% revenue decrease.
+
+---
+
+#### Q2: How would you invalidate CDN cache after a hotfix?
+**What interviewers look for**: Knowledge of the three invalidation strategies and their trade-offs, and when each applies.
+
+**Answer framework**:
+1. **Purge/Invalidate API (for urgent fixes)**: Call Cloudflare or CloudFront's API to purge specific URLs. Takes 1–5 seconds to propagate globally. Use for price corrections, security patches, or content mistakes. Example: `aws cloudfront create-invalidation --paths "/product/123"`.
+2. **Versioned URLs (best practice for deployments)**: Content-hash the filename at build time (`app.a1b2c3.js`). New deploy = new filename = new cache entry — no purging needed. Instant effect, safe rollback (old file still cached if you need to roll back). This is how Next.js, Webpack, and Vite all work.
+3. **Short TTL + stale-while-revalidate (for dynamic content)**: Use `Cache-Control: public, max-age=60, stale-while-revalidate=30`. Content expires in 60 seconds; CDN serves stale while revalidating in background. No manual purge needed for most updates.
+
+**Key numbers to mention**: Purge propagation on Cloudflare takes ~1–2 seconds globally (310+ PoPs). On CloudFront it takes 1–5 minutes to all 450+ edge locations. For immediate effect, versioned URLs are instant and require zero API calls.
+
+---
+
+#### Q3: What is edge computing and when does it make sense over CDN caching?
+**What interviewers look for**: Understanding that edge computing = running code at the edge, not just serving static files — and the trade-offs vs. origin compute.
+
+**Answer framework**:
+1. **CDN caches static responses. Edge computing runs logic at the edge.** Instead of a request traveling 200ms to origin to run a function, you run the function 2ms away at the edge PoP. Cloudflare Workers, Lambda@Edge, and Vercel Edge Functions are examples.
+2. **Good edge use cases**: A/B testing (assign variant at edge, no origin round-trip), JWT validation and auth (reject unauthorized requests before they reach origin — reduces origin load by 20–40%), geolocation routing (detect country, serve localized content or redirect to nearest datacenter), image resizing (convert to WebP/AVIF per device at edge).
+3. **When NOT to use edge**: Anything requiring database writes or complex stateful logic — edge functions are stateless and have no local database access. Cloudflare KV adds ~20ms for reads; it's not a replacement for a relational DB. Keep complex business logic at origin.
+
+**Key numbers to mention**: Cloudflare Workers cold start < 5ms (V8 isolates, not containers). Lambda@Edge cold start 50–100ms. Vercel Edge Functions < 5ms. Origin Lambda cold start 100–500ms. For auth and routing, edge is 10–100x faster.
+
+---
+
+#### Q4: What happens when a CDN cache misses on a popular URL after a deploy?
+**What interviewers look for**: Awareness of the thundering herd / cache stampede problem at the CDN layer and mitigation with origin shielding.
+
+**Answer framework**:
+1. **Without origin shielding, all 300+ edge PoPs simultaneously miss and hit origin** on the first request after deploy. With 1,000 req/s globally, origin could receive 300,000 req/s in the first second.
+2. **Origin Shield (mid-tier cache)**: A regional cache layer sits between edge PoPs and origin. 300 edge PoPs → 3 regional shields → 1 origin request. Reduces origin load by 99%+ on cache miss.
+3. **Prewarming** for predictable events: Before a product launch announcement, push content to CDN edges using API (push-based caching). Netflix pre-positions new movie content on ISP appliances overnight before the premiere.
+
+**Key numbers to mention**: Without origin shielding, a Cloudflare CDN with 310 PoPs can send 310x traffic to origin on cold cache. With origin shielding, origin sees 1–3x normal traffic. This prevents the [Thundering Herd](/problems-at-scale/availability/thundering-herd) pattern at the CDN level.
+
+---
+
+#### Q5: How do you design a global API for sub-100ms response times worldwide?
+**What interviewers look for**: Multi-layer thinking that combines CDN, edge computing, and multi-region architecture, not just "use a CDN."
+
+**Answer framework**:
+1. **Layer 1 — CDN for cacheable responses**: Static assets (images, JS, CSS) with 1-year TTL. Dynamic but shared content (product listings, search results) with 60s TTL + stale-while-revalidate. This handles 70–90% of requests.
+2. **Layer 2 — Edge compute for personalization**: JWT validation, A/B test assignment, geo-routing — all at the edge without origin round-trip. Adds ~2ms, not ~200ms.
+3. **Layer 3 — Multi-region origin for uncacheable requests**: User-specific data (cart, profile, real-time prices) must hit origin. Deploy origin in 3–5 regions (US, EU, APAC). Use GeoDNS to route users to nearest region. P99 latency for uncacheable requests: ~50ms within region, ~150ms cross-region.
+
+**Key numbers to mention**: Netflix achieves global P50 < 50ms by combining CDN (95% of traffic) + multi-region origin (5%). For purely API-heavy systems like trading platforms, multi-region alone can achieve <50ms within a continent without CDN.
+
+---
+
 ## Key Takeaways
 
 ```
