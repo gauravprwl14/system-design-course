@@ -1,14 +1,38 @@
 ---
-title: "Double Booking: When Two Users Win the Last Seat"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["concurrency", "race-conditions"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead"]
-tags: ["race-condition", "locking", "select-for-update", "optimistic-locking", "distributed-lock", "pessimistic-locking", "idempotency"]
-description: "Two concurrent requests both confirm the same resource booking, resulting in overbooking and angry customers"
-reading_time: "20 min"
-difficulty: "senior"
-status: "published"
+title: 'Double Booking: When Two Users Win the Last Seat'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - concurrency
+  - race-conditions
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - race-condition
+  - locking
+  - select-for-update
+  - optimistic-locking
+  - distributed-lock
+  - pessimistic-locking
+  - idempotency
+description: >-
+  Two concurrent requests both confirm the same resource booking, resulting in
+  overbooking and angry customers
+reading_time: 20 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/hands-on/database-transactions
+  - 03-redis/hands-on/redis-distributed-lock
+  - 03-redis/hands-on/redis-transactions-multi-exec
+  - 03-redis/hands-on/redis-watch-optimistic-locking
+  - 05-distributed-systems/failures/race-condition-inventory
+  - 11-real-world/google-drive
+  - 11-real-world/ticket-booking
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
 ---
 
 # Double Booking: When Two Users Win the Last Seat

@@ -10,8 +10,7 @@ related_problems:
 case_studies: []
 see_poc:
   - interview-prep/practice-pocs/database-indexes
-linked_from:
-  - interview-prep/database-storage/query-optimization
+linked_from: []
 tags:
   - database
   - indexing

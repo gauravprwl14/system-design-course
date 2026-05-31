@@ -20,8 +20,7 @@ see_poc:
   - interview-prep/practice-pocs/kafka-basics-producer-consumer
   - interview-prep/practice-pocs/database-transactions
   - interview-prep/practice-pocs/redis-deduplication
-linked_from:
-  - system-design/databases/data-archival-strategies
+linked_from: []
 tags:
   - google-drive
   - file-storage

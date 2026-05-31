@@ -1,14 +1,38 @@
 ---
-title: "Timeout Domino Effect: You've Built a Latency Amplifier"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["availability", "resilience"]
-personas: ["Senior Engineer", "Tech Lead", "Staff Engineer"]
-tags: ["timeout", "deadline propagation", "context cancellation", "latency", "gRPC", "AbortController", "request budget"]
-description: "The checkout service has a 30-second timeout. The payment service has 29 seconds. The fraud service has 28 seconds. When the ML model takes 25 seconds, every request through the stack waits 25+ seconds. You've built a timeout amplifier, not a timeout chain."
-reading_time: "19 min"
-difficulty: "senior"
-status: "published"
+title: 'Timeout Domino Effect: You''ve Built a Latency Amplifier'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - availability
+  - resilience
+personas:
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+tags:
+  - timeout
+  - deadline propagation
+  - context cancellation
+  - latency
+  - gRPC
+  - AbortController
+  - request budget
+description: >-
+  The checkout service has a 30-second timeout. The payment service has 29
+  seconds. The fraud service has 28 seconds. When the ML model takes 25 seconds,
+  every request through the stack waits 25+ seconds. You've built a timeout
+  amplifier, not a timeout chain.
+reading_time: 19 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/failures/connection-pool-starvation
+  - 09-observability/failures/thread-pool-exhaustion
+  - 10-architecture/concepts/circuit-breaker
+  - 10-architecture/concepts/microservices-communication
+  - 10-architecture/concepts/timeouts-backpressure
+  - 10-architecture/failures/cascading-failures
+  - 10-architecture/hands-on/timeout-configuration
 ---
 
 # Timeout Domino Effect: You've Built a Latency Amplifier

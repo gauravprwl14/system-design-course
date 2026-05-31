@@ -10,10 +10,7 @@ related_problems:
   - problems-at-scale/performance/n-plus-one-query
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/database-storage/query-optimization
-  - problems-at-scale/performance/n-plus-one-query
-  - system-design/databases/indexing-deep-dive
+linked_from: []
 tags:
   - postgresql
   - n-plus-one

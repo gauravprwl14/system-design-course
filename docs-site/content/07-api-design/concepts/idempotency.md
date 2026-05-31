@@ -19,12 +19,7 @@ see_poc:
   - interview-prep/practice-pocs/redis-deduplication
   - interview-prep/practice-pocs/outbox-pattern
 linked_from:
-  - interview-prep/practice-pocs/idempotency-keys
-  - interview-prep/practice-pocs/kafka-exactly-once-semantics
-  - problems-at-scale/concurrency/double-charge-payment
-  - problems-at-scale/concurrency/duplicate-orders
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/ticket-booking
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
 tags:
   - idempotency
   - payments

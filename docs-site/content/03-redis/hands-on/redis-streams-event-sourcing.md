@@ -13,8 +13,7 @@ related_problems:
   - problems-at-scale/data-integrity/duplicate-event-processing
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/scalability/event-driven-architecture
+linked_from: []
 tags:
   - redis
   - streams

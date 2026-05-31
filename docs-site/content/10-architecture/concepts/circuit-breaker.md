@@ -16,14 +16,9 @@ see_poc:
   - interview-prep/practice-pocs/retry-backoff
   - interview-prep/practice-pocs/timeout-configuration
 linked_from:
-  - interview-prep/practice-pocs/circuit-breaker
-  - interview-prep/practice-pocs/graceful-degradation
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/observability-monitoring
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/circuit-breaker-failure
-  - problems-at-scale/availability/retry-storm
-  - system-design/scalability/chaos-engineering
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/observability-monitoring
 tags:
   - resilience
   - microservices
@@ -831,6 +826,94 @@ breaker.on('stateChange', ({ name, to }) => {
 });
 ```
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on Circuit Breaker
+
+#### Q1: Explain the circuit breaker pattern and why it's needed in microservices.
+**What interviewers look for**: Understanding of failure isolation, state machine design, and ability to connect the pattern to real-world cascading failure scenarios.
+
+**Answer framework**:
+1. **The problem**: Without protection, a slow or failing downstream service holds threads, exhausts thread pools, and cascades failures upward — one service failure brings down the whole system within 1-3 minutes.
+2. **The pattern**: A circuit breaker wraps outgoing calls and tracks failure rates. It moves through three states — CLOSED (normal), OPEN (fail fast), HALF_OPEN (probe for recovery) — like an electrical fuse that can reset itself.
+3. **The benefit**: In OPEN state, requests fail in microseconds instead of waiting 30+ seconds for a timeout; the calling service stays healthy, and the downstream service gets breathing room to recover.
+
+**Key numbers to mention**: Netflix's Hystrix uses 50% error rate threshold over a rolling 10-second window with a minimum of 20 requests; reset timeout is typically 30–60 seconds; recovery requires 3 consecutive successes in HALF_OPEN state.
+
+---
+
+#### Q2: How do you tune circuit breaker thresholds for a production system?
+**What interviewers look for**: Practical knowledge of volume thresholds, error rate percentages, reset timeouts, and understanding that wrong tuning causes false positives.
+
+**Answer framework**:
+1. **Volume threshold first**: Never open on a single failure — require at least 10–20 requests in the window before evaluating error rate (prevents cold-start false positives).
+2. **Error rate percentage**: 50% is Netflix's default; for critical paths like payments, use 30% to be more aggressive; for non-critical services, 70% gives more tolerance.
+3. **Reset timeout**: 30–60 seconds allows the downstream service time to recover without being flooded by test requests; use exponential backoff on the reset timeout if repeated open cycles occur (30s → 60s → 120s).
+
+**Key numbers to mention**: `volumeThreshold: 10`, `errorThresholdPercentage: 50`, `resetTimeout: 60000ms` are sensible defaults; Stripe uses stricter 30% thresholds for payment circuits; Amazon API Gateway has 5-second default.
+
+---
+
+#### Q3: What is the difference between a circuit breaker and a retry with exponential backoff? When do you use each?
+**What interviewers look for**: Ability to differentiate complementary patterns and explain when combining them is correct vs. dangerous.
+
+**Answer framework**:
+1. **Retry** handles transient failures (network blip, single 500 error) — same request, tried again after a delay; appropriate when failure is expected to be temporary and the operation is idempotent.
+2. **Circuit breaker** handles sustained failures (service is down or overloaded) — stops all attempts for a reset period; appropriate when the downstream is in a degraded state and more requests would make it worse.
+3. **Combined correctly**: Wrap the circuit breaker around the retry — retries handle transient blips, circuit breaker trips if retries keep failing; never retry when the circuit is open (that defeats the purpose).
+
+**Key numbers to mention**: Retry max 3 attempts with base delay 1s, factor 2x, jitter ±10%; circuit breaker reset timeout 30–60s; combined strategy means max 3 retries before recording a failure in the circuit breaker's window.
+
+---
+
+#### Q4: How would you implement fallback behavior when a circuit is open?
+**What interviewers look for**: Design thinking around graceful degradation — not just "throw an error" but concrete fallback strategies appropriate to the service being called.
+
+**Answer framework**:
+1. **Cached data**: If you have a Redis cache for the dependency, serve the last known good value with a staleness indicator — works for user profiles, product catalogs, pricing.
+2. **Default/static response**: Return a safe default — empty list for recommendations, `{ available: true }` for inventory checks when you'd rather risk an oversell than block checkout.
+3. **Queue for later**: For non-idempotent writes (payments, order creation), enqueue the operation and return a `202 Accepted` / "processing" response — process when the circuit closes.
+
+**Key numbers to mention**: Netflix serves 10+ fallback tiers for recommendations; cache TTL for fallbacks should be 5–15 minutes; payment queues should have a retry deadline of 24 hours before alerting for manual intervention.
+
+---
+
+#### Q5: How does circuit breaker state affect your monitoring and alerting strategy?
+**What interviewers look for**: Operational maturity — understanding that circuit state changes are first-class events that need to be tracked and alerted on.
+
+**Answer framework**:
+1. **CLOSED → OPEN**: This is a P1/P2 alert — a service dependency is unhealthy; page the on-call engineer and log the exact error rate and timestamps.
+2. **OPEN → HALF_OPEN → CLOSED**: Recovery event — send an informational alert, verify the service is truly healthy, not just passing one test request; check error rate over the next 5 minutes.
+3. **Metrics to track**: Circuit state (0=CLOSED, 1=OPEN) as a Prometheus gauge; `circuit_breaker_failures_total` counter; `circuit_breaker_rejected_total` for requests dropped in OPEN state; P99 latency before and after a trip.
+
+**Key numbers to mention**: Alert threshold: circuit open for >2 minutes = page; circuit flapping (open/close >3 times in 10 minutes) = escalate; rejected calls >1% of total traffic = investigate; Netflix monitors 700+ circuit breakers via a real-time dashboard.
+
+---
+
+#### Q6: How would you design a circuit breaker for a payment service specifically?
+**What interviewers look for**: Domain-specific thinking — payments have stricter requirements than general services (no silent data loss, idempotency, regulatory considerations).
+
+**Answer framework**:
+1. **Lower error threshold**: Use 30% instead of 50% because payment failures directly cause revenue loss and user trust issues; fail fast before the situation compounds.
+2. **Mandatory fallback queue**: Never silently drop payment attempts — when circuit opens, enqueue the charge request with a unique idempotency key; process when circuit closes; send user a "processing" confirmation.
+3. **Idempotency on retry**: Generate a unique payment ID before the circuit breaker call; use it as the Stripe/payment provider idempotency key so that retries after circuit recovery don't double-charge.
+
+**Key numbers to mention**: Stripe circuit breaker timeout 5 seconds (vs. 3s for general services); reset timeout 120 seconds (2 minutes) to ensure Stripe has recovered; payment queue max age 24 hours before alerting; idempotency key format: `pay_<userId>_<orderId>_<timestamp>`.
+
+---
+
+#### Q7: What is the "thundering herd" problem and how does the circuit breaker's HALF_OPEN state solve it?
+**What interviewers look for**: Understanding of the subtle danger in circuit recovery — naively allowing all traffic when the circuit tests healthy can immediately re-open it.
+
+**Answer framework**:
+1. **Thundering herd**: When a circuit transitions from OPEN to HALF_OPEN, all the pent-up requests try to go through at once; if the downstream just recovered, this flood re-overwhelms it and the circuit reopens immediately.
+2. **HALF_OPEN as a rate limiter**: Allow only 1 probe request (or a configurable small number like 3) through; all other requests still fail fast; only close the circuit after `successThreshold` consecutive successes.
+3. **Additional mitigation**: Add jitter to the reset timeout so multiple circuit breakers for the same service don't all probe simultaneously (e.g., 30s ± 5s random); use gradual traffic ramping in HALF_OPEN (10% → 50% → 100%) for high-traffic services.
+
+**Key numbers to mention**: Netflix uses 1 probe in HALF_OPEN; Resilience4j allows configuring `permittedNumberOfCallsInHalfOpenState` (default: 10); recovery jitter of ±5–10% of reset timeout; some systems use a 5-minute gradual ramp after recovery before declaring fully healthy.
+
+---
+
 ## 🎓 Key Takeaways
 
 1. ✅ **Prevent cascading failures** - One service down ≠ entire system down
@@ -842,9 +925,10 @@ breaker.on('stateChange', ({ name, to }) => {
 
 ## 🔗 Next Steps
 
-- [Retry Pattern](./02-retry-pattern.md) - Exponential backoff for transient failures
-- [Bulkhead Pattern](./04-bulkhead.md) - Isolate failures to pools
-- [Timeout Pattern](./03-timeout-pattern.md) - Fail fast on slow services
+- [Retry Pattern](/10-architecture/hands-on/retry-backoff) - Exponential backoff for transient failures
+- [Bulkhead Pattern](/10-architecture/concepts/bulkhead-pattern) - Isolate failures to pools
+- [Timeout Pattern](/10-architecture/hands-on/timeout-configuration) - Fail fast on slow services
+- [Circuit Breaker Interview Prep](/12-interview-prep/system-design/fundamentals/circuit-breaker-pattern) - Detailed Q&A for system design interviews
 
 ## 📚 Further Reading
 

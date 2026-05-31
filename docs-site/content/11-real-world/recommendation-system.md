@@ -1,5 +1,5 @@
 ---
-title: "Recommendation System at Scale — Netflix, Spotify, Amazon"
+title: 'Recommendation System at Scale — Netflix, Spotify, Amazon'
 layer: case-study
 section: system-design/case-studies
 difficulty: advanced
@@ -9,8 +9,18 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from: []
-tags: [recommendation, machine-learning, collaborative-filtering, two-tower, feature-store, a-b-testing, netflix, spotify, amazon]
+linked_from:
+  - 12-interview-prep/system-design/business-and-advanced/recommendation-system
+tags:
+  - recommendation
+  - machine-learning
+  - collaborative-filtering
+  - two-tower
+  - feature-store
+  - a-b-testing
+  - netflix
+  - spotify
+  - amazon
 ---
 
 # Recommendation System at Scale — Netflix, Spotify, Amazon

@@ -1,14 +1,43 @@
 ---
-title: "Cache Invalidation Race: When Stale Beats Fresh"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["consistency", "caching", "race-conditions"]
-personas: ["Senior Engineer", "Tech Lead"]
-tags: ["cache-invalidation", "race-condition", "write-through", "cache-versioning", "redis", "stale-cache", "cache-aside", "TTL", "optimistic-locking"]
-description: "A price changes from 99 dollars to 79 dollars. The cache is cleared. A slow request that started before the clear finishes and writes the old 99 dollars price back to cache. Users see wrong prices for 5 minutes. Your cache invalidation logic is correct — and that's the problem."
-reading_time: "17 min"
-difficulty: "senior"
-status: "published"
+title: 'Cache Invalidation Race: When Stale Beats Fresh'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - consistency
+  - caching
+  - race-conditions
+personas:
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - cache-invalidation
+  - race-condition
+  - write-through
+  - cache-versioning
+  - redis
+  - stale-cache
+  - cache-aside
+  - TTL
+  - optimistic-locking
+description: >-
+  A price changes from 99 dollars to 79 dollars. The cache is cleared. A slow
+  request that started before the clear finishes and writes the old 99 dollars
+  price back to cache. Users see wrong prices for 5 minutes. Your cache
+  invalidation logic is correct — and that's the problem.
+reading_time: 17 min
+difficulty: senior
+status: published
+linked_from:
+  - 02-caching/concepts/caching-fundamentals
+  - 02-caching/concepts/caching-strategies
+  - 02-caching/hands-on/cache-aside-pattern
+  - 02-caching/hands-on/cache-invalidation-strategies
+  - 02-caching/hands-on/write-through-caching
+  - 05-distributed-systems/failures/stale-read-after-write
+  - 10-architecture/failures/thundering-herd
+  - 12-interview-prep/quick-reference/caching/cache-strategies
+  - 12-interview-prep/system-design/fundamentals/caching-strategies
+  - 12-interview-prep/system-design/messaging-and-streaming/cms-design
 ---
 
 # Cache Invalidation Race: When Stale Beats Fresh

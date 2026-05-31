@@ -1,14 +1,61 @@
 ---
-title: "Stale Read After Write: When Your Own Updates Disappear"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["consistency", "replication", "database"]
-personas: ["Senior Engineer", "Tech Lead"]
-tags: ["read-your-writes", "replication-lag", "consistency", "primary-replica", "session-consistency", "monotonic-reads", "postgresql", "mysql", "read-replica"]
-description: "A user updates their profile picture. They refresh. They see their old picture. They update it again. Still old. They file a support ticket. The app isn't broken — they're reading from a replica that's 3 seconds behind the primary."
-reading_time: "16 min"
-difficulty: "senior"
-status: "published"
+title: 'Stale Read After Write: When Your Own Updates Disappear'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - consistency
+  - replication
+  - database
+personas:
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - read-your-writes
+  - replication-lag
+  - consistency
+  - primary-replica
+  - session-consistency
+  - monotonic-reads
+  - postgresql
+  - mysql
+  - read-replica
+description: >-
+  A user updates their profile picture. They refresh. They see their old
+  picture. They update it again. Still old. They file a support ticket. The app
+  isn't broken — they're reading from a replica that's 3 seconds behind the
+  primary.
+reading_time: 16 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/concepts/read-replicas
+  - 01-databases/concepts/replication-basics
+  - 01-databases/hands-on/database-read-replicas
+  - 01-databases/hands-on/postgresql-connection-pooling-replication
+  - 02-caching/concepts/caching-fundamentals
+  - 02-caching/concepts/caching-strategies
+  - 02-caching/failures/cache-invalidation-race
+  - 02-caching/hands-on/cache-invalidation-strategies
+  - 02-caching/hands-on/write-through-caching
+  - 04-messaging/failures/message-out-of-order
+  - 04-messaging/hands-on/event-sourcing-basics
+  - 05-distributed-systems/concepts/distributed-consensus
+  - 05-distributed-systems/failures/counter-race
+  - 06-scalability/concepts/multi-region
+  - 10-architecture/concepts/cqrs
+  - 10-architecture/failures/split-brain
+  - 10-architecture/hands-on/cqrs-pattern
+  - 11-real-world/google-drive
+  - 11-real-world/news-feed
+  - 12-interview-prep/quick-reference/caching/cache-strategies
+  - 12-interview-prep/quick-reference/databases/database-replication
+  - 12-interview-prep/system-design/business-and-advanced/cqrs-pattern
+  - 12-interview-prep/system-design/fundamentals/caching-strategies
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
+  - >-
+    12-interview-prep/system-design/real-time-systems/collaborative-editing-google-docs
+  - 12-interview-prep/system-design/storage-and-databases/database-replication
+  - 12-interview-prep/system-design/storage-and-databases/database-sharding
 ---
 
 # Stale Read After Write: When Your Own Updates Disappear

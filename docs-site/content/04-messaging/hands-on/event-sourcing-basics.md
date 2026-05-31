@@ -11,11 +11,7 @@ related_problems:
   - problems-at-scale/consistency/stale-read-after-write
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/cqrs-pattern
-  - interview-prep/system-design/event-driven-architecture
-  - system-design/scalability/cqrs
-  - system-design/scalability/event-driven-architecture
+linked_from: []
 tags:
   - event-sourcing
   - events

@@ -1,14 +1,41 @@
 ---
-title: "Retry Storm: How Retries Turned a 30-Second Hiccup into a 45-Minute Outage"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["availability", "resilience"]
-personas: ["Senior Engineer", "Tech Lead", "Staff Engineer"]
-tags: ["retry storm", "exponential backoff", "jitter", "circuit breaker", "retry budget", "idempotency", "backpressure"]
-description: "Service B had a 30-second hiccup. It recovered. But every upstream service had retried 3 times, so B was now handling 4x traffic. It slowed again. All services retried again. 8x traffic. It collapsed. The 30-second hiccup became a 45-minute outage."
-reading_time: "18 min"
-difficulty: "senior"
-status: "published"
+title: 'Retry Storm: How Retries Turned a 30-Second Hiccup into a 45-Minute Outage'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - availability
+  - resilience
+personas:
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+tags:
+  - retry storm
+  - exponential backoff
+  - jitter
+  - circuit breaker
+  - retry budget
+  - idempotency
+  - backpressure
+description: >-
+  Service B had a 30-second hiccup. It recovered. But every upstream service had
+  retried 3 times, so B was now handling 4x traffic. It slowed again. All
+  services retried again. 8x traffic. It collapsed. The 30-second hiccup became
+  a 45-minute outage.
+reading_time: 18 min
+difficulty: senior
+status: published
+linked_from:
+  - 03-redis/hands-on/redis-lua-rate-limiting
+  - 03-redis/hands-on/redis-rate-limiting
+  - 06-scalability/hands-on/rate-limiting-algorithms
+  - 07-api-design/hands-on/api-gateway-rate-limiting
+  - 10-architecture/failures/cascading-failures
+  - 10-architecture/failures/circuit-breaker-failure
+  - 10-architecture/failures/thundering-herd
+  - 10-architecture/hands-on/retry-backoff
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
+  - 12-interview-prep/system-design/fundamentals/rate-limiting
 ---
 
 # Retry Storm: How Retries Turned a 30-Second Hiccup into a 45-Minute Outage

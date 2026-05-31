@@ -1,15 +1,36 @@
 ---
-title: "Saga Pattern: Choreography vs Orchestration for Distributed Transactions"
-date: "2026-03-18"
-category: "system-design-playbook"
-subcategories: ["distributed-systems", "microservices", "transactions", "patterns"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead", "Staff Engineer", "Principal Engineer"]
-tags: ["saga", "distributed-transactions", "choreography", "orchestration", "compensating-transactions", "microservices", "eventual-consistency"]
-description: "Distributed transactions without 2PC: how to choose between choreography and orchestration sagas, design compensating transactions, and avoid the tracing nightmare at 10+ services."
-reading_time: "22 min"
-difficulty: "staff+"
-status: "published"
-featured_image: "/assets/diagrams/saga-pattern-deep-dive.png"
+title: 'Saga Pattern: Choreography vs Orchestration for Distributed Transactions'
+date: '2026-03-18'
+category: system-design-playbook
+subcategories:
+  - distributed-systems
+  - microservices
+  - transactions
+  - patterns
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+  - Principal Engineer
+tags:
+  - saga
+  - distributed-transactions
+  - choreography
+  - orchestration
+  - compensating-transactions
+  - microservices
+  - eventual-consistency
+description: >-
+  Distributed transactions without 2PC: how to choose between choreography and
+  orchestration sagas, design compensating transactions, and avoid the tracing
+  nightmare at 10+ services.
+reading_time: 22 min
+difficulty: staff+
+status: published
+featured_image: /assets/diagrams/saga-pattern-deep-dive.png
+linked_from:
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
 ---
 
 # Saga Pattern: Choreography vs Orchestration for Distributed Transactions
@@ -399,6 +420,150 @@ CREATE TABLE saga_state (
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on the Saga Pattern
+
+#### Q1: How would you design a distributed transaction for an e-commerce checkout across 5 microservices?
+**What interviewers look for**: Whether you immediately reach for 2PC (wrong answer at scale) or propose a saga. They want to see you reason about failure modes and compensation explicitly.
+
+**Answer framework**:
+1. Name the 5 services and their local operations: Order (create record), Inventory (reserve stock), Payment (charge card), Loyalty (award points), Shipping (schedule delivery)
+2. Choose orchestration over choreography at 5+ services — traceability is critical for a financial flow; a central saga state table gives you instant visibility into any stuck transaction
+3. Design compensating transactions in reverse order: Payment → refund, Inventory → release, Order → cancel. Loyalty and Shipping compensations must be idempotent (double-releasing is safe; double-charging is not)
+4. Explain the orchestrator persistence requirement: every step transition persists to durable storage before calling the next service, so a crash mid-saga resumes from the last committed step
+
+**Key numbers to mention**: 2PC at 5 services compounded = 99.5% availability (vs 99.9% per service). Temporal handles 50K+ workflows/sec. AWS Step Functions: 4,000 state transitions/sec default limit, raisable. Compensation rate > 2% should trigger an alert.
+
+---
+
+#### Q2: What's the difference between choreography and orchestration sagas? When do you use each?
+**What interviewers look for**: Deep understanding of trade-offs, not just definitions. They want specific failure modes and a defensible decision rule.
+
+**Answer framework**:
+1. Choreography: event-driven, no central coordinator — each service emits events and reacts to others. Low coupling, scales with event bus, but very hard to trace at >5 services. A cycle bug (event A triggers event B which re-triggers A) caused 50,000x loyalty points in a real incident
+2. Orchestration: central saga orchestrator controls the flow, persists state, calls each service explicitly. Easy to observe and reason about; state table IS the audit log. Trade-off: orchestrator is a stateful service that needs HA
+3. Decision rule: ≤4 services with autonomous teams who already share an event bus → choreography. 5+ services or any financial/compliance flow requiring audit trail → orchestration
+
+**Key numbers to mention**: Event throughput math — at 10K orders/sec with 5-step saga, you need ~50K events/sec on the bus. Temporal: 2-4 replicas × 4GB RAM handles 10K concurrent workflows.
+
+---
+
+#### Q3: How do you handle a compensation transaction that itself fails?
+**What interviewers look for**: Whether you've thought through the "what if compensation fails" scenario — the second-order problem most candidates miss.
+
+**Answer framework**:
+1. Never silently drop a failed compensation — this leaves the system in a permanently inconsistent financial state (payment refunded but inventory still reserved, or vice versa)
+2. Retry compensation with exponential backoff — most compensation failures are transient (service temporarily down). Use idempotency keys (`saga_id + step_id`) so retrying the same compensation is safe
+3. If retries exhaust (e.g., service down for hours): escalate to a dead-letter queue. An operations runbook defines manual resolution: human reviews the saga state, manually applies the compensation in the target service's admin interface, marks the saga as manually resolved
+4. Alert immediately on any compensation failure — this is a financial integrity issue, not a normal error
+
+**Key numbers to mention**: Define a maximum retry count (e.g., 10 retries over 30 minutes) before DLQ escalation. SLA for manual DLQ resolution: < 4 hours for financial sagas to meet regulatory requirements.
+
+---
+
+#### Q4: How do you ensure idempotency in saga steps?
+**What interviewers look for**: Understanding of at-least-once delivery and concrete implementation technique for idempotent consumers.
+
+**Answer framework**:
+1. At-least-once delivery is a guarantee of Kafka, SQS, and most message brokers — every consumer must be idempotent, meaning processing the same message twice produces the same result as processing it once
+2. Implementation: before executing a step, check if this `(saga_id, step_id)` combination has already been processed. Store processed tuples in a table with a unique constraint. If already processed, return the cached result
+3. For compensating transactions: same pattern. Track `(saga_id, compensation_step_id)` as processed. Releasing inventory twice must be safe — check if reservation still exists before releasing
+
+**Key numbers to mention**: Idempotency key table lookup adds ~1-2ms per step (Redis cache). Store processed keys for at least 7 days (longer than any saga's SLA) to handle delayed message redelivery.
+
+---
+
+#### Q5: How would you monitor a saga-based system in production?
+**What interviewers look for**: Operational maturity — can you define what "healthy" looks like for an event-driven distributed system?
+
+**Answer framework**:
+1. The primary observable is saga state: maintain a `saga_state` table (or use orchestrator's built-in state) with columns for `saga_id`, `current_step`, `status`, `started_at`, `updated_at`. Query this for any stuck transaction
+2. Four key metrics: `saga_duration_seconds` histogram, `saga_step_duration_seconds` per step, `saga_compensation_total` counter (compensations = failures), `saga_stuck_count` gauge (sagas not updated > SLA threshold)
+3. Three alert thresholds: compensation rate > 2% of starting sagas (indicates systemic business logic errors), any saga stuck > 5 minutes (indicates a service outage or infinite retry loop), saga completion rate drops > 20% from baseline (indicates systemic failure)
+
+**Key numbers to mention**: SLA for saga completion (typically 60 seconds for e-commerce checkout). Alert on sagas stuck > 5 minutes. Compensation rate > 2% = page on-call immediately.
+
+---
+
+#### Q6: What is the dual-write problem and how does it relate to sagas?
+**What interviewers look for**: Understanding of why naive event-publishing is unsafe and how sagas (or outbox pattern) solve it.
+
+**Answer framework**:
+1. Dual-write: writing to a database and publishing an event are two separate operations. If the service crashes between them (DB write succeeds, publish fails), the event is lost — the saga never progresses. This is not a bug, it's a fundamental distributed systems problem
+2. Sagas don't fully solve dual-write — each saga step still has a local DB write + event/call. The Transactional Outbox Pattern solves it: write the event to an outbox table in the same DB transaction as the business operation. A separate relay process reads the outbox and publishes to the event bus. Now the two are atomic at the DB level
+3. Orchestration sagas reduce dual-write exposure: the orchestrator calls services synchronously (HTTP/gRPC), and the orchestrator's state is updated in one durable write. Less fan-out than choreography's event chain
+
+**Key numbers to mention**: Outbox polling latency: typically 100-500ms. For real-time sagas, use CDC (Debezium) on the outbox table for sub-100ms event publishing. Outbox table cleanup: delete processed records older than 7 days to prevent unbounded growth.
+
+---
+
+#### Q7: How would you debug a saga that's stuck in production at 2 AM?
+**What interviewers look for**: Incident response maturity and concrete tooling knowledge for distributed systems debugging.
+
+**Answer framework**:
+1. Query the saga state table: `SELECT * FROM saga_state WHERE status = 'RUNNING' AND updated_at < NOW() - INTERVAL '5 minutes'`. This immediately shows you which sagas are stuck and at which step
+2. For the stuck step, check the downstream service: is it healthy? Check its error logs correlated by `saga_id`. Is it an idempotency issue (processed the step but didn't publish the success event)?
+3. For orchestration sagas: use the orchestrator UI (Temporal Web, Step Functions console) to inspect the exact step, its inputs, outputs, and error. You can manually trigger a retry from the orchestrator without touching application code
+4. For choreography sagas: trace by `saga_id` across all Kafka topics. Search distributed traces (Jaeger/Tempo) by `saga_id` to reconstruct the event chain and find where it stopped
+
+**Key numbers to mention**: MTTR for a stuck saga with good observability (saga state table + distributed tracing): < 15 minutes. Without it: hours of log archaeology across 10+ services.
+
+---
+
+## 💡 Pseudocode Walkthrough
+
+```pseudocode
+// Orchestration Saga — Order Placement (5 services)
+// Orchestrator persists state before each external call
+
+function placeOrderSaga(orderId, items, userId, amount):
+  saga = SagaState(id=orderId, status=RUNNING)
+  persist(saga)
+
+  // Step 1: Reserve inventory
+  result = Inventory.reserve(orderId, items)
+  if result.failed:
+    saga.status = FAILED
+    persist(saga)
+    return SAGA_FAILED("inventory_unavailable")
+
+  saga.completedSteps.append("inventory_reserved")
+  persist(saga)
+
+  // Step 2: Charge payment
+  result = Payment.charge(orderId, userId, amount)
+  if result.failed:
+    // Compensate step 1
+    Inventory.release(orderId)  // idempotent: safe to call twice
+    saga.status = COMPENSATED
+    persist(saga)
+    return SAGA_FAILED("payment_declined")
+
+  saga.completedSteps.append("payment_charged")
+  persist(saga)
+
+  // Step 3: Schedule shipping
+  result = Shipping.schedule(orderId)
+  if result.failed:
+    // Compensate steps 1 and 2 in reverse order
+    Payment.refund(orderId)     // idempotent: check if already refunded
+    Inventory.release(orderId)  // idempotent: check if already released
+    saga.status = COMPENSATED
+    persist(saga)
+    return SAGA_FAILED("shipping_unavailable")
+
+  saga.status = COMPLETED
+  persist(saga)
+  return SAGA_SUCCESS
+
+// If orchestrator crashes between any persist() calls,
+// on restart it reads saga state and continues from last committed step.
+// Idempotency keys prevent double-execution of already-completed steps.
+```
+
+---
+
 ## Decision Framework Checklist `[All Levels]`
 
 - [ ] Mapped every service involved in the saga and their database boundaries
@@ -413,6 +578,14 @@ CREATE TABLE saga_state (
 - [ ] Load tested saga throughput against orchestrator/event bus capacity
 - [ ] Verified consumer idempotency — same event delivered twice is safe
 - [ ] Documented rollback behavior for each step in the runbook
+
+## Next Steps
+
+- **Interview Prep**: Practice answering saga questions → [Saga Pattern Interview Q&A](/12-interview-prep/system-design/business-and-advanced/saga-pattern)
+- **Related Pattern**: CQRS often pairs with sagas for read-model updates → [CQRS Pattern Interview Q&A](/12-interview-prep/system-design/business-and-advanced/cqrs-pattern)
+- **Related Problem**: See how e-commerce checkout uses sagas end-to-end → [E-Commerce Checkout Design](/12-interview-prep/system-design/business-and-advanced/ecommerce-checkout)
+- **Related Architecture**: How service mesh observability helps trace sagas → [Service Mesh Architecture](./service-mesh-architecture)
+- **Deployment Context**: Rolling out saga orchestration safely → [Deployment Strategies](./deployment-strategies-deep-dive)
 
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*

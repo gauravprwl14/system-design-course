@@ -17,34 +17,7 @@ case_studies:
   - system-design/case-studies/news-feed
   - system-design/case-studies/chat-system
 see_poc: []
-linked_from:
-  - interview-prep/caching-cdn/cache-strategies
-  - interview-prep/database-storage/database-replication
-  - interview-prep/practice-pocs/cache-invalidation-strategies
-  - interview-prep/practice-pocs/cqrs-pattern
-  - interview-prep/practice-pocs/database-read-replicas
-  - interview-prep/practice-pocs/event-sourcing-basics
-  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
-  - interview-prep/practice-pocs/write-through-caching
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/cqrs-pattern
-  - interview-prep/system-design/database-replication
-  - interview-prep/system-design/database-sharding
-  - interview-prep/system-design/social-media-feed
-  - problems-at-scale/availability/split-brain
-  - problems-at-scale/concurrency/counter-race
-  - problems-at-scale/consistency/cache-invalidation-race
-  - problems-at-scale/consistency/message-out-of-order
-  - system-design/caching/caching-fundamentals
-  - system-design/caching/caching-strategies
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/news-feed
-  - system-design/consistency/distributed-consensus
-  - system-design/databases/read-replicas
-  - system-design/databases/replication-basics
-  - system-design/scalability/cqrs
-  - system-design/scalability/multi-region
+linked_from: []
 tags:
   - consistency
   - read-replicas

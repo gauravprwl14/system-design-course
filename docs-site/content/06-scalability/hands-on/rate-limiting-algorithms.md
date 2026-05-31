@@ -12,12 +12,7 @@ related_problems:
   - problems-at-scale/availability/thundering-herd
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/api-gateway-pattern
-  - interview-prep/system-design/rate-limiting
-  - system-design/api-design/rate-limiting
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/rate-limiter
+linked_from: []
 tags:
   - rate-limiting
   - token-bucket

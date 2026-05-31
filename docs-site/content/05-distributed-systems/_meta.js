@@ -1,5 +1,6 @@
 export default {
   index: "⚖️ Distributed Systems",
   concepts: "📖 Concepts",
-  failures: "⚠️ Failure Modes"
+  failures: "⚠️ Failure Modes",
+  poc: "🛠️ Hands-On POCs"
 }

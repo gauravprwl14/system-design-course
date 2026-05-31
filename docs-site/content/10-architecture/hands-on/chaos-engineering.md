@@ -12,9 +12,7 @@ related_problems:
   - problems-at-scale/availability/circuit-breaker-failure
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/case-studies/netflix
-  - system-design/scalability/chaos-engineering
+linked_from: []
 tags:
   - chaos-engineering
   - resilience
@@ -588,8 +586,151 @@ Chaos Kong        - Simulates entire region failure
 
 ---
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal chaos experiment runner — copy-paste template
+class ChaosExperiment {
+  constructor({ name, steadyState, inject, restore, duration = 30000 }) {
+    this.name = name;
+    this.steadyState = steadyState;  // () => { errorRate, p95Latency }
+    this.inject = inject;            // () => Promise<void>
+    this.restore = restore;          // () => Promise<void>
+    this.duration = duration;
+  }
+
+  async run() {
+    const before = await this.steadyState();
+    console.log(`[${this.name}] Baseline: ${JSON.stringify(before)}`);
+
+    await this.inject();
+    await sleep(this.duration);
+    const during = await this.steadyState();
+    console.log(`[${this.name}] During:   ${JSON.stringify(during)}`);
+
+    await this.restore();
+    const after = await this.steadyState();
+    console.log(`[${this.name}] After:    ${JSON.stringify(after)}`);
+
+    return { hypothesis: 'system tolerates failure', maintained: during.errorRate < 0.05 };
+  }
+}
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: How would you run a chaos experiment to test database failover?
+
+**What interviewers look for**: Structured hypothesis-driven approach, not just "kill things and see what happens."
+
+**Answer framework**:
+1. **Hypothesis**: "When the primary database fails, the system promotes a replica within 30s and serves requests with < 1% error rate during the failover window"
+2. **Steady state**: measure baseline error rate (<0.1%), p95 latency (<200ms), and successful read/write operations
+3. **Inject**: kill the primary database (AWS RDS: force failover; on-prem: `systemctl stop postgres`)
+4. **Monitor**: watch error rate and latency for 60s; compare against steady state thresholds
+5. **Restore/verify**: confirm new primary is up, replica promoted, app reconnected; check steady state restored
+
+**Code snippet that impresses**:
+```javascript
+const dbFailoverExperiment = new ChaosExperiment({
+  name: 'db-primary-failover',
+  steadyState: async () => ({
+    errorRate: await metrics.getErrorRate('last-1m'),
+    p95: await metrics.getP95Latency('last-1m'),
+    writesSucceeding: await metrics.getSuccessRate('db-writes', 'last-1m')
+  }),
+  inject: () => rds.rebootDbInstance({ ForceFailover: true }),
+  restore: async () => { /* RDS auto-restores — verify promotion */ },
+  duration: 90000  // 90s to observe failover completion
+});
+```
+
+---
+
+#### Q2: What is a blast radius and how do you limit it during a chaos experiment?
+
+**What interviewers look for**: Risk management thinking and progressive experiment design.
+
+**Answer framework**:
+1. **Blast radius**: the scope of potential impact if an experiment goes wrong — how many users, services, or data could be affected
+2. **Limit by environment**: start in development, then staging, then production off-peak, then production during business hours
+3. **Limit by traffic**: use feature flags or canary routing to route only 1-5% of traffic through the chaos-injected path
+4. **Limit by target**: inject failure into a single availability zone, a single node, or a non-critical service — not everything at once
+5. **Auto-restore**: always set a hard timeout (`duration`) after which the experiment is automatically stopped, regardless of findings
+
+---
+
+#### Q3: How do you implement latency injection middleware for chaos testing?
+
+**What interviewers look for**: Practical implementation knowledge for fault injection without infrastructure changes.
+
+**Answer framework**:
+1. Add a middleware layer between your service and its downstream clients
+2. The middleware checks a chaos configuration store (Redis key, env var, or local config) on each call
+3. If chaos is enabled for a route/service, add `sleep(configuredDelay)` before passing through
+4. Key: the chaos configuration must be externally toggleable without a code deploy
+
+**Code snippet that impresses**:
+```javascript
+// Chaos middleware — toggled via Redis key without restart
+function chaosLatencyMiddleware(chaosConfig) {
+  return async (req, res, next) => {
+    const delay = await chaosConfig.get(`chaos:latency:${req.path}`);
+    if (delay) {
+      console.log(`[Chaos] Injecting ${delay}ms latency on ${req.path}`);
+      await new Promise(r => setTimeout(r, parseInt(delay)));
+    }
+    next();
+  };
+}
+// Toggle: redis-cli SET chaos:latency:/api/orders 2000 EX 60
+```
+
+---
+
+#### Q4: How do you define "steady state" metrics for a chaos experiment?
+
+**What interviewers look for**: Measurement-first thinking and understanding that steady state is system-specific.
+
+**Answer framework**:
+1. Steady state is the set of metrics that define "the system is healthy" for YOUR system — not generic thresholds
+2. Minimum set: error rate, latency percentiles (p95/p99), availability (uptime)
+3. Better: include business metrics — transactions per second, conversion rate, active users — because a technically "green" deploy can still hurt revenue
+4. The experiment only runs if steady state is confirmed BEFORE injection; if not, abort — you don't want to inject on an already-degraded system
+
+---
+
+#### Q5: How does chaos engineering fit into a CI/CD pipeline?
+
+**What interviewers look for**: Automation mindset and the maturity model from manual experiments to continuous verification.
+
+**Answer framework**:
+1. **Level 1** (beginner): manual chaos game days — run experiments during scheduled windows with full team present
+2. **Level 2**: automated chaos in staging as part of deployment gate — inject failures, verify system meets thresholds, gate promotion to prod
+3. **Level 3** (advanced): continuous chaos in production — Netflix's Chaos Monkey runs constantly, killing random instances; requires mature circuit breakers and fallbacks
+4. Entry point for most teams: Level 2 — add a chaos test suite to your staging pipeline that runs before production deploy
+
+---
+
 ## Related POCs
 
 - [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
 - [Load Testing](/09-observability/hands-on/load-testing-k6)
 - [Graceful Degradation](/10-architecture/hands-on/graceful-degradation)
+
+## Further Reading
+
+**Concept articles:**
+- [Chaos Engineering — Concept](/10-architecture/concepts/chaos-engineering)
+- [High Availability](/10-architecture/concepts/microservices-architecture)
+
+**Interview prep:**
+- [Observability and Monitoring](/12-interview-prep/system-design/scale-and-reliability/observability-monitoring)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)
+- [Thundering Herd](/10-architecture/failures/thundering-herd)

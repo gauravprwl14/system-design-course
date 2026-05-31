@@ -17,16 +17,7 @@ see_poc:
   - interview-prep/practice-pocs/redis-key-value-cache
   - interview-prep/practice-pocs/database-crud
   - interview-prep/practice-pocs/database-indexes
-linked_from:
-  - system-design/caching/caching-fundamentals
-  - system-design/caching/caching-strategies
-  - system-design/databases/indexing-strategies
-  - system-design/databases/read-replicas
-  - system-design/databases/replication-basics
-  - system-design/databases/sharding-strategies
-  - system-design/load-balancing/load-balancing-strategies
-  - system-design/scalability/scaling-basics
-  - system-design/scalability/stateless-architecture
+linked_from: []
 tags:
   - url-shortener
   - hashing

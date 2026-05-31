@@ -12,10 +12,7 @@ related_problems:
   - problems-at-scale/scalability/hot-partition
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - problems-at-scale/consistency/message-out-of-order
-  - system-design/queues/kafka-vs-rabbitmq
+linked_from: []
 tags:
   - kafka
   - consumer-groups

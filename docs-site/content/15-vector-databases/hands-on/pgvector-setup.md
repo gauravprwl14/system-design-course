@@ -1,11 +1,19 @@
 ---
-title: "POC: pgvector — Vector Search in PostgreSQL"
+title: 'POC: pgvector — Vector Search in PostgreSQL'
 layer: poc
 section: vector-databases/hands-on
 difficulty: intermediate
 prerequisites:
   - 15-vector-databases/concepts/vector-embeddings
-tags: [vector-databases, pgvector, postgresql, hnsw, similarity-search]
+tags:
+  - vector-databases
+  - pgvector
+  - postgresql
+  - hnsw
+  - similarity-search
+linked_from:
+  - 15-vector-databases/hands-on/embedding-pipeline
+  - 15-vector-databases/hands-on/hybrid-search-poc
 ---
 
 # POC: pgvector — Vector Search in PostgreSQL

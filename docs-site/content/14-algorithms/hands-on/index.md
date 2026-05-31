@@ -43,11 +43,11 @@ graph LR
 | [Consistent Hashing Ring](./consistent-hashing-poc) | 🟡 | Virtual nodes, ring routing | Cassandra, DynamoDB |
 | [Trie Autocomplete](./trie-autocomplete-poc) | 🟡 | Prefix tree for fast lookup | Search, IDE autocomplete |
 | [External Sort](./external-sort-poc) | 🔴 | Sort data larger than memory | PostgreSQL, Hadoop, Spark |
-| [Top-K Streams](./top-k-streams-poc) | 🟡 | Min-heap maintains top K | Trending, monitoring |
-| [Gossip Simulator](./gossip-simulator-poc) | 🔴 | Epidemic information spread | Cassandra, Consul |
-| [Rate Limiter Algorithms](./rate-limiter-algorithms-poc) | 🟡 | Token bucket, sliding window | API gateways, Redis |
-| [Dijkstra Network Routing](./dijkstra-network-routing-poc) | 🟡 | Shortest path with priority queue | CDN, network routing |
-| [Merkle Tree Sync](./merkle-tree-sync-poc) | 🔴 | Efficient replica difference detection | Git, DynamoDB, IPFS |
+| [Top-K Streams](../interview-patterns/heap-top-k-pattern) | 🟡 | Min-heap maintains top K | Trending, monitoring |
+| [Gossip Simulator](../distributed/gossip-protocol) | 🔴 | Epidemic information spread | Cassandra, Consul |
+| [Rate Limiter Algorithms](../../06-scalability/hands-on/rate-limiting-algorithms) | 🟡 | Token bucket, sliding window | API gateways, Redis |
+| [Dijkstra Network Routing](./graph-shortest-path-poc) | 🟡 | Shortest path with priority queue | CDN, network routing |
+| [Merkle Tree Sync](../concepts/merkle-tree) | 🔴 | Efficient replica difference detection | Git, DynamoDB, IPFS |
 
 ## How to Use These POCs
 

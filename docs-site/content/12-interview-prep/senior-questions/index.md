@@ -5,6 +5,8 @@ tags: [system-design, senior, staff, solution-architect]
 category: interview-prep
 ---
 
+[← Interview Prep](/12-interview-prep) / Senior Engineer Questions
+
 # Senior Engineer / Staff / Solution Architect Interview Questions
 
 The questions in this section reflect what top companies actually ask at **Senior, Staff, and Solution Architect** levels. At this tier, interviewers expect you to:
@@ -23,11 +25,11 @@ Each question below links to a deep-dive answer page that covers both the **surf
 
 | # | Question | Difficulty | Type | Deep Dive | Related POC |
 |---|----------|-----------|------|-----------|------------|
-| 1 | [Design a high-throughput, low-latency system (1M RPS)](#) | 🔴 Senior | Design | [Answer](./high-throughput-low-latency) | Redis, Kafka |
+| 1 | [Design a high-throughput, low-latency system (1M RPS)](./high-throughput-low-latency) | 🔴 Senior | Design | [Answer](./high-throughput-low-latency) | Redis, Kafka |
 | 2 | Design a globally distributed database | 🔴 Senior | Design | — | — |
-| 3 | [Design a real-time notification system](#) | 🔴 Senior | Design | — | WebSocket |
+| 3 | Design a real-time notification system | 🔴 Senior | Design | — | WebSocket |
 | 4 | Design a URL shortener at scale | 🟡 Mid | Design | — | Redis |
-| 5 | [Design a distributed rate limiter](#) | 🔴 Senior | Design | [Answer](./distributed-rate-limiter) | Redis Lua |
+| 5 | [Design a distributed rate limiter](./distributed-rate-limiter) | 🔴 Senior | Design | [Answer](./distributed-rate-limiter) | Redis Lua |
 | 6 | Design a search autocomplete system | 🟡 Mid | Design | — | — |
 | 7 | Design a recommendation engine | 🔴 Senior | Design | — | — |
 

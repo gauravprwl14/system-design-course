@@ -9,8 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/scalability/microservices-architecture
+linked_from: []
 tags:
   - integration-testing
   - docker
@@ -623,8 +622,167 @@ services:
 
 ---
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal integration test structure — copy-paste template
+class IntegrationTest {
+  static async setup() {
+    // Start real dependencies once per suite
+    this.db = await PostgresContainer.start({ image: 'postgres:15' });
+    this.redis = await RedisContainer.start({ image: 'redis:7' });
+    this.app = createApp({ db: this.db.client, cache: this.redis.client });
+    await migrate(this.db.client);  // Run DB migrations
+  }
+
+  static async teardown() {
+    await this.db.stop();
+    await this.redis.stop();
+  }
+
+  static async resetBetweenTests() {
+    await this.db.client.query('TRUNCATE orders, users CASCADE');
+    await this.redis.client.flushdb();
+  }
+}
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: How do you structure integration tests so they're fast and isolated?
+
+**What interviewers look for**: Test lifecycle management, shared vs. per-test infrastructure, and state isolation.
+
+**Answer framework**:
+1. **Start containers once per suite** (not per test): Docker startup is slow (2-5s per container); use `beforeAll`/`afterAll` for container lifecycle
+2. **Reset state between tests**: truncate tables or use transactions that roll back; never share state across tests
+3. **Parallelize suites, not tests within a suite**: run multiple test suites (files) in parallel with separate DB instances; within a suite, run tests sequentially to avoid interference
+4. **Fast assertions**: assert on side effects (DB row inserted, cache key set, mock called) — not on timing or order of async events
+
+**Code snippet that impresses**:
+```javascript
+// Jest example: containers started once, state reset between each test
+beforeAll(async () => {
+  db = await startPostgresContainer();  // ~3s startup, amortized across all tests
+  await runMigrations(db);
+});
+
+beforeEach(async () => {
+  await db.query('BEGIN');  // Wrap each test in a transaction
+});
+
+afterEach(async () => {
+  await db.query('ROLLBACK');  // Discard all changes — perfect isolation
+});
+
+afterAll(() => db.stop());
+```
+
+---
+
+#### Q2: How do you mock external services (payment gateway, SMS provider) in integration tests?
+
+**What interviewers look for**: The difference between mocking at the network level vs. the code level, and test fidelity trade-offs.
+
+**Answer framework**:
+1. **Code-level mock** (unit test style): inject a mock object that implements the interface — fast but tests your integration only up to the boundary
+2. **HTTP server mock (WireMock, msw)**: spin up a local HTTP server that mimics the external API — tests the actual HTTP client code including headers, serialization, retries
+3. **Contract stubs**: use the contract pact file to generate a mock — ensures the mock stays in sync with the real provider
+4. For payment gateways: use sandbox environments provided by the vendor; for SMS: use a logging mock that asserts the right message was "sent"
+
+**Code snippet that impresses**:
+```javascript
+// HTTP-level mock — tests real HTTP client behavior
+const paymentMock = new ExternalServiceMock();
+paymentMock.when('POST', '/charge').respond({
+  status: 200,
+  body: { chargeId: 'ch_test_123', status: 'succeeded' }
+});
+
+// After test: verify the mock was called with correct parameters
+paymentMock.verify('POST', '/charge', 1);
+const call = paymentMock.getRequests()[0];
+expect(call.options.body.amount).toBe(9999);  // $99.99 in cents
+```
+
+---
+
+#### Q3: How do you test that cache invalidation works correctly?
+
+**What interviewers look for**: Asserting on infrastructure side effects, not just response values.
+
+**Answer framework**:
+1. Pre-seed the cache with known stale data before running the action under test
+2. Execute the action (e.g., `updateUser`)
+3. Assert the cache key is absent (or has the new value)
+4. Verify the next read goes to the database (assert DB query count, or verify cache miss)
+
+**Code snippet that impresses**:
+```javascript
+it('invalidates user cache after profile update', async () => {
+  // Pre-seed stale cache data
+  await redis.set('user:123', JSON.stringify({ name: 'Old Name' }));
+
+  // Update the user
+  await userService.updateProfile('123', { name: 'New Name' });
+
+  // Assert cache was invalidated — not just updated
+  const cached = await redis.get('user:123');
+  expect(cached).toBeNull();
+
+  // Next read should hit DB and return fresh data
+  const user = await userService.getProfile('123');
+  expect(user.name).toBe('New Name');
+  // Cache should now be repopulated with new value
+  const newCached = await redis.get('user:123');
+  expect(JSON.parse(newCached).name).toBe('New Name');
+});
+```
+
+---
+
+#### Q4: How do you test message queue publishing and consuming in integration tests?
+
+**What interviewers look for**: End-to-end event flow testing without timing dependencies.
+
+**Answer framework**:
+1. Publish a command or trigger an action, then consume from the queue and assert on the message content
+2. Don't sleep() to wait for async processing — use polling with a timeout: `waitForCondition(() => consumer.received > 0, 5000)`
+3. Use a real Kafka/RabbitMQ instance via Docker (testcontainers), not just an in-memory mock — tests the actual serialization and routing
+4. Test both the happy path (message consumed and processed) and error cases (bad message goes to DLQ)
+
+---
+
+#### Q5: What is the difference between integration tests and end-to-end (E2E) tests? When should you use each?
+
+**What interviewers look for**: Test pyramid knowledge and the appropriate scope for each test type.
+
+**Answer framework**:
+1. **Integration tests**: test the interaction between internal components (API + DB + cache) using real dependencies in Docker; milliseconds to seconds; run on every PR
+2. **E2E tests**: test the entire stack from user perspective — UI, APIs, databases, external services; seconds to minutes; run before production deploy
+3. **Trade-off**: integration tests are faster, more debuggable, and run more frequently; E2E tests catch full-stack issues but are slow and brittle
+4. **Ideal ratio**: 70% unit + 20% integration + 10% E2E (the test pyramid)
+
+---
+
 ## Related POCs
 
 - [Contract Testing](/10-architecture/hands-on/contract-testing)
 - [Database Testing](/01-databases/hands-on/database-testing)
 - [Load Testing](/09-observability/hands-on/load-testing-k6)
+
+## Further Reading
+
+**Concept articles:**
+- [Microservices Architecture](/10-architecture/concepts/microservices-architecture)
+- [Microservices Communication](/10-architecture/concepts/microservices-communication)
+
+**Interview prep:**
+- [Monolith to Microservices](/12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

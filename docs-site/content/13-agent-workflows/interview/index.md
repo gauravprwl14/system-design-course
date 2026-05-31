@@ -7,7 +7,7 @@ description: "System design interview questions for AI agents, RAG, tool calling
 
 7 real interview questions covering the full LLM system design stack. These questions appear at FAANG and AI-first companies for senior engineer and above roles.
 
-> These questions live in the [Interview Prep section](../../12-interview-prep/system-design/ai-and-agents) and are linked here for context within your learning path. Complete at least Stage 2 of the [AI Agents learning path](../index) before tackling these.
+> These questions live in the [Interview Prep section](../../12-interview-prep/system-design/ai-and-agents) and are linked here for context within your learning path. Complete at least Stage 2 of the [AI Agents learning path](/13-agent-workflows) before tackling these.
 
 ## Questions at a Glance
 

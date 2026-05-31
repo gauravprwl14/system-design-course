@@ -19,12 +19,7 @@ see_poc:
   - interview-prep/practice-pocs/retry-backoff
   - interview-prep/practice-pocs/graceful-degradation
 linked_from:
-  - interview-prep/practice-pocs/retry-backoff
-  - interview-prep/practice-pocs/timeout-configuration
-  - interview-prep/system-design/circuit-breaker-pattern
-  - problems-at-scale/availability/retry-storm
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/thread-pool-exhaustion
+  - 12-interview-prep/system-design/fundamentals/circuit-breaker-pattern
 tags:
   - timeouts
   - backpressure
@@ -740,6 +735,124 @@ const data = await client.request('/users/123');
 
 ---
 
+## Timeout + Backpressure: Normal vs. Overload Flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant ServiceA
+    participant ServiceB
+    participant DB
+
+    Note over Client,DB: Normal Flow (all within budget)
+
+    Client->>Gateway: POST /checkout (budget: 5000ms)
+    Gateway->>ServiceA: process order (budget: 4800ms)
+    ServiceA->>ServiceB: charge payment (timeout: 3000ms)
+    ServiceB->>DB: write transaction (timeout: 1000ms)
+    DB-->>ServiceB: OK (50ms)
+    ServiceB-->>ServiceA: charged (200ms)
+    ServiceA-->>Gateway: order created (300ms)
+    Gateway-->>Client: 200 OK (350ms)
+
+    Note over Client,DB: Overload Flow (DB slow, backpressure kicks in)
+
+    Client->>Gateway: POST /checkout
+    Gateway->>ServiceA: process order
+    ServiceA->>ServiceB: charge payment (timeout: 3000ms)
+    ServiceB->>DB: write transaction (timeout: 1000ms)
+    DB--xServiceB: TIMEOUT (1000ms exceeded)
+    ServiceB--xServiceA: 503 Service Unavailable
+    Note over ServiceA: Circuit breaker records failure
+    ServiceA-->>Gateway: 503 + Retry-After: 5
+    Gateway-->>Client: 503 Service Overloaded
+
+    Note over Client,DB: After threshold breached — Circuit OPEN
+
+    Client->>Gateway: POST /checkout
+    Gateway->>ServiceA: process order
+    ServiceA--xGateway: FAST FAIL (circuit open, 2ms)
+    Gateway-->>Client: 503 + fallback response (queued)
+```
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Timeouts and Backpressure
+
+#### Q1: Why is a slow service more dangerous than a dead service? How do timeouts fix this?
+**What interviewers look for**: Understanding of thread-pool exhaustion mechanics and why "fail fast" is better than "wait and see".
+
+**Answer framework**:
+1. **Dead service fails immediately**: Connection refused in <100ms; circuit breaker trips fast; calling service handles the error and moves on; thread is released in milliseconds.
+2. **Slow service holds threads**: Each thread blocked waiting for a 30-second timeout; a 200-thread pool is exhausted in 200 × 30s / incoming RPS = minutes; once the pool is exhausted, the calling service itself becomes unresponsive, cascading the failure upward.
+3. **Timeout as a circuit breaker pre-cursor**: By failing after 3 seconds instead of 30, each thread is held for 3s instead of 30s — 10x more throughput under degraded conditions; combined with a circuit breaker (which trips after enough timeouts), the system recovers gracefully.
+
+**Key numbers to mention**: Amazon found every 100ms of latency costs 1% of sales; typical HTTP timeout 3–5 seconds for synchronous APIs; database query timeout 5 seconds; a 200-thread pool with no timeouts: 30-second hangs exhaust all threads in ~2 minutes at 100 RPS; Netflix default Hystrix timeout: 1 second.
+
+---
+
+#### Q2: How would you choose timeout values for a microservices call chain? Explain "deadline propagation".
+**What interviewers look for**: Understanding that nested timeouts must be smaller than parent timeouts, and that the total budget must be managed explicitly.
+
+**Answer framework**:
+1. **Timeout budget model**: The outermost call has a budget (e.g., 5000ms); each downstream call should use a fraction of the remaining budget, leaving a buffer for overhead; if Service A calls B which calls C, A's timeout must be > B's timeout (e.g., 5000ms → 3000ms → 1500ms).
+2. **Deadline propagation**: Pass the remaining time budget in a context header (gRPC's `deadline` field does this natively; HTTP services add `X-Request-Deadline`); each service checks if the deadline is already expired before making its own downstream calls — no point calling if the client will time out anyway.
+3. **Practical guidelines**: Use P99 latency of the downstream service × 3 as the timeout; start with generous values and tighten them based on observed P99; alert when timeout-triggered failures exceed 0.1% of traffic.
+
+**Key numbers to mention**: gRPC propagates deadlines natively via headers; outer SLO: 500ms for P99; API→ServiceA: 400ms; ServiceA→ServiceB: 250ms; ServiceB→DB: 100ms; subtract 50ms overhead at each hop; Netflix uses 1-second default timeout but tunes per service; Google gRPC deadline header: `grpc-timeout: 1S`.
+
+---
+
+#### Q3: What is backpressure and what are the four main strategies to handle it?
+**What interviewers look for**: A clear mental model of producer-consumer speed mismatch plus concrete strategy names and when each applies.
+
+**Answer framework**:
+1. **Load shedding**: Reject excess requests with 503 + `Retry-After` header; prioritize critical paths (checkout) over non-critical (recommendations); simplest strategy, immediately effective, but some requests are lost.
+2. **Bounded queues + buffering**: Accept requests into a fixed-size queue; process at consumer's pace; effective for bursty traffic that calms down; fails for sustained overload (queue grows to max, then falls back to load shedding).
+3. **Rate limiting**: Limit per-client or per-API-key request rate (token bucket); returns 429 with `Retry-After`; protects against misbehaving clients and DDoS; doesn't help with legitimate sustained load from many clients.
+4. **Adaptive concurrency control**: Dynamically adjust the number of concurrent requests based on observed latency (Netflix Concurrency Limits library); if P99 latency starts rising, reduce the concurrency limit; more sophisticated but handles both bursty and sustained overload.
+
+**Key numbers to mention**: Load shedding threshold: 90% CPU or 80% thread pool utilization; bounded queue size: 500–2000 for typical services; token bucket rate: per-client limit typically 100–1000 RPS depending on tier; Netflix adaptive concurrency control reduces tail latency by 40% during load spikes; Kafka consumer backpressure: `max.poll.records: 500` per batch.
+
+---
+
+#### Q4: How do you implement retry logic safely without creating a retry storm?
+**What interviewers look for**: Knowledge of jitter, exponential backoff, and the interaction between retries and circuit breakers.
+
+**Answer framework**:
+1. **Exponential backoff**: Delay doubles on each retry — 1s, 2s, 4s, 8s; caps at a maximum (e.g., 30s) to prevent indefinitely long waits; combined with `maxRetries: 3`, total wait is at most 7 seconds before giving up.
+2. **Jitter is mandatory**: Without jitter, all clients that received a 503 at the same time retry at the same time, creating a synchronized retry wave that re-overwhelms the just-recovered service; add ±10–30% random jitter to break synchronization.
+3. **Only retry idempotent operations**: Never retry a payment charge without an idempotency key — double charges are worse than errors; retry only on 429, 503, 504, and network errors; never retry 400, 401, 403 (client errors won't resolve with retries).
+
+**Key numbers to mention**: Without jitter: 1000 clients retry at T+1s, T+2s simultaneously = thundering herd; with jitter: retries spread over 0.9s–1.1s, 1.8s–2.2s, etc.; max retries: 3 for synchronous APIs, 5 for async/queue consumers; base delay: 1 second; AWS SDK uses full jitter (random between 0 and cap); Google Cloud recommends 0.5× to 1.5× jitter factor.
+
+---
+
+#### Q5: Describe the bulkhead pattern and how it prevents one slow service from taking down your entire application.
+**What interviewers look for**: Analogy to ship bulkheads, concrete implementation (separate thread pools), and how it complements circuit breakers.
+
+**Answer framework**:
+1. **Without bulkhead**: All downstream calls share one thread pool (e.g., 200 threads); Payment service gets slow → all 200 threads are blocked waiting for payment → zero threads for User, Inventory, Shipping calls → entire service becomes unresponsive.
+2. **With bulkhead**: Separate thread pools per downstream dependency — Payment: 40 threads, User: 30 threads, Inventory: 30 threads, Shipping: 20 threads, other: 80 threads; Payment service getting slow only exhausts its 40-thread pool; User, Inventory, and Shipping continue serving requests normally.
+3. **Sizing bulkheads**: Use P99 response time and target throughput: if Payment takes 200ms P99 and you handle 200 RPS of payment calls, you need 200 × 0.2s = 40 threads; add 20% buffer → 50 threads max.
+
+**Key numbers to mention**: Netflix Hystrix uses one thread pool per dependency by default; typical pool sizes: 10–50 per external service; semaphore-based bulkheads (same thread, just counter) have lower overhead but don't timeout the thread itself; thread-based bulkheads add ~1–3ms overhead per call; Resilience4j bulkhead default: 25 max concurrent calls.
+
+---
+
+#### Q6: How would you handle a situation where your database is slow and causing timeouts across your service fleet?
+**What interviewers look for**: Layered defense — not just "add a timeout" but a full mitigation strategy from caching to read replicas to circuit breakers.
+
+**Answer framework**:
+1. **Immediate mitigation**: Ensure all DB calls have statement timeouts (`SET statement_timeout = '5s'` in Postgres); this kills slow queries before they block other connections; use PgBouncer connection pooling to limit max DB connections.
+2. **Read traffic mitigation**: Route read queries to read replicas; serve recent reads from Redis cache (stale-while-revalidate pattern) so the primary DB is only hit for writes; return cached data with a staleness header rather than timing out.
+3. **Write traffic protection**: Queue non-critical writes (audit logs, analytics) via a message queue; circuit-break the DB call and fail fast for non-critical writes; for critical writes, use optimistic locking to reduce contention.
+
+**Key numbers to mention**: Postgres `statement_timeout: 5000ms`; PgBouncer pool size: 50–100 connections vs. 200+ app connections without pooling; Redis cache TTL for read-your-writes: 100ms; replica lag: typically <100ms for synchronous, <1s for async replication; circuit breaker on DB: open at 50% errors in 20-request window.
+
+---
+
 ## Key Takeaways
 
 ### Resilience Checklist
@@ -772,6 +885,7 @@ const data = await client.request('/users/123');
 - [POC #76: Retry with Backoff](/10-architecture/hands-on/retry-backoff)
 - [Cascading Failures](/problems-at-scale/availability/cascading-failures)
 - [Connection Pool Management](/09-observability/concepts/connection-pool-management)
+- [Circuit Breaker Interview Prep](/12-interview-prep/system-design/fundamentals/circuit-breaker-pattern)
 
 ---
 

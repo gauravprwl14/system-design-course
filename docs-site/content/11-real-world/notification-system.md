@@ -19,15 +19,7 @@ see_poc:
   - interview-prep/practice-pocs/redis-pubsub
   - interview-prep/practice-pocs/redis-job-queue
   - interview-prep/practice-pocs/rate-limiting-algorithms
-linked_from:
-  - system-design/api-design/rate-limiting
-  - system-design/queues/kafka-vs-rabbitmq
-  - system-design/queues/message-queue-basics
-  - system-design/scalability/async-processing
-  - system-design/scalability/backpressure
-  - system-design/scalability/event-driven-architecture
-  - system-design/scalability/high-availability
-  - system-design/scalability/stateless-architecture
+linked_from: []
 tags:
   - notifications
   - push

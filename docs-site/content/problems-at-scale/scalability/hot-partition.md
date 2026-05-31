@@ -1,14 +1,75 @@
 ---
-title: "Hot Partition / Celebrity Problem: When One User Breaks Your Database"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["scalability", "database", "sharding"]
-personas: ["Senior Engineer", "Tech Lead"]
-tags: ["hot-partition", "celebrity-problem", "fan-out", "cassandra", "dynamodb", "consistent-hashing", "write-sharding", "materialized-fan-out", "twitter", "instagram"]
-description: "Justin Bieber posts a new photo. 100 million followers refresh their feeds. All 100 million requests hash to the same Cassandra partition. That partition's CPU hits 100%. Your horizontally scalable database has a single point of failure: popular people."
-reading_time: "18 min"
-difficulty: "senior"
-status: "published"
+title: 'Hot Partition / Celebrity Problem: When One User Breaks Your Database'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - scalability
+  - database
+  - sharding
+personas:
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - hot-partition
+  - celebrity-problem
+  - fan-out
+  - cassandra
+  - dynamodb
+  - consistent-hashing
+  - write-sharding
+  - materialized-fan-out
+  - twitter
+  - instagram
+description: >-
+  Justin Bieber posts a new photo. 100 million followers refresh their feeds.
+  All 100 million requests hash to the same Cassandra partition. That
+  partition's CPU hits 100%. Your horizontally scalable database has a single
+  point of failure: popular people.
+reading_time: 18 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/concepts/sharding-strategies
+  - 01-databases/failures/database-hotspots
+  - 01-databases/hands-on/database-sharding
+  - 03-redis/hands-on/redis-cluster-sharding
+  - 04-messaging/concepts/kafka-vs-rabbitmq
+  - 04-messaging/concepts/message-queue-basics
+  - 04-messaging/hands-on/kafka-consumer-groups-load-balancing
+  - 05-distributed-systems/failures/stock-order-matching-race
+  - 06-scalability/concepts/auto-scaling
+  - 06-scalability/concepts/scaling-basics
+  - 06-scalability/hands-on/load-balancer-consistent-hashing
+  - 07-api-design/concepts/rate-limiting
+  - 08-security/concepts/authentication-at-scale
+  - 10-architecture/concepts/backpressure
+  - 10-architecture/concepts/cdn-edge-computing
+  - 10-architecture/concepts/load-balancing-strategies
+  - 11-real-world/chat-system
+  - 11-real-world/netflix
+  - 11-real-world/news-feed
+  - 11-real-world/notification-system
+  - 11-real-world/pastebin
+  - 11-real-world/rate-limiter
+  - 11-real-world/spotify
+  - 11-real-world/uber-backend
+  - 11-real-world/url-shortener
+  - 11-real-world/youtube
+  - 12-interview-prep/quick-reference/aws-cloud/s3-tps-limits
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/fundamentals/load-balancing-strategies
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/audio-streaming-spotify
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/online-gaming-backend
+  - 12-interview-prep/system-design/real-time-systems/video-conferencing
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
+  - 12-interview-prep/system-design/storage-and-databases/database-sharding
+  - >-
+    12-interview-prep/system-design/storage-and-databases/search-engine-architecture
 ---
 
 # Hot Partition / Celebrity Problem: When One User Breaks Your Database

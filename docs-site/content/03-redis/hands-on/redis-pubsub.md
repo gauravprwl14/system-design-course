@@ -10,14 +10,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/video-conferencing
-  - interview-prep/system-design/websocket-architecture
-  - system-design/case-studies/chat-system
-  - system-design/case-studies/notification-system
+linked_from: []
 tags:
   - redis
   - pubsub

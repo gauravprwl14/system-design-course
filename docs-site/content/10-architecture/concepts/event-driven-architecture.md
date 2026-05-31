@@ -23,29 +23,18 @@ see_poc:
   - interview-prep/practice-pocs/outbox-pattern
   - interview-prep/practice-pocs/redis-streams-event-sourcing
 linked_from:
-  - interview-prep/practice-pocs/cqrs-pattern
-  - interview-prep/practice-pocs/event-sourcing-basics
-  - interview-prep/practice-pocs/event-store-implementation
-  - interview-prep/practice-pocs/kafka-streams-real-time-processing
-  - interview-prep/practice-pocs/outbox-pattern
-  - interview-prep/practice-pocs/redis-lua-workflows
-  - interview-prep/practice-pocs/redis-pubsub
-  - interview-prep/practice-pocs/redis-pubsub-patterns
-  - interview-prep/practice-pocs/redis-streams
-  - interview-prep/practice-pocs/redis-streams-event-sourcing
-  - interview-prep/practice-pocs/saga-pattern
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/cqrs-pattern
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/saga-pattern
-  - interview-prep/system-design/social-media-feed
-  - problems-at-scale/concurrency/stock-order-matching-race
-  - problems-at-scale/consistency/message-out-of-order
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/scalability/cqrs
+  - 12-interview-prep/system-design/business-and-advanced/cqrs-pattern
+  - 12-interview-prep/system-design/business-and-advanced/saga-pattern
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
+  - >-
+    12-interview-prep/system-design/real-time-systems/collaborative-editing-google-docs
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices
 tags:
   - event-driven
   - kafka
@@ -688,6 +677,82 @@ Infrastructure:
    Order events partitioned by orderId
    All events for order-123 are in order
 ```
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Event-Driven Architecture
+
+#### Q1: How does event-driven architecture differ from request-response?
+**What interviewers look for**: A clear mental model distinguishing push-based async communication from pull-based synchronous coupling, and knowing when each applies.
+
+**Answer framework**:
+1. **Request-response** is synchronous and tightly coupled — the caller blocks waiting for the response; if the called service is slow or down, the caller fails. OrderService calling PaymentService directly means both must be up for either to work.
+2. **Event-driven** is asynchronous and loosely coupled — the publisher emits an event ("OrderCreated") and moves on; consumers react independently. OrderService doesn't know how many consumers exist or what they do.
+3. **Trade-off**: EDA gains resilience and scalability but loses synchronous consistency — you get eventual consistency instead of immediate confirmation.
+
+**Key numbers to mention**: Uber processes 1 trillion+ messages/day on Kafka; a tightly-coupled OrderService calling 5 services synchronously adds 2,400ms latency vs 865ms with async events for the non-critical path.
+
+---
+
+#### Q2: How do you handle event ordering in a distributed event-driven system?
+**What interviewers look for**: Understanding of partition keys, the limits of ordering guarantees, and practical patterns for order-sensitive workflows.
+
+**Answer framework**:
+1. **Partition by entity ID**: In Kafka, route all events for the same entity (e.g., same `orderId`) to the same partition by using `orderId` as the partition key — ordering is guaranteed within a partition.
+2. **Consumer-side sequencing**: Store an `eventVersion` or `sequence` field on each event; consumer checks if it's receiving events in order and defers out-of-order events to a retry queue.
+3. **Accept partial ordering**: Between different entities (order-123 vs order-456), ordering is NOT guaranteed — design consumers to be stateless per entity or tolerant of cross-entity out-of-order delivery.
+
+**Key numbers to mention**: Kafka guarantees ordering per partition; across partitions there is no ordering. A topic with 12 partitions can have 12 consumers in parallel, each seeing ordered events for their partition subset.
+
+---
+
+#### Q3: What are the trade-offs between event sourcing and traditional CRUD?
+**What interviewers look for**: Understanding of when event sourcing is worth the complexity, what you gain (audit trail, replay), and what you give up (query complexity).
+
+**Answer framework**:
+1. **Event sourcing stores the history** (all events that happened), not current state. Current state is derived by replaying events. Like a bank account: balance = sum of all transactions, not a single `balance` column.
+2. **Benefits**: Complete audit trail (compliance, debugging), time travel (rebuild state at any past point), new read projections can be built by replaying existing events with no data migration.
+3. **Costs**: Querying is harder (you need projections/read models, not direct SQL); event schema evolution is risky (changing old events breaks replay); storage grows indefinitely (snapshots help); ~5-10x more infrastructure complexity than simple CRUD.
+
+**Key numbers to mention**: Event sourcing makes sense for financial systems, healthcare records, or legal audit trails — anywhere the full history is valuable. For a blog or user profile service, it's over-engineering.
+
+---
+
+#### Q4: When should you use choreography vs orchestration in distributed workflows?
+**What interviewers look for**: A nuanced answer that doesn't treat either pattern as universally superior, with concrete examples and failure handling awareness.
+
+**Answer framework**:
+1. **Choreography**: Each service reacts to events independently — OrderCreated → PaymentService processes → PaymentProcessed → InventoryService reserves. Simple to add new steps (just subscribe to events), but hard to trace the overall flow and handle partial failures.
+2. **Orchestration (Saga)**: A central coordinator calls each service in sequence, tracks progress, and runs compensating transactions on failure. Harder to add new steps but the flow is explicit, traceable, and failure handling is centralized.
+3. **Decision rule**: 3–4 linear steps → choreography. 5+ steps with branching, error handling, or compensation logic → orchestration. Mix both: choreography between bounded contexts, orchestration within a context.
+
+**Key numbers to mention**: Netflix uses both — choreography for event propagation between 700+ microservices, but orchestration (Conductor) for complex workflows like content ingestion pipelines with 15+ steps.
+
+---
+
+#### Q5: How do you ensure exactly-once processing in an event-driven system?
+**What interviewers look for**: Understanding of idempotency keys, at-least-once delivery semantics, and the database pattern that makes de-duplication reliable.
+
+**Answer framework**:
+1. **Most systems guarantee at-least-once delivery** (Kafka, SQS, SNS) — the broker will re-deliver if the consumer doesn't acknowledge. "Exactly-once" at the infrastructure layer requires transactions across the broker and the consumer state, which is complex.
+2. **Practical solution: idempotent consumers**. Store the `eventId` in a `processed_events` table inside the same database transaction as the business operation. Before processing, check if `eventId` already exists. This makes the consumer safe to retry.
+3. **The outbox pattern**: When writing to your DB, write the event to an `outbox` table in the same transaction. A separate process reads from the outbox and publishes to Kafka. This prevents the "charge happened but event not published" race condition.
+
+**Key numbers to mention**: Kafka supports exactly-once semantics (EOS) within a single Kafka cluster using transactions, but cross-system exactly-once still requires application-level idempotency. The overhead of idempotency checks is typically < 1ms with indexed lookups.
+
+---
+
+#### Q6: How do you handle schema evolution in a long-running event-driven system?
+**What interviewers look for**: Knowledge of schema registries, backward/forward compatibility rules, and practical migration patterns.
+
+**Answer framework**:
+1. **Use a schema registry** (Confluent Schema Registry, AWS Glue) — producers validate against a registered schema before publishing; consumers reject events with incompatible schemas.
+2. **Backward-compatible changes only**: Adding optional fields is safe (old consumers ignore them). Removing required fields or renaming fields breaks existing consumers.
+3. **Version your events**: Include `"version": 1` in event metadata. Consumers implement a migration function: `if (event.version === 1) { /* old handling */ } else { /* new handling */ }`. During migration, both versions coexist; old consumers keep working while new consumers handle both.
+
+**Key numbers to mention**: With FULL compatibility mode (schema registry), new schemas must be readable by old consumers AND new consumers must be able to read old events — this is the gold standard. Plan for at least 2 schema versions running simultaneously during any migration.
 
 ---
 

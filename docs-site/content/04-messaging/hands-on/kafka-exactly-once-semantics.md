@@ -12,12 +12,7 @@ related_problems:
   - problems-at-scale/data-integrity/duplicate-event-processing
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - problems-at-scale/concurrency/stock-order-matching-race
-  - problems-at-scale/consistency/message-out-of-order
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/queues/kafka-vs-rabbitmq
+linked_from: []
 tags:
   - kafka
   - exactly-once

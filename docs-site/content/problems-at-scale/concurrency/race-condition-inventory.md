@@ -1,14 +1,45 @@
 ---
-title: "Inventory Overselling: How Flash Sales Break Your Warehouse"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["concurrency", "race-conditions"]
-personas: ["Mid-level Engineer", "Senior Engineer", "Tech Lead"]
-tags: ["race-condition", "inventory", "atomic-update", "redis", "overselling", "flash-sale", "idempotency", "lua-script"]
-description: "Concurrent requests all passing the availability check and decrementing inventory below zero, causing overselling"
-reading_time: "19 min"
-difficulty: "senior"
-status: "published"
+title: 'Inventory Overselling: How Flash Sales Break Your Warehouse'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - concurrency
+  - race-conditions
+personas:
+  - Mid-level Engineer
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - race-condition
+  - inventory
+  - atomic-update
+  - redis
+  - overselling
+  - flash-sale
+  - idempotency
+  - lua-script
+description: >-
+  Concurrent requests all passing the availability check and decrementing
+  inventory below zero, causing overselling
+reading_time: 19 min
+difficulty: senior
+status: published
+linked_from:
+  - 03-redis/hands-on/redis-atomic-inventory
+  - 03-redis/hands-on/redis-distributed-lock
+  - 03-redis/hands-on/redis-lua-scripting-basics
+  - 03-redis/hands-on/redis-lua-workflows
+  - 03-redis/hands-on/redis-transactions-multi-exec
+  - 03-redis/hands-on/redis-watch-optimistic-locking
+  - 05-distributed-systems/failures/double-booking
+  - 05-distributed-systems/failures/double-charge-payment
+  - 05-distributed-systems/failures/duplicate-orders
+  - 05-distributed-systems/failures/stock-order-matching-race
+  - 11-real-world/ticket-booking
+  - 11-real-world/uber-backend
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
 ---
 
 # Inventory Overselling: How Flash Sales Break Your Warehouse

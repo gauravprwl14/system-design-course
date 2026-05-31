@@ -9,8 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/monolith-to-microservices
+linked_from: []
 tags:
   - feature-flags
   - configuration
@@ -492,8 +491,163 @@ demonstrate().catch(console.error);
 
 ---
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal feature flag evaluator — copy-paste template
+class FeatureFlag {
+  constructor(key, { defaultValue = false, rolloutPct = 100, rules = [] } = {}) {
+    this.key = key;
+    this.defaultValue = defaultValue;
+    this.rolloutPct = rolloutPct;
+    this.rules = rules;  // [{ match: (user) => bool, value: any }]
+  }
+
+  evaluate(user = {}) {
+    // 1. Check targeted rules first
+    for (const rule of this.rules) {
+      if (rule.match(user)) return rule.value;
+    }
+    // 2. Percentage rollout via consistent hash
+    const hash = this._hash(`${user.id}:${this.key}`);
+    return (hash % 100) < this.rolloutPct ? true : this.defaultValue;
+  }
+
+  _hash(str) {
+    let h = 5381;
+    for (const c of str) h = ((h << 5) + h) + c.charCodeAt(0);
+    return Math.abs(h);
+  }
+}
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: How do you implement a feature flag that gradually rolls out to 10% of users, ensuring the same user always gets the same experience?
+
+**What interviewers look for**: Consistent hashing for deterministic bucketing, not random per-request.
+
+**Answer framework**:
+1. Hash `userId + flagKey` together (not just userId — prevents all flags toggling at the same percentage threshold)
+2. `bucket = hash(userId + ":" + flagKey) % 100` — if bucket < rolloutPct, return true
+3. Including the flag key means user-123 might be in bucket 30 for flag A but bucket 70 for flag B
+4. This is deterministic: same user, same flag → same bucket every time, regardless of when or where evaluated
+
+**Code snippet that impresses**:
+```javascript
+// Include flagKey in hash to avoid correlated buckets across flags
+function getUserBucket(userId, flagKey) {
+  const input = `${userId}:${flagKey}`;
+  let hash = 5381;
+  for (const c of input) hash = ((hash << 5) + hash) + c.charCodeAt(0);
+  return Math.abs(hash) % 100;
+}
+
+function isEnabled(userId, flagKey, rolloutPercent) {
+  return getUserBucket(userId, flagKey) < rolloutPercent;
+}
+// isEnabled('user-123', 'new-ui', 10) → consistent true/false for this user
+```
+
+---
+
+#### Q2: What are the different types of feature flags and when should you use each?
+
+**What interviewers look for**: Taxonomy knowledge and lifecycle management awareness.
+
+**Answer framework**:
+1. **Release flags**: gate new features during gradual rollout; short-lived — remove after 100% rollout
+2. **Experiment flags (A/B)**: test variant behavior for product metrics; time-boxed — remove after analysis
+3. **Ops flags (kill switches)**: disable expensive or broken features under load; permanent — keep as circuit breakers
+4. **Permission flags**: entitlements per plan/tier (premium features); permanent — managed by product data
+
+**Code snippet that impresses**:
+```javascript
+// Ops flag as a kill switch — no user targeting needed, just a global toggle
+const flags = {
+  'recommendations-enabled': { type: 'ops', defaultValue: true },
+  'new-checkout': { type: 'release', rolloutPct: 25 },
+  'checkout-button-color': { type: 'experiment', variants: ['blue', 'green'] },
+  'advanced-analytics': { type: 'permission', rules: [{ plan: 'enterprise', value: true }] }
+};
+```
+
+---
+
+#### Q3: How do you handle flag evaluation latency? What's the difference between a local SDK and a remote API call?
+
+**What interviewers look for**: Performance sensitivity — flag evaluation happens on every request.
+
+**Answer framework**:
+1. **Remote API (naïve)**: call a flag service on every request — adds 10-50ms latency, single point of failure
+2. **Local SDK with polling**: SDK caches flags in-memory, polls for updates every 30s — sub-millisecond evaluation, stale by up to 30s
+3. **Local SDK with streaming**: flag service pushes updates via SSE/WebSocket — near-real-time with local evaluation speed
+4. LaunchDarkly and Unleash both use the local SDK + streaming approach for production safety
+
+---
+
+#### Q4: How do you prevent "flag debt" — the accumulation of stale flags that nobody removes?
+
+**What interviewers look for**: Process discipline and operational maturity beyond just technical implementation.
+
+**Answer framework**:
+1. Set an expiry date on every flag at creation time — flag as tech debt in the backlog when it expires
+2. Track flag usage: log every evaluation; alert if a flag hasn't been evaluated in 30 days (dead flag)
+3. Fail-fast in dev: throw an error in development if a flag is past its expiry date
+4. Regular audits: make flag cleanup part of sprint planning (treat flags like TODO comments)
+
+---
+
+#### Q5: How would you test code that uses feature flags to ensure both the enabled and disabled paths are covered?
+
+**What interviewers look for**: Testing discipline for branching code paths and avoiding flag-coupled test failures.
+
+**Answer framework**:
+1. Use the override mechanism (`setOverride(flagKey, value)`) in tests to force specific paths
+2. Write two test variants for every feature-flagged path: one with flag=true, one with flag=false
+3. Never use real user IDs in tests that rely on percentage rollout — override explicitly
+4. Integration tests: test the full system with flag on vs. flag off as separate test suites
+
+**Code snippet that impresses**:
+```javascript
+// Test both flag branches explicitly — never rely on rollout percentages in tests
+describe('checkout', () => {
+  it('shows new UI when flag is ON', () => {
+    flags.setOverride('new-checkout', true);
+    const result = renderCheckout(user);
+    expect(result).toMatchSnapshot('new-checkout-ui');
+    flags.clearOverride('new-checkout');
+  });
+
+  it('shows legacy UI when flag is OFF', () => {
+    flags.setOverride('new-checkout', false);
+    const result = renderCheckout(user);
+    expect(result).toMatchSnapshot('legacy-checkout-ui');
+    flags.clearOverride('new-checkout');
+  });
+});
+```
+
+---
+
 ## Related POCs
 
 - [Graceful Degradation](/10-architecture/hands-on/graceful-degradation)
 - [Blue-Green Deployment](/10-architecture/hands-on/blue-green-deployment)
 - [Canary Releases](/10-architecture/hands-on/canary-releases)
+
+## Further Reading
+
+**Concept articles:**
+- [Feature Flag Architecture](/10-architecture/concepts/feature-flag-architecture)
+- [Deployment Strategies Deep Dive](/10-architecture/concepts/deployment-strategies-deep-dive)
+
+**Interview prep:**
+- [API Gateway Pattern](/12-interview-prep/system-design/fundamentals/api-gateway-pattern)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

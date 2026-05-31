@@ -20,9 +20,11 @@ see_poc:
   - interview-prep/practice-pocs/redis-cluster-sharding
   - interview-prep/practice-pocs/redis-cluster-caching
 linked_from:
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/video-conferencing
+  - 05-distributed-systems/concepts/disaster-recovery-design
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/video-conferencing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
 tags:
   - multi-region
   - global-distribution

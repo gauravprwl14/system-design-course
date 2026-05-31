@@ -13,14 +13,7 @@ related_problems:
   - problems-at-scale/data-integrity/duplicate-event-processing
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/saga-pattern
-  - problems-at-scale/concurrency/double-charge-payment
-  - problems-at-scale/concurrency/duplicate-orders
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/api-design/idempotency
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/ticket-booking
+linked_from: []
 tags:
   - idempotency
   - payment

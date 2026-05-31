@@ -11,9 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/kubernetes-basics
-  - system-design/scalability/auto-scaling
+linked_from: []
 tags:
   - deployment
   - canary
@@ -608,8 +606,154 @@ CRITICAL METRICS:
 
 ---
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal canary controller — copy-paste template
+class CanaryController {
+  constructor({ stages = [1, 5, 10, 25, 50, 100], thresholds = {} } = {}) {
+    this.stages = stages;
+    this.stageIdx = 0;
+    this.weight = stages[0];   // Current canary % (e.g., 1)
+    this.thresholds = { maxErrorRate: 1, maxP95ms: 500, minRequests: 100, ...thresholds };
+  }
+
+  // Consistent hashing: same user always hits same version
+  route(userId) {
+    let h = 5381;
+    for (const c of String(userId)) h = ((h << 5) + h) + c.charCodeAt(0);
+    return (Math.abs(h) % 100) < this.weight ? 'canary' : 'stable';
+  }
+
+  analyze(canaryStats, baselineStats) {
+    if (canaryStats.requests < this.thresholds.minRequests) return 'wait';
+    if (canaryStats.errorRate - baselineStats.errorRate > this.thresholds.maxErrorRate) return 'rollback';
+    if (canaryStats.p95 - baselineStats.p95 > this.thresholds.maxP95ms) return 'rollback';
+    return 'promote';
+  }
+
+  promote() {
+    if (this.stageIdx < this.stages.length - 1) this.weight = this.stages[++this.stageIdx];
+    return this.weight;
+  }
+}
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: How do you implement canary analysis to auto-rollback a bad release?
+
+**What interviewers look for**: Automated decision making based on statistical comparison, not just raw thresholds.
+
+**Answer framework**:
+1. Collect key metrics for both the canary version and the stable baseline during the same time window
+2. Compare canary metrics against baseline (relative, not absolute) — a 2% canary error rate is fine if baseline is 2%, but bad if baseline is 0.1%
+3. Set rollback triggers: if `canary.errorRate > baseline.errorRate + 0.5%` OR `canary.p95 > baseline.p95 + 100ms` → auto-rollback
+4. Require minimum request volume (e.g., 100 requests) before making any promotion/rollback decision — avoid acting on noise
+
+**Code snippet that impresses**:
+```javascript
+function analyzeCanary(canaryStats, baselineStats, thresholds) {
+  // Relative comparison prevents false alarms during high-error periods
+  const errorDelta = canaryStats.errorRate - baselineStats.errorRate;
+  const latencyDelta = canaryStats.p95 - baselineStats.p95;
+
+  if (errorDelta > thresholds.maxErrorDelta) {
+    return { action: 'rollback', reason: `Error rate delta ${errorDelta.toFixed(2)}% exceeds threshold` };
+  }
+  if (latencyDelta > thresholds.maxLatencyDelta) {
+    return { action: 'rollback', reason: `P95 latency delta ${latencyDelta}ms exceeds threshold` };
+  }
+  if (canaryStats.requests < thresholds.minRequests) {
+    return { action: 'wait', reason: 'Insufficient traffic for confident analysis' };
+  }
+  return { action: 'promote' };
+}
+```
+
+---
+
+#### Q2: What metrics would you monitor during a canary release and why?
+
+**What interviewers look for**: Breadth of observability — technical AND business metrics.
+
+**Answer framework**:
+1. **Error rate**: HTTP 5xx / total requests — catch crashes immediately
+2. **Latency P95/P99**: tail latency is what users actually experience during slow periods
+3. **Throughput**: requests per second — a sudden drop may mean the canary is rejecting requests silently
+4. **Business metrics**: conversion rate, checkout success rate, revenue per session — a technically "green" deploy can still hurt business
+5. **Resource utilization**: CPU/memory on canary instances — memory leaks show up here before they cause crashes
+
+---
+
+#### Q3: How do you ensure the same user always goes to the same version (sticky sessions) during a canary rollout?
+
+**What interviewers look for**: Consistent hashing knowledge and session management awareness.
+
+**Answer framework**:
+1. Problem: without sticky sessions, a user may see v1 for request 1 and v2 for request 2 — causes jarring inconsistencies
+2. Solution: hash the user ID (or session cookie) to a bucket 0–99; if bucket < canaryWeight, route to canary, else stable
+3. This is deterministic: the same user ID always hashes to the same bucket, so routing is consistent across requests
+4. A/B testing platforms (LaunchDarkly, Optimizely) use this exact pattern
+
+**Code snippet that impresses**:
+```javascript
+function routeRequest(userId, canaryWeightPercent) {
+  // djb2 hash — simple and fast; use murmurhash in production
+  let hash = 5381;
+  for (const char of String(userId)) {
+    hash = ((hash << 5) + hash) + char.charCodeAt(0);
+    hash = hash & hash;  // 32-bit integer
+  }
+  const bucket = Math.abs(hash) % 100;
+  return bucket < canaryWeightPercent ? 'canary' : 'stable';
+}
+// user-123 always hashes to same bucket regardless of when called
+```
+
+---
+
+#### Q4: How would you handle a canary release for a database schema change?
+
+**What interviewers look for**: Understanding that canary deploys are harder when state is involved.
+
+**Answer framework**:
+1. Canary adds a code layer between users and the database — the database is **shared** between canary and stable
+2. Schema must be backward-compatible: add nullable columns, never drop/rename in the same release
+3. New index: add `CONCURRENTLY` to avoid locking; run before the canary deploy, not during
+4. If the schema change is breaking: use feature flags to control which code path reads/writes the new column
+
+---
+
+#### Q5: How does a canary release differ from an A/B test? When would you use each?
+
+**What interviewers look for**: Conceptual clarity and knowing when to reach for which tool.
+
+**Answer framework**:
+1. **Canary**: safety mechanism — route N% to new version to catch bugs/regressions before full rollout; auto-rollback on degradation; temporary
+2. **A/B test**: product experiment — compare two variants to measure user behavior difference (click rate, conversion); requires statistical significance; runs for days/weeks
+3. Canary is infrastructure/ops owned; A/B test is product/engineering owned
+4. They can coexist: canary handles the safe deployment, a feature flag handles the A/B assignment within the same deployed version
+
+---
+
 ## Related POCs
 
 - [Blue-Green Deployment](/10-architecture/hands-on/blue-green-deployment)
 - [Feature Flags](/10-architecture/hands-on/feature-flags)
 - [Health Check Patterns](/09-observability/hands-on/health-check-patterns)
+
+## Further Reading
+
+**Concept articles:**
+- [Deployment Strategies Deep Dive](/10-architecture/concepts/deployment-strategies-deep-dive)
+
+**Interview prep:**
+- [Load Balancing Strategies](/12-interview-prep/system-design/fundamentals/load-balancing-strategies)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

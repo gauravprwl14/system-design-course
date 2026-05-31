@@ -38,9 +38,9 @@ Each article is structured identically:
 - [Bloom Filter](/14-algorithms/concepts/bloom-filter) — How Cassandra avoids disk reads for keys that don't exist
 - [Trie / Prefix Tree](/14-algorithms/concepts/trie-prefix-tree) — How search autocomplete and IP routing work
 - [Consistent Hashing](/14-algorithms/concepts/consistent-hashing-deep-dive) — How DynamoDB and Cassandra add/remove nodes without rehashing everything
-- [Union-Find](/14-algorithms/concepts/union-find) — How systems detect connected components in graphs
+- [Union-Find](/14-algorithms/interview-patterns/union-find-pattern) — How systems detect connected components in graphs
 - [Geospatial Algorithms](/14-algorithms/concepts/geospatial-algorithms) — How Uber matches drivers and Redis handles GEORADIUS
-- [Rate Limiting Algorithms](/14-algorithms/concepts/sliding-window-rate-limiting) — Five algorithms: fixed window, sliding log, sliding counter, token bucket, leaky bucket
+- [Rate Limiting Algorithms](/14-algorithms/interview-patterns/sliding-window-pattern) — Five algorithms: fixed window, sliding log, sliding counter, token bucket, leaky bucket
 
 ### Advanced
 

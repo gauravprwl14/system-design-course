@@ -10,9 +10,7 @@ related_problems:
   - problems-at-scale/concurrency/race-condition-inventory
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/concurrency/counter-race
-  - problems-at-scale/concurrency/stock-order-matching-race
+linked_from: []
 tags:
   - redis
   - lua

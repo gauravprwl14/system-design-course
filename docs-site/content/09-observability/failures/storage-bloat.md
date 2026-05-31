@@ -13,19 +13,7 @@ related_problems:
   - problems-at-scale/data-integrity/orphaned-records
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/database-archival-strategies
-  - interview-prep/practice-pocs/database-vacuum
-  - interview-prep/practice-pocs/postgresql-partitioning-strategies
-  - interview-prep/practice-pocs/redis-hyperloglog
-  - interview-prep/system-design/audio-streaming-spotify
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/cms-design
-  - problems-at-scale/data-integrity/orphaned-records
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/pastebin
-  - system-design/case-studies/youtube
-  - system-design/databases/data-archival-strategies
+linked_from: []
 tags:
   - cost-optimization
   - storage

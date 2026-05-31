@@ -1,14 +1,49 @@
 ---
-title: "Storage Bloat: Your Database Is a Landfill"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["cost-optimization", "database", "data-management"]
-personas: ["Senior Engineer", "Tech Lead"]
-tags: ["storage-bloat", "soft-delete", "archival", "table-partitioning", "vacuum", "dead-tuples", "postgresql", "s3", "athena", "cost-optimization", "audit-logs"]
-description: "Your database was 50GB three years ago. It's 2.4TB today. User count grew 10x. Storage grew 48x. You're paying 18,000 dollars/month for storage that's 70% garbage: soft-deleted records, orphaned rows, uncompressed logs, old event streams nobody queries."
-reading_time: "19 min"
-difficulty: "senior"
-status: "published"
+title: 'Storage Bloat: Your Database Is a Landfill'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - cost-optimization
+  - database
+  - data-management
+personas:
+  - Senior Engineer
+  - Tech Lead
+tags:
+  - storage-bloat
+  - soft-delete
+  - archival
+  - table-partitioning
+  - vacuum
+  - dead-tuples
+  - postgresql
+  - s3
+  - athena
+  - cost-optimization
+  - audit-logs
+description: >-
+  Your database was 50GB three years ago. It's 2.4TB today. User count grew 10x.
+  Storage grew 48x. You're paying 18,000 dollars/month for storage that's 70%
+  garbage: soft-deleted records, orphaned rows, uncompressed logs, old event
+  streams nobody queries.
+reading_time: 19 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/concepts/data-archival-strategies
+  - 01-databases/hands-on/database-archival-strategies
+  - 01-databases/hands-on/database-vacuum
+  - 01-databases/hands-on/postgresql-partitioning-strategies
+  - 03-redis/hands-on/redis-hyperloglog
+  - 05-distributed-systems/failures/orphaned-records
+  - 11-real-world/google-drive
+  - 11-real-world/pastebin
+  - 11-real-world/youtube
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/audio-streaming-spotify
+  - 12-interview-prep/system-design/messaging-and-streaming/cms-design
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
 ---
 
 # Storage Bloat: Your Database Is a Landfill

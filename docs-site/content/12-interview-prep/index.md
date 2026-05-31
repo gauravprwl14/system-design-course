@@ -6,11 +6,11 @@ Structured preparation for system design interviews at top tech companies. This 
 
 | I am... | Start here | Goal |
 |---------|-----------|------|
-| 🟢 Junior | [Fundamentals](./system-design/fundamentals) | Core concepts: API, caching, rate limiting |
-| 🟡 Mid-level | [Storage & DBs](./system-design/storage-and-databases), [Messaging](./system-design/messaging-and-streaming) | Medium-scale systems |
-| 🔴 Senior / TL | [Scale & Reliability](./system-design/scale-and-reliability), [Business & Advanced](./system-design/business-and-advanced) | High-scale, multi-region |
-| 🤖 Building AI | [AI Agents & LLM Systems](./system-design/ai-and-agents) | Agent loop, RAG, multi-agent coordination |
-| 🏆 Staff/Architect | [Real-Time Systems](./system-design/real-time-systems) | Full system mastery |
+| 🟢 Junior | [Fundamentals](/12-interview-prep/system-design/fundamentals) | Core concepts: API, caching, rate limiting |
+| 🟡 Mid-level | [Storage & DBs](/12-interview-prep/system-design/storage-and-databases), [Messaging](/12-interview-prep/system-design/messaging-and-streaming) | Medium-scale systems |
+| 🔴 Senior / TL | [Scale & Reliability](/12-interview-prep/system-design/scale-and-reliability), [Business & Advanced](/12-interview-prep/system-design/business-and-advanced) | High-scale, multi-region |
+| 🤖 Building AI | [AI Agents & LLM Systems](/12-interview-prep/system-design/ai-and-agents) | Agent loop, RAG, multi-agent coordination |
+| 🏆 Staff/Architect | [Real-Time Systems](/12-interview-prep/system-design/real-time-systems) | Full system mastery |
 
 ## Quick Navigation by Level
 

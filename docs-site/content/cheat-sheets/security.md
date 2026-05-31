@@ -3,6 +3,15 @@ title: "Security & Auth Cheat Sheet"
 description: "Authentication, authorization, encryption, and security patterns quick reference"
 ---
 
+> **📅 Spaced Repetition Schedule**
+> Use this cheat sheet on a 4-interval cycle for maximum retention:
+> - **Day 0** — Read it fully (20–30 min)
+> - **Day 3** — Skim headers, cover answers, test yourself
+> - **Day 10** — Quiz yourself on the "Trap" entries without looking
+> - **Day 30** — Quick scan for gaps; revisit any you missed
+
+---
+
 # Security & Auth Cheat Sheet
 
 > Key concepts for security rounds and general system design interviews. Facts and decision rules only.
@@ -415,3 +424,127 @@ graph TD
 
 [Deep dive: Security Interview Prep →](../12-interview-prep/quick-reference/security)
 [Deep dive: Encryption & KMS →](../08-security/)
+
+---
+
+## 12. Question-Bank: Security & Auth Deep Dives
+
+### Authentication Patterns
+**Authentication patterns** — verifying identity across sessions, tokens, and multi-factor
+
+| Pattern | State | Revocation | Scale |
+|---------|-------|-----------|-------|
+| **Session (Redis-backed)** | Server-side | Instant (delete from Redis) | Requires shared store |
+| **JWT (stateless)** | Client-side | Hard (wait for expiry or denylist) | Any server verifies locally |
+| **mTLS** | Certificate-based | Revoke cert (CRL/OCSP) | PKI infrastructure needed |
+| **API Key** | Server-side lookup | Instant (delete key) | DB lookup per request |
+
+- **Key number**: JWT revocation gap — stolen JWT valid until expiry; with 24h TTL = 24h attacker window; fix: TTL=**15 min** + refresh token
+- **Decision**: JWT for stateless APIs and microservices; server sessions for banking/medical where instant revocation is mandatory
+- **Trap**: Returning 404 instead of 403 for unauthorized resources — leaks resource existence; return 403 for authenticated users; 404 only when the resource truly doesn't exist
+- → [Full article](../12-interview-prep/question-bank/security-auth/authentication-patterns)
+
+---
+
+### Authorization: RBAC vs ABAC
+**RBAC vs ABAC** — choosing between role-based and attribute-based access control
+
+| | RBAC | ABAC |
+|-|------|------|
+| **Decision basis** | Static roles assigned to users | Dynamic attributes (user + resource + context) |
+| **Complexity** | O(R) roles — typically 10–100 | O(P) policies — more expressive |
+| **Performance** | Fast (role lookup) | Slower (attribute resolution at runtime) |
+| **Use when** | Clear org hierarchy (admin/editor/viewer) | Fine-grained conditions (patient data by assignment) |
+
+- **Key number**: RBAC ceiling — if you need **1,000 different permission combinations** driven by data values, RBAC requires 1,000 roles; ABAC handles it with 1 policy and 4 attribute conditions
+- **Decision**: RBAC for most SaaS applications; ABAC for healthcare, legal, finance where access depends on dynamic data relationships (e.g., doctor only sees their assigned patients)
+- **Trap**: Creating roles for every permission combination (role explosion) — `admin-region-east`, `admin-region-west`; use ABAC attributes instead when roles multiply beyond ~100
+- → [Full article](../12-interview-prep/question-bank/security-auth/authorization-rbac-abac)
+
+---
+
+### OAuth2 & OIDC
+**OAuth2 + OIDC** — authorization delegation and authentication on top of OAuth2
+
+| Flow | Client type | Use for |
+|------|------------|--------|
+| **Auth Code + PKCE** | Public (SPA, mobile) | User-facing apps — best practice |
+| **Auth Code** | Confidential (server-side) | Traditional web apps with backend |
+| **Client Credentials** | Server (no user) | M2M / service accounts |
+| **Device Code** | Limited input (TV, CLI) | GitHub CLI, Roku, IoT |
+| **Implicit** | Legacy SPA | **Deprecated — do not use** |
+
+- **Key number**: OAuth2 alone is NOT authentication — access token proves authorization, not identity; OIDC adds `id_token` (signed JWT) that proves who the user is
+- **Decision**: Auth Code + PKCE for all public clients; Client Credentials for microservice-to-microservice; OIDC (not raw OAuth2) when you need user identity
+- **Trap**: Using OAuth2 access token as proof of login identity — attacker replays their own token to your app claiming to be "logged in"; always use OIDC `id_token` for authentication
+- → [Full article](../12-interview-prep/question-bank/security-auth/oauth2-oidc)
+
+---
+
+### JWT, Sessions & Cookies
+**JWT vs sessions + cookie security flags** — secure client state management
+
+| Cookie flag | Prevents | Required? |
+|------------|---------|----------|
+| `HttpOnly` | XSS token theft (JS cannot read cookie) | Always |
+| `Secure` | MITM interception on HTTP | Always in production |
+| `SameSite=Strict` | CSRF attacks | Recommended |
+| `__Host-` prefix | Subdomain cookie injection | Highest security |
+
+- **Key number**: `SameSite=Strict` cookie not sent on cross-site requests — prevents CSRF with zero token overhead; `SameSite=None` requires `Secure` flag
+- **Decision**: HttpOnly + Secure + SameSite=Strict for all session/auth cookies; JWT in Authorization header (not localStorage) for API clients
+- **Trap**: Storing JWT in `localStorage` — XSS attack reads `localStorage` and exfiltrates token; use `HttpOnly` cookie for browser storage; `localStorage` is only safe for non-sensitive data
+- → [Full article](../12-interview-prep/question-bank/security-auth/jwt-sessions-cookies)
+
+---
+
+### Encryption at Rest & In Transit
+**Encryption** — algorithm selection, TLS internals, hybrid encryption pattern
+
+| Algorithm | Type | Speed | Use for |
+|-----------|------|-------|--------|
+| **AES-256-GCM** | Symmetric | ~10 GB/s | Bulk data encryption (at rest, TLS bulk) |
+| **RSA-2048** | Asymmetric | ~1ms/op | Key exchange, signatures |
+| **ECDHE** | Asymmetric | Faster than RSA | TLS key exchange (forward secrecy) |
+| **bcrypt/Argon2** | Password hash | Slow by design | Password storage only |
+| **SHA-256** | Hash | Fast | Content addressing, HMAC |
+
+- **Key number**: AES-256 ~**0.001ms** per block; RSA-2048 ~**1ms** per op — **1000× slower**; TLS uses hybrid: ECDHE for key exchange, AES-256-GCM for bulk data
+- **Decision**: AES-GCM (not CBC) for new systems — GCM provides authenticated encryption (detects tampering); CBC requires separate HMAC
+- **Trap**: Using MD5 or SHA-1 for password hashing — these are fast hashes (meant for data integrity, not passwords); always use bcrypt or Argon2 which are intentionally slow (cost factor prevents brute force)
+- → [Full article](../12-interview-prep/question-bank/security-auth/encryption-at-rest-transit)
+
+---
+
+### API Security Patterns
+**API security** — SQL injection, XSS, SSRF, and defense-in-depth patterns
+
+| Attack | Root cause | Prevention |
+|--------|-----------|-----------|
+| **SQL Injection** | User input concatenated into SQL | Parameterized queries / ORM (never `.raw()`) |
+| **Stored XSS** | User content stored + rendered unescaped | Output encode on render; CSP header |
+| **Reflected XSS** | URL param reflected in HTML response | Output encode all user-controlled data |
+| **SSRF** | Server fetches user-supplied URL | URL allowlist; block `169.254.169.254` |
+| **CSRF** | Forged cross-site request with session cookie | `SameSite=Strict` + CSRF token |
+
+- **Key number**: SSRF AWS risk — attacker uses SSRF to hit `169.254.169.254` (metadata endpoint) and steal IAM credentials; require IMDSv2 (token-protected) and block metadata IP at WAF
+- **Decision**: Output encode (not just sanitize) for XSS — sanitization can be bypassed; encoding converts `<` to `&lt;` making injection harmless in HTML context
+- **Trap**: ORM raw query escape hatches (`queryRaw`, `.raw()`, `$executeRawUnsafe`) bypass parameterization — all raw SQL must be manually reviewed and audited in every PR
+- → [Full article](../12-interview-prep/question-bank/security-auth/api-security-patterns)
+
+---
+
+### Zero Trust Architecture
+**Zero trust** — identity-first security that eliminates implicit network trust
+
+| Old perimeter model | Zero Trust |
+|--------------------|-----------|
+| VPN = trusted | Network location = no trust |
+| Inside network = safe | Verify every request regardless of source |
+| Flat internal network | Micro-segmented; least privilege per service |
+| Long-lived credentials | Short-lived tokens; mTLS between services |
+
+- **Key number**: **80% of breaches** involve lateral movement after initial perimeter breach (Verizon DBIR) — perimeter model fails once attacker is inside
+- **Decision**: mTLS for service-to-service auth (mutual certificate verification); service mesh (Istio/Linkerd) for enforcing zero trust in Kubernetes at scale
+- **Trap**: Treating zero trust as a product to buy, not a principle to implement — zero trust is achieved incrementally by enforcing authentication + authorization on every service call, not by installing a single tool
+- → [Full article](../12-interview-prep/question-bank/security-auth/zero-trust-architecture)

@@ -10,10 +10,7 @@ related_problems:
   - problems-at-scale/scalability/database-hotspots
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/aws-cloud/load-balancer
-  - interview-prep/system-design/load-balancing-strategies
-  - system-design/load-balancing/load-balancing-strategies
+linked_from: []
 tags:
   - load-balancing
   - least-connections

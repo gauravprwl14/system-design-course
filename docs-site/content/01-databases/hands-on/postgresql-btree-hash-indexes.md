@@ -11,10 +11,7 @@ related_problems:
   - problems-at-scale/performance/n-plus-one-query
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/database-indexing-deep-dive
-  - system-design/databases/indexing-deep-dive
-  - system-design/databases/indexing-strategies
+linked_from: []
 tags:
   - postgresql
   - btree

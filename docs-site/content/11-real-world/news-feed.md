@@ -20,21 +20,7 @@ see_poc:
   - interview-prep/practice-pocs/redis-leaderboard
   - interview-prep/practice-pocs/kafka-basics-producer-consumer
 linked_from:
-  - interview-prep/system-design/social-media-feed
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/concurrency/counter-race
-  - problems-at-scale/consistency/cache-invalidation-race
-  - problems-at-scale/consistency/stale-read-after-write
-  - problems-at-scale/performance/n-plus-one-query
-  - problems-at-scale/scalability/database-hotspots
-  - system-design/caching/caching-fundamentals
-  - system-design/caching/caching-strategies
-  - system-design/databases/indexing-deep-dive
-  - system-design/databases/indexing-strategies
-  - system-design/databases/read-replicas
-  - system-design/databases/replication-basics
-  - system-design/scalability/cqrs
-  - system-design/scalability/scaling-basics
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
 tags:
   - news-feed
   - instagram

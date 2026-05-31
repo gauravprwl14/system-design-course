@@ -3,6 +3,8 @@ title: Database Sharding Strategies
 layer: concept
 section: system-design/databases
 difficulty: intermediate
+readTime: "22 min"
+fastPath: true
 prerequisites:
   - system-design/databases/replication-basics
   - system-design/databases/read-replicas
@@ -20,26 +22,11 @@ see_poc:
   - interview-prep/practice-pocs/postgresql-partitioning-strategies
   - interview-prep/practice-pocs/load-balancer-consistent-hashing
 linked_from:
-  - interview-prep/practice-pocs/database-archival-strategies
-  - interview-prep/practice-pocs/database-partitioning
-  - interview-prep/practice-pocs/database-sharding
-  - interview-prep/practice-pocs/load-balancer-consistent-hashing
-  - interview-prep/practice-pocs/postgresql-partitioning-strategies
-  - interview-prep/practice-pocs/redis-cluster-sharding
-  - interview-prep/system-design/database-sharding
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/search-engine-architecture
-  - interview-prep/system-design/ticket-booking-system
-  - problems-at-scale/concurrency/stock-order-matching-race
-  - problems-at-scale/scalability/database-hotspots
-  - problems-at-scale/scalability/hot-partition
-  - system-design/case-studies/chat-system
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/ticket-booking
-  - system-design/case-studies/uber-backend
-  - system-design/case-studies/unique-id-generator
-  - system-design/databases/data-archival-strategies
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
+  - 12-interview-prep/system-design/storage-and-databases/database-sharding
+  - >-
+    12-interview-prep/system-design/storage-and-databases/search-engine-architecture
 tags:
   - databases
   - sharding
@@ -818,9 +805,9 @@ class ReshardingOrchestrator {
 
 ## 🔗 Next Steps
 
-- [Hot Partition Problem](./10-hot-partition.md) - Handling skewed data
-- [Multi-Region Databases](./07-multi-region-setup.md) - Geographic sharding
-- [Distributed Transactions](./11-distributed-transactions.md) - Cross-shard operations
+- [Hot Partition Problem](/01-databases/failures/hot-partition) - Handling skewed data
+- [Multi-Region Databases](/01-databases/concepts/replication-basics) - Geographic sharding
+- [Distributed Transactions](/01-databases/concepts/distributed-transactions) - Cross-shard operations
 
 ## 📚 Further Reading
 

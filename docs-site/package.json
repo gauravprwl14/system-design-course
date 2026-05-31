@@ -4,24 +4,30 @@
   "description": "System Design & Interview Prep Knowledge Base",
   "scripts": {
     "dev": "next dev",
+    "validate-links": "node ../.claude/scripts/validate-links.mjs",
+    "validate-links:strict": "node ../.claude/scripts/validate-links.mjs --strict",
+    "prebuild": "node ../.claude/scripts/validate-links.mjs --meta-only",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
     "build:clean": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=8192' next build --webpack",
     "postbuild": "pagefind --site .next/server/app && sudo cp -r .next/server/app/pagefind/. /var/www/html/system-design-pagefind/ && sudo chmod -R 755 /var/www/html/system-design-pagefind/",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "check-links": "node ../.claude/scripts/crawl-links.mjs",
+    "check-links:prod": "node ../.claude/scripts/crawl-links.mjs --url ${LINK_CHECK_URL:-https://rnd.blr0.geekydev.com/system-design} --auth ${LINK_CHECK_AUTH:-}"
   },
   "dependencies": {
     "next": "^16.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "nextra": "^4.0.0",
-    "nextra-theme-docs": "^4.0.0"
+    "nextra-theme-docs": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.9.0",
-    "pagefind": "^1.0.0"
+    "linkinator": "^7.6.1",
+    "pagefind": "^1.0.0",
+    "typescript": "^5.9.0"
   }
 }

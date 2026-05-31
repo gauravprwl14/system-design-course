@@ -11,11 +11,7 @@ related_problems:
   - problems-at-scale/performance/thread-pool-exhaustion
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/pdf-converter
-  - system-design/case-studies/notification-system
-  - system-design/queues/message-queue-basics
-  - system-design/scalability/async-processing
+linked_from: []
 tags:
   - redis
   - job-queue

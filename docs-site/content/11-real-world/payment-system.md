@@ -23,22 +23,9 @@ see_poc:
   - interview-prep/practice-pocs/outbox-pattern
   - interview-prep/practice-pocs/database-transactions
 linked_from:
-  - interview-prep/system-design/saga-pattern
-  - problems-at-scale/availability/retry-storm
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/concurrency/double-charge-payment
-  - problems-at-scale/concurrency/duplicate-orders
-  - problems-at-scale/concurrency/stock-order-matching-race
-  - problems-at-scale/consistency/message-out-of-order
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/api-design/idempotency
-  - system-design/consistency/distributed-consensus
-  - system-design/monitoring/observability-slos
-  - system-design/queues/kafka-vs-rabbitmq
-  - system-design/queues/message-queue-basics
-  - system-design/scalability/async-processing
-  - system-design/scalability/event-driven-architecture
-  - system-design/scalability/high-availability
+  - 12-interview-prep/system-design/business-and-advanced/ecommerce-checkout
+  - 12-interview-prep/system-design/business-and-advanced/fraud-detection-system
+  - 12-interview-prep/system-design/business-and-advanced/saga-pattern
 tags:
   - payments
   - stripe

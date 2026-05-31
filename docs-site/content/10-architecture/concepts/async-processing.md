@@ -21,16 +21,12 @@ see_poc:
   - interview-prep/practice-pocs/backpressure-queues
   - interview-prep/practice-pocs/outbox-pattern
 linked_from:
-  - interview-prep/aws-cloud/lambda-serverless
-  - interview-prep/practice-pocs/redis-job-queue
-  - interview-prep/system-design/event-driven-architecture
-  - interview-prep/system-design/high-concurrency-api
-  - interview-prep/system-design/message-queues-kafka-rabbitmq
-  - interview-prep/system-design/pdf-converter
-  - system-design/case-studies/news-feed
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/youtube
-  - system-design/scalability/backpressure
+  - 12-interview-prep/system-design/fundamentals/high-concurrency-api
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/event-driven-architecture
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/message-queues-kafka-rabbitmq
+  - 12-interview-prep/system-design/messaging-and-streaming/pdf-converter
 tags:
   - async
   - message-queues
@@ -780,6 +776,70 @@ Queue Health:
 ✅ Max retries → DLQ → alert → manual review
    Never let one bad message block the queue
 ```
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Async Processing
+
+#### Q1: When would you use async processing vs synchronous?
+**What interviewers look for**: A clear mental model distinguishing what the user needs immediately vs. what can happen in the background — and the ability to identify the critical path.
+
+**Answer framework**:
+1. **Synchronous = user is waiting**: Use for operations where the user needs the result to continue — login, payment authorization, order confirmation, search results. If it takes > 3 seconds, consider whether part of it can be moved async.
+2. **Async = user doesn't need the result immediately**: Email confirmations, SMS notifications, PDF generation, analytics tracking, recommendation updates, audit logging. These can fail and retry without affecting the user's primary flow.
+3. **Identify the "critical path"**: Ask "what is the minimum the user needs to see on this screen?" In checkout: validate order + charge payment = synchronous. Send email + update analytics + notify warehouse = async. Moving 4 synchronous steps (totaling ~1,400ms) to async can drop response time from 2,400ms to 865ms.
+
+**Key numbers to mention**: Uber's checkout responds in < 200ms by only synchronizing the payment authorization. All other checkout steps (receipt, analytics, driver notification) are async via Kafka at 1T+ messages/day. A typical async refactor reduces P95 response time by 50–75%.
+
+---
+
+#### Q2: How do you handle dead-letter queues in async systems?
+**What interviewers look for**: Understanding of what causes messages to reach DLQ, the operational response, and how to design for safe re-processing.
+
+**Answer framework**:
+1. **Why messages end up in DLQ**: Consumer throws an unhandled exception (bug, unexpected data format, downstream service unavailable), max retries exceeded, message TTL expired. A DLQ is your "poison message quarantine" — it prevents one bad message from blocking all subsequent messages indefinitely.
+2. **Operational runbook**: DLQ depth > 0 should alert immediately. Investigate the error in the DLQ message headers (`x-error`, `x-retry-count`, `x-original-topic`). Fix the root cause (code bug or dependency outage). Then replay DLQ messages to the original queue — not blindly, but in batches of 10–100 to verify the fix works.
+3. **Design for idempotent replay**: DLQ messages may be replayed days or weeks later. Ensure your consumer is idempotent — processing the same message twice must produce the same result. Use an idempotency key (message ID or business ID) stored in a `processed_events` table.
+
+**Key numbers to mention**: DLQ alert threshold: any non-zero DLQ depth in a payments topic should be a P1 incident (potential lost payment). For non-critical topics (analytics), alert at > 100 messages. At Stripe, DLQ events for payment topics trigger automatic paging regardless of time of day.
+
+---
+
+#### Q3: How do you choose between Kafka, RabbitMQ, and SQS?
+**What interviewers look for**: Decision logic based on throughput, ordering, replay, and operational complexity — not memorized specs.
+
+**Answer framework**:
+1. **Kafka** when you need: event replay (consumers can re-read old messages), high throughput (1M+ messages/second per cluster), long retention (days/weeks), multiple independent consumer groups reading the same topic. Examples: clickstream analytics, CDC, event sourcing.
+2. **RabbitMQ** when you need: complex routing (header-based, topic exchange, fanout with filtering), task queues where messages are consumed and deleted, low latency (microseconds), or simpler operational setup for < 100K messages/second.
+3. **SQS** when you need: zero operational overhead (AWS-managed, infinite scaling), Lambda integration, simple async decoupling at < 100K messages/second, or tight AWS ecosystem integration. SQS FIFO for ordering, standard SQS for maximum throughput.
+
+**Key numbers to mention**: Kafka throughput: 1M+ msg/sec per cluster, messages retained 7 days default (configurable to forever). RabbitMQ: ~50K msg/sec, messages deleted after consumption. SQS: unlimited scale (AWS manages it), 256KB max message size, 14-day max retention. Kafka latency: ~5ms end-to-end. RabbitMQ: ~1ms. SQS: ~10–50ms.
+
+---
+
+#### Q4: How do you prevent and handle backpressure when consumers fall behind?
+**What interviewers look for**: Understanding of the consumer lag metric and the concrete strategies to handle producers outrunning consumers.
+
+**Answer framework**:
+1. **Detect early with consumer lag monitoring**: In Kafka, `max(partition_lag)` shows how far behind each consumer is. Alert at > 1,000 messages lag; critical at > 10,000. A lag of 10,000 with a consumer processing 1,000 msg/sec = 10 seconds behind. Growing lag = producers outpacing consumers.
+2. **Scale consumers horizontally**: Add more consumer instances (up to the number of Kafka partitions). If you have 12 partitions and 3 consumers, each reads 4 partitions. Adding 3 more consumers means each reads 2 partitions — 2x throughput.
+3. **Producer-side flow control**: When queue depth exceeds a threshold, return 429 Too Many Requests to producers, or reduce producer send rate. This applies backpressure upstream rather than letting the queue grow infinitely until disk is full and the broker crashes.
+
+**Key numbers to mention**: A Kafka topic with 3 partitions can have at most 3 consumers in parallel. To handle 10,000 msg/sec, set at least 10 partitions and 10 consumers (1,000 msg/sec per consumer). Consumer lag > 100,000 messages with growing trend = risk of broker disk exhaustion (alert immediately, scale consumers).
+
+---
+
+#### Q5: How do you ensure message ordering in an async system?
+**What interviewers look for**: The partition key pattern and acceptance that global ordering is impractical at scale — a common misunderstanding among junior engineers.
+
+**Answer framework**:
+1. **Ordering is guaranteed per partition, not globally**: In Kafka, all messages for `orderId=123` in Partition 0 arrive in the order they were produced. Messages across different orders (order-123 in P0, order-456 in P1) have no ordering guarantee relative to each other.
+2. **Partition key = ordering unit**: Use `orderId` as the partition key for order events. Kafka hashes the key to consistently map it to the same partition. All `OrderCreated`, `OrderPaid`, `OrderShipped` events for order-123 land in the same partition in sequence.
+3. **Consumer handles out-of-order within limits**: Even with partition keys, consumer restarts can briefly process newer events before older ones are replayed. Design consumers to check `event.version` or `event.timestamp` and defer out-of-order events to a retry queue with a 100ms delay.
+
+**Key numbers to mention**: Kafka message ordering guarantee: strict within a partition. Cross-partition: no guarantee. If you need global ordering (e.g., global transaction ledger), use a single partition — but this limits throughput to ~100K msg/sec and removes parallelism. For most use cases, per-entity ordering (same `entityId` = same partition) is sufficient.
 
 ---
 

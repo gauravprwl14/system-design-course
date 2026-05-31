@@ -10,9 +10,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/search-engine-architecture
-  - system-design/case-studies/pastebin
+linked_from: []
 tags:
   - postgresql
   - full-text-search

@@ -11,8 +11,7 @@ related_problems:
   - problems-at-scale/performance/n-plus-one-query
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/scalability/cqrs
+linked_from: []
 tags:
   - postgresql
   - materialized-views

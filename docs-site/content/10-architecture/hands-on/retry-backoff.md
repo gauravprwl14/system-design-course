@@ -11,11 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/circuit-breaker-pattern
-  - problems-at-scale/availability/retry-storm
-  - system-design/patterns/circuit-breaker
-  - system-design/patterns/timeouts-backpressure
+linked_from: []
 tags:
   - resilience
   - retry
@@ -43,6 +39,31 @@ graph TD
 ```
 
 *Exponential backoff with jitter spaces out retries to avoid thundering-herd storms after an outage.*
+
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal retry with exponential backoff + full jitter — copy-paste template
+async function retryWithBackoff(fn, { maxRetries = 3, base = 1000, max = 30000 } = {}) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn(attempt);
+    } catch (err) {
+      if (attempt === maxRetries || !isRetryable(err)) throw err;
+      const delay = Math.random() * Math.min(base * Math.pow(2, attempt), max); // Full jitter
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
+function isRetryable(err) {
+  if (['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED'].includes(err.code)) return true;
+  if (err.response?.status >= 500 || err.response?.status === 429) return true;
+  return false;  // 4xx client errors: don't retry
+}
+```
+
+---
 
 ## What You'll Build
 
@@ -453,6 +474,125 @@ Test 4: Non-retryable error
 Correctly threw immediately for non-retryable error
 ```
 
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: Implement exponential backoff with jitter in pseudocode. Why is jitter necessary?
+
+**What interviewers look for**: The formula, the reasoning, and the difference between full jitter, equal jitter, and decorrelated jitter.
+
+**Answer framework**:
+1. Without jitter: if 100 clients all fail at the same moment and retry at `base * 2^attempt`, they all retry at exactly the same times — thundering herd every `2^n` seconds
+2. Full jitter: `delay = random(0, base * 2^attempt)` — completely decorrelated retries; AWS recommends this
+3. Equal jitter: `delay = base * 2^attempt / 2 + random(0, base * 2^attempt / 2)` — guarantees some minimum wait while still adding randomness
+4. Always cap: `delay = min(delay, maxDelay)` to prevent multi-hour waits on high attempt counts
+
+**Code snippet that impresses**:
+```javascript
+function calculateBackoffDelay(attempt, { base = 1000, max = 30000, jitter = 'full' } = {}) {
+  const exponential = base * Math.pow(2, attempt);   // 1s, 2s, 4s, 8s...
+  const capped = Math.min(exponential, max);          // Never exceed maxDelay
+
+  if (jitter === 'full') {
+    return Math.random() * capped;                    // AWS recommendation
+  } else if (jitter === 'equal') {
+    return capped / 2 + Math.random() * (capped / 2);
+  }
+  return capped;  // No jitter (don't use in production)
+}
+// attempt=0: 0-1s | attempt=1: 0-2s | attempt=2: 0-4s | attempt=3: 0-8s
+```
+
+---
+
+#### Q2: How do you prevent retry storms when all clients retry simultaneously after a service restart?
+
+**What interviewers look for**: Understanding of thundering herd at the retry level and mitigation strategies.
+
+**Answer framework**:
+1. **Full jitter**: the single most important defense — spreads retries over the entire backoff window
+2. **Max concurrent retries**: rate-limit retries at the client SDK level (e.g., max 5 concurrent retry attempts per client instance)
+3. **Circuit breaker**: after the circuit opens, stop retrying entirely until the downstream recovers — only HALF_OPEN probe requests go through
+4. **Backpressure from server**: 429 with `Retry-After: 60` tells ALL clients to wait 60s — more coordinated than random jitter
+
+**Code snippet that impresses**:
+```javascript
+// Guard: don't pile retries on top of retries
+class RetryLimiter {
+  constructor(maxConcurrent = 5) {
+    this.activeRetries = 0;
+    this.max = maxConcurrent;
+  }
+
+  async executeWithRetry(fn, maxAttempts = 3) {
+    if (this.activeRetries >= this.max) {
+      throw new Error('Too many concurrent retries — fast failing');
+    }
+    this.activeRetries++;
+    try {
+      return await retryWithBackoff(fn, { maxRetries: maxAttempts });
+    } finally {
+      this.activeRetries--;
+    }
+  }
+}
+```
+
+---
+
+#### Q3: How do you distinguish retryable errors from non-retryable errors?
+
+**What interviewers look for**: Practical knowledge of HTTP status codes and network error semantics.
+
+**Answer framework**:
+1. **Retryable** (transient): `500 Internal Server Error`, `503 Service Unavailable`, `504 Gateway Timeout`, network errors (`ECONNRESET`, `ETIMEDOUT`), `429 Too Many Requests`
+2. **Non-retryable** (permanent): `400 Bad Request` (wrong input — retrying won't fix it), `401 Unauthorized` (need new credentials), `403 Forbidden` (permission issue), `404 Not Found`, `409 Conflict` (depending on semantics)
+3. **Context-dependent**: `408 Request Timeout` is retryable; `422 Unprocessable Entity` usually isn't
+4. Key principle: retry only when the error indicates a transient infrastructure problem, not a business logic rejection
+
+---
+
+#### Q4: What is the Retry-After header and how should your retry logic use it?
+
+**What interviewers look for**: Respecting server-side signals instead of blindly applying your own backoff.
+
+**Answer framework**:
+1. `Retry-After: 30` means wait 30 seconds before retrying; `Retry-After: Sat, 01 Jan 2026 00:00:00 GMT` means wait until that date
+2. Common sources: rate limiting (429), server maintenance (503), temporary overload
+3. Your retry logic should check for this header FIRST, before applying exponential backoff
+4. Benefit: avoids hammering a server that's explicitly telling you it needs time to recover
+
+**Code snippet that impresses**:
+```javascript
+function getRetryDelay(error, attempt) {
+  // Always honor server-side signals over local backoff calculation
+  const retryAfter = error.response?.headers?.['retry-after'];
+  if (retryAfter) {
+    const seconds = parseInt(retryAfter, 10);
+    if (!isNaN(seconds)) return seconds * 1000;
+    const date = new Date(retryAfter);
+    if (!isNaN(date)) return Math.max(0, date - Date.now());
+  }
+  // Fall back to exponential backoff with full jitter
+  return calculateBackoffDelay(attempt);
+}
+```
+
+---
+
+#### Q5: How do you make operations safe to retry? What is idempotency and how do you implement it?
+
+**What interviewers look for**: Understanding that retry safety requires server-side design, not just client-side retry logic.
+
+**Answer framework**:
+1. An operation is idempotent if calling it N times has the same effect as calling it once
+2. GET, DELETE, PUT are naturally idempotent; POST is not (unless you add an idempotency key)
+3. Implementation: client generates a UUID (`idempotency-key` header); server stores `(key → result)` in Redis with 24h TTL; on duplicate key, return the stored result without re-processing
+4. This allows safe retries of payment, order creation, and any other non-idempotent operation
+
+---
+
 ## Key Takeaways
 
 1. **Exponential backoff** prevents thundering herd
@@ -477,3 +617,16 @@ Attempt   Delay (base: 1s, factor: 2)   With Jitter (±20%)
 - [POC #75: Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
 - [POC #73: Idempotency Keys](/07-api-design/hands-on/idempotency-keys)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
+
+## Further Reading
+
+**Concept articles:**
+- [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
+- [Async Processing](/10-architecture/concepts/async-processing)
+
+**Interview prep:**
+- [High Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+
+**Failure modes:**
+- [Retry Storm](/10-architecture/failures/retry-storm)
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

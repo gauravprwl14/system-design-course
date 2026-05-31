@@ -8,6 +8,8 @@ tags: ["cap-theorem", "pacelc", "partition-tolerance", "consistency", "availabil
 description: "CAP is not a dial you turn — partitions happen whether you want them or not. You only choose what to sacrifice when they do."
 reading_time: "22 min"
 difficulty: "staff+"
+readTime: "15 min"
+fastPath: true
 status: "published"
 featured_image: "/assets/diagrams/cap-theorem-practical.png"
 ---
@@ -376,3 +378,53 @@ The trajectory: the industry is moving toward per-operation consistency configur
 ---
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*
+
+---
+
+## 🧠 Test Your Understanding
+
+*Don't re-read before attempting. The goal is retrieval, not recognition.*
+
+<details>
+<summary>Q1 — Surface Check: State the CAP theorem in one sentence. Then explain which property is non-negotiable and why.</summary>
+
+**Answer**: CAP theorem states a distributed system can guarantee at most 2 of 3: Consistency (every read sees the latest write), Availability (every request gets a non-error response), and Partition Tolerance. Partition Tolerance is non-negotiable — networks always partition eventually (hardware failure, packet loss, network splits). Since you must tolerate partitions, the real choice is: during a partition, do you return an error (CP) or return potentially stale data (AP)?
+
+</details>
+
+<details>
+<summary>Q2 — Failure Scenario: A network partition isolates your database's primary from its 3 replicas. Your system is configured as AP. A user writes their new address. 30 seconds later they read it — they see the old address. Trace the exact sequence of events.</summary>
+
+**Answer**: Write goes to primary (partition-isolated, still accepting writes) → primary acknowledges write → user immediately reads → read is routed to a replica (replica hasn't received the write due to partition) → replica returns old address. This is a read-your-writes violation, which is expected in AP systems during partitions. When partition heals, replication will eventually propagate the write to all replicas. Fix for this scenario: route reads to primary immediately after a write (sticky read-your-writes), or accept the inconsistency window.
+
+</details>
+
+<details>
+<summary>Q3 — Cross-Concept: DynamoDB is AP. PostgreSQL with synchronous replication is CP. You're building a payment processing system. Which do you choose, and what specific failure scenario does your choice prevent?</summary>
+
+**Answer**: CP (Postgres with sync replication). In a payment system, the nightmare failure is double-charge or missing payment. This happens when: (1) payment write reaches primary but not replica, (2) partition occurs, (3) replica is promoted, (4) replica doesn't know about the payment → user is charged again. CP prevents this: if the replica can't be confirmed, the write is rejected (payment fails cleanly) rather than succeeding on one node and disappearing on failover. DynamoDB's AP model is right for shopping carts (losing a cart item is tolerable) — not for financial transactions.
+
+</details>
+
+<details>
+<summary>Q4 — Trade-off Challenge: Your team wants to use DynamoDB (AP) to store user session tokens for authentication. Your security team is worried. Name the specific attack scenario the security team is right to worry about, and the mitigation.</summary>
+
+**Answer**: Token revocation lag. If a user's token is revoked (logout, security breach, account suspension) → revocation write goes to one node → AP partition means revoked tokens on other nodes aren't immediately invalid → attacker with stolen token can authenticate against a replica that hasn't received the revocation for up to [replication lag] seconds. This is a real attack surface. Mitigation: (1) Keep sessions short (5-15 min TTL) so revocation window is bounded, (2) Use a CP store (Redis with quorum reads) for security-critical revocation checks, (3) Bloom filter of recently revoked tokens on each replica (false negatives possible but bounded).
+
+</details>
+
+---
+
+## 📚 Ready for Interview Level?
+
+You just tested your understanding with 4 application questions. The interview versions are harder — they require applying CAP to specific systems (Kafka, Redis, MongoDB) and production failure scenarios.
+
+**Curated questions from the interview bank (do these in order):**
+
+| Question | Tests | Level |
+|----------|-------|-------|
+| [Is MongoDB CP or AP? Why does it sometimes return stale data?](../../12-interview-prep/question-bank/distributed-systems/cap-theorem-real-world) | CAP in a real database with failover | 🟡 Mid |
+| [Is Kafka CP or AP? Prove it with a real partition scenario.](../../12-interview-prep/question-bank/distributed-systems/cap-theorem-real-world) | CAP applied to message queues (acks + ISR) | 🔴 Senior |
+| [AP Redis + read-your-writes requirement: they contradict. How do you reconcile?](../../12-interview-prep/question-bank/distributed-systems/cap-theorem-real-world) | Cross-concept: CAP + caching + consistency models | ⚫ Staff |
+
+> The Staff question (⚫) requires knowing Redis internals. Read [Caching Fundamentals](../../02-caching/concepts/caching-fundamentals) first if you haven't.

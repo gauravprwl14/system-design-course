@@ -13,12 +13,7 @@ related_problems:
   - problems-at-scale/consistency/stale-read-after-write
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/database-replication
-  - problems-at-scale/performance/connection-pool-starvation
-  - system-design/databases/read-replicas
-  - system-design/databases/replication-basics
-  - system-design/performance/connection-pool-management
+linked_from: []
 tags:
   - postgresql
   - connection-pooling

@@ -15,16 +15,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/ticket-booking
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/database-transactions
-  - interview-prep/practice-pocs/redis-distributed-lock
-  - interview-prep/practice-pocs/redis-transactions-multi-exec
-  - interview-prep/practice-pocs/redis-watch-optimistic-locking
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/ticket-booking-system
-  - problems-at-scale/concurrency/race-condition-inventory
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/ticket-booking
+linked_from: []
 tags:
   - concurrency
   - locking

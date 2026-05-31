@@ -11,13 +11,7 @@ related_problems:
   - problems-at-scale/availability/cascading-failures
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/circuit-breaker-pattern
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/thread-pool-exhaustion
-  - system-design/patterns/circuit-breaker
-  - system-design/patterns/timeouts-backpressure
+linked_from: []
 tags:
   - resilience
   - timeouts
@@ -45,6 +39,35 @@ graph LR
 ```
 
 *Each layer's timeout must be shorter than its upstream so the caller never retries a request still in flight downstream.*
+
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Timeout wrapper — copy-paste template
+function withTimeout(promise, ms, name = 'operation') {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${name} timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+// Deadline propagation: pass remaining budget downstream
+function getRemainingBudget(startTime, totalBudgetMs, bufferMs = 100) {
+  const elapsed = Date.now() - startTime;
+  return Math.max(0, totalBudgetMs - elapsed - bufferMs);
+}
+
+// Usage: cascading timeout budget
+async function handleRequest(req) {
+  const start = Date.now();
+  const total = 10000;  // 10s total budget
+  await withTimeout(checkInventory(), Math.min(2000, getRemainingBudget(start, total)), 'inventory');
+  await withTimeout(processPayment(), Math.min(5000, getRemainingBudget(start, total)), 'payment');
+}
+```
+
+---
 
 ## What You'll Learn
 
@@ -396,8 +419,113 @@ const response = await fetch(url);  // Can hang forever
 
 ---
 
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: How do you set appropriate timeout values for each tier in a distributed system?
+
+**What interviewers look for**: The cascade rule and the practical heuristics for sizing timeouts.
+
+**Answer framework**:
+1. **The cascade rule**: each downstream timeout MUST be shorter than the upstream timeout that wraps it; otherwise the upstream retries while the downstream is still working — double processing
+2. **Rule of thumb**: downstream timeout = upstream timeout × 0.5, with some buffer for network overhead
+3. **Database queries**: profile your p99 query time, set timeout at p99 × 1.5 (fail fast on outliers)
+4. **Cache (Redis)**: 100-500ms — if Redis takes more than 500ms, treat as down and use fallback
+5. Start with these defaults and tune based on observed p99 latency
+
+**Code snippet that impresses**:
+```
+// Correct cascade — each layer shorter than its parent
+Client       → 30s   (user patience limit)
+Load Balancer→ 25s   (must be < Client)
+API Gateway  → 15s   (must be < Load Balancer)
+Microservice → 10s   (must be < API Gateway)
+  → Database  → 3s   (must be < Microservice)
+  → Redis     → 200ms (must be < Microservice)
+  → 3rd party → 5s   (non-critical: wrap in try/catch, non-blocking)
+```
+
+---
+
+#### Q2: What is deadline propagation and why does it matter?
+
+**What interviewers look for**: gRPC context propagation pattern and the problem with independent per-hop timeouts.
+
+**Answer framework**:
+1. **Problem**: Service A has a 10s timeout calling Service B; B has a 10s timeout calling C; total possible wait: 20s — but A's user already gave up at 10s
+2. **Deadline propagation**: the original deadline is passed down the call chain as a context deadline; each service uses `min(its_own_timeout, remaining_deadline)` as its effective timeout
+3. gRPC propagates deadlines automatically via `context.WithDeadline`; HTTP services must implement it manually via request headers (e.g., `X-Request-Deadline`)
+4. Benefit: no wasted work — if the client already timed out, downstream services abort immediately
+
+**Code snippet that impresses**:
+```javascript
+// Pass remaining deadline downstream
+async function callDownstream(request, remainingMs) {
+  const deadline = Date.now() + remainingMs;
+  const myTimeout = 5000;  // My configured timeout
+  const effectiveTimeout = Math.min(myTimeout, remainingMs - 200);  // 200ms buffer
+
+  return await fetch(DOWNSTREAM_URL, {
+    signal: AbortSignal.timeout(effectiveTimeout),
+    headers: { 'X-Request-Deadline': deadline.toString() }
+  });
+}
+```
+
+---
+
+#### Q3: How do you distinguish between a connect timeout, a read timeout, and a request timeout? Why does the distinction matter?
+
+**What interviewers look for**: Network timeout taxonomy and proper configuration of HTTP clients.
+
+**Answer framework**:
+1. **Connect timeout**: how long to wait for the TCP handshake to complete — typically 2-5s; should be short (a server that can't accept connections in 5s is likely down)
+2. **Read/socket timeout**: how long to wait for data after the connection is established — covers slow responses mid-stream
+3. **Request timeout**: the total wall-clock time budget for the entire request including connect + transfer
+4. Missing connect timeout is a common bug: the default is often unlimited, meaning a firewall black-hole can block a thread forever
+
+---
+
+#### Q4: What happens when a timeout fires but the downstream service has already processed the request?
+
+**What interviewers look for**: The idempotency connection — timeouts create the exactly-once problem.
+
+**Answer framework**:
+1. This is the "did it commit or not?" problem — the request may have been processed but the response was lost
+2. For non-idempotent operations (payment, order creation): you don't know if retrying will double-charge
+3. Solution: use idempotency keys — client generates a UUID and sends it on every attempt; server deduplicates using that key
+4. For database operations: wrap in a transaction — if the connection times out, the transaction rolls back automatically (assuming the connection is closed)
+
+---
+
+#### Q5: How do you implement an adaptive timeout that adjusts based on observed latency?
+
+**What interviewers look for**: Dynamic configuration instead of static magic numbers, and percentile-based sizing.
+
+**Answer framework**:
+1. Track a sliding window of the last N request latencies for each downstream dependency
+2. Compute p99 of the window; set timeout = p99 × 1.2 (20% safety buffer)
+3. Clamp to `[minTimeout, maxTimeout]` to prevent the timeout from drifting to extremes
+4. Use this to auto-tune in development; in production, promote calculated timeouts to config values after validation
+
+---
+
 ## Related POCs
 
 - [Retry with Backoff](/10-architecture/hands-on/retry-backoff)
 - [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
+
+## Further Reading
+
+**Concept articles:**
+- [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
+- [Backpressure](/10-architecture/concepts/backpressure)
+
+**Interview prep:**
+- [High Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+
+**Failure modes:**
+- [Timeout Domino Effect](/10-architecture/failures/timeout-domino-effect)
+- [Cascading Failures](/10-architecture/failures/cascading-failures)

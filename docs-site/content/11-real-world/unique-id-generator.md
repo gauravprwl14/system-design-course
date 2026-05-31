@@ -16,8 +16,7 @@ see_poc:
   - interview-prep/practice-pocs/database-sequences
   - interview-prep/practice-pocs/redis-counter
   - interview-prep/practice-pocs/redis-atomic-inventory
-linked_from:
-  - system-design/databases/sharding-strategies
+linked_from: []
 tags:
   - distributed-systems
   - unique-id
@@ -738,9 +737,9 @@ When to use:
 
 ## Related Resources
 
-- [URL Shortener Design](./url-shortener.md) - Uses ID generation for short codes
-- [Pastebin Design](./pastebin.md) - Similar ID requirements
-- [Database Sharding](../databases/sharding.md) - Sharding by generated ID
+- [URL Shortener Design](/11-real-world/url-shortener) - Uses ID generation for short codes
+- [Pastebin Design](/11-real-world/pastebin) - Similar ID requirements
+- [Database Sharding](/01-databases/concepts/sharding-strategies) - Sharding by generated ID
 
 ---
 

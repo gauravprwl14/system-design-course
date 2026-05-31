@@ -18,12 +18,10 @@ see_poc:
   - interview-prep/practice-pocs/load-testing-k6
   - interview-prep/practice-pocs/canary-releases
 linked_from:
-  - interview-prep/aws-cloud/auto-scaling
-  - interview-prep/practice-pocs/load-testing-k6
-  - interview-prep/system-design/kubernetes-basics
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/pdf-converter
-  - interview-prep/system-design/websocket-architecture
+  - 12-interview-prep/system-design/messaging-and-streaming/pdf-converter
+  - 12-interview-prep/system-design/real-time-systems/online-gaming-backend
+  - 12-interview-prep/system-design/real-time-systems/websocket-architecture
+  - 12-interview-prep/system-design/scale-and-reliability/kubernetes-basics
 tags:
   - auto-scaling
   - cloud

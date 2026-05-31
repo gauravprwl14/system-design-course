@@ -16,12 +16,7 @@ case_studies:
   - system-design/case-studies/news-feed
   - system-design/case-studies/youtube
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/redis-counter
-  - interview-prep/practice-pocs/redis-lua-leaderboards
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/online-gaming-backend
-  - problems-at-scale/scalability/database-hotspots
+linked_from: []
 tags:
   - concurrency
   - counters

@@ -13,14 +13,7 @@ related_problems:
   - problems-at-scale/consistency/message-out-of-order
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/saga-pattern
-  - problems-at-scale/consistency/message-out-of-order
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/api-design/idempotency
-  - system-design/case-studies/payment-system
-  - system-design/scalability/async-processing
-  - system-design/scalability/event-driven-architecture
+linked_from: []
 tags:
   - outbox-pattern
   - event-publishing

@@ -17,22 +17,13 @@ see_poc:
   - interview-prep/practice-pocs/database-read-replicas
   - interview-prep/practice-pocs/postgresql-connection-pooling-replication
 linked_from:
-  - interview-prep/practice-pocs/database-read-replicas
-  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/cqrs-pattern
-  - interview-prep/system-design/database-indexing-deep-dive
-  - interview-prep/system-design/database-replication
-  - interview-prep/system-design/social-media-feed
-  - interview-prep/system-design/video-streaming-platform
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/consistency/stale-read-after-write
-  - system-design/case-studies/netflix
-  - system-design/case-studies/news-feed
-  - system-design/case-studies/spotify
-  - system-design/case-studies/youtube
-  - system-design/databases/sharding-strategies
-  - system-design/scalability/cqrs
+  - 12-interview-prep/system-design/business-and-advanced/cqrs-pattern
+  - 12-interview-prep/system-design/fundamentals/caching-strategies
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - >-
+    12-interview-prep/system-design/storage-and-databases/database-indexing-deep-dive
+  - 12-interview-prep/system-design/storage-and-databases/database-replication
 tags:
   - databases
   - replication
@@ -730,9 +721,9 @@ Benefit: Handle 20% more traffic
 
 ## 🔗 Next Steps
 
-- [Database Sharding Strategies](./03-sharding-strategies.md) - Scale writes
-- [Connection Pooling](./05-connection-pooling.md) - Manage connections efficiently
-- [Multi-Region Databases](./07-multi-region-setup.md) - Global read replicas
+- [Database Sharding Strategies](/01-databases/concepts/sharding-strategies) - Scale writes
+- [Connection Pooling](/01-databases/concepts/connection-pooling-deep-dive) - Manage connections efficiently
+- [Multi-Region Databases](/01-databases/concepts/replication-basics) - Global read replicas
 
 ## 📚 Further Reading
 

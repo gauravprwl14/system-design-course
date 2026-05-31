@@ -12,13 +12,7 @@ related_problems:
   - problems-at-scale/consistency/cache-invalidation-race
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/caching-cdn/cache-strategies
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/cms-design
-  - problems-at-scale/consistency/cache-invalidation-race
-  - system-design/caching/caching-fundamentals
-  - system-design/caching/caching-strategies
+linked_from: []
 tags:
   - caching
   - write-through

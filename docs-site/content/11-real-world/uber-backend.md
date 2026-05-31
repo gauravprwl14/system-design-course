@@ -21,19 +21,7 @@ see_poc:
   - interview-prep/practice-pocs/kafka-basics-producer-consumer
   - interview-prep/practice-pocs/load-balancer-consistent-hashing
 linked_from:
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/split-brain
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/connection-pool-starvation
-  - problems-at-scale/performance/thread-pool-exhaustion
-  - problems-at-scale/scalability/database-hotspots
-  - system-design/api-design/rest-graphql-grpc
-  - system-design/performance/connection-pool-management
-  - system-design/scalability/auto-scaling
-  - system-design/scalability/event-driven-architecture
-  - system-design/scalability/microservices-architecture
-  - system-design/scalability/multi-region
-  - system-design/security/authentication-at-scale
+  - 12-interview-prep/system-design/storage-and-databases/geospatial-service
 tags:
   - uber
   - ride-hailing

@@ -19,51 +19,7 @@ case_studies:
   - system-design/case-studies/netflix
   - system-design/case-studies/uber-backend
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/backpressure-queues
-  - interview-prep/practice-pocs/blue-green-deployment
-  - interview-prep/practice-pocs/canary-releases
-  - interview-prep/practice-pocs/chaos-engineering
-  - interview-prep/practice-pocs/circuit-breaker
-  - interview-prep/practice-pocs/distributed-tracing
-  - interview-prep/practice-pocs/graceful-degradation
-  - interview-prep/practice-pocs/health-check-patterns
-  - interview-prep/practice-pocs/nginx-load-balancer
-  - interview-prep/practice-pocs/retry-backoff
-  - interview-prep/practice-pocs/service-discovery
-  - interview-prep/practice-pocs/slo-dashboard
-  - interview-prep/practice-pocs/timeout-configuration
-  - interview-prep/system-design/api-gateway-pattern
-  - interview-prep/system-design/circuit-breaker-pattern
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/high-concurrency-api
-  - interview-prep/system-design/kubernetes-basics
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/observability-monitoring
-  - interview-prep/system-design/service-discovery
-  - interview-prep/system-design/video-conferencing
-  - problems-at-scale/availability/circuit-breaker-failure
-  - problems-at-scale/availability/retry-storm
-  - problems-at-scale/availability/split-brain
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/availability/timeout-domino-effect
-  - problems-at-scale/performance/connection-pool-starvation
-  - problems-at-scale/performance/thread-pool-exhaustion
-  - problems-at-scale/scalability/memory-leak-long-running
-  - system-design/case-studies/netflix
-  - system-design/case-studies/notification-system
-  - system-design/case-studies/uber-backend
-  - system-design/monitoring/observability-slos
-  - system-design/patterns/circuit-breaker
-  - system-design/patterns/microservices-communication
-  - system-design/patterns/timeouts-backpressure
-  - system-design/queues/message-queue-basics
-  - system-design/scalability/async-processing
-  - system-design/scalability/backpressure
-  - system-design/scalability/chaos-engineering
-  - system-design/scalability/event-driven-architecture
-  - system-design/scalability/high-availability
-  - system-design/scalability/microservices-architecture
+linked_from: []
 tags:
   - availability
   - cascading-failure
@@ -903,6 +859,64 @@ public class LoadMeter {
 - **SEV-1**: Complete site outage (multi-service cascade)
 - **SEV-2**: Partial availability (single service cascade)
 - **SEV-3**: Degraded performance (slow cascade)
+
+---
+
+## 🔍 Quick Detection Checklist
+
+**Alert signals**:
+- [ ] P99 latency of a downstream service exceeds 3x its normal baseline (e.g., payment P99 goes from 200ms to 600ms+)
+- [ ] Thread pool utilization on any service exceeds 80% sustained for > 30 seconds
+- [ ] Error rate on dependent services rising in sequence (first payment, then checkout, then gateway)
+- [ ] Health check failures propagating upstream — healthy services start failing health checks
+- [ ] Queue depth on any async worker growing faster than it is draining
+
+**Immediate mitigation steps**:
+1. **Identify the root cause service** — look for the furthest-downstream service with elevated P99 latency; that's where the slowness originated. Cascades propagate upstream, so the root cause is at the bottom of the call chain.
+2. **Manually open the circuit breaker** on the failing dependency (via admin dashboard or feature flag) to stop thread pool exhaustion from spreading. This immediately frees upstream threads.
+3. **Enable load shedding** at the API gateway — drop low-priority traffic (analytics, recommendations) to protect the critical path (checkout, payment). Accept 503 errors on non-critical endpoints to preserve the revenue-generating flows.
+4. **Restart services in reverse cascade order** — start from the upstream-most affected service first (gateway), then work downstream. Restarting in the wrong order re-cascades the failure.
+5. **Verify recovery with synthetic traffic** before removing manual circuit breaker — send 1% of normal load to the recovered service for 60 seconds, confirm error rate < 0.5%, then gradually remove the manual override.
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Cascading Failures
+
+#### Q1: You're on-call and see error rates rising across 5 services simultaneously. Walk me through how you'd diagnose and fix a cascading failure.
+**What interviewers look for**: Structured incident response — identify root cause first, then apply targeted fixes rather than randomly restarting everything.
+
+**Answer framework**:
+1. **Find the origin**: In distributed tracing (Jaeger, Zipkin), look at the trace for a failing request. The span with the highest duration and errors furthest down the trace is the root cause. Without tracing, look at metrics: which service's latency elevated first (check timestamps on alert triggers)?
+2. **Contain the blast radius**: Open the circuit breaker on the identified failing service at its callers. This stops thread pool exhaustion from propagating further upstream. This is more important than fixing the root cause immediately.
+3. **Fix root cause, verify, close circuit**: Fix or restart the failing service, watch it recover to baseline latency, then close the circuit breaker incrementally (10% traffic → 50% → 100%) while monitoring error rate.
+
+**Key numbers to mention**: Thread pool exhaustion happens fast — at 30s timeout and 100 threads, you can only handle 100/30 = 3.3 req/s. Normal capacity might be 2,000 req/s. Circuit breaker converts 30s waits into 10ms rejections, restoring thread availability in seconds.
+
+---
+
+#### Q2: How would you design a checkout service to prevent cascading failures from a slow payment provider?
+**What interviewers look for**: The combination of circuit breaker + bulkhead + fallback thinking applied to a concrete system design.
+
+**Answer framework**:
+1. **Circuit breaker on the payment call**: Configure with time-based window (not count-based), failure threshold 50%, open duration 30s. When payment P99 > 5s, treat as failure. Provides fast-fail behavior so checkout threads aren't blocked for 30 seconds each.
+2. **Bulkhead — dedicated thread pool for payment**: Isolate payment calls to a pool of 50 threads, separate from the 200-thread general checkout pool. Payment degrading exhausts only the payment pool; inventory checks and user auth remain unaffected.
+3. **Graceful fallback**: When circuit is open, offer cash-on-delivery, "Pay later" (queue the payment), or "Try again in 2 minutes" with a status page link. Never show a generic 500 error — preserve trust and give the user agency.
+
+**Key numbers to mention**: Without bulkhead: 1 slow dependency blocks 100% of checkout threads. With bulkhead: 1 slow dependency blocks only its allocated pool (e.g., 20 threads), leaving 80 threads available for other operations. Checkout remains partially functional rather than completely down.
+
+---
+
+#### Q3: A circuit breaker is open but the failing service has already recovered. Why might requests still be failing?
+**What interviewers look for**: Understanding of the half-open transition mechanism and the "stuck open" failure mode.
+
+**Answer framework**:
+1. **Stuck open**: If the circuit uses count-based windows (e.g., "10 failures over 10 requests"), at 3AM with only 5 requests/minute it might never collect enough data to transition to half-open. Low traffic = stuck open indefinitely even if service recovered.
+2. **Solution 1**: Switch to time-based windows. After 60 seconds in open state, automatically transition to half-open regardless of traffic volume. Send 10 test requests; if successful, close circuit.
+3. **Solution 2**: Active health checks. A background task polls the service's `/health` endpoint every 10 seconds. When it returns 200, force the circuit to half-open — don't wait for user traffic.
+
+**Key numbers to mention**: See the [Circuit Breaker Failure](/problems-at-scale/availability/circuit-breaker-failure) article for full details. The fix: `minimumNumberOfCalls(5)` + `slidingWindowType(TIME_BASED)` + `automaticTransitionFromOpenToHalfOpenEnabled(true)`. This guarantees recovery in ≤ open-state-duration (60s) regardless of traffic volume.
 
 ---
 

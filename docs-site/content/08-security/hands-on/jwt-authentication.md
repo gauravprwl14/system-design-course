@@ -10,11 +10,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/security-encryption/jwt-vs-session
-  - interview-prep/system-design/api-gateway-pattern
-  - system-design/scalability/stateless-architecture
-  - system-design/security/authentication-at-scale
+linked_from: []
 tags:
   - jwt
   - authentication

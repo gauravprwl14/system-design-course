@@ -18,8 +18,7 @@ see_poc:
   - interview-prep/practice-pocs/api-gateway-rate-limiting
   - interview-prep/practice-pocs/redis-lua-rate-limiting
 linked_from:
-  - interview-prep/system-design/rate-limiting
-  - system-design/api-design/rate-limiting
+  - 12-interview-prep/system-design/fundamentals/rate-limiting
 tags:
   - rate-limiting
   - token-bucket

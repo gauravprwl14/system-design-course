@@ -10,8 +10,7 @@ related_problems:
   - problems-at-scale/concurrency/counter-race
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/online-gaming-backend
+linked_from: []
 tags:
   - redis
   - lua

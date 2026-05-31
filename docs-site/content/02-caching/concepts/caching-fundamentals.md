@@ -3,6 +3,8 @@ title: Caching Fundamentals
 layer: concept
 section: system-design/caching
 difficulty: beginner
+readTime: "18 min"
+fastPath: true
 prerequisites: []
 solves_with: []
 related_problems:
@@ -17,76 +19,25 @@ see_poc:
   - interview-prep/practice-pocs/cache-aside-pattern
   - interview-prep/practice-pocs/write-through-caching
 linked_from:
-  - interview-prep/caching-cdn/cache-strategies
-  - interview-prep/practice-pocs/cache-aside-pattern
-  - interview-prep/practice-pocs/cache-invalidation-strategies
-  - interview-prep/practice-pocs/database-materialized-views
-  - interview-prep/practice-pocs/http-caching-headers
-  - interview-prep/practice-pocs/idempotency-keys
-  - interview-prep/practice-pocs/rate-limiting-algorithms
-  - interview-prep/practice-pocs/redis-atomic-inventory
-  - interview-prep/practice-pocs/redis-banking-transfers
-  - interview-prep/practice-pocs/redis-cluster-caching
-  - interview-prep/practice-pocs/redis-cluster-sharding
-  - interview-prep/practice-pocs/redis-counter
-  - interview-prep/practice-pocs/redis-deduplication
-  - interview-prep/practice-pocs/redis-distributed-lock
-  - interview-prep/practice-pocs/redis-hyperloglog
-  - interview-prep/practice-pocs/redis-job-queue
-  - interview-prep/practice-pocs/redis-key-value-cache
-  - interview-prep/practice-pocs/redis-leaderboard
-  - interview-prep/practice-pocs/redis-lua-leaderboards
-  - interview-prep/practice-pocs/redis-lua-performance-benchmarks
-  - interview-prep/practice-pocs/redis-lua-rate-limiting
-  - interview-prep/practice-pocs/redis-lua-scripting-basics
-  - interview-prep/practice-pocs/redis-lua-workflows
-  - interview-prep/practice-pocs/redis-monitoring-performance
-  - interview-prep/practice-pocs/redis-persistence-strategies
-  - interview-prep/practice-pocs/redis-pubsub
-  - interview-prep/practice-pocs/redis-pubsub-patterns
-  - interview-prep/practice-pocs/redis-rate-limiting
-  - interview-prep/practice-pocs/redis-session-management
-  - interview-prep/practice-pocs/redis-streams
-  - interview-prep/practice-pocs/redis-streams-event-sourcing
-  - interview-prep/practice-pocs/redis-transaction-rollback
-  - interview-prep/practice-pocs/redis-transactions-multi-exec
-  - interview-prep/practice-pocs/redis-watch-optimistic-locking
-  - interview-prep/practice-pocs/write-through-caching
-  - interview-prep/system-design/audio-streaming-spotify
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/cms-design
-  - interview-prep/system-design/database-indexing-deep-dive
-  - interview-prep/system-design/database-sharding
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/high-concurrency-api
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/rate-limiting
-  - interview-prep/system-design/search-engine-architecture
-  - interview-prep/system-design/social-media-feed
-  - interview-prep/system-design/ticket-booking-system
-  - interview-prep/system-design/video-streaming-platform
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/concurrency/counter-race
-  - problems-at-scale/consistency/cache-invalidation-race
-  - problems-at-scale/consistency/stale-read-after-write
-  - system-design/api-design/rate-limiting
-  - system-design/caching/caching-strategies
-  - system-design/case-studies/chat-system
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/netflix
-  - system-design/case-studies/news-feed
-  - system-design/case-studies/pastebin
-  - system-design/case-studies/rate-limiter
-  - system-design/case-studies/spotify
-  - system-design/case-studies/ticket-booking
-  - system-design/case-studies/uber-backend
-  - system-design/case-studies/url-shortener
-  - system-design/case-studies/youtube
-  - system-design/scalability/cdn-edge-computing
-  - system-design/scalability/stateless-architecture
-  - system-design/security/authentication-at-scale
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
+  - 12-interview-prep/system-design/fundamentals/caching-strategies
+  - 12-interview-prep/system-design/fundamentals/high-concurrency-api
+  - 12-interview-prep/system-design/fundamentals/rate-limiting
+  - >-
+    12-interview-prep/system-design/messaging-and-streaming/audio-streaming-spotify
+  - 12-interview-prep/system-design/messaging-and-streaming/cms-design
+  - 12-interview-prep/system-design/messaging-and-streaming/social-media-feed
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/online-gaming-backend
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
+  - >-
+    12-interview-prep/system-design/storage-and-databases/database-indexing-deep-dive
+  - 12-interview-prep/system-design/storage-and-databases/database-sharding
+  - >-
+    12-interview-prep/system-design/storage-and-databases/search-engine-architecture
 tags:
   - caching
   - redis
@@ -697,12 +648,62 @@ async function updateUser(userId, updates) {
 
 ## 🔗 Next Steps
 
-- [Cache-Aside Pattern](./02-cache-aside.md) - Most common caching strategy
-- [Cache Invalidation](./05-cache-invalidation.md) - Keeping cache fresh
-- [Distributed Caching with Redis](./06-redis-distributed.md) - Scale across servers
+- [Cache-Aside Pattern](/02-caching/concepts/caching-strategies) - Most common caching strategy
+- [Cache Invalidation](/02-caching/concepts/cache-invalidation-strategies) - Keeping cache fresh
+- [Distributed Caching with Redis](/02-caching/concepts/distributed-cache-design) - Scale across servers
 
 ## 📚 Further Reading
 
 - Redis Documentation: https://redis.io/documentation
 - Memcached: https://memcached.org/
 - AWS ElastiCache: https://aws.amazon.com/elasticache/
+
+---
+
+## 🧠 Test Your Understanding
+
+*Don't re-read before attempting. The goal is retrieval, not recognition.*
+
+<details>
+<summary>Q1 — Surface Check: What problem does caching solve, and name the two main eviction policies?</summary>
+
+**Answer**: Caching solves latency and database load by storing frequently accessed data in fast memory. Main eviction policies: LRU (Least Recently Used — evicts the item not accessed longest) and LFU (Least Frequently Used — evicts the item accessed fewest times). LRU works well for recency-biased access; LFU works better for stable hot sets.
+
+</details>
+
+<details>
+<summary>Q2 — Failure Scenario: Your cache hit rate drops from 95% to 60% after you scale from 10M to 100M users. The cache size hasn't changed. Explain what most likely happened and how you'd diagnose it.</summary>
+
+**Answer**: The working set grew beyond the cache. At 10M users, the top 5% of data (500K items) drives 95% of reads — that fits in cache. At 100M users, the hot 5% is now 5M items, exceeding cache capacity. Diagnosis: check cache memory usage (likely hitting the limit), check hit rate per key range, check eviction rate (high eviction = working set exceeds capacity). Fix: increase cache size, or switch to LFU if access patterns are skewed (most popular items stay, less popular get evicted first).
+
+</details>
+
+<details>
+<summary>Q3 — Cross-Concept: Your cache uses LRU eviction. Your database is a Postgres read replica. During a 2-hour traffic spike, cache eviction rate spikes and replica lag increases from 50ms to 8 seconds. Are these events related? Walk through the connection.</summary>
+
+**Answer**: Yes, directly related. High eviction → cache misses → DB queries that would have been cached now hit the replica → replica write throughput spikes (it must process both real writes AND the cache-miss reads) → replica lag increases. The connection: caching offloads read replicas. When the cache fails to offload, replica falls behind. If replica lag exceeds 8 seconds, users may see stale data — a consistency violation driven by a performance problem. Fix: the cache is the bottleneck, not the replica. Increase cache size or improve eviction policy.
+
+</details>
+
+<details>
+<summary>Q4 — Trade-off Challenge: Your CTO says "just cache everything for 24 hours — we'll have near-100% hit rate." Name two specific scenarios where a 24-hour TTL would cause visible user-facing bugs.</summary>
+
+**Answer**: (1) **User profile changes**: user updates their email → 24 hours later they still see old email. Any feature using cached profile (notifications, billing, security) shows wrong data. (2) **Inventory or pricing**: e-commerce item goes out of stock → still shows "in stock" for up to 24 hours. Users order unavailable items. (3) **Permission changes**: user's account is suspended → cached authorization says "allowed" for 24 hours. Security boundary is broken. The TTL must match the staleness tolerance of the data, not a uniform "longer = better" policy.
+
+</details>
+
+---
+
+## 📚 Ready for Interview Level?
+
+You just tested your understanding with 4 application questions. The interview versions are harder — they require connecting caching with CAP theorem, replica lag, and traffic patterns simultaneously.
+
+**Curated questions from the interview bank (do these in order):**
+
+| Question | Tests | Level |
+|----------|-------|-------|
+| [What are the 3 main techniques to prevent cache stampede?](../../12-interview-prep/question-bank/caching-performance/cache-stampede-thundering-herd) | Prevention options + context-appropriate selection | 🟡 Mid |
+| [Write-behind node crash: what data is lost and how to prevent it?](../../12-interview-prep/question-bank/caching-performance/write-behind-write-through) | Durability trade-offs of async writes | 🔴 Senior |
+| [Redis cluster loses 2 of 5 nodes → thundering herd cascade](../../12-interview-prep/question-bank/caching-performance/cache-stampede-thundering-herd) | Cross-concept: CAP theorem + caching failure cascade | ⚫ Staff |
+
+> The Staff question (⚫) requires knowing CAP theorem. Read [CAP Theorem Practical](../../05-distributed-systems/concepts/cap-theorem-practical) first if you haven't.

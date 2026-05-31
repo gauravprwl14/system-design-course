@@ -20,12 +20,7 @@ see_poc:
   - interview-prep/practice-pocs/connection-leak-detection
   - interview-prep/practice-pocs/postgresql-connection-pooling-replication
 linked_from:
-  - interview-prep/practice-pocs/connection-leak-detection
-  - interview-prep/practice-pocs/connection-pool-sizing
-  - interview-prep/practice-pocs/database-connection-pooling
-  - interview-prep/practice-pocs/postgresql-connection-pooling-replication
-  - interview-prep/system-design/high-concurrency-api
-  - problems-at-scale/performance/connection-pool-starvation
+  - 12-interview-prep/system-design/fundamentals/high-concurrency-api
 tags:
   - connection-pooling
   - databases

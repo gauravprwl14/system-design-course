@@ -23,21 +23,11 @@ see_poc:
   - interview-prep/practice-pocs/chaos-engineering
   - interview-prep/practice-pocs/redis-cluster-caching
 linked_from:
-  - interview-prep/caching-cdn/cdn-usage
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/video-streaming-platform
-  - problems-at-scale/availability/cascading-failures
-  - problems-at-scale/availability/circuit-breaker-failure
-  - system-design/api-design/rest-graphql-grpc
-  - system-design/load-balancing/load-balancing-strategies
-  - system-design/monitoring/observability-slos
-  - system-design/scalability/auto-scaling
-  - system-design/scalability/cdn-edge-computing
-  - system-design/scalability/chaos-engineering
-  - system-design/scalability/high-availability
-  - system-design/scalability/microservices-architecture
-  - system-design/scalability/multi-region
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
+  - 12-interview-prep/system-design/scale-and-reliability/cdn-from-scratch
 tags:
   - netflix
   - video-streaming

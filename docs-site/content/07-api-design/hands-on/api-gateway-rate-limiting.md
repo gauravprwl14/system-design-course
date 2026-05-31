@@ -11,11 +11,7 @@ related_problems:
   - problems-at-scale/availability/retry-storm
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/api-gateway-pattern
-  - interview-prep/system-design/rate-limiting
-  - system-design/api-design/rate-limiting
-  - system-design/case-studies/rate-limiter
+linked_from: []
 tags:
   - api-gateway
   - rate-limiting

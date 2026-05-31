@@ -1,0 +1,18 @@
+export default {
+  "index": "📋 Overview",
+  "sql-vs-nosql-decisions": "SQL vs NoSQL Decisions",
+  "database-sharding-deep-dive": "Database Sharding",
+  "database-replication-patterns": "Replication Patterns",
+  "indexing-strategies": "Indexing Strategies",
+  "transactions-acid-base": "Transactions & ACID",
+  "connection-pooling": "Connection Pooling",
+  "database-migrations-at-scale": "Migrations at Scale",
+  "time-series-databases": "Time-Series Databases",
+  "graph-databases": "Graph Databases",
+  "document-databases": "Document Databases",
+  "wide-column-stores": "Wide-Column Stores",
+  "query-optimization": "Query Optimization",
+  "database-consistency-models": "Consistency Models",
+  "multi-tenancy-database-patterns": "Multi-Tenancy Patterns",
+  "database-backup-recovery": "Backup & Recovery",
+}

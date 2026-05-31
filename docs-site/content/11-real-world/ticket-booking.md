@@ -20,12 +20,8 @@ see_poc:
   - interview-prep/practice-pocs/database-transactions
   - interview-prep/practice-pocs/idempotency-keys
 linked_from:
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/ticket-booking-system
-  - problems-at-scale/concurrency/double-booking
-  - problems-at-scale/concurrency/race-condition-inventory
-  - system-design/api-design/idempotency
-  - system-design/consistency/distributed-consensus
+  - 12-interview-prep/system-design/business-and-advanced/flash-sales
+  - 12-interview-prep/system-design/business-and-advanced/ticket-booking-system
 tags:
   - ticket-booking
   - concurrency

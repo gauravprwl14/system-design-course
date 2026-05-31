@@ -19,15 +19,10 @@ see_poc:
   - interview-prep/practice-pocs/redis-watch-optimistic-locking
   - interview-prep/practice-pocs/database-transactions
 linked_from:
-  - interview-prep/system-design/collaborative-editing-google-docs
-  - interview-prep/system-design/rate-limiting
-  - interview-prep/system-design/saga-pattern
-  - problems-at-scale/availability/split-brain
-  - system-design/case-studies/google-drive
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/ticket-booking
-  - system-design/case-studies/unique-id-generator
-  - system-design/scalability/multi-region
+  - 12-interview-prep/system-design/business-and-advanced/saga-pattern
+  - 12-interview-prep/system-design/fundamentals/rate-limiting
+  - >-
+    12-interview-prep/system-design/real-time-systems/collaborative-editing-google-docs
 tags:
   - consensus
   - raft

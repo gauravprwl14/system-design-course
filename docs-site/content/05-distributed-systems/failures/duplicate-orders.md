@@ -16,17 +16,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/payment-system
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/database-sequences
-  - interview-prep/practice-pocs/idempotency-keys
-  - interview-prep/practice-pocs/redis-atomic-inventory
-  - problems-at-scale/concurrency/double-booking
-  - problems-at-scale/concurrency/double-charge-payment
-  - problems-at-scale/concurrency/race-condition-inventory
-  - problems-at-scale/data-integrity/duplicate-event-processing
-  - system-design/api-design/idempotency
-  - system-design/case-studies/payment-system
-  - system-design/case-studies/unique-id-generator
+linked_from: []
 tags:
   - concurrency
   - deduplication

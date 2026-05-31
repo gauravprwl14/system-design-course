@@ -19,21 +19,9 @@ see_poc:
   - interview-prep/practice-pocs/database-explain
   - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
 linked_from:
-  - interview-prep/practice-pocs/database-explain
-  - interview-prep/practice-pocs/database-full-text-search
-  - interview-prep/practice-pocs/database-indexes
-  - interview-prep/practice-pocs/database-jsonb
-  - interview-prep/practice-pocs/database-materialized-views
-  - interview-prep/practice-pocs/database-n-plus-one
-  - interview-prep/practice-pocs/database-partitioning
-  - interview-prep/practice-pocs/postgresql-btree-hash-indexes
-  - interview-prep/practice-pocs/postgresql-composite-covering-indexes
-  - interview-prep/practice-pocs/postgresql-explain-analyze-optimization
-  - interview-prep/practice-pocs/postgresql-partitioning-strategies
-  - interview-prep/system-design/database-indexing-deep-dive
-  - problems-at-scale/performance/n-plus-one-query
-  - system-design/databases/data-archival-strategies
-  - system-design/databases/indexing-deep-dive
+  - 12-interview-prep/system-design/business-and-advanced/recommendation-system
+  - >-
+    12-interview-prep/system-design/storage-and-databases/database-indexing-deep-dive
 tags:
   - databases
   - indexes
@@ -713,9 +701,9 @@ async weeklyMaintenance() {
 
 ## 🔗 Next Steps
 
-- [Connection Pooling](./05-connection-pooling.md) - Manage database connections
-- [Query Optimization](./06-performance/02-query-optimization.md) - Advanced query tuning
-- [Database Monitoring](./10-monitoring/03-database-monitoring.md) - Track performance
+- [Connection Pooling](/01-databases/concepts/connection-pooling-deep-dive) - Manage database connections
+- [Query Optimization](/12-interview-prep/question-bank/databases/query-optimization) - Advanced query tuning
+- [Database Monitoring](/09-observability/concepts/database-query-performance) - Track performance
 
 ## 📚 Further Reading
 

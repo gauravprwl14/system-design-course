@@ -12,12 +12,7 @@ related_problems:
   - problems-at-scale/scalability/hot-partition
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/database-storage/scaling-strategies
-  - interview-prep/system-design/database-sharding
-  - problems-at-scale/scalability/database-hotspots
-  - problems-at-scale/scalability/hot-partition
-  - system-design/databases/sharding-strategies
+linked_from: []
 tags:
   - postgresql
   - sharding

@@ -18,13 +18,11 @@ see_poc:
   - interview-prep/practice-pocs/kafka-basics-producer-consumer
   - interview-prep/practice-pocs/service-discovery
 linked_from:
-  - interview-prep/practice-pocs/contract-testing
-  - interview-prep/practice-pocs/grpc-protocol-buffers
-  - interview-prep/practice-pocs/service-discovery
-  - interview-prep/system-design/api-design-rest-graphql-grpc
-  - interview-prep/system-design/distributed-tracing
-  - interview-prep/system-design/monolith-to-microservices
-  - interview-prep/system-design/service-discovery
+  - 12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc
+  - 12-interview-prep/system-design/scale-and-reliability/distributed-tracing
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices
+  - 12-interview-prep/system-design/scale-and-reliability/service-discovery
 tags:
   - microservices
   - grpc
@@ -590,6 +588,94 @@ Pattern: Heavy event-driven
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on Microservices Communication
+
+#### Q1: When do you choose REST over gRPC for inter-service communication? Give concrete examples.
+**What interviewers look for**: Understanding that it's not just about performance — protocol choice affects debugging, ecosystem fit, team skill, and browser compatibility.
+
+**Answer framework**:
+1. **REST for external/public APIs**: Browser clients can't call gRPC natively without a proxy; REST with JSON is universally tooled (Postman, curl, browser DevTools); webhook payloads and third-party integrations expect JSON.
+2. **gRPC for internal high-throughput**: Protobuf binary is 2–10x smaller and faster than JSON; HTTP/2 multiplexing means hundreds of concurrent streams over one connection; bidirectional streaming for real-time feeds (driver location, live metrics).
+3. **Practical factors**: gRPC requires schema management (proto files) which adds coordination overhead; REST is easier to debug with raw HTTP tools; many teams start with REST and add gRPC only for proven hot paths.
+
+**Key numbers to mention**: gRPC is 5–10x faster than REST for high-throughput internal calls; proto serialization is 3–5x smaller than JSON; Uber uses gRPC for internal RPC handling millions of driver-location updates/sec; Google uses gRPC for almost all internal services; REST JSON adds ~30% overhead vs. binary for the same payload.
+
+---
+
+#### Q2: Describe the event-driven choreography vs. orchestration pattern. What are the trade-offs?
+**What interviewers look for**: Ability to articulate the debugging and coupling implications, not just the surface-level description.
+
+**Answer framework**:
+1. **Choreography** (services react to events independently): Each service listens to events and publishes its own; no central coordinator; services are fully decoupled and can be added/removed without changing others; debugging requires tracing events across multiple topics.
+2. **Orchestration** (central saga controller directs steps): One orchestrator calls each service in sequence and handles compensation; single place to see the workflow state; easier to debug and change flow; orchestrator becomes a coupling point.
+3. **Decision rule**: Choreography for simple fan-out (≤3 steps, no complex rollback); orchestration for complex business processes (>3 steps, compensation logic, audit requirements) — Uber Cadence/Temporal are popular orchestration engines.
+
+**Key numbers to mention**: Netflix uses choreography for analytics pipelines (simple fan-out); Amazon uses orchestrated sagas for multi-step order workflows; Temporal handles 10M+ workflow executions/day; typical choreography event processing adds 10–50ms vs. direct call; orchestration adds 1 hop but gives full auditability.
+
+---
+
+#### Q3: A synchronous REST call chain is causing cascading failures. How would you diagnose and fix it?
+**What interviewers look for**: Structured debugging approach + concrete architectural remediation, not just "add a circuit breaker".
+
+**Answer framework**:
+1. **Diagnose**: Use distributed tracing (Jaeger/Zipkin) to identify the slowest span in the chain; check thread pool metrics for exhaustion; look for the first service whose P99 latency spiked — that's the root cause.
+2. **Immediate mitigation**: Add timeouts (2–5 seconds) to every HTTP call; add circuit breakers so downstream failures fail fast; add bulkheads (separate thread pools per downstream dependency) to prevent one slow service from blocking all others.
+3. **Architectural fix**: Identify which calls in the chain are truly synchronous requirements vs. fire-and-forget; move non-essential calls (notifications, analytics, audit logs) to async events; parallelize independent sync calls with `Promise.all()` to cut total latency from sum to max.
+
+**Key numbers to mention**: Without timeouts, a 30s slow service exhausts a 200-thread pool in ~60 seconds; circuit breaker with 50% error threshold at 10 req minimum; bulkhead: 30 threads max per downstream dependency; parallelizing 3 independent 50ms calls reduces total latency from 150ms to 50ms; the Black Friday example: 8-service sync chain → $50M loss.
+
+---
+
+#### Q4: How do you ensure exactly-once processing in an event-driven microservices system?
+**What interviewers look for**: Understanding that exactly-once is very hard; at-least-once + idempotency is the practical standard.
+
+**Answer framework**:
+1. **At-least-once delivery is the default**: Kafka guarantees at-least-once delivery; consumers can receive the same event twice on retry, rebalance, or crash recovery — design consumers to be idempotent.
+2. **Idempotency key pattern**: Include a unique `eventId` or `messageId` in every event; consumer tracks processed IDs (in a DB or Redis `SETNX`); if the ID exists, skip processing and acknowledge the message — deduplication window of 24 hours covers all reasonable retry scenarios.
+3. **Transactional outbox for producer reliability**: Instead of publishing to Kafka directly in application code (which can fail after DB write), write to an `outbox` table in the same transaction; a separate relay process reads and publishes — guarantees the event is always published if the DB commit succeeded.
+
+**Key numbers to mention**: Kafka default delivery: at-least-once; Kafka exactly-once semantics (EOS) available but adds ~20% throughput overhead; Redis `SETNX` deduplication adds ~1ms per event; transactional outbox delay is typically <100ms; idempotency key storage TTL of 24 hours handles 99.99% of retry scenarios.
+
+---
+
+#### Q5: How would you implement the Saga pattern for an order placement flow involving inventory, payment, and shipping?
+**What interviewers look for**: Concrete sequence design including the compensation steps, not just a high-level description.
+
+**Answer framework**:
+1. **Happy path sequence**: Create order (PENDING) → Reserve inventory → Charge payment → Schedule shipping → Update order (CONFIRMED); each step publishes an event that triggers the next.
+2. **Compensation chain** (payment fails): Publish `PaymentFailed` → Inventory service receives event, releases reservation → Order service receives event, marks order CANCELLED; compensations must be idempotent (release an already-released reservation should be a no-op).
+3. **Idempotency and locking**: Use a saga state machine with persistent state (DB); if the orchestrator crashes mid-saga, replay from the last recorded state; use optimistic locking on inventory (`UPDATE inventory SET reserved = reserved + qty WHERE available >= qty`) to prevent race conditions.
+
+**Key numbers to mention**: Compensation transactions must be idempotent and complete within SLA (typically <5 seconds per step); saga state should be persisted in durable storage (not in-memory); max saga duration should be bounded (e.g., 30 minutes — after which alert and compensate); Amazon processes millions of order sagas/day with <0.001% requiring manual intervention.
+
+---
+
+#### Q6: What is the "distributed monolith" anti-pattern and how do you avoid it?
+**What interviewers look for**: Recognition that microservices without proper boundaries are worse than a monolith — all the operational complexity, none of the deployment independence.
+
+**Answer framework**:
+1. **Symptoms**: Services that must deploy together (tight coupling via shared library versions or synchronous call expectations); services that share a database schema; long synchronous chains of 5+ services where one failure takes down the whole request.
+2. **Root cause**: Incorrect decomposition — splitting by technical layer (UserController, UserRepository, UserService) instead of by business capability (OrderDomain, PaymentDomain); or premature decomposition before domain boundaries are understood.
+3. **Fixes**: Apply domain-driven design to find bounded contexts; enforce "database per service" strictly; replace synchronous chains with async events; test independent deployability in CI (deploy Service A alone and run its full test suite).
+
+**Key numbers to mention**: A distributed monolith has 3x the operational complexity of a monolith with zero of the deployment benefits; 60% of teams that adopt microservices without DDD end up with distributed monoliths (Martin Fowler); independent deployment test: if changing Service A requires testing Service B, you have a distributed monolith; chatty services (>5 calls per request) is a smell.
+
+---
+
+#### Q7: How do you handle schema evolution in event-driven systems where multiple consumers depend on event structure?
+**What interviewers look for**: Forward and backward compatibility strategies for Kafka/event schemas — a common operational challenge at scale.
+
+**Answer framework**:
+1. **Schema registry with compatibility rules**: Use Confluent Schema Registry (or AWS Glue) with `BACKWARD` compatibility mode — new schema must be able to read old messages; consumers don't need to be updated before producers.
+2. **Additive-only changes**: Add new fields as optional with defaults; never remove or rename fields (use deprecation markers instead); never change field types; version the event type name only for truly breaking changes (`order.placed.v2`).
+3. **Consumer-side tolerance**: Use the "robustness principle" — consumers should ignore unknown fields; producer can add new fields without breaking consumers; maintain two event versions in parallel during migration (produce both, consume the new one, deprecate old after all consumers migrate).
+
+**Key numbers to mention**: Confluent Schema Registry supports BACKWARD, FORWARD, and FULL compatibility modes; Avro/Protobuf support schema evolution natively; JSON Schema requires manual enforcement; Kafka topic retention of 7 days allows consumers to replay if they miss an event; deprecation window should be ≥30 days with consumer lag monitoring.
+
+---
+
 ## Key Takeaways
 
 ### The Golden Rules
@@ -632,3 +718,5 @@ Don't start with events everywhere!
 - [Circuit Breaker Pattern](/10-architecture/concepts/circuit-breaker)
 - [Timeouts & Backpressure](/10-architecture/concepts/timeouts-backpressure)
 - [Idempotency](/07-api-design/concepts/idempotency)
+- [Monolith to Microservices Interview Prep](/12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices)
+- [API Design: REST, GraphQL, gRPC Interview Prep](/12-interview-prep/system-design/fundamentals/api-design-rest-graphql-grpc)

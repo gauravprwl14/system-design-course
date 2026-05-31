@@ -16,17 +16,7 @@ related_problems:
 case_studies:
   - system-design/case-studies/news-feed
 see_poc: []
-linked_from:
-  - interview-prep/caching-cdn/cache-strategies
-  - interview-prep/practice-pocs/cache-aside-pattern
-  - interview-prep/practice-pocs/cache-invalidation-strategies
-  - interview-prep/practice-pocs/write-through-caching
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/cms-design
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/consistency/stale-read-after-write
-  - system-design/caching/caching-fundamentals
-  - system-design/caching/caching-strategies
+linked_from: []
 tags:
   - consistency
   - caching

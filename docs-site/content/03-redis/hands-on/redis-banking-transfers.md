@@ -10,9 +10,7 @@ related_problems:
   - problems-at-scale/concurrency/double-charge-payment
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/concurrency/double-charge-payment
-  - system-design/case-studies/payment-system
+linked_from: []
 tags:
   - redis
   - transactions

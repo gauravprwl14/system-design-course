@@ -9,13 +9,7 @@ solves_with: []
 related_problems: []
 case_studies: []
 see_poc: []
-linked_from:
-  - interview-prep/system-design/caching-strategies
-  - interview-prep/system-design/cdn-edge-computing-media
-  - system-design/caching/caching-strategies
-  - system-design/case-studies/spotify
-  - system-design/case-studies/youtube
-  - system-design/scalability/cdn-edge-computing
+linked_from: []
 tags:
   - http
   - caching

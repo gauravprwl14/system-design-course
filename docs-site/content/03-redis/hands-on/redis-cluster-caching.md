@@ -12,12 +12,7 @@ related_problems:
   - problems-at-scale/scalability/database-hotspots
 case_studies: []
 see_poc: []
-linked_from:
-  - system-design/caching/caching-strategies
-  - system-design/case-studies/netflix
-  - system-design/case-studies/spotify
-  - system-design/scalability/high-availability
-  - system-design/scalability/multi-region
+linked_from: []
 tags:
   - redis
   - cluster

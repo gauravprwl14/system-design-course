@@ -21,23 +21,10 @@ see_poc:
   - interview-prep/practice-pocs/redis-counter
   - interview-prep/practice-pocs/http-caching-headers
 linked_from:
-  - interview-prep/caching-cdn/cdn-usage
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/video-streaming-platform
-  - problems-at-scale/availability/thundering-herd
-  - problems-at-scale/concurrency/counter-race
-  - problems-at-scale/scalability/hot-partition
-  - system-design/caching/caching-strategies
-  - system-design/databases/data-archival-strategies
-  - system-design/databases/read-replicas
-  - system-design/performance/connection-pool-management
-  - system-design/queues/kafka-vs-rabbitmq
-  - system-design/queues/message-queue-basics
-  - system-design/scalability/async-processing
-  - system-design/scalability/backpressure
-  - system-design/scalability/cdn-edge-computing
-  - system-design/scalability/multi-region
+  - 12-interview-prep/system-design/real-time-systems/live-streaming-twitch
+  - 12-interview-prep/system-design/real-time-systems/video-streaming-platform
+  - >-
+    12-interview-prep/system-design/scale-and-reliability/cdn-edge-computing-media
 tags:
   - youtube
   - video-streaming

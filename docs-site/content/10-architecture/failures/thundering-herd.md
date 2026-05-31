@@ -19,33 +19,7 @@ case_studies:
   - system-design/case-studies/youtube
   - system-design/case-studies/news-feed
 see_poc: []
-linked_from:
-  - interview-prep/practice-pocs/load-testing-k6
-  - interview-prep/practice-pocs/rate-limiting-algorithms
-  - interview-prep/system-design/audio-streaming-spotify
-  - interview-prep/system-design/cdn-edge-computing-media
-  - interview-prep/system-design/flash-sales
-  - interview-prep/system-design/live-streaming-twitch
-  - interview-prep/system-design/load-balancing-strategies
-  - interview-prep/system-design/online-gaming-backend
-  - interview-prep/system-design/pdf-converter
-  - interview-prep/system-design/rate-limiting
-  - interview-prep/system-design/ticket-booking-system
-  - interview-prep/system-design/video-streaming-platform
-  - interview-prep/system-design/websocket-architecture
-  - problems-at-scale/availability/retry-storm
-  - problems-at-scale/consistency/cache-invalidation-race
-  - problems-at-scale/scalability/hot-partition
-  - system-design/api-design/rate-limiting
-  - system-design/caching/caching-fundamentals
-  - system-design/caching/caching-strategies
-  - system-design/case-studies/news-feed
-  - system-design/case-studies/rate-limiter
-  - system-design/case-studies/spotify
-  - system-design/case-studies/ticket-booking
-  - system-design/load-balancing/load-balancing-strategies
-  - system-design/scalability/cdn-edge-computing
-  - system-design/scalability/high-availability
+linked_from: []
 tags:
   - availability
   - caching
@@ -783,6 +757,66 @@ async function getPost(postId) {
 - Probabilistic algorithms
 - Stale-while-revalidate (HTTP caching)
 - Circuit breaker (protect downstream)
+
+---
+
+---
+
+## 🔍 Quick Detection Checklist
+
+**Alert signals**:
+- [ ] Database connection pool utilization spikes from ~10% to 100% within 1 second (not gradual)
+- [ ] Database CPU jumps to 100% at a predictable time (e.g., exactly on the hour, every hour = TTL-aligned stampede)
+- [ ] Cache hit rate drops from >95% to near 0% suddenly — all requests are misses
+- [ ] `db.query.rate` metric spikes 10–100x normal rate at the same moment `cache.hit_rate` drops to 0%
+- [ ] Connection refused errors from database while application servers have healthy CPU (the DB is the bottleneck, not the app)
+
+**Immediate mitigation steps**:
+1. **Enable emergency DB connection rate limiting**: If using a connection pooler (PgBouncer, ProxySQL), reduce max connections to 20% of normal. This prevents the DB from being overwhelmed while the cache rebuilds. Some requests will queue, but the DB stays functional.
+2. **Force a single cache repopulation**: Identify the hot key(s). Use a Redis `SETNX lock:{key}` to manually acquire the rebuild lock, then populate the cache from DB once. Release the lock. All queued requests will then hit the populated cache.
+3. **Pre-warm cache before next TTL expiry**: If you know a key expires at HH:00:00, manually refresh it at HH:59:50 (10 seconds before expiry). Set the new TTL to 1 hour + 30–60 seconds of random jitter to prevent next-hour re-alignment.
+4. **Monitor cache warm-up progress**: Watch `cache.hit_rate` recovering from 0% back toward 95%+. DB connection pool utilization should drop in parallel. Full recovery typically takes 60–120 seconds after the initial lock-based repopulation.
+5. **Deploy TTL jitter as permanent fix**: After the incident, add `ttl + random(0, ttl * 0.1)` to all cache-set operations. This staggers future expirations by up to 10% of TTL, preventing synchronized stampedes.
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Thundering Herd
+
+#### Q1: Your homepage starts returning 500 errors at exactly 4PM every day. The database CPU spikes to 100% for 60 seconds. How do you diagnose and fix this?
+**What interviewers look for**: Correlating the time-alignment clue (exactly 4PM) with cache TTL patterns, and knowing the specific fix.
+
+**Answer framework**:
+1. **Diagnose**: "Exactly 4PM every day" is a TTL alignment signal. Check when the homepage cache was last populated — if the cache was set at 3PM with a 1-hour TTL, it expires at exactly 4PM, triggering a synchronized cache stampede. Confirm by looking at cache hit rate — it will show a cliff drop at 4PM.
+2. **Immediate mitigation**: Manually re-populate the cache now (acquire lock, query DB, SET with new TTL). Set the new TTL to 3600 + random(0, 300) seconds (1 hour + 0–5 minutes of jitter) to break the daily alignment.
+3. **Permanent fix**: Add jitter to all cache TTL assignments in code. For the homepage: `cache.set('homepage', data, { ttl: 3600 + Math.floor(Math.random() * 300) })`. This spreads future expirations across a 5-minute window instead of a single millisecond.
+
+**Key numbers to mention**: A 4PM daily stampede with 10,000 concurrent requests and DB capacity of 200 connections = 50x overload. With request coalescing (distributed lock), only 1 DB query fires. With TTL jitter of 10%, expirations spread over 360 seconds — at 10K req/s, only 27 req/sec arrive per second instead of 10K/sec at once.
+
+---
+
+#### Q2: How would you design a caching layer for a social media feed that serves 1 million requests per second?
+**What interviewers look for**: Cache strategy selection at massive scale, with awareness of hot keys and thundering herd prevention built-in from the start.
+
+**Answer framework**:
+1. **Soft/Hard TTL for user feeds**: Soft TTL = 60 seconds (when to start background refresh), Hard TTL = 300 seconds (when to delete). Users always get instant cache hits. Background refresh triggers when content is stale but not expired. No thundering herd possible — cache never goes empty.
+2. **Celebrity/hot key handling**: For accounts with 10M+ followers, feed cache entries are hit by millions of users. Use dedicated pre-warming: when a celebrity posts, immediately refresh all cached feed fragments containing that user's content via async job queue, before any user requests trigger a miss.
+3. **Per-user feed cache sharding**: Distribute user feed caches across Redis cluster by consistent hashing on `userId`. This distributes the 1M req/s across ~50 Redis shards (20K req/s each), preventing hot-shard overload.
+
+**Key numbers to mention**: Facebook's memcache handles 1B+ reads/second with ~95% hit rate. A 5% miss rate at 1B req/sec = 50M DB queries/sec — impossible without thundering herd protection. Redis Cluster with 50 nodes handles 500K ops/sec per node × 50 = 25M ops/sec total. See also: [CDN and Edge Computing](/10-architecture/concepts/cdn-edge-computing) for serving cached feeds at the edge.
+
+---
+
+#### Q3: What is the XFetch algorithm and how does it differ from request coalescing?
+**What interviewers look for**: Knowledge of both approaches and when the latency trade-off makes one preferable over the other.
+
+**Answer framework**:
+1. **Request coalescing (mutex-based)**: First request acquires lock, queries DB, populates cache. All other concurrent requests wait (100–500ms). Guarantees only 1 DB query. Trade-off: waiting latency during cache rebuild.
+2. **XFetch (probabilistic early refresh)**: As cache approaches expiry, each request has an increasing probability of triggering a background refresh. P(refresh) = current_age / (TTL × beta). No waiting — current request returns stale data while background refresh runs. Trade-off: brief staleness.
+3. **Decision**: Use request coalescing when the data must be fresh (prices, inventory). Use XFetch when brief staleness is acceptable (news feed, product descriptions) and low latency is paramount.
+
+**Key numbers to mention**: XFetch with beta=1.0 starts triggering refreshes at 50% of TTL remaining. With a 3600s TTL, refreshes begin ~30 minutes before expiry. By expiry time, probability of refresh having already fired is ~95–99%. Expected additional DB queries per hour: 1.01–1.05x normal (vs. 10,000x in an unprotected stampede).
 
 ---
 

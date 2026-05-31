@@ -1,14 +1,41 @@
 ---
-title: "Split-Brain: 8 Minutes of Two Databases Both Thinking They're Primary"
-date: "2026-03-20"
-category: "problems-at-scale"
-subcategories: ["availability", "consistency"]
-personas: ["Senior Engineer", "Tech Lead", "Staff Engineer"]
-tags: ["split-brain", "network partition", "raft", "paxos", "quorum", "STONITH", "fencing tokens", "distributed consensus", "dual primary"]
-description: "A network switch fails at 4:22 AM. For 8 minutes, your 'single' database is actually two separate databases, both accepting writes. When connectivity restores, you have 8 minutes of conflicting data. Which side do you keep?"
-reading_time: "25 min"
-difficulty: "senior"
-status: "published"
+title: 'Split-Brain: 8 Minutes of Two Databases Both Thinking They''re Primary'
+date: '2026-03-20'
+category: problems-at-scale
+subcategories:
+  - availability
+  - consistency
+personas:
+  - Senior Engineer
+  - Tech Lead
+  - Staff Engineer
+tags:
+  - split-brain
+  - network partition
+  - raft
+  - paxos
+  - quorum
+  - STONITH
+  - fencing tokens
+  - distributed consensus
+  - dual primary
+description: >-
+  A network switch fails at 4:22 AM. For 8 minutes, your 'single' database is
+  actually two separate databases, both accepting writes. When connectivity
+  restores, you have 8 minutes of conflicting data. Which side do you keep?
+reading_time: 25 min
+difficulty: senior
+status: published
+linked_from:
+  - 01-databases/concepts/replication-basics
+  - 03-redis/hands-on/redis-cluster-sharding
+  - 03-redis/hands-on/redis-persistence-strategies
+  - 05-distributed-systems/concepts/distributed-consensus
+  - 05-distributed-systems/failures/stale-read-after-write
+  - 06-scalability/concepts/high-availability
+  - 06-scalability/concepts/multi-region
+  - 10-architecture/concepts/chaos-engineering
+  - 12-interview-prep/system-design/storage-and-databases/database-replication
 ---
 
 # Split-Brain: 8 Minutes of Two Databases Both Thinking They're Primary

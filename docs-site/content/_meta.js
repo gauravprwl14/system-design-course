@@ -66,7 +66,16 @@ export default {
     title: '🧮 Algorithms',
   },
 
-  // ── Pillar 4: Prep & Reference ────────────────────────────────────────────
+  // ── Pillar 4: Problem Sets ────────────────────────────────────────────────
+  '_sep_problems': {
+    type: 'separator',
+    title: '🏗️ System Design Problems',
+  },
+  '16-system-design-problems': {
+    title: '🏗️ 163 Problems',
+  },
+
+  // ── Pillar 5: Prep & Reference ────────────────────────────────────────────
   '_sep_prep': {
     type: 'separator',
     title: '🎯 Prep & Reference',

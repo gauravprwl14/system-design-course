@@ -10,8 +10,7 @@ related_problems:
   - problems-at-scale/data-integrity/orphaned-records
 case_studies: []
 see_poc: []
-linked_from:
-  - problems-at-scale/data-integrity/orphaned-records
+linked_from: []
 tags:
   - postgresql
   - foreign-keys
