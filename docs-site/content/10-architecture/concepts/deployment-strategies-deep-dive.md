@@ -394,6 +394,157 @@ labels:
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on Deployment Strategies
+
+#### Q1: Explain the difference between blue-green and canary deployments.
+**What interviewers look for**: Precision on the trade-offs, not just definitions. They want to see you reason about blast radius, rollback speed, infrastructure cost, and when to choose each.
+
+**Answer framework**:
+1. Blue-green: two complete, identical environments. Deploy v2 to green while blue serves 100% of production traffic. Test green, then switch the load balancer from blue to green in a single operation (< 1 second with AWS ALB). Blast radius: 100% — all users switch at once. Rollback: < 5 seconds (switch back). Cost: 2x infrastructure during deployment window
+2. Canary: deploy v2 to a small subset of instances (5%), route 5% of traffic there. Monitor metrics. Progressively increase to 25% → 50% → 100%. Blast radius: controlled (5% of users affected on bad deploy). Rollback: < 30 seconds. Cost: 5-10% extra capacity
+3. Key distinction: blue-green is an all-or-nothing cutover; canary is a progressive rollout. Blue-green wins on rollback speed and simplicity. Canary wins on blast radius control and cost. If you deploy 5+ times per day, canary's lower infrastructure overhead makes it the economical choice
+4. When to choose blue-green: low deployment frequency (< 5/day), instant rollback is a hard requirement, or the change is binary by nature (infrastructure change, new dependency that can't partially exist)
+
+**Key numbers to mention**: Blue-green rollback: < 5 seconds (ALB target group switch). Canary rollback: < 30 seconds (revert weight to 0%). Blue-green cost: 100% overhead during window. Canary cost: 5-10% overhead. At 20 deploys/day, blue-green = ~42% average overhead vs canary = 5-10%.
+
+---
+
+#### Q2: How do you roll back a bad deployment with zero downtime?
+**What interviewers look for**: Concrete operational knowledge — not just "change the load balancer" but the exact mechanism, the timing, and the gotchas.
+
+**Answer framework**:
+1. Blue-green rollback: the load balancer still knows about the blue environment. Execute one command: `aws elbv2 modify-listener --default-actions Type=forward,TargetGroupArn=<blue-arn>`. ALB propagates the change in < 1 second. Blue environment was idle but still running — it's warm and receives traffic immediately
+2. Canary rollback: set canary weight to 0% and stable weight to 100% in the AnalysisTemplate or Argo Rollouts. Takes effect in < 30 seconds. No pod restarts needed — routing rule change only
+3. Rolling rollback: requires a new rolling deployment with the old image tag. Takes as long as the original rollout — 15-30 minutes for a 100-pod service. This is why rolling is not a good strategy for high-risk changes
+4. The prerequisite for any rollback: tested the rollback procedure in staging before the production deployment. If you've never practiced the rollback, it will fail during a real incident under time pressure
+
+**Key numbers to mention**: ALB weight update: < 1 second. Rolling rollback for 100 pods: ~15 minutes (same as forward rollout). Blue-green rollback time: < 5 seconds. Session draining on blue-green: set `deregistration_delay.timeout_seconds = 300` to drain existing connections gracefully before hard cutover.
+
+---
+
+#### Q3: How do you handle database migrations safely during deployments?
+**What interviewers look for**: Understanding of the expand-contract pattern — the standard answer for zero-downtime schema changes. Many candidates don't know this and propose risky "deploy both at once" approaches.
+
+**Answer framework**:
+1. The core problem: during any deployment, old code and new code run simultaneously (rolling update) or sequentially with instant cutover (blue-green). If your schema migration drops a column that v1 code reads, v1 errors. If v2 requires a column that hasn't been added, v2 errors
+2. Expand-contract (3-phase deployment): Phase 1 (expand) — add the new column, keep the old. Deploy v1.5 that reads new column if exists, falls back to old. Both v1 and v1.5 work. Phase 2 — deploy v2 using new column exclusively. Verify stable for 24-48 hours. Phase 3 (contract) — remove old column. Now v1 can't roll back — accept this deliberately
+3. Never run a destructive migration in the same deployment as application code changes. The migration and the code change must be separate commits, separate deployments, separated by 24-48 hours of validation
+4. Blue-green specific: green environment runs against the same database as blue. If green's migration is destructive, you cannot roll back to blue — the DB is already modified. This is why expand-contract is mandatory even for blue-green
+
+**Key numbers to mention**: Validation window between expand and contract: 24-48 hours minimum. Time to add/remove a column on 100M-row table with zero-downtime (online DDL): 5-30 minutes depending on DB. MySQL pt-online-schema-change or pg_repack for large tables. Never mix schema migration + code change in a single deployment.
+
+---
+
+#### Q4: What metrics should gate a canary promotion?
+**What interviewers look for**: Whether you include business metrics, not just infrastructure metrics — a common real-world failure mode.
+
+**Answer framework**:
+1. Infrastructure metrics (necessary but not sufficient): HTTP error rate (5xx rate < 1%), p99 latency (< 150% of baseline), pod restart rate (0 OOM kills)
+2. Business metrics (the ones candidates miss): checkout completion rate, order success rate, payment processing rate, user engagement metrics. A canary can have 0% HTTP errors and still represent a bad deployment if the UX change causes a 12% drop in conversion
+3. Statistical significance gate: canary must receive at least 10,000 requests before promotion decision. At 5% canary with 200 RPS total = 10 RPS to canary = 1000 seconds (17 minutes) minimum per stage
+4. Time-based gate: add minimum soak time even if metrics look good. Some failures manifest after extended runtime (memory leaks: 4+ hours, connection pool exhaustion under sustained load: 30+ minutes)
+
+**Key numbers to mention**: Real incident: 0% error rate, 12% conversion drop — bad deploy not caught by infrastructure metrics only. Canary statistical significance: 10,000 requests minimum. Minimum soak time per stage: 30 minutes for fast failures, 4 hours for memory leak detection. Business metric gate: < 5% relative drop from baseline.
+
+---
+
+#### Q5: How do feature flags differ from canary deployments, and when do you choose each?
+**What interviewers look for**: Understanding of the deployment/release decoupling concept — often called progressive delivery.
+
+**Answer framework**:
+1. Canary deployment: infrastructure-level traffic splitting. New code is deployed to a percentage of pods; those pods handle a percentage of requests. Controlled at the routing layer. The deployment and release are the same event
+2. Feature flags: code-level toggle. Entire new code is deployed to 100% of pods with the flag off. The flag is then enabled for specific users, segments, or percentages. Deployment and release are decoupled
+3. Feature flags win on rollback speed: toggle flag off in < 1 second for any user segment, no pod restarts, no routing changes. They also enable user-dimension targeting (enable for enterprise users only, not random 5%)
+4. Feature flags lose on: they can't help if bad code causes OOM crashes at startup (the process dies before flag evaluation), they accumulate as technical debt if not cleaned up (flag debt). Set a 90-day expiry on every flag and create a cleanup ticket at creation time
+5. Combined pattern: use canary for infrastructure changes (new infrastructure behavior, library upgrades), feature flags for business logic changes (new checkout flow, new recommendation algorithm)
+
+**Key numbers to mention**: Feature flag rollback: < 1 second (cache update or kill switch). LaunchDarkly/Flagsmith flag evaluation: < 1ms SDK latency. Flag debt: OpenFeature standard (CNCF, GA 2024) enables vendor-neutral SDKs. Each flag should have a 90-day expiry ticket created at flag creation time.
+
+---
+
+#### Q6: How do you handle session consistency during blue-green deployments?
+**What interviewers look for**: The stateful session gotcha that many candidates overlook when recommending blue-green.
+
+**Answer framework**:
+1. The problem: if sessions are stored in the pod's memory (in-process session), a user authenticated against blue environment loses their session immediately when traffic switches to green. This is a user-facing outage even though the deployment succeeded
+2. Solution prerequisite: externalize session state to a shared store (Redis, database-backed sessions) before attempting blue-green. With external sessions, any pod in any environment can serve any user's session
+3. Long-lived connections: WebSocket connections, server-sent events, long-polling — these maintain a persistent connection to a specific pod. When the LB switches to green, these connections remain on blue until they disconnect. Configure connection draining: ALB `deregistration_delay.timeout_seconds = 300`. Blue receives no new connections but drains existing ones gracefully over 5 minutes
+4. Sticky sessions (session affinity): if you use sticky sessions in the LB, sticky sessions bound to blue pods break at cutover. Remove LB session affinity before attempting blue-green — use application-level session externalization instead
+
+**Key numbers to mention**: Redis session store latency: < 1ms read. WebSocket drain timeout: 300 seconds (5 minutes) is typical. ALB `deregistration_delay` default: 300s, configurable 0-3600s. External session prerequisite must be deployed and stable in production before attempting first blue-green deployment.
+
+---
+
+#### Q7: How would you design a zero-downtime deployment pipeline for a service that has strict SLOs?
+**What interviewers look for**: End-to-end thinking — combining strategy selection with automation, observability, and incident response.
+
+**Answer framework**:
+1. Strategy selection based on SLO: if the SLO is < 0.1% error rate and rollback must happen in < 30 seconds, canary with automated rollback (Argo Rollouts) is the right choice. Blue-green for sub-5-second rollback requirement
+2. Metric-gated automation: AnalysisTemplate in Argo Rollouts queries Prometheus every 60 seconds. If error rate on canary > 2x baseline, automatic rollback. If business metric drops > 5%, automatic rollback + PagerDuty alert. No human in the promotion loop for standard deployments
+3. Pre-deployment gates: staging environment that mirrors production at 10% scale. Load test canary in staging before production deployment. Synthetic monitoring run against staging canary
+4. Post-deployment monitoring window: after 100% cutover, dedicated 30-minute monitoring window in the deployment runbook. On-call engineer watches dashboards. Automatic rollback triggers remain active for 4 hours post-cutover
+5. Deployment runbook: one page, version-controlled, reviewed in quarterly drills. Contains: health check command, rollback command (one CLI call), escalation path. Practiced in staging quarterly
+
+**Key numbers to mention**: Argo Rollouts metric check interval: configurable, minimum 30 seconds. Automated rollback trigger: error rate > 2x baseline. Business metric gate: > 5% relative drop. Post-cutover monitoring window: 30 minutes active + 4 hours automated triggers. Rollback command must be testable in staging.
+
+---
+
+## 💡 Pseudocode Walkthrough
+
+```pseudocode
+// Canary Deployment with Metric-Gated Promotion
+// Argo Rollouts-style automated progressive delivery
+
+DEFINE canary_rollout(new_image):
+  stages = [
+    { weight: 5,   min_requests: 10000, soak_minutes: 30 },
+    { weight: 25,  min_requests: 10000, soak_minutes: 60 },
+    { weight: 50,  min_requests: 10000, soak_minutes: 30 },
+    { weight: 100, min_requests: 10000, soak_minutes: 15 },
+  ]
+
+  deploy canary pods with new_image (5% of fleet initially)
+
+  for stage in stages:
+    set_traffic_weight(canary=stage.weight, stable=100-stage.weight)
+
+    // Wait for statistical significance
+    wait until canary_request_count >= stage.min_requests
+    wait_minutes(stage.soak_minutes)
+
+    // Evaluate promotion criteria every 60 seconds
+    metrics = query_prometheus(last_5_minutes)
+
+    if metrics.error_rate_canary > 2 * metrics.error_rate_stable:
+      rollback()  // set canary weight to 0%, page on-call
+      return DEPLOYMENT_FAILED("error_rate_regression")
+
+    if metrics.p99_canary > 1.5 * metrics.p99_stable:
+      rollback()
+      return DEPLOYMENT_FAILED("latency_regression")
+
+    if metrics.checkout_completion_canary < 0.95 * metrics.checkout_completion_stable:
+      rollback()
+      return DEPLOYMENT_FAILED("business_metric_regression")
+
+    // Metrics healthy: promote to next stage
+    log("Stage {stage.weight}% passed — promoting")
+
+  // All stages passed → decommission stable pods
+  scale_down(stable_pods)
+  return DEPLOYMENT_SUCCESS
+
+function rollback():
+  set_traffic_weight(canary=0, stable=100)
+  // Takes effect in < 30 seconds
+  // Canary pods remain for post-mortem analysis
+  alert_oncall("Canary rollback triggered — check dashboard")
+```
+
+---
+
 ## Decision Framework Checklist `[All Levels]`
 
 - [ ] Identified whether deployment includes database migrations (changes strategy selection)
@@ -408,6 +559,14 @@ labels:
 - [ ] For feature flags: created ticket for flag cleanup with 90-day expiry
 - [ ] Deployment runbook accessible to on-call team with rollback commands
 - [ ] Metrics split by version label for side-by-side comparison during deployment
+
+## Next Steps
+
+- **Traffic splitting infrastructure**: Istio VirtualService enables canary routing without Argo Rollouts → [Service Mesh Architecture](./service-mesh-architecture)
+- **Resilience during deployments**: Protect in-flight transactions with bulkheads during rolling updates → [Bulkhead Pattern](./bulkhead-pattern)
+- **Database schema safety**: Expand-contract pattern details → [Database Migration Patterns](/10-architecture/concepts/database-migration-patterns)
+- **Saga deployment safety**: Rolling out saga orchestration changes safely → [Saga Pattern Deep Dive](./saga-pattern-deep-dive)
+- **Progressive migration**: Strangler fig uses the same facade routing concepts → [Strangler Fig Migration](./strangler-fig-migration)
 
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*

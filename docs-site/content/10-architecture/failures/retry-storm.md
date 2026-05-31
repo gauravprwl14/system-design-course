@@ -947,6 +947,64 @@ public class CheckoutService {
 
 ---
 
+## 🔍 Quick Detection Checklist
+
+**Alert signals**:
+- [ ] Service recovers from an outage but error rates immediately spike back to 100% within seconds (recovery → re-collapse cycle)
+- [ ] Inbound request rate to a service is 10–100x higher than normal immediately after a brief downtime
+- [ ] `retry.attempt` metric spikes sharply when `retry.success` metric is near zero (all retries failing)
+- [ ] Consumer lag in async queues growing faster than consumers can drain (retried messages re-queuing)
+- [ ] Retry-related 429 responses appearing in logs; `Retry-After` headers present but clients ignoring them
+
+**Immediate mitigation steps**:
+1. **Apply emergency rate limiting**: If the recovering service has a token bucket rate limiter, ensure it's active and set to sustainable processing rate. If not, manually configure Nginx or API Gateway rate limiting to cap inbound requests at 110% of normal capacity.
+2. **Enable circuit breaker at all callers**: Force all callers to open circuit breakers on the recovering service, then gradually close them (10% traffic → 30% → 100%) over 5 minutes. This controls the flow-in rate instead of getting flooded at once.
+3. **Drain the retry backlog in batches**: If using a job queue (SQS, Kafka), reduce consumer concurrency to process accumulated retry messages at 20% of normal rate. Let the service recover before handling full backlog.
+4. **Inform clients with Retry-After**: Ensure 429 responses include `Retry-After: 30` so well-behaved clients pause retries for 30 seconds. This breaks the retry amplification cycle at the client level.
+5. **Monitor recovery curve**: Plot inbound request rate and error rate on the same chart. You should see error rate drop as rate limiting holds traffic below capacity. If error rate stays high despite rate limiting, the root cause is not yet resolved.
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Retry Storms
+
+#### Q1: Your payment service had a 30-second outage and has now recovered, but it's immediately overwhelmed again and collapsing. What's happening and how do you fix it?
+**What interviewers look for**: Recognition of the retry amplification pattern and knowledge of the specific interventions.
+
+**Answer framework**:
+1. **What's happening**: During the 30-second outage, 10,000 requests/second × 30 seconds = 300,000 requests accumulated. Each caller retries 3 times → 900,000 retry requests all fire at recovery time. At 10,000 req/s capacity, that's 90 seconds of backlog — but during those 90 seconds, new retries keep arriving. Service never recovers.
+2. **Immediate fix**: Enable emergency rate limiting — accept only 10,000 req/s (normal capacity), reject the rest with 429 + `Retry-After: 60`. Clients back off; backlog drains over 15 minutes instead of overwhelming the service.
+3. **Permanent fix**: Exponential backoff with jitter on all retry logic. Next time a 30-second outage happens, clients are spread across 30–300 seconds of backoff window instead of all retrying simultaneously at second 31.
+
+**Key numbers to mention**: Retry amplification factor = (outage duration × request rate × retry count) / service capacity. At 30s × 10K/s × 3 retries = 900K queued retries at recovery. Without rate limiting, service needs to handle 900K requests in the first second — 90x its capacity.
+
+---
+
+#### Q2: What is exponential backoff with jitter and why does jitter matter?
+**What interviewers look for**: Clear explanation of why randomness (jitter) is critical — not just "it spreads load" but understanding of the synchronization problem.
+
+**Answer framework**:
+1. **Without jitter, clients synchronize**: If 50 service instances all retry at t=1s, t=2s, t=4s exactly, they create synchronized traffic spikes at each interval. The recovering service sees 50,000 requests arriving at precisely t=1.000s, then again at t=2.000s.
+2. **Jitter breaks synchronization**: Full jitter: `delay = random(0, min(cap, base × 2^attempt))`. This spreads 50,000 clients across a random window. At attempt 1 (base=1s), clients retry anywhere from 0ms to 1000ms. The recovering service sees a smooth 50 req/s ramp instead of a 50,000 req/s spike.
+3. **AWS Full Jitter recommendation**: AWS's production recommendation is Full Jitter (random between 0 and the exponential cap) rather than "equal jitter" (cap/2 + random(0, cap/2)). Full jitter has the best spread distribution.
+
+**Key numbers to mention**: With no jitter and 50K clients retrying at 1-second intervals, peak retry rate = 50K/second. With Full Jitter and 1-second base, retries spread over 0–1000ms window = ~50 req/s average. 1000x reduction in peak load. Cap backoff at 30–60 seconds — users won't wait longer than that anyway.
+
+---
+
+#### Q3: How does a retry budget prevent retry storms better than a fixed retry count?
+**What interviewers look for**: Understanding of the self-regulating adaptive behavior vs. static configuration.
+
+**Answer framework**:
+1. **Fixed retry count (3 retries) amplifies during outages**: During a healthy period, 1,000 successful requests → 10 failures → 30 retries (3 per failure). During an outage: 0 successful requests → 10,000 failures → 30,000 retries. The retry count is the same but amplification is 30,000x.
+2. **Retry budget is proportional to success rate**: Budget = `recent_success_count × 10%`. During healthy periods: 1,000 successes/sec × 10% = 100 retry credits/sec. During outage: 0 successes/sec × 10% = 0 retry credits. When service is failing, retries automatically stop.
+3. **Self-regulating feedback loop**: Fewer retries → less load on recovering service → faster recovery → higher success rate → budget grows → retries resume. This is the same control-loop principle as TCP congestion control.
+
+**Key numbers to mention**: Netflix's Hystrix uses a similar adaptive mechanism. During a 30-second outage with 10% retry budget: 0 successes → 0 retries. Service recovers → 100 successes → 10 retry credits → gradual backlog drain. Without retry budget: 900K retries at recovery. With retry budget: retries controlled to 10% of processing capacity.
+
+---
+
 ## Key Takeaways
 
 1. **Retries amplify load during outages** - 30s outage → 900K retries at recovery

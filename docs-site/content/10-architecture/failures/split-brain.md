@@ -1224,6 +1224,64 @@ public class OrderService {
 
 ---
 
+## 🔍 Quick Detection Checklist
+
+**Alert signals**:
+- [ ] Write conflict errors appearing in application logs — `duplicate key value violates unique constraint` for records that shouldn't duplicate (e.g., two `order_id=123` rows with different data)
+- [ ] Auto-increment IDs from two nodes colliding — `ORDER-001` created in both DC-East and DC-West with different contents
+- [ ] Replication lag alert fires AND primary switch happens simultaneously — classic partition + failover pattern
+- [ ] Two nodes both reporting themselves as "primary" in monitoring (visible if you track `is_primary` metric per node)
+- [ ] Payment records and ledger records diverge — balance calculated from DB ≠ balance calculated from payment events
+
+**Immediate mitigation steps**:
+1. **Stop writes to the minority/suspect master immediately**: Put the suspected old master into read-only mode (`SET GLOBAL read_only=1` for MySQL, `SET default_transaction_read_only=on` for PostgreSQL). Do NOT allow further writes until the canonical master is confirmed.
+2. **Identify which node has the authoritative dataset**: Compare transaction counts, replication offsets, and timestamps between the two candidates. The node with higher replication offset and continuous write activity since partition start is typically the authoritative primary.
+3. **Quantify divergent writes**: Run diff queries to identify conflicting records (IDs that exist in both nodes with different data, records in one node but not the other). This determines the data loss/conflict scope.
+4. **Manually reconcile conflicting records**: This is painful and often manual. For financial data, use ledger events (event sourcing) to reconstruct canonical state if available. For orders, contact affected customers and void/reprocess conflicting transactions.
+5. **Apply permanent safeguards before restoring writes**: Verify quorum consensus is properly configured, add fencing tokens if missing, or deploy a witness node. Only then re-enable writes on the confirmed canonical primary.
+
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Split-Brain
+
+#### Q1: You're on-call and discover your database has two primaries. How do you handle the incident?
+**What interviewers look for**: Calm, systematic data-first approach — not panic-restart, but careful triage to minimize additional data loss.
+
+**Answer framework**:
+1. **Stop the bleeding**: Immediately put the old/suspect primary into read-only mode. Accept reduced availability — it's far better than more divergent writes accumulating while you investigate.
+2. **Determine canonical state**: Compare replication offsets and write timestamps. The node that was active as primary before the partition is usually authoritative. If you have event sourcing or WAL logs, use them as the source of truth.
+3. **Scope the damage, reconcile, harden**: Diff the two datasets. Reconcile conflicts (often manual for financial data). Then deploy quorum consensus or fencing tokens before re-enabling writes. File a post-mortem — split-brain is a severe incident.
+
+**Key numbers to mention**: The GitHub 2018 database split-brain took 24 hours to fully resolve due to complex data reconciliation across 10 million developer accounts. The split lasted only a few minutes, but the recovery took a full day. Prevention (quorum) costs ~2x infrastructure; recovery costs ~100x engineering time.
+
+---
+
+#### Q2: How does Raft prevent split-brain, and why does it require a majority of nodes to be healthy?
+**What interviewers look for**: Mathematical clarity on why majority = split-brain prevention, and how Raft's leader election enforces it.
+
+**Answer framework**:
+1. **The quorum invariant**: In a 5-node cluster, a majority is 3. Two separate partitions cannot both achieve a majority of 3, because 3+3=6 > 5. So at most one partition can form a quorum and elect a leader.
+2. **Raft leader election**: A candidate must receive `floor(N/2) + 1` votes to become leader. It contacts all other nodes requesting votes. If the network is partitioned and the candidate can only reach its own side, it only gets 2 votes (itself + 1 neighbor). Needs 3. Cannot become leader. The majority side elects a leader; the minority stays as followers.
+3. **The availability trade-off**: With 5 nodes and a 2/5 partition, the 2-node side goes fully unavailable — no reads or writes. This is the CAP theorem trade-off: choosing Consistency (no split-brain) over Availability (all nodes remain writable).
+
+**Key numbers to mention**: etcd (used by Kubernetes) uses Raft with a minimum of 3 nodes. With 3 nodes, quorum=2 — can survive 1 node failure. With 5 nodes, quorum=3 — can survive 2 node failures. Running with 2 nodes provides no split-brain protection at all (both sides think they're majority). PostgreSQL Patroni requires a 3-node cluster minimum for safe automatic failover.
+
+---
+
+#### Q3: How would you design a multi-datacenter database deployment to prevent split-brain?
+**What interviewers look for**: Practical architecture — not just theory but knowing what AWS/GCP primitives to use and how much it costs.
+
+**Answer framework**:
+1. **3-node cross-DC with quorum**: Deploy primary in DC-1, replica in DC-2, replica in DC-3 (or a lightweight witness in DC-3). Any single DC failure still leaves 2/3 nodes = quorum maintained. Example: PostgreSQL with Patroni + etcd (3 nodes across 3 AZs).
+2. **Managed database with built-in consensus**: AWS Aurora uses a 6-copy quorum across 3 AZs internally — you don't manage the replication topology. RDS Multi-AZ uses synchronous standby with automatic failover (30–60 seconds). These eliminate split-brain at the cost of vendor lock-in.
+3. **Two-DC with witness**: If budget allows only 2 DCs, add a t3.micro witness node in a third cloud region (costs ~$10/month). Witness doesn't store data — just acts as tiebreaker. PostgreSQL Patroni supports witness nodes natively.
+
+**Key numbers to mention**: AWS Aurora Multi-AZ: RPO ≈ 0 (no data loss), RTO ≈ 30 seconds. PostgreSQL Patroni with 3 nodes: RPO ≈ 0 (synchronous replication), RTO ≈ 30–60 seconds. Running without split-brain protection: RPO = potentially hours of data loss, RTO = 24+ hours for reconciliation. The infrastructure cost delta is $500–2,000/month; the recovery cost is $1M+.
+
+---
+
 ## Key Takeaways
 
 1. **Split-brain causes data corruption** - Two masters = divergent writes = lost data integrity
