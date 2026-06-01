@@ -28,10 +28,6 @@ references:
 
 ---
 
-> 🚧 **Full article coming soon.** This stub gives you the essentials to start thinking about this problem.
-
----
-
 ## The Core Problem
 
 Computing shortest routes across 100 million road segments with real-time traffic in under 500ms — naive Dijkstra on a full road graph would take minutes. Hierarchical routing algorithms pre-compute "important" roads (highways, arterials) so routing can skip low-level roads, achieving sub-second performance on global-scale graphs.
@@ -186,9 +182,70 @@ Raster tiles are PNG/JPEG images pre-rendered server-side. They are large (10–
 
 Raw geodata (OpenStreetMap contributions + proprietary surveys + satellite imagery analysis) is processed by a Geo Data Processing pipeline that simplifies geometry (Douglas-Peucker algorithm), assigns style layers, and encodes into Mapbox Vector Tile (MVT) format. Tiles are generated in parallel using a global job queue — rendering all 100B relevant tiles takes ~3 days on a 10,000-core cluster. Changed tiles (due to new road data or business updates) are re-rendered incrementally within minutes using a change-detection diff feed.
 
+**Quadtree decomposition and tile addressing:**
+
+The tile coordinate system uses a quadtree structure. At zoom level `z`, the world is divided into a 2^z × 2^z grid of tiles. Each tile at zoom `z` subdivides into four tiles at zoom `z+1`. Tiles are addressed by `(z, x, y)` where `x` is the column (west=0) and `y` is the row (north=0). This scheme lets clients request precisely the tiles visible in the current viewport based on screen bounds and zoom level, without any server-side computation.
+
+```mermaid
+graph TD
+    Z0["Zoom 0 — 1 tile<br/>(entire world)"]
+    Z1["Zoom 1 — 4 tiles<br/>(hemispheres)"]
+    Z2["Zoom 2 — 16 tiles<br/>(continental scale)"]
+    Z10["Zoom 10 — ~1M tiles<br/>(city scale, ~150km²/tile)"]
+    Z15["Zoom 15 — ~1B tiles<br/>(neighborhood scale, ~1km²/tile)"]
+    Z21["Zoom 21 — ~4.3T tiles<br/>(building scale, ~0.3m²/tile)"]
+
+    Z0 -->|split into 4| Z1
+    Z1 -->|split into 4| Z2
+    Z2 -->|"... ×4 per level"| Z10
+    Z10 -->|"... ×4 per level"| Z15
+    Z15 -->|"... ×4 per level"| Z21
+```
+
+Each quadtree node corresponds to a bounded geographic region (bounding box). This hierarchical structure enables efficient spatial queries: to find all tiles that intersect a viewport, traverse the quadtree top-down and collect tiles whose bounding boxes overlap the viewport. Traversal depth is bounded by zoom level, limiting search to O(log N) nodes regardless of total tile count.
+
 **Caching strategy:**
 
 Static tiles (zoom 0–12, rarely changes) are cached at CDN edge nodes globally with 30-day TTL and ~98% hit rate. Dynamic tiles (zoom 13–21, updated when road data changes) carry 1-hour CDN TTL. The CDN miss path fetches from a regional tile object store (Google Cloud Storage equivalent) — cold cache misses add 20–50ms. The client app pre-fetches tiles for the predicted 5km navigation corridor to eliminate mid-route cache misses.
+
+| Tile Strategy | Storage | Latency | Freshness | Best For |
+|--------------|---------|---------|-----------|---------|
+| Raster (PNG/JPEG) | 30–100KB/tile | Fast (CDN) | Stale until re-render | Satellite imagery, hillshading |
+| Vector (MVT protobuf) | 5–20KB/tile | Fast (CDN) + client render | Real-time style updates | Road maps, labels, POIs |
+| Hybrid (raster base + vector overlay) | 35–120KB/tile | Fast (CDN) | Mixed | Google Maps current approach |
+
+---
+
+## Routing Algorithm Comparison
+
+When candidates design Google Maps in an interview, they typically propose one of four approaches. The table below captures when each is appropriate and where each fails.
+
+| Algorithm | Query Latency | Preprocessing | Memory Overhead | Handles Live Traffic? | Verdict |
+|-----------|--------------|---------------|-----------------|----------------------|---------|
+| Plain Dijkstra | 5–30 s (100M nodes) | None | 10 GB | Yes (re-run each query) | Unusable at scale — fails the 500ms SLA by 6–60x |
+| A* with Euclidean heuristic | 1–5 s | None | 10 GB | Yes (re-run each query) | 3–10x improvement over Dijkstra, still 2–10x too slow for global routes |
+| Bidirectional Dijkstra | 2–10 s | None | 10 GB | Yes | Cuts search space ~50% — still too slow for large graphs |
+| Contraction Hierarchies (CH) | 1–50 ms | 4–8 h (offline) | 25 GB (with shortcuts) | Via TDCH edge weights | Production standard; Google, Uber, HERE all use this |
+| RAPTOR (transit) | 20–200 ms | 1–2 h | 5 GB | Partial (schedule-based) | Best for public transit multi-leg journeys; not for driving |
+| Arc Flags + ALT | 10–100 ms | 2–4 h | 20 GB | Partial | Alternative to CH; better for dynamically changing graphs |
+
+**Why CH wins at this scale:** The key insight is that most long-distance routes use only the top 0.01% of the road hierarchy (motorways, trunk roads). CH exploits this by pre-contracting low-importance nodes. The offline preprocessing is a one-time cost; query time pays nothing for nodes below the current hierarchy level being explored. The bidirectional search on the contracted graph explores roughly 1,000 nodes instead of 100 million.
+
+---
+
+## Google Maps Traffic Aggregation — H3 Hexagonal Indexing
+
+Google Maps uses a hexagonal tiling system (similar to Uber's H3) for aggregating GPS probe data into traffic speed estimates. Hexagons have a critical advantage over squares: **every hexagon has exactly 6 equidistant neighbors**, while squares have 4 edge-adjacent neighbors (distance 1) and 4 diagonal neighbors (distance √2 ≈ 1.41). This distortion in square grids causes inaccurate spatial averaging — a traffic event at a grid diagonal appears "farther away" than it geometrically is.
+
+**How Google Maps uses hexagonal aggregation:**
+
+GPS pings are snapped to road segments via HMM map-matching. For aggregating speeds across a region (e.g., to detect a traffic jam spanning multiple segments), pings are bucketed into hexagonal cells at resolution 8 (average cell area ~0.74 km²). For each cell, the median observed speed is computed over a 5-minute rolling window. The resulting "hex-speed" surface is then interpolated back to individual segment estimates for CH edge weights.
+
+The benefit over rectangular geohash cells: hexagonal cells have uniform distance to neighbors, so a single GPS ping contributes equally to its own cell and all 6 adjacent cells (inverse-distance weighting). With geohash rectangles, the contribution depends on which of 4 or 8 neighbor directions the neighbor lies in — introducing directional bias in dense urban street grids.
+
+**Waze crowdsourcing model (comparison):**
+
+Waze (owned by Google) uses a purer crowdsourcing approach: users explicitly report incidents (accidents, police, road closures) through the app. These reports are validated by agreement — if 3+ independent users report the same incident within 2km and 5 minutes, the incident is confirmed and shown to all users. This social validation mechanism filters GPS noise and allows traffic alerts to propagate in under 30 seconds (vs. 2-minute batch aggregation in the sensor-only pipeline). The trade-off: requires active community engagement; rural areas with low Waze density get poor coverage.
 
 ---
 
@@ -274,6 +331,54 @@ CREATE TABLE nav_sessions (
 
 ---
 
+## Re-routing and Navigation Session Management
+
+When a user takes a wrong turn, the navigation system must detect the deviation and compute a new route in under 1 second — fast enough that the audio instruction "recalculating" plays before the user drives past the next junction.
+
+**Deviation detection:**
+
+The mobile client continuously samples GPS at 1Hz during navigation. Each new GPS point is checked against the current route polyline using perpendicular distance. If the GPS point is more than **30 meters from the route polyline** for **3 consecutive samples** (3 seconds), a deviation is declared. This threshold balances false positives (GPS drift in urban canyons) against latency — waiting 10 seconds before re-routing would be too slow for fast-moving vehicles.
+
+**Incremental re-routing:**
+
+A full CH query from the current GPS position to the destination is triggered. Because the contracted graph is already loaded in the routing engine's memory (it was used for the original route computation), the bidirectional Dijkstra query completes in 5–20ms. The new route shares the majority of its path with the original route beyond the first common major junction — typically only the first 0.5–5km of path differs.
+
+**Session state management:**
+
+Each navigation session maintains state in a distributed session store (Redis Cluster, keyed by `session_id`):
+
+```
+session:{session_id} → {
+  current_route_node_ids: [...],
+  current_segment_index: int,   // which edge the user is on
+  eta_seconds: int,
+  reroute_count: int,
+  last_gps: {lat, lng, ts},
+  traffic_snapshot_version: int // used to detect stale edge weights
+}
+```
+
+Sessions expire after 24 hours of inactivity (TTL). At peak, Google Maps handles ~25 million concurrent navigation sessions — the session store must sustain ~25M key-value entries with ~1,000 reads/sec and ~200 writes/sec per session (GPS updates). With 25M sessions at ~500 bytes each, that is ~12GB of session state, easily accommodated in a Redis Cluster across 20 nodes (0.6GB per node).
+
+**Traffic-triggered re-routing:**
+
+Beyond wrong turns, routes may need updating because traffic conditions changed mid-journey. The navigation client compares the current traffic snapshot version against the version used to compute the active route every 60 seconds. If the edge weight for any segment in the upcoming 10km of route has changed by more than 15% (travel time), the client triggers a silent background re-route. If the new route saves more than 2 minutes vs. the current route, the user is prompted: "Faster route available — 4 minutes faster." This 2-minute threshold was tuned empirically to avoid overwhelming users with constant re-routing suggestions while still capturing meaningful time savings.
+
+```mermaid
+graph TD
+    GPS[GPS Client\n1Hz samples] -->|"perpendicular_dist > 30m for 3s"| DeviationDetect[Deviation Detector]
+    DeviationDetect -->|"deviation confirmed"| RerouteReq[Re-route Request]
+    GPS -->|"route still valid"| ETAUpdate[ETA Updater\nevery 60s]
+    ETAUpdate -->|"edge weight delta > 15%\nfor next 10km"| SilentReroute[Silent Re-route\nbackground]
+    SilentReroute -->|"new route saves > 2min"| UserPrompt[User Prompt\n'Faster route available']
+    RerouteReq --> CHEngine[CH Engine\n5-20ms query]
+    UserPrompt -->|"accepted"| CHEngine
+    CHEngine --> SessionStore[Session Store\nRedis, update route]
+    SessionStore --> Client[Update Client\nPush new polyline]
+```
+
+---
+
 ## Scale Bottlenecks
 
 | Traffic Level | Component That Breaks | Symptoms | Mitigation |
@@ -325,6 +430,23 @@ A non-obvious decision: ETA is not simply `route_distance / average_speed`. Uber
 3. **Conflating tile serving with routing.** Tiles are static pre-generated artifacts served from CDN with >98% cache hit rate and zero computation at request time. Routing is a real-time compute problem. Treating them as the same kind of problem (e.g., "just cache routes") misses that routes are personalized (origin + destination + departure time = unique), while tiles are shared by all users viewing the same area.
 
 **The insight that separates good from great answers:** Great candidates mention that re-routing on wrong turns is not a full re-computation from scratch — it uses incremental CH queries starting from the nearest valid road node. Because the contracted graph is already in memory, a re-route query takes 5–20ms. The remaining portion of the original CH hierarchy is reused, and only the local path from the current position to the first shared node changes. This is why navigation reroutes feel instant — it is genuinely fast, not a UX trick.
+
+**How to structure your answer in a 45-minute interview:**
+
+| Time | Focus |
+|------|-------|
+| 0–5 min | Clarify requirements: driving only or multi-modal? ETA accuracy SLA? Offline support? |
+| 5–15 min | High-level components: routing engine, tile server, traffic ingestion, client |
+| 15–25 min | Deep dive routing: why naive Dijkstra fails, CH preprocessing concept, bidirectional query |
+| 25–35 min | Deep dive traffic: GPS probe pipeline, Kafka + Flink, Redis edge weights, TDCH |
+| 35–40 min | Tile serving: vector vs. raster, CDN strategy, quadtree addressing |
+| 40–45 min | Scale numbers, bottlenecks, re-routing logic |
+
+**Follow-up questions to anticipate:**
+
+- "How do you handle GPS spoofing?" — traffic adversaries can flood fake GPS pings to manipulate routing for all users. Defense: outlier detection (speed > 200mph), anomaly scoring per device hash, rate-limiting probe contributions per token.
+- "How does Google Maps work offline?" — clients download a compressed subgraph for a geographic region (e.g., a city). The CH hierarchy for that region is pre-computed and bundled. Offline routing runs the same CH query on device, but with no live traffic overlay — uses historical speed profiles only.
+- "How do you support alternate routes?" — run CH k-shortest paths with a penalty on shared edges. After the first shortest path, edges on that path have their weights temporarily inflated (×1.3), and CH runs again. Repeat for 3 alternate routes. Each run takes <50ms, so returning 3 alternatives adds <150ms total.
 
 ---
 

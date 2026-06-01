@@ -5,4 +5,5 @@ export default {
   "mcp-server": "POC: MCP Server 🔴",
   "tool-calling-agent": "POC: Production Tool-Calling Agent 🟡",
   "multi-agent-pipeline": "POC: Multi-Agent Research Pipeline 🔴",
+  "agent-with-memory-poc": "POC: Agent with Memory 🟡",
 }

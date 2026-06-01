@@ -333,7 +333,340 @@ Source: [Cloudflare Blog — Privacy-first Web Analytics](https://blog.cloudflar
 
 ---
 
+## Level 2 — Deep Dive
 
+---
+
+## Event Ingestion at Scale
+
+### Kafka as the Ingestion Backbone
+
+At 1M+ events/sec, the collector fleet cannot write directly to any database. Kafka acts as the shock absorber between bursty ingest and downstream processing. Events are partitioned by `site_id` so that all events for a given site land on the same set of partitions — enabling stateful per-site operations (session stitching, HLL maintenance) without cross-partition shuffles in Flink.
+
+**Producer configuration trade-offs:**
+
+| Kafka `acks` setting | Durability | Throughput | Use when |
+|----------------------|-----------|-----------|----------|
+| `acks=0` (fire-and-forget) | None — broker crash = data loss | Highest (~3M events/sec per cluster) | Never for analytics; loss is invisible |
+| `acks=1` (leader ack) | Leader durability; follower lag = potential loss | High (~1M events/sec) | Real-time analytics — tolerable ±0.01% loss |
+| `acks=all` (ISR ack) | Full replica durability | Low (~300k events/sec) | Financial transactions, not analytics |
+
+Google Analytics and Amplitude both use `acks=1` for their ingest path. At 10 trillion events/month (Amplitude's published scale), losing 0.01% of events means losing 1 billion events/month — acceptable for behavioral analytics but unacceptable for billing or fraud.
+
+**Partition count sizing**: Each Kafka partition handles ~10MB/sec sustained. At 200MB/sec peak ingest (1M events/sec × 200 bytes), you need at minimum 20 partitions. Production deployments use 100–500 partitions to allow parallel consumer scaling headroom without repartitioning later (repartitioning requires full consumer group rebalance).
+
+```mermaid
+graph TD
+    subgraph Collectors ["Collector Fleet (Stateless, Auto-Scaling)"]
+        C1[Collector 1]
+        C2[Collector 2]
+        CN[Collector N]
+    end
+    subgraph KafkaCluster ["Kafka Cluster (partitioned by site_id % 500)"]
+        P1[Partitions 0-99\nSites A-F]
+        P2[Partitions 100-199\nSites G-M]
+        P3[Partitions 200-499\nSites N-Z]
+    end
+    subgraph Consumers ["Consumer Groups"]
+        FL1[Flink Workers 1-10\nSpeed Layer]
+        SP1[Spark Workers\nBatch Layer]
+    end
+    C1 & C2 & CN --> P1 & P2 & P3
+    P1 --> FL1
+    P2 --> FL1
+    P3 --> FL1
+    P1 & P2 & P3 --> SP1
+```
+
+### Schema-on-Read vs Schema-on-Write
+
+This is one of the most consequential architectural decisions in an analytics pipeline. Getting it wrong costs months of migration work.
+
+**Schema-on-write (Avro/Protobuf with Schema Registry):**
+- Events are validated against a registered schema at produce time
+- Invalid events are rejected at the collector boundary
+- Schema evolution requires explicit version management (backward/forward compatibility)
+- Consumers always know the field types; no runtime type coercion
+- Amplitude uses Avro with Confluent Schema Registry — every event type has a registered schema
+
+**Schema-on-read (raw JSON → Kafka → parse at query time):**
+- Collector accepts any JSON payload, stores it as-is
+- Validation happens when Spark/Flink reads the event
+- New custom properties (e.g., `ab_variant`, `plan_tier`) don't require schema registration
+- Type coercion errors surface downstream, not at ingest — harder to debug
+- Google Tag Manager's custom dimension model uses this approach
+
+**The right answer for a product analytics platform (Amplitude/Mixpanel style):** Schema-on-write for standard event fields (`event_type`, `user_id`, `timestamp`, `session_id`), schema-on-read for `custom_props` (a JSON blob column in ClickHouse). This gives you validation for the structural fields that power aggregation, while allowing arbitrary product-specific properties without schema migration.
+
+```mermaid
+graph LR
+    Browser --> Collector
+    Collector --> Validator{Schema\nValidation}
+    Validator -- Valid --> Kafka[Kafka\nAvro message]
+    Validator -- Invalid --> DLQ[Dead Letter Queue\nfor debugging]
+    Kafka --> Flink[Flink\nDeserializes Avro]
+    Flink --> CH[(ClickHouse\nstructured cols +\ncustom_props JSON)]
+```
+
+**Dead Letter Queue (DLQ):** Invalid events (malformed JSON, missing required fields, future-dated timestamps > 24h) go to a separate `events-dlq` topic. A separate alert fires if DLQ rate exceeds 0.1% of total ingest — this catches SDK bugs in customer applications before they cause silent data gaps.
+
+---
+
+## Session Stitching
+
+Session stitching is the process of grouping raw events into logical user sessions. It sounds simple but involves several edge cases that separate production-grade analytics from toy systems.
+
+### The 30-Minute Inactivity Timeout
+
+The industry-standard definition of a session: a contiguous group of events from a single user where no gap between consecutive events exceeds 30 minutes. A new session starts when:
+1. The user's first event arrives (no prior session)
+2. More than 30 minutes has elapsed since the last event in the current session
+3. A new day starts at midnight (even mid-session) — this is a convention used by Google Analytics for date-boundary attribution
+
+**Implementation in Flink (session windows):**
+
+Flink natively supports session windows via `EventTimeSessionWindows.withGap(Duration.ofMinutes(30))`. Each window is keyed by `user_id_hashed` (or cookie ID for anonymous users). When the window closes (30-minute gap detected), Flink emits a `SessionRecord` containing:
+
+```json
+{
+  "session_id": "derived_hash_of_first_event_id",
+  "user_id": "anon_cookie_abc123",
+  "site_id": "GA-1234",
+  "session_start_ms": 1748736000000,
+  "session_end_ms": 1748737234000,
+  "duration_sec": 1234,
+  "pageview_count": 7,
+  "is_bounce": false,
+  "entry_page": "/pricing",
+  "exit_page": "/checkout",
+  "events": ["pageview", "click", "pageview", "form_submit", ...]
+}
+```
+
+**The late-arrival problem:** Events from mobile apps arrive late due to offline-mode buffering. An event timestamped at 14:23 may arrive at the collector at 16:45 (device was on airplane mode). Flink's event-time watermarks handle this: the pipeline allows events up to 2 hours late before closing a session window. Events arriving after the watermark go to the DLQ for manual reconciliation.
+
+```mermaid
+sequenceDiagram
+    participant App as Mobile App (offline)
+    participant Coll as Collector
+    participant Flink as Flink Session Windows
+    participant CH as ClickHouse
+
+    App->>App: Buffer 14:23 event (offline)
+    Note over App: Device offline for 2.5h
+    App->>Coll: Sends 14:23 event at 16:48 (after reconnect)
+    Coll->>Flink: Event arrives with event_time=14:23
+    Note over Flink: Watermark is currently at 16:46\n(2hr behind wall clock)
+    Flink->>Flink: 14:23 < 16:46 - event is within 2h window
+    Flink->>CH: Include in session for 14:xx window
+    Note over Flink: If event arrived at 18:00,\nwatermark=16:00, event time < watermark → DLQ
+```
+
+### Anonymous to Identified User Stitching
+
+When a user visits a website anonymously, they receive a cookie ID (e.g., `anon_7f3a8b2c`). When they sign up or log in, the application calls `analytics.identify("user_12345")`. At this point, the pipeline must retroactively stitch all prior anonymous events to the now-known user ID.
+
+**The stitching problem at scale:**
+
+- Amplitude processes this in near-real-time using a "user stitching" Kafka consumer
+- The consumer maintains a `cookie_id → user_id` mapping in Redis (keyed by `(site_id, cookie_id)`)
+- When an `identify` event arrives, the consumer: (1) writes the mapping to Redis with 90-day TTL, (2) emits a backfill job that rewrites historical `user_id` for all past events with that cookie
+
+**Why you cannot do this in the hot path:** Retroactive backfill touches potentially thousands of historical event records per user. At 10M sign-ups/day, that's 10M backfill jobs triggering concurrent ClickHouse UPDATE operations. ClickHouse is not designed for point updates — it uses immutable parts. The correct approach is to track both `anon_id` and `user_id` on every event, join at query time using the stitching table.
+
+**Query-time stitching (the right approach):**
+
+```sql
+-- ClickHouse query: get all events for user_12345 including pre-login anonymous events
+SELECT e.*
+FROM analytics.events e
+LEFT JOIN analytics.user_stitching s
+    ON s.site_id = e.site_id AND s.cookie_id = e.anon_id
+WHERE
+    e.site_id = 'GA-1234'
+    AND (e.user_id = 'user_12345' OR s.user_id = 'user_12345')
+    AND e.timestamp >= now() - INTERVAL 90 DAY
+```
+
+The `user_stitching` table is small (one row per cookie per site) and fits in ClickHouse's in-memory mark cache, making the join fast even at trillion-event scale.
+
+---
+
+## Pre-Aggregation Strategy
+
+### Hourly Rollups vs On-the-Fly Queries
+
+The fundamental tension: raw events are flexible (supports any future query) but expensive to query; pre-aggregations are fast but inflexible (can't retroactively add dimensions).
+
+**Approach A: Pure on-the-fly queries on raw events**
+- Store all raw events in ClickHouse or BigQuery
+- Run queries against raw data at query time
+- Pros: any filter, any dimension, retroactive analysis
+- Cons: ClickHouse scanning 20TB/day of raw events for a "top pages" query takes 10–30 seconds even with columnar storage; not feasible for dashboards refreshing every 30 seconds
+
+**Approach B: Pure pre-aggregation (Cloudflare's approach)**
+- Aggregate at collection time; discard raw events
+- Store only minute-level or hour-level buckets
+- Pros: Sub-second queries; storage 99% smaller
+- Cons: Cannot answer "which users visited /pricing before signing up?" (no user-level raw events)
+
+**Approach C: Tiered storage (Amplitude/Mixpanel's approach)**
+
+| Layer | Storage | Retention | Query type |
+|-------|---------|-----------|-----------|
+| Hot raw events | ClickHouse | 90 days | Funnel analysis, cohort queries, user-level paths |
+| Minute-level aggregates | ClickHouse | 1 year | Real-time dashboards, top-N reports |
+| Daily rollups | BigQuery/S3 | Indefinite | Historical trends, year-over-year comparisons |
+| Monthly rollups | BigQuery | Indefinite | Executive dashboards, billing |
+
+Amplitude uses Approach C. The 90-day raw event window enables their "People" feature — showing the exact sequence of events for a specific user — while pre-aggregates serve the 99% of dashboard queries that don't need user-level detail.
+
+### Funnel Analysis — The Hardest Query in Analytics
+
+A funnel query asks: "Of 1M users who visited /pricing, how many completed checkout within 7 days?" This requires joining user-level event sequences — a query pattern that columnar OLAP databases struggle with.
+
+**Naive approach (wrong):**
+```sql
+-- This requires a self-join that explodes at scale
+SELECT COUNT(DISTINCT a.user_id)
+FROM events a
+JOIN events b ON a.user_id = b.user_id
+WHERE a.event_type = 'view_pricing'
+  AND b.event_type = 'checkout_complete'
+  AND b.timestamp > a.timestamp
+  AND b.timestamp < a.timestamp + INTERVAL 7 DAY
+```
+
+At 10B events this self-join produces a cross product of billions × billions rows — it will OOM even on a 1TB RAM server.
+
+**Amplitude's approach — ClickHouse window functions with pre-sorted arrays:**
+
+ClickHouse stores events per user as sorted arrays using the `groupArray` function. Funnel detection becomes an array scan (O(n) per user), not a join:
+
+```sql
+-- ClickHouse funnel query using windowFunnel()
+SELECT
+    level,
+    count() AS users_reaching_level
+FROM (
+    SELECT
+        user_id,
+        windowFunnel(7 * 86400)(  -- 7-day window in seconds
+            timestamp,
+            event_type = 'view_pricing',
+            event_type = 'add_to_cart',
+            event_type = 'checkout_complete'
+        ) AS level
+    FROM analytics.events
+    WHERE site_id = 'GA-1234'
+      AND timestamp >= now() - INTERVAL 30 DAY
+    GROUP BY user_id
+)
+GROUP BY level
+ORDER BY level;
+```
+
+`windowFunnel()` is a native ClickHouse aggregate function that scans each user's sorted event sequence in a single pass. At Amplitude's scale (10 trillion events/month = ~3.8M events/sec), this query returns in under 3 seconds for a 30-day window because:
+1. ClickHouse's columnar storage reads only `user_id`, `event_type`, `timestamp` columns (3 of potentially 30+ columns)
+2. Partition pruning by `toYYYYMM(timestamp)` limits scan to 1–2 partitions
+3. The `windowFunnel` aggregate processes each user's events without cross-user joins
+
+---
+
+## Real Company: Amplitude at 10 Trillion Events/Month
+
+Amplitude is a product analytics company serving 3,000+ enterprise customers including Ford, Walmart, and Dropbox. Their published engineering blog documents the transition to ClickHouse for sub-second funnel queries.
+
+**Scale numbers:**
+- **10 trillion events/month** (333 billion/day, ~3.8M events/sec average, 10M+ events/sec peak)
+- **Query SLA:** < 3 seconds for funnel queries on 90-day windows
+- **Cardinality:** billions of distinct users across all customers
+
+**Why Amplitude moved from Redshift to ClickHouse:**
+- Redshift (columnar, OLAP) handled aggregation queries well but struggled with funnel queries that required per-user sorted sequences — Redshift's `LISTAGG` function hit 65,535-character limits
+- User-level path analysis queries took 45–120 seconds on Redshift, exceeding the 3-second dashboard SLA
+- ClickHouse's native `windowFunnel()`, `retention()`, and `sequenceMatch()` aggregate functions handle these patterns natively in the storage engine
+- Benchmark: funnel query on 1B events — Redshift 47 seconds, ClickHouse 2.1 seconds (22x faster)
+
+**Data model at Amplitude scale:**
+- Events table: partitioned by `(customer_id, toYYYYMM(timestamp))`, sorted by `(customer_id, user_id, timestamp)`
+- Each partition averages 500GB compressed (ClickHouse compresses ~5:1 vs raw JSON)
+- Total storage: ~150PB compressed across all customers
+- Replication factor: 3 (ClickHouse ReplicatedMergeTree)
+- Hardware: Bare metal servers, 128 cores, 1TB RAM, NVMe SSDs — not cloud VMs (better price/performance for I/O-intensive workloads)
+
+**The ClickHouse-specific optimization Amplitude uses:** `AggregatingMergeTree` for pre-aggregated tables. Background merge operations automatically combine partial aggregates from different insert batches — meaning the pre-aggregation is handled by the storage engine itself, not a separate ETL job. The hourly Spark rollup job that other analytics companies run is unnecessary.
+
+Source: [Amplitude Engineering Blog — ClickHouse for Analytics](https://amplitude.engineering/how-amplitude-leverages-clickhouse-for-analytics-at-10-trillion-events-9e0d4eff1bcd) (published scale: 10T events/month as of 2022, growing 40% YoY)
+
+---
+
+## Extended Trade-Off Table: Storage Architecture Choices
+
+| Dimension | ClickHouse | Apache Druid | Apache Pinot | BigQuery | Redshift |
+|-----------|-----------|--------------|--------------|---------|---------|
+| Funnel queries | Native `windowFunnel()` — best | Limited | Limited | Manual SQL — slow | `LISTAGG` — limited |
+| Ingest model | Async batch inserts | Lambda (batch + stream) | Real-time UPSERT | Streaming inserts ($) | COPY from S3 |
+| Storage format | Columnar MergeTree | Columnar segments | Columnar segments | Columnar Capacitor | Columnar |
+| Real-time latency | 1–5 seconds | 1–5 seconds | < 1 second | 5–30 seconds | Minutes |
+| Operational complexity | Low (single binary) | High (Broker/Historical/Coordinator) | Medium | Zero (serverless) | Low (managed) |
+| JOINs | Full SQL JOINs | Limited | Limited | Full SQL JOINs | Full SQL JOINs |
+| Cost model | Self-hosted (CAPEX) | Self-hosted (CAPEX) | Self-hosted (CAPEX) | Per-TB scanned (OPEX) | Per-node-hour (OPEX) |
+| Used by | Cloudflare, Yandex, Amplitude | Lyft, Netflix | LinkedIn, Uber | Spotify, Twitter | Airbnb, Yelp |
+| Best for | Product analytics with funnels | Ad-hoc OLAP with pre-agg | Low-latency SLA < 100ms | Serverless historical | Managed warehouse |
+
+**Decision rule:**
+- Choose ClickHouse when: you need funnel analysis, you can self-host, you want SQL-compatible query interface, you process > 100B events/month
+- Choose Druid when: you need sub-second query on pre-aggregated rollup data and can tolerate operational complexity
+- Choose BigQuery when: you want zero ops, are already on GCP, and can tolerate 5–30 second query latency
+- Choose Pinot when: you need p99 < 100ms query latency for user-facing dashboards
+
+---
+
+## Interview Angle: OLTP vs OLAP — The #1 Candidate Mistake
+
+**The mistake:** Most candidates reach for PostgreSQL, DynamoDB, or MySQL when asked to design a web analytics system. They model events as rows, add indexes on `user_id` and `timestamp`, and propose read replicas for query scaling.
+
+**Why this fails:**
+
+OLTP databases (PostgreSQL, MySQL, DynamoDB) are optimized for:
+- Point reads by primary key (`WHERE user_id = X`)
+- Transactional writes (ACID semantics)
+- Low-cardinality result sets (fetch 1–100 rows)
+- Mutable records (UPDATE, DELETE are O(1))
+
+Analytics queries are the exact opposite:
+- Full table scans with GROUP BY (`SELECT page_url, COUNT(*) FROM events GROUP BY page_url`)
+- Read-heavy, write-once (events are immutable)
+- High-cardinality aggregations (100M rows → 1 result row)
+- No UPDATE/DELETE needed (events are append-only)
+
+**The query pattern incompatibility, quantified:**
+
+| Query | PostgreSQL (row store) | ClickHouse (columnar) | Ratio |
+|-------|----------------------|----------------------|-------|
+| `SELECT page_url, COUNT(*) ... GROUP BY page_url` on 1B rows | 45–90 seconds (scans all columns) | 1.2–3 seconds (scans 2 columns) | 30–45x |
+| `SELECT DISTINCT user_id` cardinality on 100M rows | 12–30 seconds | 0.8 seconds | 15–37x |
+| Funnel: 3-step sequence on 1B events | OOM / timeout | 2–4 seconds | N/A |
+
+**Why columnar storage wins for analytics:**
+
+A typical event has 20 fields. A `GROUP BY page_url` query needs only 2 of those 20 fields. A row-store reads all 20 fields for every event (200 bytes). A columnar store reads only the 2 relevant columns (10 bytes per event). For 1B events, that's 200GB vs 10GB of I/O — a 20x difference before any query optimization.
+
+Additionally, columnar stores achieve 5–10x compression on each column (same data type, similar values) vs 1.5–2x for row stores (mixed data types per row). This multiplies the I/O advantage to 50–100x.
+
+**What great candidates say instead:**
+1. "Events are immutable and append-only — I don't need ACID transactions, I need fast bulk ingest and fast aggregate reads. That's OLAP, not OLTP."
+2. "I'll use Kafka as a write buffer and ClickHouse as the serving layer. ClickHouse is columnar, compresses well, and has native functions for funnel and retention analysis."
+3. "Pre-aggregation at minute-level granularity reduces query-time I/O by 1000x for dashboard queries. Raw events stay for 90 days to support user-level funnel analysis."
+
+**Follow-up question the interviewer will ask:** "How do you handle the fact that ClickHouse doesn't support UPDATES, but you need to retroactively stitch anonymous users to identified users?"
+
+**Strong answer:** "ClickHouse does support `ReplacingMergeTree` for deduplication and `CollapsingMergeTree` for soft deletes, but for user stitching I'd avoid mutations entirely. Both `anon_id` and `user_id` fields are stored on every event at ingest time. The stitching table is a separate small table mapping `cookie_id → user_id`. At query time, a LEFT JOIN with the stitching table resolves anonymous events to known users. The join is fast because the stitching table is small and lives in ClickHouse's buffer cache."
+
+---
+
+## References
 
 | Resource | Type | What You'll Learn |
 |----------|------|------------------|
@@ -341,4 +674,6 @@ Source: [Cloudflare Blog — Privacy-first Web Analytics](https://blog.cloudflar
 | [Mixpanel Engineering: Analytics at Scale](https://engineering.mixpanel.com/) | 📖 Blog | How Mixpanel handles petabytes of behavioral event data |
 | [Segment Architecture: Customer Data Platform](https://segment.com/blog/rebuilding-our-infrastructure/) | 📖 Blog | How Segment rebuilt their data collection infrastructure at scale |
 | [Clickhouse for Real-Time Analytics](https://clickhouse.com/blog/real-time-analytics-at-scale) | 📚 Docs | Column-store analytics DB used by Cloudflare, ByteDance for analytics at scale |
-| [High Scalability: Analytics Platform Case Studies](http://highscalability.com) | 📖 Blog | Real-world analytics infrastructure at major companies |
+| [Amplitude Engineering — ClickHouse at 10T Events](https://amplitude.engineering/how-amplitude-leverages-clickhouse-for-analytics-at-10-trillion-events-9e0d4eff1bcd) | 📖 Blog | Production architecture details: funnel queries, windowFunnel(), storage layout |
+| [Cloudflare Blog — Privacy-First Web Analytics](https://blog.cloudflare.com/free-privacy-first-web-analytics/) | 📖 Blog | Schema-on-write vs schema-on-read, HLL without cookies, AggregatingMergeTree |
+| [ClickHouse windowFunnel documentation](https://clickhouse.com/docs/en/sql-reference/aggregate-functions/parametric-functions#windowfunnel) | 📚 Docs | Native funnel analysis aggregate function — the key to sub-second funnel queries |

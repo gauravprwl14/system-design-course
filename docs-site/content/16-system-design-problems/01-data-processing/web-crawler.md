@@ -415,6 +415,384 @@ Source: [CommonCrawl blog](https://commoncrawl.org/blog) and [AWS Big Data blog:
 
 ---
 
+## URL Frontier Implementation: BFS + Priority Queue + Bloom Filter
+
+Most interview answers describe the URL frontier as "a priority queue" — the real implementation layers three distinct data structures that serve different goals.
+
+### Why BFS Alone Fails
+
+Pure Breadth-First Search (BFS) would work on a small, well-behaved graph. At web scale, it fails for three reasons:
+
+1. **No priority**: BFS treats a spam farm URL identically to a Wikipedia article. You exhaust crawl budget on junk before reaching high-value pages.
+2. **No politeness**: BFS pops URLs in discovery order. If you discovered 500 URLs on `reddit.com`, they queue back-to-back and your crawler hammers Reddit at full network speed — violating `robots.txt` and triggering an IP ban.
+3. **Memory blowup**: BFS queues the entire frontier in memory. At 1B URLs × 64 bytes = 64GB, you cannot hold this on a single node.
+
+The solution is a **three-layer architecture** that separates priority scoring, politeness enforcement, and deduplication.
+
+### Layer 1: Priority Scoring (Front Queue)
+
+Before a URL enters the frontier, it is assigned a numeric priority score:
+
+```
+priority = (pagerank_estimate × 0.4)
+         + (domain_authority    × 0.3)
+         + (freshness_bonus     × 0.2)
+         + (content_type_bonus  × 0.1)
+
+where:
+  freshness_bonus   = 1.0 if page is new, decays to 0.1 after 30 days without change
+  content_type_bonus = 1.0 for HTML, 0.5 for sitemaps, 0.2 for media
+```
+
+URLs are inserted into a Redis Sorted Set (`ZADD frontier:hot <score> <url>`). The selector thread runs every 100ms, pops the top 500 URLs via `ZPOPMIN`, and routes them to per-domain queues.
+
+**Hot vs Cold tiers**: Only the top 10M highest-priority URLs live in Redis (hot tier). The remaining 990M URLs are stored in Kafka topics (cold tier). When the Redis frontier drops below 5M entries, a background process promotes URLs from Kafka by recalculating priority scores.
+
+### Layer 2: Per-Domain FIFO Queues (Back Queue)
+
+The selector thread reads the hot tier and routes each URL to `queue:<domain>` (e.g., `queue:nytimes.com`). Each domain queue is a Redis List (FIFO). A separate min-heap tracks the next allowed crawl time per domain:
+
+```
+domain_heap entry: (next_allowed_time_unix, domain_name)
+
+After each fetch from domain X:
+  next_allowed_time = now + max(robots_crawl_delay, 1.0)
+  HEAPPUSH(domain_heap, (next_allowed_time, domain_name))
+```
+
+Fetcher workers query `ZRANGEBYSCORE domain_heap 0 now` to find domains ready for crawling, then `LPOP queue:<domain>` to get the next URL. This two-tier design decouples global priority management from per-domain rate limiting.
+
+### Layer 3: Bloom Filter Deduplication Gate
+
+Before any URL enters the priority queue, it passes through a Bloom filter check. The filter sits in front of the entire frontier pipeline:
+
+```mermaid
+graph TD
+    NL[New URL from Parser] --> NORM[Normalize URL]
+    NORM --> BF{Bloom Filter\nLookup}
+    BF -- "Bit = 0\nDefinitely new" --> EXACT{Exact DB\nLookup}
+    BF -- "All bits = 1\nProbably seen" --> DROP[Discard]
+    EXACT -- "Not found" --> SCORE[Compute Priority Score]
+    EXACT -- "Found" --> DROP
+    SCORE --> HOT{Score >\nthreshold?}
+    HOT -- "Yes" --> REDIS[ZADD frontier:hot\nRedis Sorted Set]
+    HOT -- "No" --> KAFKA[Kafka frontier:cold\nTopic]
+    REDIS --> SELECT[Selector Thread\nevery 100ms]
+    SELECT --> DQ[Domain FIFO Queue\nqueue:domain]
+    DQ --> FW[Fetcher Worker\npops when domain ready]
+```
+
+**Combined parameter tuning for 1B URL frontier**:
+
+| Parameter | Value | Calculation |
+|-----------|-------|-------------|
+| Bloom filter size | 1.8 GB | 10 bits/element × 1B URLs ÷ 8 |
+| Hash functions (k) | 7 | Optimal: k = (m/n) × ln(2) |
+| False positive rate | 0.1% | At k=7, m=10×n |
+| Redis hot tier size | ~640 MB | 10M URLs × 64 bytes |
+| Domain heap size | ~80 MB | 10M active domains × 8 bytes |
+| Kafka cold tier | ~64 GB | 1B URLs × 64 bytes on disk |
+
+**BFS still matters at the micro level**: Within each domain's FIFO queue, URLs are ordered by discovery time (BFS order). This ensures you explore a site's top-level pages before drilling into deep subdirectories — which is how BFS finds high-value pages without needing PageRank for intra-site ordering.
+
+---
+
+## Distributed Crawler Coordination: Consistent Hashing
+
+A single-machine crawler cannot sustain 12,000 pages/sec (network bottleneck alone requires 10Gbps sustained). You need 50–200 crawler nodes working in parallel. The coordination challenge: how do you distribute 1B URLs across N nodes without routing the same URL to multiple nodes (duplicate work) or losing URLs?
+
+### The Assignment Problem
+
+Naive approaches fail:
+- **Random assignment**: URL `reddit.com/r/news/post-123` is assigned to node 7. URL `reddit.com/r/news/post-124` goes to node 3. Now two nodes are both trying to enforce politeness for `reddit.com` — they cannot coordinate their crawl delays without a shared lock (which becomes a bottleneck).
+- **Central coordinator**: One master node assigns URLs to workers. At 12,000 URLs/sec, the master processes 12,000 assignments/sec — manageable, but it becomes a single point of failure and a hot bottleneck at higher scales.
+
+### Consistent Hashing by Domain
+
+The solution: use consistent hashing of the **domain name** (not the full URL) to assign ownership of all URLs for a domain to a specific crawler node.
+
+```
+node = consistent_hash(domain) % num_crawler_nodes
+
+Example:
+  "nytimes.com"  → hash → node 7
+  "reddit.com"   → hash → node 2
+  "bbc.co.uk"    → hash → node 15
+
+All URLs for nytimes.com are fetched by node 7.
+Node 7 enforces crawl-delay for nytimes.com locally, no coordination needed.
+```
+
+This eliminates the need for distributed locks on per-domain rate limiting. Each node is the single authority for its assigned domains.
+
+### Rebalancing When Nodes Join or Leave
+
+Consistent hashing with a virtual node ring (150 virtual nodes per physical node) minimizes data movement during rebalancing:
+
+```mermaid
+graph TD
+    A[New URL Arrives] --> B[Extract Domain]
+    B --> C[consistent_hash domain]
+    C --> D{Node alive?}
+    D -- "Yes" --> E[Route to assigned node's\nRedis domain queue]
+    D -- "No, node failed" --> F[Successor node on ring\ntakes ownership]
+    F --> G[Pull pending domain\nurls from failed node's\nKafka partition]
+    G --> H[Continue crawling\nwith inherited state]
+```
+
+**Partition strategy**: Each crawler node owns a partition of the Kafka `frontier:cold` topic. Domain-to-partition assignment matches the consistent hash ring. When a node joins, it steals partitions from neighbors; when it leaves, the successor node absorbs its partitions. This is exactly how Kafka consumer groups work — the crawler reuses Kafka's rebalancing protocol.
+
+### Distributed Coordination Architecture
+
+```mermaid
+graph TD
+    FP[Frontier Producers\nLink Extractors] --> KF[Kafka: frontier:cold\n32 partitions]
+    FP --> RS[Redis Cluster: frontier:hot\n16 shards]
+    KF --> CN1[Crawler Node 1\ndomains: a-f]
+    KF --> CN2[Crawler Node 2\ndomains: g-m]
+    KF --> CN3[Crawler Node 3\ndomains: n-s]
+    KF --> CN4[Crawler Node 4\ndomains: t-z]
+    RS --> CN1
+    RS --> CN2
+    RS --> CN3
+    RS --> CN4
+    CN1 --> S3[Object Store\nRaw HTML]
+    CN2 --> S3
+    CN3 --> S3
+    CN4 --> S3
+    CN1 --> ZK[ZooKeeper / etcd\nNode Registry]
+    CN2 --> ZK
+    CN3 --> ZK
+    CN4 --> ZK
+    ZK --> LB[Coordinator\nRebalancing]
+```
+
+**Node discovery**: Each crawler node registers with ZooKeeper/etcd at startup, publishing its assigned domain hash range. When a node fails (heartbeat timeout after 30s), the coordinator redistributes its hash range to neighbors. Recovery time: ~90 seconds (30s detection + 60s partition transfer).
+
+### Googlebot Scale Reference
+
+Googlebot crawls approximately **20 billion pages per day** (source: Google Search Central documentation, 2023). That is:
+- 231,000 pages/sec sustained
+- ~20x higher than the 12,000 pages/sec target in this article
+- Requires ~1,000+ crawler nodes running in parallel across multiple data centers
+- DNS query rate: estimated 500k–1M DNS lookups/sec (many URLs share domains but CDN IPs rotate)
+- robots.txt fetches: ~200M distinct domains/day, with 24-hour cache TTL meaning ~2,300 robots.txt refreshes/sec
+
+At Googlebot scale, the consistent hashing ring has tens of thousands of nodes across US, EU, and APAC regions. Google geo-distributes crawling so that European domains are crawled from European data centers (lower RTT, compliance with data sovereignty rules).
+
+---
+
+## Politeness Implementation: robots.txt + Crawl-Delay
+
+Politeness is the most frequently skipped component in interview answers — and the most legally and operationally critical. A crawler without politeness will be IP-blocked within hours and may violate the Computer Fraud and Abuse Act (CFAA) in the US and similar laws elsewhere.
+
+### robots.txt: The Contract Between Crawler and Server
+
+The `robots.txt` protocol (formalized as RFC 9309 in 2022) defines which paths a crawler may fetch:
+
+```
+# Example robots.txt for a news site
+User-agent: Googlebot
+Allow: /news/
+Disallow: /private/
+Disallow: /user/*/settings
+Crawl-delay: 2
+Sitemap: https://news.example.com/sitemap.xml
+
+User-agent: *
+Disallow: /admin/
+Crawl-delay: 5
+```
+
+Your crawler must parse:
+1. `User-agent` blocks — match your crawler's name or use the `*` wildcard block
+2. `Allow` rules (take precedence over `Disallow` for matching paths)
+3. `Disallow` rules — prefix matching with `*` wildcard and `$` end-of-string anchors
+4. `Crawl-delay` — seconds to wait between requests to this domain
+5. `Sitemap` — URLs of XML sitemaps (seed these into your frontier directly for faster discovery)
+
+### robots.txt Cache Implementation
+
+Fetching robots.txt for every URL would double your request volume. Cache it:
+
+```sql
+-- robots_cache table
+CREATE TABLE robots_cache (
+    domain          VARCHAR(255) PRIMARY KEY,
+    raw_txt         TEXT,                       -- raw robots.txt body
+    crawl_delay_sec INT DEFAULT 1,              -- parsed Crawl-delay
+    disallow_rules  JSONB,                      -- [{user_agent, paths: [...]}]
+    allow_rules     JSONB,
+    sitemap_urls    JSONB,
+    fetched_at      TIMESTAMPTZ NOT NULL,
+    expires_at      TIMESTAMPTZ NOT NULL,       -- fetched_at + 24h
+    fetch_status    SMALLINT,                   -- HTTP status when fetched
+    is_all_allowed  BOOLEAN DEFAULT FALSE       -- robots.txt returned 4xx (allow all)
+);
+
+-- domain_crawl_state table (per-domain rate limiting)
+CREATE TABLE domain_crawl_state (
+    domain              VARCHAR(255) PRIMARY KEY,
+    last_fetch_at       TIMESTAMPTZ,            -- timestamp of most recent fetch
+    next_allowed_at     TIMESTAMPTZ,            -- last_fetch_at + crawl_delay
+    consecutive_errors  INT DEFAULT 0,          -- for exponential backoff
+    is_blocked          BOOLEAN DEFAULT FALSE,  -- manually blocked (spam, legal)
+    total_pages_crawled BIGINT DEFAULT 0,
+    crawl_delay_sec     INT DEFAULT 1           -- cached from robots_cache
+);
+```
+
+**Cache TTL**: 24 hours is the standard. Google uses 24 hours. Bing uses 24 hours. Some crawlers use 1 hour for high-churn news domains, but 24 hours is the safe default that respects server operators' intent without generating excessive robots.txt traffic.
+
+**Cache size calculation**: 10M active domains × 1KB average robots.txt = 10GB. Fits in Redis with LRU eviction. Cold domains (not crawled in 7 days) are evicted; on re-visit, robots.txt is re-fetched.
+
+### Crawl-Delay Enforcement Mechanics
+
+The `Crawl-delay` directive specifies the minimum number of seconds between consecutive requests to a domain. Implementation:
+
+```python
+# Pseudocode: Domain-aware fetch scheduling
+class DomainScheduler:
+    def __init__(self):
+        self.domain_heap = []  # min-heap: (next_allowed_time, domain)
+        self.domain_queues = {}  # domain -> deque of URLs
+
+    def add_url(self, url):
+        domain = extract_domain(url)
+        if domain not in self.domain_queues:
+            self.domain_queues[domain] = deque()
+            heappush(self.domain_heap, (time.time(), domain))
+        self.domain_queues[domain].append(url)
+
+    def next_ready_url(self):
+        while self.domain_heap:
+            next_time, domain = self.domain_heap[0]
+            if next_time > time.time():
+                return None  # no domain ready yet
+            heappop(self.domain_heap)
+            if self.domain_queues[domain]:
+                url = self.domain_queues[domain].popleft()
+                crawl_delay = robots_cache.get_delay(domain)
+                heappush(self.domain_heap, (time.time() + crawl_delay, domain))
+                return url
+        return None
+```
+
+**Key invariant**: A domain's `next_allowed_at` is updated *after* each successful fetch, not before. This means the crawl delay is measured from the end of the previous response, not the start. This is the correct interpretation of RFC 9309.
+
+### What Happens Without Politeness
+
+| Consequence | Mechanism | Timeline |
+|-------------|-----------|----------|
+| IP ban | Target server detects >N req/sec from single IP, adds to firewall | Minutes to hours |
+| User-Agent ban | Server blocks your crawler's User-Agent string | Days |
+| Legal risk | CFAA (US), Computer Misuse Act (UK) prohibit "unauthorized access" | Ongoing liability |
+| Data quality degradation | Server returns 503/429 or garbage responses under load | Immediate |
+| Reputation damage | IP listed in spam blacklists, affects all services on your IP range | Weeks to resolve |
+
+**The legal angle**: In *hiQ Labs v. LinkedIn* (9th Circuit, 2022), the court ruled that scraping publicly accessible data does not automatically violate CFAA. However, ignoring `robots.txt` and overwhelming servers crosses into unauthorized access territory. Respecting `robots.txt` is both the ethical and legally safer choice.
+
+---
+
+## Content Extraction Pipeline
+
+After a page is fetched, raw HTML must be parsed to extract two things: outbound links (for the URL frontier) and structured content (for the search index). These are two separate pipelines with different latency and accuracy requirements.
+
+### Link Extraction Pipeline
+
+Link extraction must be fast (inline with fetching) and complete (missing links = missing pages). The pipeline:
+
+```
+Raw HTML (gzipped, avg 100KB)
+    ↓
+HTML Parser (BeautifulSoup4 / Jsoup / html5lib)
+    ↓
+Link Normalization:
+  - Resolve relative URLs against base URL
+  - Canonicalize: lowercase scheme+domain, strip default ports
+  - Normalize path: collapse ../ and ./
+  - Strip fragment identifiers (#section)
+  - Sort query parameters alphabetically
+  - Remove tracking parameters (utm_*, fbclid, etc.)
+    ↓
+URL Filtering:
+  - Reject non-HTTP(S) schemes (mailto:, ftp:, javascript:)
+  - Reject file extensions irrelevant to text crawl (.exe, .zip, .mp4)
+  - Check URL length limit (max 2048 chars)
+  - Apply domain allowlist/blocklist
+    ↓
+Bloom Filter + DB Deduplication Check
+    ↓
+Priority Scoring
+    ↓
+URL Frontier (Redis hot tier or Kafka cold tier)
+```
+
+**Performance target**: Link extraction must complete in <50ms per page to avoid becoming the pipeline bottleneck. At 12,000 pages/sec, you have 1 billion extractions/day — use a compiled HTML parser (lxml in Python, Jsoup in Java) not an interpreted one.
+
+### Text Extraction Pipeline
+
+Text extraction is for downstream indexing, not URL discovery. It runs asynchronously from fetching (decoupled via a message queue):
+
+```mermaid
+graph TD
+    S3[Raw HTML in S3] --> Q[Kafka: raw-html-events]
+    Q --> P1[Parser Worker Pool\n×50 nodes]
+    P1 --> PE[Python/Java HTML Parser\nlxml / Jsoup]
+    PE --> TE[Text Extractor\nstrip tags, scripts, styles]
+    TE --> LO[Language Detection\nfasttext model]
+    LO --> TK[Tokenization\nword segmentation]
+    TK --> CI[Content Indexer\nElasticsearch / Solr]
+    PE --> ME[Metadata Extractor\ntitle, description, og:tags]
+    ME --> DB[(Metadata Store\nCassandra)]
+    PE --> LS[Link Extractor\nsee above]
+    LS --> FR[URL Frontier]
+```
+
+**JavaScript-rendered content**: ~30% of modern web pages require JavaScript execution to render meaningful content. Static HTML parsers miss this content entirely. Solutions:
+- **Headless browser pool**: Run 50–100 Chromium instances (via Playwright or Puppeteer). Throughput: ~50 pages/sec per instance (10x slower than static fetching). Reserve for high-priority pages (top 1M domains only).
+- **Rendered content cache**: After headless rendering, cache the rendered HTML in S3 for 1 hour. Re-fetch requests within 1 hour get the cached render.
+- **Content detection**: Classify pages as JS-heavy using lightweight heuristics (low raw text/HTML ratio, presence of `<script>` tags with known SPA frameworks) before committing to headless rendering.
+
+### Content Deduplication (Near-Duplicate Detection)
+
+URL deduplication catches exact URL matches. Content deduplication catches near-duplicates: pages with identical or near-identical text but different URLs (printer-friendly versions, paginated views, syndicated articles).
+
+**SimHash algorithm**:
+1. Extract text tokens from the page
+2. For each token, compute a 64-bit hash
+3. For each bit position: sum +1 for each token hash where that bit is 1, -1 where bit is 0
+4. The final SimHash is 1 where the sum is positive, 0 where negative
+5. Two pages are near-duplicates if their SimHash vectors differ by ≤ 3 bits (Hamming distance ≤ 3)
+
+```
+SimHash storage: 64 bits per page
+1B pages × 8 bytes = 8GB — fits in memory on a single high-memory node
+
+Lookup: For each new page's SimHash, check all pages within Hamming distance 3.
+Naive: O(n) per lookup — too slow.
+Optimized: Partition the 64-bit SimHash into 4 × 16-bit blocks.
+  Two hashes within distance 3 must share at least 1 identical 16-bit block.
+  Build 4 hash tables (one per block). Lookup = 4 hash table lookups.
+  Reduces 1B comparisons to ~1M per lookup.
+```
+
+---
+
+## Common Mistakes and How to Avoid Them
+
+| Mistake | Root Cause | Impact | Fix |
+|---------|-----------|--------|-----|
+| Forgetting robots.txt | Treating crawling as a pure engineering problem | IP ban, legal liability, data gaps | Fetch and cache robots.txt before first request to any domain; enforce per robots.txt Crawl-delay |
+| Single-tier URL queue | Thinking of the frontier as a simple FIFO | Politeness violations; low-quality crawl order | Two-tier queue: global priority front queue + per-domain FIFO back queues |
+| URL dedup only (not content dedup) | Missing that different URLs can serve identical content | Duplicate content in index; wasted storage | SimHash near-duplicate detection on extracted text |
+| No recrawl scheduling | Designing only for initial crawl | Stale index within days | Adaptive recrawl intervals: 6h for frequently-changing pages, 30d for stable pages |
+| Ignoring DNS caching | Each fetch triggers a DNS lookup | 50ms added to every fetch; DNS resolver overload | Local unbound DNS cache per crawler node; pre-warm with top 10M domains |
+| Not handling robots.txt failures | 5xx on robots.txt fetch | Either block domain (missed coverage) or allow all (risk) | On 5xx: treat as allow-all and retry in 1h. On 4xx: treat as allow-all permanently |
+| Fixed crawl-delay for all domains | robots.txt Crawl-delay varies (1s–60s per domain) | Violating fast-crawl-allowed domains; hammering slow-crawl domains | Read Crawl-delay from robots.txt cache; default to 1s if not specified |
+
+---
+
 ## 📚 Resources & References
 
 | Resource | Type | What You'll Learn |

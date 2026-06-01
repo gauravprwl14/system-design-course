@@ -14,6 +14,7 @@ export default {
   // --- Prompt Engineering ---
   "react-pattern": "🟢 ReAct Pattern",
   "tool-use-function-calling": "🟢 Tool Use & Function Calling",
+  "tool-use-patterns": "🟡 Tool Use Patterns",
   "prompt-engineering-for-agents": "🟡 Prompt Engineering for Agents",
   "meta-prompting": "🔴 Meta-Prompting",
   "structured-output": "🟡 Structured Output & JSON Mode",

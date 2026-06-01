@@ -92,6 +92,33 @@ graph TD
 
 ---
 
+## Level 1 — Surface (2-Minute Read)
+
+**What it is**: A system that lets users search available hotel rooms, reserve them atomically, and pay — while guaranteeing no two users can book the same room for the same night.
+
+**When you need this**: Any reservation system where inventory is finite and time-bound — hotel rooms, rental cars, airline seats. The pattern applies whenever "check availability" and "confirm reservation" must be atomic.
+
+**Core concepts:**
+- Availability is stored as a count per `(hotel, room_type, date)` — not per physical room
+- Search reads from a cache (stale by up to 60s); booking reads from the live DB
+- Row-level locking (pessimistic) or version-column (optimistic) prevents double-booking
+- Payments use the Saga pattern with compensating transactions — not 2PC
+- Idempotency key (`booking_id`) generated client-side prevents double charges on retry
+
+**Use this when / don't use this when:**
+
+| Use this when | Don't use this when |
+|--------------|---------------------|
+| Finite, time-bound inventory | Unlimited-supply digital goods |
+| Reservation must be exclusive (one room = one booking) | Soft reservations acceptable (e.g., waitlists) |
+| Multi-step booking (reserve → pay → confirm) | Single-step atomic purchase |
+
+---
+
+## Level 2 — Deep Dive
+
+---
+
 ## Component Deep Dive 1: Inventory Reservation and Concurrency Control
 
 The inventory reservation component is the most critical and most failure-prone part of a hotel booking system. Its job is deceptively simple: atomically decrement an availability counter when a booking is confirmed and atomically restore it on cancellation. In practice, it must handle thousands of concurrent requests racing over the same (hotel, room_type, date) inventory record.
@@ -193,6 +220,242 @@ Choreography (event-based: each service emits events and reacts to others' event
 **Idempotency is mandatory at every step**
 
 Every Saga step must be idempotent. The booking service generates a `booking_id` UUID client-side before the first API call. This UUID flows through every downstream call as an idempotency key. The payment gateway receives `booking_id` as the payment reference — duplicate retries return the original charge result. The DB upserts on `booking_id` as primary key. Without idempotency, network retries cause double charges — the most user-visible failure mode.
+
+---
+
+## Component Deep Dive 4: Availability Calendar — Bitmap Representation
+
+At Booking.com scale (150M+ listings, 1.5M room-nights sold per day), the availability calendar cannot be a simple SQL table scan. The naive approach — querying `room_inventory` for each date in a search window — requires 30 rows per hotel per search for a 30-night window. At 500,000 search QPS, that is 15 million DB reads per second for calendar lookups alone. The solution is to compress each hotel's availability into a compact bitmap structure served from cache.
+
+### Bitmap per room type per date range
+
+Instead of one row per `(hotel, room_type, date)`, the cache stores a **64-bit integer bitmap** representing 64 consecutive days of availability for each `(hotel_id, room_type_id, start_week)` bucket. Bit position `i` = 1 means at least one room of that type is available on day `i`. Bit position `i` = 0 means fully booked.
+
+To check availability for a 5-night stay starting day `D`, you compute:
+```
+mask = ((1 << 5) - 1) << D_offset   # bits D through D+4
+available = (bitmap & mask) == mask  # all 5 bits must be 1
+```
+
+This reduces a 30-row DB scan to a single 64-bit integer AND operation — O(1) in cache.
+
+```mermaid
+graph TD
+    subgraph "Availability Bitmap (64-bit, 8 weeks)"
+        BM["hotel_id=42, room_type=KNG, week=2026-W01\nBitmap: 1111101111111011111111111111111111111111111111111111111111111111"]
+        BM --> BITS["Bit 0=Jan1=1 available\nBit 1=Jan2=1 available\nBit 4=Jan5=0 SOLD OUT\nBit 7=Jan8=0 SOLD OUT\n..."]
+    end
+
+    subgraph "Search Path"
+        SEARCH["Search: Jan 3–6 (4 nights)"] --> MASK["mask = 0b...001111 << 2 = bits 2,3,4,5"]
+        MASK --> AND["bitmap AND mask == mask ?"]
+        AND --> |"Bit 4 = 0 — fails"| NOPE["NOT AVAILABLE"]
+        AND --> |"All bits = 1"| AVAIL["AVAILABLE"]
+    end
+
+    subgraph "Update Path"
+        BOOKING["Booking confirmed: Jan 5"] --> CLR["Clear bit 4: bitmap = bitmap AND ~(1 << 4)"]
+        CLR --> WRITE["Write updated bitmap to Redis\nInvalidate affected search cache keys"]
+    end
+```
+
+### Handling partial availability
+
+A bitmap bit = 1 means "at least 1 room available" — it does not encode the count. To answer "how many rooms are available?", the search layer uses a separate **count array** (one byte per day, values 0–255) stored alongside the bitmap. The bitmap is used for fast boolean filtering; the count array is used for display ("3 rooms left").
+
+For multi-room bookings (e.g., "reserve 3 Standard Twin rooms for a conference"), the system checks that `count[day] >= 3` for every day in the stay. The count decrement on booking is atomic: `WATCH bitmap_key` + Lua script in Redis, or a DB transaction updating `room_inventory.available_count`.
+
+### Cache population and invalidation
+
+The bitmap cache is populated by two mechanisms:
+1. **Initial bulk load**: when a hotel updates its inventory (e.g., marking rooms as out-of-service), a batch job recomputes all bitmaps for that hotel and writes them to Redis. TTL = 24 hours.
+2. **Incremental invalidation**: when a booking commits, the Booking Service sends a `BITMAP_UPDATE` event to a Kafka topic. A Bitmap Updater consumer reads the event, clears the appropriate bit in Redis, and writes the updated bitmap. End-to-end latency < 500ms.
+
+**Failure mode**: If the Kafka consumer lags during a traffic spike, cached bitmaps stay stale for longer than 500ms. Users searching will see "available" for a room already booked. This is acceptable — the booking service enforces real availability at reservation time. The bitmap is an optimization for search UX, not a consistency boundary.
+
+---
+
+## Component Deep Dive 5: Double-Booking Prevention — Optimistic vs Pessimistic Locking
+
+This is the most technically nuanced part of the design and the question interviewers focus on most. The choice between optimistic and pessimistic locking depends on contention level, not on which is "newer" or "more scalable."
+
+### The race condition in detail
+
+The classic double-booking race condition:
+
+1. User A and User B both search for the last available Standard King room on Dec 25.
+2. Both see `available_count = 1`.
+3. Both click "Book."
+4. Both proceed to the booking transaction.
+5. Both execute: `UPDATE room_inventory SET available_count = 0 WHERE ... AND available_count > 0`.
+6. Without coordination, both updates succeed — two bookings for one room.
+
+The "AND available_count > 0" clause is a partial defense but is not atomic in a concurrent environment without an explicit lock — two transactions can both read `available_count = 1`, both pass the check, and both issue the UPDATE before either commits.
+
+### Approach A: Pessimistic Locking (SELECT FOR UPDATE)
+
+```sql
+BEGIN;
+
+-- Acquire exclusive row lock — concurrent writers block here
+SELECT available_count, version
+  FROM room_inventory
+ WHERE hotel_id = :hotel_id
+   AND room_type_id = :room_type_id
+   AND stay_date    = :date
+   FOR UPDATE;
+
+-- If available_count > 0, proceed with booking
+INSERT INTO bookings (...) VALUES (...);
+UPDATE room_inventory
+   SET available_count = available_count - 1
+ WHERE hotel_id = :hotel_id
+   AND room_type_id = :room_type_id
+   AND stay_date    = :date;
+
+COMMIT;
+-- Lock released on COMMIT
+```
+
+User B's `SELECT FOR UPDATE` blocks until User A's transaction commits or rolls back. After User A commits, User B's query re-reads `available_count = 0` and aborts. No double booking.
+
+**Lock hold duration**: The lock is held from `SELECT FOR UPDATE` to `COMMIT`. If the booking service makes a synchronous payment API call inside the transaction, the lock is held for potentially 2–5 seconds — blocking every other thread trying to book that room type for that date. This is why payment should happen outside the DB transaction (see Saga pattern above).
+
+### Approach B: Optimistic Locking (version column)
+
+```sql
+-- Step 1: Read without lock
+SELECT available_count, version
+  FROM room_inventory
+ WHERE hotel_id = :hotel_id
+   AND room_type_id = :room_type_id
+   AND stay_date    = :date;
+-- Returns: available_count=1, version=42
+
+-- Step 2: Attempt conditional update
+BEGIN;
+UPDATE room_inventory
+   SET available_count = available_count - 1,
+       version         = version + 1
+ WHERE hotel_id    = :hotel_id
+   AND room_type_id = :room_type_id
+   AND stay_date   = :date
+   AND version     = 42;          -- <-- optimistic check
+-- rows_affected = 1 → success, commit
+-- rows_affected = 0 → conflict, rollback and retry
+COMMIT;
+```
+
+If User A and User B both read `version = 42` and both issue the conditional UPDATE, only one will see `rows_affected = 1`. The other sees 0 and retries with the fresh row (which now has `available_count = 0`), and aborts.
+
+### Comparison table
+
+| Dimension | Pessimistic (SELECT FOR UPDATE) | Optimistic (version column) |
+|-----------|---------------------------------|-----------------------------|
+| Lock held during payment? | Yes, if payment is inside tx | No — lock is implicit |
+| Blocking on contention? | Yes — second user blocks | No — second user retries immediately |
+| Performance at low contention | Slightly slower (lock overhead ~2–5ms) | Faster (no blocking) |
+| Performance at high contention | Degrades — queue forms | Degrades — retry storm |
+| Correctness guarantee | Strong (serializable) | Strong (compare-and-swap) |
+| Complexity | Lower | Higher (retry logic required) |
+| Recommended for | Last room, high-demand dates, peak events | Most normal bookings (low contention) |
+| Retry storms? | No — waiters are queued | Yes — if 50 users race for 1 room |
+
+### When to use which
+
+**Use pessimistic locking when:**
+- `available_count <= 2` — the last 1–2 rooms have a high probability of contention
+- The date is a known peak (New Year's Eve, sold-out event nearby)
+- The hotel_id is flagged as "high demand" based on recent booking velocity
+
+**Use optimistic locking when:**
+- `available_count >= 10` — collision probability is low
+- Normal weekday dates, off-season hotels
+- You want to minimize lock wait time for the common case
+
+**Booking.com's approach**: They use pessimistic locking (`SELECT FOR UPDATE` in MySQL) as the default, with a 100ms statement timeout. If a lock cannot be acquired within 100ms, the booking returns a "temporarily unavailable, please retry" response rather than waiting indefinitely. This bounds the worst-case user experience.
+
+```mermaid
+flowchart TD
+    START["User clicks Book"] --> READ["Read room_inventory\n(available_count, version)"]
+    READ --> CHECK{available_count > 0?}
+    CHECK --> |No| SOLD["Return 409 Sold Out"]
+    CHECK --> |Yes| CONTENTION{High contention?\navailable_count <= 2\nor peak date?}
+
+    CONTENTION --> |Yes — last rooms| PESSIMISTIC["SELECT FOR UPDATE\n(acquire row lock)"]
+    CONTENTION --> |No — normal| OPTIMISTIC["Attempt conditional UPDATE\nWHERE version = :read_version"]
+
+    PESSIMISTIC --> LOCK_CHECK{Lock acquired\nwithin 100ms?}
+    LOCK_CHECK --> |No| TIMEOUT["Return 503 Retry\n(lock timeout)"]
+    LOCK_CHECK --> |Yes| LOCK_UPDATE["UPDATE available_count - 1\nINSERT booking row\nCOMMIT (releases lock)"]
+    LOCK_UPDATE --> SUCCESS["Return 200 Booking Confirmed"]
+
+    OPTIMISTIC --> OPT_CHECK{rows_affected = 1?}
+    OPT_CHECK --> |Yes| SUCCESS
+    OPT_CHECK --> |No — conflict| RETRY["Retry with fresh data\n(max 3 attempts)"]
+    RETRY --> READ
+```
+
+---
+
+## Component Deep Dive 6: Dynamic Pricing — Caching Strategy for Rate Queries
+
+Hotel room rates are not static. Booking.com and Expedia apply yield management algorithms that adjust prices based on:
+- **Occupancy level**: prices rise as rooms fill up (typically: >70% occupied → +15–30%)
+- **Days until check-in**: last-minute discounts or premiums depending on hotel category
+- **Demand signals**: local events, competitor pricing, seasonal patterns
+- **Channel**: direct booking vs OTA vs corporate account
+
+This means the `price_usd` field in `room_inventory` is rewritten frequently — potentially every few minutes for high-demand hotels. At 500,000 price queries per second (same as availability queries), reading live prices from Postgres on every request is infeasible.
+
+### Three-tier pricing cache
+
+```
+Tier 1 — Browser/CDN cache: 5-minute TTL
+    └── Acceptable for initial price display in search results (may be stale)
+
+Tier 2 — Redis price cache: 2-minute TTL, keyed by (hotel_id, room_type_id, date)
+    └── Used by search service for sub-second price lookups
+    └── Invalidated by pricing engine on every price change event
+
+Tier 3 — Postgres room_inventory: Ground truth, <50ms read
+    └── Used at booking confirmation to get the authoritative price
+    └── Price displayed to user at checkout is always a fresh DB read
+```
+
+**Cache invalidation flow**: The pricing engine runs as a separate service. When it recalculates prices for a hotel (event-driven, triggered by occupancy changes), it:
+1. Writes new `price_usd` to `room_inventory` (DB update)
+2. Publishes a `PRICE_UPDATED` event to Kafka
+3. The Redis cache invalidator consumer deletes the affected Redis keys
+
+Because Tier 2 has a 2-minute TTL anyway, even if the invalidation event is delayed, the cache self-heals within 2 minutes. Tier 1 (browser cache) means users may see a 5-minute-old price in search results — but the booking page always shows the fresh price.
+
+**The price guarantee problem**: If a user sees price X in search results (from Tier 1 cache), then the price changes to X+20 before they click "Book," they will see the higher price at checkout. This is the same behavior as airline booking sites. The alternative — holding the displayed price for the user — requires a "price lock" record in the DB with an expiry (similar to the soft room hold), which adds complexity only justified for premium booking flows.
+
+### Price query SQL pattern
+
+The booking confirmation page fetches price directly from the source of truth:
+
+```sql
+SELECT price_usd
+  FROM room_inventory
+ WHERE hotel_id    = :hotel_id
+   AND room_type_id = :room_type_id
+   AND stay_date   BETWEEN :check_in AND :check_out - INTERVAL '1 day'
+ ORDER BY stay_date;
+-- Sum prices across all nights; multi-night stays may have different per-night rates
+```
+
+For a 5-night stay, this returns 5 rows — one price per night. The booking total is the sum. This allows the pricing engine to set different prices per night (e.g., Friday night priced higher than Monday).
+
+### Dynamic pricing numbers
+
+| Scenario | Typical price change | Frequency |
+|----------|---------------------|-----------|
+| Hotel reaches 70% occupancy | +15–30% on remaining rooms | Once per significant booking |
+| T-7 days before check-in | ±10% (last-minute algorithm) | Daily re-evaluation |
+| Local event detected (concert, conference) | +20–80% | Set once, persists until event |
+| Competitor price drop (if tracked) | -5–10% response | Within 1–4 hours |
 
 ---
 
@@ -309,7 +572,35 @@ Source: Booking.com Engineering Blog — [How we improved our booking system](ht
 
 **What the interviewer is testing:** Whether you understand that the hard problem is not the happy path (one user books a room) but the concurrency edge cases — what happens when two users race for the last room, and what happens when payment fails midway through a booking. The interviewer wants to see you identify the TOCTOU race condition and propose a correct atomic solution.
 
-**Common mistakes candidates make:**
+### The locking question: why candidates get it wrong
+
+The most common candidate mistake on this problem is to propose **pessimistic locking everywhere**, reasoning that "we can't risk double-booking, so we must lock everything." This fails at scale for two reasons:
+
+1. **Pessimistic locks held across payment calls** block concurrent writers for 2–5 seconds. At 300 bookings/sec for a popular hotel, a queue forms behind every payment call — booking latency spikes to 10–60 seconds for users unlucky enough to start a booking while the previous one's payment is in flight.
+
+2. **Lock contention on normal dates is unnecessary**. If a hotel has 50 Standard King rooms available for a Tuesday in October, the probability of two users racing for the last room is near zero. Acquiring an exclusive row lock for every booking on that date serializes all 50 bookings unnecessarily.
+
+**The correct nuanced answer**: Use optimistic locking as the default (low contention, common case) and fall back to pessimistic locking for the last 1–2 rooms.
+
+```
+if available_count >= 3:
+    → Optimistic locking (version column compare-and-swap)
+    → Retry up to 3 times on conflict
+    → < 1% conflict rate for available_count >= 3
+
+elif available_count <= 2:
+    → Pessimistic locking (SELECT FOR UPDATE)
+    → 100ms timeout to acquire lock
+    → Return 503 retry if timeout exceeded (don't queue indefinitely)
+```
+
+This adaptive strategy gives you O(1) throughput for normal bookings (no waiting) while preventing the double-booking race condition for the genuinely scarce inventory cases.
+
+**Why optimistic locking is correct for most hotel bookings**: Hotel booking writes occur at ~12/sec globally and ~0.1/sec per room type per date for a given hotel. At this write rate, the probability of two users submitting a booking for the same `(hotel, room_type, date)` within the same 50ms transaction window is ~0.005%. Pessimistic locking for this case is pure overhead. Optimistic locking's retry cost — one extra DB round-trip on conflict — is paid only in the rare collision case.
+
+**When pessimistic wins**: New Year's Eve in a boutique hotel. Available rooms: 1. Users racing: potentially hundreds. Optimistic locking would cause a retry storm — all users retry simultaneously, hit the updated `available_count = 0`, and fail. But in this case, the failure is the correct outcome anyway. The only user who should succeed is the first one to commit. Pessimistic locking ensures exactly one winner; optimistic locking also ensures exactly one winner (everyone else gets `rows_affected = 0`). The difference is that pessimistic locking serializes the attempts in a predictable queue, while optimistic locking causes a thundering herd of retries. For the last-room scenario, pessimistic locking is cleaner.
+
+### Common mistakes candidates make
 
 1. **Application-level locking with Redis SET NX** — candidates often reach for Redis distributed locks because they feel modern. This is wrong for inventory: Redis locks are advisory, not enforced by the inventory DB. A process crash, a Redis failover, or clock drift can cause two bookings for one room. The DB transaction is the enforcement boundary.
 
@@ -317,7 +608,15 @@ Source: Booking.com Engineering Blog — [How we improved our booking system](ht
 
 3. **Using 2PC across services** — some candidates propose two-phase commit between the booking service and payment service to guarantee consistency. 2PC is impractical across service boundaries (payment gateways do not implement 2PC) and creates distributed locks that span external network calls. The correct answer is the Saga pattern with compensating transactions.
 
-**The insight that separates good from great answers:** Recognizing that search and booking have fundamentally incompatible consistency requirements. Search can tolerate stale data (60-second-old cache) because the cost of showing a stale "available" result is just a failure at booking time — not a data corruption. But booking must be strictly consistent because the cost of overselling is a real customer harm. A great candidate explicitly separates these two subsystems, gives each its own consistency model, and explains why eventual consistency is safe for search but unsafe for the booking transaction.
+4. **Proposing pessimistic locking globally** — as described above, holding DB row locks during payment calls (which take 500ms–2s) creates a serialization bottleneck that destroys throughput at scale. The lock must be released before the payment API call, not after.
+
+5. **Confusing bitmap availability with ground-truth availability** — the bitmap cache is a search optimization. Candidates sometimes say "check the bitmap at booking time to prevent double-booking." Wrong: the bitmap can be stale by up to 500ms. Always check the live `room_inventory` table — with a lock — at booking time.
+
+### The insight that separates good from great answers
+
+Recognizing that search and booking have fundamentally incompatible consistency requirements. Search can tolerate stale data (60-second-old cache) because the cost of showing a stale "available" result is just a failure at booking time — not a data corruption. But booking must be strictly consistent because the cost of overselling is a real customer harm. A great candidate explicitly separates these two subsystems, gives each its own consistency model, and explains why eventual consistency is safe for search but unsafe for the booking transaction.
+
+An exceptional answer also mentions **dynamic TTL based on occupancy** (Booking.com's technique): when a hotel reaches 80% occupancy, the search cache TTL drops from 60 seconds to 15 seconds, trading cache efficiency for freshness as the hotel approaches sell-out. This demonstrates understanding that consistency requirements are not binary — they exist on a spectrum that should adapt to the current state of the system.
 
 ---
 
