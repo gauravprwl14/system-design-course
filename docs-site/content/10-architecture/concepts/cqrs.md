@@ -561,6 +561,70 @@ All kept in sync via events from Kafka
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on CQRS
+
+#### Q1: Explain CQRS and when you would use it.
+**What interviewers look for**: A clear definition, a concrete use case, and awareness of the added complexity — they want to see you don't apply it everywhere.
+
+**Answer framework**:
+1. **CQRS separates the read model from the write model.** Commands (writes) go to a normalized write store optimized for integrity (ACID transactions, validation). Queries (reads) hit purpose-built read models optimized for query speed (denormalized, pre-joined, or in a different database like Elasticsearch).
+2. **When to use**: Read-heavy systems with divergent read/write patterns (e.g., 100:1 read/write ratio); when you need multiple different views of the same data (search index, analytics dashboard, real-time view); naturally pairs with event sourcing.
+3. **When NOT to use**: Simple CRUD apps where reads are just GET-by-ID; small teams where the added infrastructure complexity (event bus, projections, multiple DBs) isn't justified; when strong consistency is required and eventual consistency isn't acceptable.
+
+**Key numbers to mention**: Read/write ratio is the trigger — above 20:1, CQRS typically pays off. The sync lag between write and read models is typically 10–100ms with event-driven projection.
+
+---
+
+#### Q2: How do you handle read/write model synchronization lag in CQRS?
+**What interviewers look for**: Concrete strategies for the "stale read after write" problem and awareness of the user-facing symptoms.
+
+**Answer framework**:
+1. **Accept it by design** — 10–100ms eventual consistency is fine for most use cases (feeds, product listings, dashboards). The user doesn't see the difference between "just confirmed" and "shown on list 50ms later."
+2. **Read-your-own-writes**: After a user writes, route their immediate subsequent read to the write database for that session/operation. All other users read from the (potentially stale) read model. This solves the "I just placed an order but it's not in my order list" problem.
+3. **Optimistic UI + event notification**: Show the updated state immediately on the client side after the user action, before the read model catches up. When the event is projected, push a WebSocket notification to confirm. If something goes wrong, roll back the UI.
+
+**Key numbers to mention**: Sync lag with Kafka + CDC (Debezium) is typically under 100ms end-to-end. If your read model is a Redis cache refreshed on events, it can be under 10ms.
+
+---
+
+#### Q3: What are the consistency trade-offs in a CQRS + event sourcing system?
+**What interviewers look for**: Deep understanding of the CAP theorem trade-off made when combining these patterns, and practical experience with the failure modes.
+
+**Answer framework**:
+1. **You're choosing AP over CP for the read side.** The write side (event store) is your source of truth — strongly consistent. The read side (projections) is eventually consistent, lagging by 10–500ms depending on projection pipeline health.
+2. **Failure modes**: If the projection consumer crashes, read models fall behind by minutes or hours. You need monitoring on consumer lag (`max(partition_lag) > 1000 messages` = alert). When consumer catches up, the read model self-heals.
+3. **Compensating strategies**: For regulatory or financial data (exact balances, audit records), keep that query on the write DB directly. Reserve CQRS read models for non-critical reads where staleness is acceptable (e.g., recommendation feeds, analytics).
+
+**Key numbers to mention**: In a payment system, the account balance query should go to the write DB (strong consistency). A transaction history view can be a CQRS read model with 100ms lag. Design the consistency tier per use case, not globally.
+
+---
+
+#### Q4: How do you rebuild a corrupted or outdated read model in CQRS?
+**What interviewers look for**: Understanding of the event replay capability — this is one of the most powerful features of CQRS + event sourcing.
+
+**Answer framework**:
+1. **Because all events are stored durably, read models are disposable.** If a projection is corrupted, wrong, or you need a new one, replay all events from the event store through the projection handler.
+2. **Blue-green projection rebuild**: Spin up a new projection consumer reading from the beginning of the event log into a new database table. Once caught up, swap the query routing from the old table to the new one. Zero downtime.
+3. **Snapshot optimization**: For large event stores (10M+ events), full replay is slow. Use snapshots — periodically store the current state at offset N, then replay only events after N. Reduces rebuild from hours to minutes.
+
+**Key numbers to mention**: A Kafka topic with 100M events replaying at 50K events/sec takes ~33 minutes to rebuild from scratch. With a 24-hour snapshot, only the last ~50K events need to be replayed — under 2 seconds.
+
+---
+
+#### Q5: How does CQRS compare to simply using read replicas?
+**What interviewers look for**: The ability to distinguish nuanced architectural choices rather than treating similar-sounding patterns as interchangeable.
+
+**Answer framework**:
+1. **Read replicas are the same schema, different instance.** They reduce read load on the primary but can't optimize the schema for different query patterns. Complex JOIN queries are still slow even on a replica.
+2. **CQRS read models are purpose-built.** You can use Elasticsearch for full-text search, ClickHouse for analytics, Redis for sub-millisecond hot-path queries — each with its own optimized schema. A read replica can't serve all these use cases.
+3. **Operational difference**: A dead replica causes read degradation; you can failover to another replica or the primary. A dead CQRS projection consumer causes read model staleness, but the write model keeps working. Failure blast radius is smaller.
+
+**Key numbers to mention**: Read replicas have ~sub-second lag (replication lag). CQRS event-driven read models have 10–100ms lag for event processing + projection update. Read replicas work well up to ~20:1 read/write ratio; above that, multiple specialized read models deliver better cost efficiency and query performance.
+
+---
+
 ## Key Takeaways
 
 ```

@@ -529,6 +529,70 @@ Key metrics to watch during experiments:
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on Chaos Engineering
+
+#### Q1: How would you implement chaos testing in production?
+**What interviewers look for**: A structured, safety-first approach — they don't want "just kill things randomly"; they want controlled experiments with defined hypotheses and abort criteria.
+
+**Answer framework**:
+1. **Start with a hypothesis and steady state**: Define normal — what does "healthy" look like in numbers? (P99 latency < 200ms, error rate < 0.1%). Hypothesize: "If [failure X], the system will [behavior Y] with [measurable threshold Z]."
+2. **Blast radius control**: Begin in staging with synthetic load, not production. Progress to production gradually — kill one pod first, then one AZ, then (much later) a full region. Each level requires monitoring dashboards open, an abort button ready, and team awareness.
+3. **Run during business hours**: Netflix's Chaos Monkey only runs 9AM–3PM Pacific, weekdays. You want engineers alert and available, not debugging at 3AM. Auto-abort if error rate exceeds 5% or P99 latency exceeds 10x baseline.
+
+**Key numbers to mention**: Netflix has run Chaos Monkey since 2011, killing instances at a 5% probability daily. Google's DiRT (Disaster Recovery Testing) exercises cost Google engineers ~1,000 hours per year but prevent outages that cost $5M+ to recover from.
+
+---
+
+#### Q2: What is a GameDay and how do you run one?
+**What interviewers look for**: Familiarity with structured chaos exercises as organizational practice, not just tooling.
+
+**Answer framework**:
+1. **Preparation (before)**: Select a realistic scenario (e.g., "Redis primary failure"), define success criteria (error rate < 1%, recovery time < 2 minutes), document an abort procedure, notify stakeholders. Assign roles: experiment lead, monitoring observer, abort coordinator.
+2. **Execution (during)**: Open monitoring dashboards, announce start, inject the failure, observe for 5–10 minutes. Record what happened: Did circuit breakers trigger? Did fallback kick in? Did auto-recovery work? Did users notice?
+3. **Follow-up (after)**: Document every finding as a ticket. Fix issues. Schedule a re-run to verify fixes work. Share a 1-page GameDay report with the team and leadership — treat it as a learning artifact, not an incident.
+
+**Key numbers to mention**: Amazon runs GameDays as "Wheel of Misfortune" exercises where on-call engineers practice debugging staged incidents. Each exercise costs 2–4 hours of senior engineer time but produces runbooks that reduce MTTR (Mean Time to Recovery) by 40–60% for real incidents.
+
+---
+
+#### Q3: What should you test first with chaos engineering?
+**What interviewers look for**: Prioritization judgment — they want to see you start with high-value, lower-risk experiments before advanced tests.
+
+**Answer framework**:
+1. **Single instance failure first** — every service must survive the loss of one instance. This is your minimum resilience bar. If this fails, stop and fix before anything else.
+2. **Dependency failures next** — kill your Redis, block your database replica, inject 500ms latency into service calls. Test that circuit breakers open, fallbacks activate, and the system degrades gracefully rather than failing completely.
+3. **Zone/region failures last** — only after you've validated the basics. AZ failures affect real users at scale; only run these when you have high confidence in instance-level and dependency-level resilience.
+
+**Key numbers to mention**: Netflix's priority order: single pod → single AZ → cross-AZ → region. Moving to region-level chaos (Chaos Kong) took Netflix 3 years after introducing Chaos Monkey in 2011. Don't rush levels.
+
+---
+
+#### Q4: How does chaos engineering relate to SLOs and reliability engineering?
+**What interviewers look for**: Connecting chaos engineering to the broader SRE practice, not treating it as an isolated tool.
+
+**Answer framework**:
+1. **SLOs define the target; chaos engineering validates whether you can meet it.** If your SLO is 99.9% availability, a chaos experiment measures whether your actual system achieves 99.9% when failures occur — not just when everything is working.
+2. **Error budgets guide experiment frequency.** If you've consumed 80% of your error budget this month, don't run production chaos experiments. If you have 90% error budget remaining, aggressive experiments are appropriate.
+3. **Chaos findings become reliability work.** Each failed hypothesis becomes a ticket in the reliability backlog, prioritized by blast radius and probability of occurrence in production. Chaos engineering without a follow-up culture is theater, not resilience.
+
+**Key numbers to mention**: A service with a 99.9% SLO has 8.7 hours/year of error budget. A chaos experiment revealing a 15-minute recovery deficiency would consume 28.7% of that budget in a single incident — worth fixing before it happens for real.
+
+---
+
+#### Q5: How do you convince leadership to allow chaos engineering in production?
+**What interviewers look for**: Business reasoning and risk framing — this is a soft-skills/leadership question often asked at Staff+ level.
+
+**Answer framework**:
+1. **Frame it as risk reduction, not risk creation.** "We're going to deliberately break things" sounds scary. "We're going to find the failures that would happen anyway, on our schedule instead of at 3AM" sounds professional.
+2. **Show the cost of not doing it**: Reference real incidents (2021 Facebook 6-hour outage, 2017 AWS S3 outage) and calculate the revenue impact of similar incidents for your company. A 2-hour outage at $1M/hour = $2M. A quarterly GameDay costs $10K in engineering time.
+3. **Start with low-blast-radius quick wins**: Show leadership a successful staging experiment first. Demonstrate the monitoring dashboard, the abort button, the clean recovery. Build trust incrementally before moving to production.
+
+**Key numbers to mention**: Netflix reports that after widespread adoption of chaos engineering, their time to detect failures dropped from hours to minutes, and MTTR dropped by ~50%. The program's cost is estimated at $500K/year; the prevented outage costs are estimated at $50M+/year.
+
+---
+
 ## Key Takeaways
 
 ```

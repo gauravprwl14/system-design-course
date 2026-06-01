@@ -502,5 +502,86 @@ Three incidents in one quarter were traced to flag interactions:
 - [ ] Adopted OpenFeature SDK (or vendor SDK wrapped behind interface) for portability
 - [ ] Business metrics tracked per flag variant (not just error rate)
 
+---
+
+## 🎯 Interview Questions
+
+### Common Interview Questions on Feature Flag Architecture
+
+#### Q1: How do you implement feature flags without performance overhead?
+**What interviewers look for**: Knowledge of the local-cache + polling model vs. remote evaluation, and the risk of putting a network call in a hot code path.
+
+**Answer framework**:
+1. **Never make a remote call per flag evaluation in a hot path.** A feature flag SDK that calls your flag service on every HTTP request adds 10–50ms latency per request. At 10,000 req/s, that's 100,000 extra network calls per second to your flag service.
+2. **Local cache + polling model**: The SDK fetches all flag configurations on startup and stores them in memory (~1MB for 1,000 flags). The SDK polls for updates every 30–60 seconds in the background. Flag evaluations are in-memory lookups: < 0.1ms.
+3. **Streaming for instant propagation**: Premium platforms (LaunchDarkly) use Server-Sent Events (SSE) to push flag changes to SDK in-memory cache in < 1 second. Free/self-hosted option: 30–60 second polling with graceful degradation on poll failures (serve cached values, never block the request).
+
+**Key numbers to mention**: Local SDK evaluation latency: < 0.1ms. Remote evaluation: 10–50ms. At 10K req/s with remote evaluation, that's 10K × 50ms = 500 seconds of blocked request time per second — catastrophic. Local cache is non-negotiable for production.
+
+---
+
+#### Q2: How do you safely roll back a feature using feature flags?
+**What interviewers look for**: The kill-switch pattern and the deployment/release decoupling mental model — code ships separately from enablement.
+
+**Answer framework**:
+1. **Kill switch = instant rollback without deployment**: A flag set to 0% is effectively "off." Flipping it from 100% to 0% in the flag service propagates to all SDK instances in < 1 second (streaming) or < 60 seconds (polling). No new code deployment needed.
+2. **Rollback vs gradual ramp-down**: In a crisis, go straight to 0%. For a soft issue, ramp from 100% → 50% → 10% → 0% over 30 minutes, monitoring error rates at each step to confirm the feature is the cause.
+3. **Prerequisite: code must be behind the flag at both 0% and 100%**: The old code path must still exist and work. If you deleted the old checkout flow when you hit 100% rollout, you can't roll back without a deployment. Always keep the "flag OFF" code path working until the flag is fully retired.
+
+**Key numbers to mention**: Knight Capital's 2012 $440M loss in 45 minutes was caused by a flag that activated dormant code — 45 minutes because it took that long to realize the flag was the cause. With kill-switch monitoring and auto-rollback triggers (error rate > X%), the blast radius can be limited to < 5 minutes.
+
+---
+
+#### Q3: What is flag debt and how do you prevent it?
+**What interviewers look for**: Awareness that feature flags are a form of technical debt that compounds — this is a Staff+/Senior question about long-term maintainability.
+
+**Answer framework**:
+1. **Flag debt = unretired flags accumulating combinatorial complexity.** 100 flags with independent states = 2^100 possible combinations your test suite can't cover. Every flag adds two code paths (ON and OFF) that both need to be correct, documented, and testable.
+2. **Knight Capital's 2012 trading loss ($440M in 45 minutes) was caused by a zombie flag** — code activated by a flag that was never cleaned up, triggered by a new deployment that changed the flag's behavior.
+3. **Prevention: lifecycle policy at creation time.** Every flag gets an expiry date (90 days default). At 100% rollout for 30 days, generate an automatic cleanup ticket. Namespace flags by team (`checkout.new-flow`, not just `new-flow`). Remove the dead code path and delete the flag record when the ticket closes.
+
+**Key numbers to mention**: A 400-engineer SaaS company accumulated 2,000 flags over 4 years with no retirement policy. 800 were "dead," 400 were "zombie" with unknown ownership. Three incidents in one quarter were traced to flag interactions. The cleanup effort took 6 months of engineering time.
+
+---
+
+#### Q4: How do you design feature flags for a multi-tenant SaaS product?
+**What interviewers look for**: Targeting rules, segment-based enablement, and the operational pattern for beta access — common at Staff/Principal level for B2B products.
+
+**Answer framework**:
+1. **Targeting hierarchy**: User-level targeting (specific email addresses) > segment targeting (enterprise plan, beta program) > percentage rollout > default. Evaluation uses first-match, so internal team members always get the feature regardless of percentage rollout.
+2. **Tenant/account-level targeting**: B2B flags are often enabled per account, not per user. `if account.tier === 'enterprise' AND account.id IN beta_list → return true`. This lets you give a new feature to select enterprise customers before broad rollout.
+3. **Progressive B2B rollout**: Internal employees (100%) → Design partners (5–10 accounts) → Opt-in beta (50 accounts) → Broad GA (all customers). Each gate is a targeting rule in the flag config, not a code change.
+
+**Key numbers to mention**: LaunchDarkly supports targeting on any attribute (company size, industry, region, plan tier). Flag evaluation with complex targeting rules takes < 0.1ms locally. For 10K flags serving 100M users, LaunchDarkly costs ~$500–2,000/month vs. $0 for self-hosted Unleash with 20+ flags.
+
+---
+
+#### Q5: How do you test code that has feature flags?
+**What interviewers look for**: The testing strategy for both ON and OFF states — a common oversight that leads to production bugs.
+
+**Answer framework**:
+1. **Test both paths in CI**: Every unit/integration test involving a flag must run twice — once with the flag ON and once with the flag OFF. This prevents regressions in the "old path" that are invisible until rollback.
+2. **Use test doubles for the flag service**: In unit tests, inject a mock flag SDK that returns deterministic values. Never let tests make real flag service network calls — they're flaky, slow, and create test-flag coupling.
+3. **Flag combination matrix for interacting flags**: Flags that affect the same flow (e.g., `new_checkout` and `new_payment_flow`) must be tested in all 4 combinations (OFF/OFF, ON/OFF, OFF/ON, ON/ON). Mark flags as "potentially interacting" in your flag metadata to trigger this matrix in CI automatically.
+
+**Key numbers to mention**: A real incident at a large SaaS company: `dark_mode_v2` and `new_dashboard_layout` each worked individually but combined caused CSS layout breaks for users with both enabled. Neither flag's tests covered the combined state — 3 weeks before it was discovered in production.
+
+---
+
+## Decision Framework Checklist `[All Levels]`
+
+- [ ] Defined flag lifecycle policy: birth → rollout → retirement → deletion with timelines
+- [ ] Set 90-day expiry on all new flags at creation time
+- [ ] Namespaced flags by team or service to avoid naming collisions
+- [ ] Defined safe default values for flag store unreachability
+- [ ] Implemented deterministic user bucketing (hash-based, not random-per-request)
+- [ ] Added evaluation tracking for all flags (analytics need variant assignment data)
+- [ ] Kill switches identified for all features with known risk and added to runbook
+- [ ] Flag SDK uses local caching with polling (never remote evaluation in hot paths)
+- [ ] CI runs tests with flags in both ON and OFF states
+- [ ] Flag retirement process automated: closed flags generate cleanup tickets
+- [ ] Adopted OpenFeature SDK (or vendor SDK wrapped behind interface) for portability
+- [ ] Business metrics tracked per flag variant (not just error rate)
+
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*

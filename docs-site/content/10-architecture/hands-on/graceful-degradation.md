@@ -381,8 +381,149 @@ Level 2 (Critical):
 
 ---
 
+## ⚡ Quick Reference Implementation
+
+```javascript
+// Minimal graceful degradation wrapper — copy-paste template
+async function withFallback(primaryFn, fallbackFn, { timeout = 2000 } = {}) {
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout')), timeout)
+  );
+  try {
+    return await Promise.race([primaryFn(), timeoutPromise]);
+  } catch (err) {
+    console.warn(`Primary failed (${err.message}), using fallback`);
+    return fallbackFn();  // Always sync — never let fallback fail
+  }
+}
+
+// Usage
+const price = await withFallback(
+  () => pricingService.getDynamic(productId),   // Real-time
+  () => product.basePrice,                       // Static fallback
+  { timeout: 500 }
+);
+```
+
+---
+
+## 🎯 Interview Questions
+
+### Implementation-Focused Interview Questions
+
+#### Q1: How do you implement a fallback cache when the primary data source is down?
+
+**What interviewers look for**: Stale-while-revalidate pattern, cache seeding strategy, and the tradeoffs of serving stale data.
+
+**Answer framework**:
+1. Cache every successful response before returning it: `cache.set(key, result)` as a side effect of normal reads
+2. On primary failure, read from the cache: `cachedValue = cache.get(key)` — may be stale but better than nothing
+3. Tag cached values with a source marker so the UI can show "prices may be delayed"
+4. Set appropriate TTL based on how stale is acceptable: product prices can be 5 minutes old; account balances probably cannot
+
+**Code snippet that impresses**:
+```javascript
+async function getProductWithFallback(productId, cache) {
+  try {
+    const product = await productService.get(productId);
+    // Write-through: populate cache on every successful read
+    await cache.set(`product:${productId}`, product, { ttl: 300 });
+    return { ...product, dataSource: 'live' };
+  } catch (err) {
+    const cached = await cache.get(`product:${productId}`);
+    if (cached) return { ...cached, dataSource: 'cached', stalePossible: true };
+    return { id: productId, name: 'Unknown', price: null, dataSource: 'unavailable' };
+  }
+}
+```
+
+---
+
+#### Q2: What is the difference between graceful degradation and a circuit breaker? When would you use each?
+
+**What interviewers look for**: Conceptual precision — these are related but serve different purposes.
+
+**Answer framework**:
+1. **Circuit breaker**: a binary switch on a single downstream dependency — CLOSED (normal), OPEN (stop calling), HALF_OPEN (test recovery). Protects the system from cascading failures.
+2. **Graceful degradation**: a multi-tier strategy for the overall service feature set — the system continues operating at reduced functionality as load increases or dependencies fail
+3. They complement each other: the circuit breaker detects that a dependency is unhealthy; graceful degradation defines what to serve instead
+4. Circuit breaker = infrastructure concern; graceful degradation = product/UX concern
+
+---
+
+#### Q3: How do you decide which features to disable first under high load? Describe a priority framework.
+
+**What interviewers look for**: Structured thinking about feature criticality and business impact.
+
+**Answer framework**:
+1. **Tier 1 (never disable)**: core user journey — checkout, login, order status, payment
+2. **Tier 2 (disable under high load)**: enrichment features — recommendations, real-time search suggestions, social proof ("10 people viewing this")
+3. **Tier 3 (disable early)**: luxury features — reviews, personalization, A/B test variants, analytics events
+4. Order of disable: Tier 3 first (most users won't notice), then Tier 2, Tier 1 is the last resort
+5. Encode this priority ordering in your `LoadShedder` thresholds table — don't decide during an incident
+
+---
+
+#### Q4: How do you implement a "static mode" fallback for a completely unavailable backend?
+
+**What interviewers look for**: CDN edge fallback, pre-rendered pages, and the architecture of resilient front-ends.
+
+**Answer framework**:
+1. Pre-render a minimal static version of key pages at deploy time (Next.js static generation, or a weekly snapshot job)
+2. Store static pages in S3 or a CDN
+3. Configure CDN edge rules: if origin returns 5xx, serve the pre-rendered fallback HTML
+4. Static mode shows last-known prices/inventory with a banner "Experiencing issues — data may be delayed"
+
+**Code snippet that impresses**:
+```javascript
+// CDN origin shield fallback configuration (Cloudflare Workers example)
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
+
+async function handleRequest(request) {
+  const response = await fetch(request);  // Try origin
+  if (response.status >= 500) {
+    const staticFallback = await STATIC_PAGES.get(request.url);
+    if (staticFallback) {
+      return new Response(staticFallback, {
+        headers: { 'X-Served-By': 'static-fallback', 'Cache-Control': 'no-store' }
+      });
+    }
+  }
+  return response;
+}
+```
+
+---
+
+#### Q5: How do you test that your degradation tiers actually work? What would a degradation drill look like?
+
+**What interviewers look for**: Operational testing discipline and chaos engineering mindset.
+
+**Answer framework**:
+1. **Unit test**: call `loadShedder.adjustForLoad(0.75)` and assert specific flags are disabled
+2. **Integration test**: mock the underlying services to throw errors, assert the API returns degraded data with appropriate markers
+3. **Chaos drill** (staging): artificially raise the load metric (or kill a dependency), verify the system degrades gracefully without user-visible errors
+4. **Runbook**: document what each degradation tier looks like from a user perspective so on-call engineers can verify quickly
+
+---
+
 ## Related POCs
 
 - [Circuit Breaker](/10-architecture/hands-on/circuit-breaker)
 - [Timeout Configuration](/10-architecture/hands-on/timeout-configuration)
 - [Backpressure](/04-messaging/hands-on/backpressure-queues)
+
+## Further Reading
+
+**Concept articles:**
+- [Circuit Breaker Concept](/10-architecture/concepts/circuit-breaker)
+- [Bulkhead Pattern](/10-architecture/concepts/bulkhead-pattern)
+
+**Interview prep:**
+- [High Concurrency API Design](/12-interview-prep/system-design/fundamentals/high-concurrency-api)
+
+**Failure modes:**
+- [Cascading Failures](/10-architecture/failures/cascading-failures)
+- [Circuit Breaker Failure](/10-architecture/failures/circuit-breaker-failure)

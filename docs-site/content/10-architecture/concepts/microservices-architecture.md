@@ -891,6 +891,94 @@ Architecture:
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on Microservices Architecture
+
+#### Q1: When would you choose microservices over a monolith, and when would you not?
+**What interviewers look for**: Balanced thinking — candidates who only advocate for microservices without acknowledging the costs fail this question at top companies.
+
+**Answer framework**:
+1. **Monolith first**: For teams under 10 engineers, unproven products, or simple CRUD apps — deployment simplicity, no network latency, easy debugging; Shopify runs a modular monolith at massive scale.
+2. **Switch signals**: Team > 20 engineers with distinct ownership areas, deployment bottlenecks (>1 hour releases), need to scale specific components independently, or different tech stacks required per domain.
+3. **Modular monolith as middle ground**: Clear internal module boundaries with separate DB schemas, but single deployment artifact — this is what most successful companies operate at $1M–$50M ARR.
+
+**Key numbers to mention**: Amazon switched at 200+ engineers in 2002; Netflix migrated over 7 years (2009–2016); typical microservices overhead adds 20–30% operational complexity; rule of thumb: 1 service per 5–8 engineers.
+
+---
+
+#### Q2: How do you handle data consistency across microservices? Explain the Saga pattern.
+**What interviewers look for**: Understanding that distributed transactions (2PC) are dangerous in microservices and that sagas with compensating transactions are the correct approach.
+
+**Answer framework**:
+1. **Why no distributed transactions**: 2PC requires all participants to hold locks simultaneously — in a distributed system, one slow or failed service blocks all others, killing availability (CAP theorem trade-off).
+2. **Saga pattern**: Break the transaction into a sequence of local transactions, each publishing an event; if a step fails, run compensating transactions in reverse order (e.g., refund payment if inventory reservation fails).
+3. **Choreography vs. Orchestration**: Choreography (event-driven, no central coordinator) is simpler but harder to debug; Orchestration (central saga orchestrator) is more complex but easier to track and reason about — prefer orchestration for >3-step sagas.
+
+**Key numbers to mention**: Saga compensating transactions must be idempotent; choreography works for ≤3 steps; Amazon uses orchestrated sagas for order processing across 10+ services; eventual consistency window is typically 100ms–2 seconds; Netflix Conductor handles millions of workflow executions per day.
+
+---
+
+#### Q3: Walk me through the Strangler Fig migration pattern — how would you migrate a monolith to microservices?
+**What interviewers look for**: Practical migration knowledge, not just theory. Interviewers want risk-awareness and an incremental approach.
+
+**Answer framework**:
+1. **Extract the edges first**: Start with services that have the clearest boundaries and fewest dependencies — notification service, email service, analytics — these have well-defined inputs and no write dependencies on the core.
+2. **Proxy/facade layer**: Add an API gateway or routing layer in front of the monolith that can progressively route traffic to new services; the monolith handles what it always did until each feature is extracted.
+3. **Data migration last**: Run dual writes (write to both monolith DB and new service DB) during transition; once reads migrate to the new service, cut the monolith's data path; avoid sharing the database schema.
+
+**Key numbers to mention**: Netflix's migration took 7 years with 700+ services extracted; Uber's took 4 years; typical "safe extraction" takes 2–4 sprints per service; dual write phase should run for ≥2 weeks before cutting over; rollback window of 48 hours minimum.
+
+---
+
+#### Q4: How does service discovery work in a Kubernetes-based microservices architecture?
+**What interviewers look for**: Modern, practical knowledge — most teams use Kubernetes now, not Consul/Eureka; understanding DNS-based discovery and its limitations.
+
+**Answer framework**:
+1. **Kubernetes DNS**: Each Service object gets a DNS name (`payment-service.namespace.svc.cluster.local`); kube-proxy load-balances across healthy pod endpoints automatically — no client-side discovery needed.
+2. **Health checks drive routing**: Kubernetes removes pods from Service endpoints when readiness probes fail; this means your circuit breaker and Kubernetes health checks must be aligned — if a pod is slow, mark it unready.
+3. **Service mesh for advanced needs**: Istio/Linkerd adds mTLS, traffic splitting, retries, and circuit breaking at the sidecar level — useful when you need cross-cluster discovery, canary releases, or fine-grained traffic control.
+
+**Key numbers to mention**: Kubernetes DNS resolves in <1ms within a cluster; Netflix's Eureka handles 30M+ service lookups/minute; Istio adds ~5ms latency per hop (sidecar overhead); Consul is still used for multi-cloud and hybrid environments; default kube-proxy endpoint update latency is ~100ms.
+
+---
+
+#### Q5: How do you design API versioning and backward compatibility in a microservices environment?
+**What interviewers look for**: Understanding that independent deployability requires consumer-driven contract management, not just URL versioning.
+
+**Answer framework**:
+1. **Never break existing consumers**: Add fields, don't remove them; use optional fields for new behavior; make consumers tolerate unknown fields (Postel's Law); version only when breaking changes are unavoidable.
+2. **URL versioning for major breaks**: `/api/v2/orders` alongside `/api/v1/orders` — support both for a deprecation window (minimum 6 months with migration notice); API gateway routes to the right service version.
+3. **Consumer-driven contract testing**: Use Pact or similar — each consumer defines what it needs from the provider; the provider's CI runs all consumer contracts; prevents accidental breaking changes before deployment.
+
+**Key numbers to mention**: Stripe supports API versions for 5+ years; Twitter deprecated v1 API over 18 months; Pact tests run in <30 seconds for 50 consumer contracts; Semver: major version = breaking, minor = new features, patch = fixes; Google deprecation policy is 12 months minimum.
+
+---
+
+#### Q6: How do you implement observability in a microservices architecture? What are the three pillars?
+**What interviewers look for**: Concrete knowledge of logs, metrics, and traces — with tool names and how they work together to debug distributed systems.
+
+**Answer framework**:
+1. **Structured Logging + Correlation IDs**: JSON logs with a `traceId` that flows through every service via HTTP headers (`X-Correlation-ID`); centralize in ELK or Datadog; `grep` one trace ID to see the entire request flow across 10 services.
+2. **Metrics (RED method)**: Rate (requests/sec), Errors (5xx rate), Duration (P50/P95/P99 latency) per service and endpoint; emit to Prometheus/Datadog; alert on error rate >1% or P99 >500ms.
+3. **Distributed Tracing**: Instrument with OpenTelemetry; visualize in Jaeger or Zipkin; a single trace shows the call tree across all services with per-span latency — turns "the order page is slow" into "UserService DB query missing index, 40ms vs expected 2ms".
+
+**Key numbers to mention**: Netflix processes 1TB+ of logs per day; Jaeger handles 100K+ traces/sec at Uber; P99 latency is the right SLO metric (not average); typical SLO targets: 99.9% availability, P99 <200ms; OpenTelemetry adds ~1% CPU overhead for tracing.
+
+---
+
+#### Q7: What is Conway's Law and how does it affect microservices design in practice?
+**What interviewers look for**: Understanding that technology architecture mirrors organizational structure — and that ignoring this causes "distributed monoliths".
+
+**Answer framework**:
+1. **Conway's Law**: "Organizations design systems that mirror their communication structures" — if three teams share ownership of one service, that service will have three poorly-integrated modules fighting over the schema.
+2. **Inverse Conway Maneuver**: Design the desired architecture first, then reorganize teams to match — Amazon's "two-pizza team" rule ensures each service has one clear owner with full autonomy; no shared services without explicit team ownership.
+3. **Distributed monolith anti-pattern**: When teams resist breaking apart a shared codebase, services end up calling each other synchronously in long chains, sharing databases, and requiring coordinated deployments — worst of both worlds.
+
+**Key numbers to mention**: Amazon reorganized 200+ engineers into two-pizza teams (6–8 people) in 2002; Netflix has ~700 services owned by ~2,000 engineers (~3 engineers per service on average); teams with shared ownership >2 take 3x longer to ship features; Google's Borg team has 1:1 service-to-team ratio for all critical services.
+
+---
+
 ## Key Takeaways
 
 ```
@@ -918,3 +1006,10 @@ Architecture:
    Your architecture will mirror your org structure
    Design teams around services, not the other way
 ```
+
+## 🔗 Next Steps
+
+- [Microservices Communication](/10-architecture/concepts/microservices-communication) - REST vs gRPC vs Events decision guide
+- [Circuit Breaker Pattern](/10-architecture/concepts/circuit-breaker) - Prevent cascading failures
+- [Monolith to Microservices Interview Prep](/12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices) - Deep-dive Q&A for system design interviews
+- [API Gateway Pattern Interview Prep](/12-interview-prep/system-design/fundamentals/api-gateway-pattern) - API Gateway and BFF patterns

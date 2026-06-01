@@ -782,4 +782,68 @@ server {
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on Load Balancing Strategies
+
+#### Q1: Compare round-robin, least-connections, and consistent hashing for load balancing.
+**What interviewers look for**: A nuanced comparison driven by use-case thinking, not memorized definitions — they want to hear when each shines and when it fails.
+
+**Answer framework**:
+1. **Round-robin** distributes requests sequentially (1→A, 2→B, 3→C, 4→A…). Best for stateless services with similar request durations and equal server capacity. Fails when request durations vary widely — a server handling 10 long-running uploads gets the same request rate as one serving fast health-check endpoints.
+2. **Least-connections** routes to the server with fewest active connections. Better for long-lived connections (WebSockets, streaming) where request durations are unpredictable. Adds tracking overhead but adapts to real server load in real-time.
+3. **Consistent hashing** routes the same key (user ID, session token, cache key) to the same server. Essential for distributed caches — without it, every server add/remove remaps all keys. With consistent hashing, adding 1 server to a 10-server ring only remaps ~10% of keys.
+
+**Key numbers to mention**: Consistent hashing with virtual nodes (100 vnodes/server) ensures adding/removing 1 server remaps only 1/N of keys. Round-robin distributes traffic ±3% evenly across servers for short-lived requests. Least-connections P99 latency is typically 10–20% better than round-robin for mixed-duration workloads.
+
+---
+
+#### Q2: How do you implement session-sticky load balancing?
+**What interviewers look for**: IP hash vs. cookie-based stickiness, and the trade-offs around server failure and rebalancing.
+
+**Answer framework**:
+1. **IP hash stickiness**: Hash the client IP to a consistent server. Simple, no extra infrastructure. Fails if clients are behind a NAT (many users share one IP → hot server) or if users move between networks (IP changes → session lost).
+2. **Cookie-based stickiness (better)**: LB injects a cookie on first request (`AWSALB=...`) with the target server ID. Subsequent requests include the cookie; LB routes accordingly. This survives IP changes and distributes better across NAT clients.
+3. **Modern recommendation — avoid stickiness entirely**: Move session state to Redis/DynamoDB. All servers become stateless; any server handles any request. This is more resilient (no session loss when server dies), easier to auto-scale, and enables zero-downtime deployments.
+
+**Key numbers to mention**: AWS ALB supports stickiness with configurable duration (1 second to 7 days). If a sticky target fails, ALB automatically re-routes to a healthy target — the user loses their session. This is why Netflix, Shopify, and most modern platforms store session in Redis (sub-millisecond lookup) rather than in-process.
+
+---
+
+#### Q3: When would you use L4 vs L7 load balancing?
+**What interviewers look for**: Understanding that L4 is faster but "blind," and L7 enables content-aware routing — with concrete use cases for each.
+
+**Answer framework**:
+1. **L4 (transport layer)**: Routes based on IP + TCP port only. Fastest option — no packet inspection, millions of connections/second, ~100μs latency. Use for: database proxies (MySQL port 3306), gaming servers, non-HTTP protocols, TLS passthrough where the LB shouldn't terminate encryption.
+2. **L7 (application layer)**: Routes based on HTTP headers, URL path, cookies, content. Slower (full HTTP parsing) but enables path-based routing (`/api` → backend, `/static` → CDN), A/B testing, WebSocket upgrades, authentication. AWS ALB is L7; NLB is L4.
+3. **When both**: Use NLB in front of ALB for DDoS protection at L4 speed, with ALB behind it for smart HTTP routing. This gives you ultra-low latency + content awareness.
+
+**Key numbers to mention**: AWS NLB achieves ~100μs latency per connection; ALB adds ~1–2ms for HTTP parsing. NLB can handle millions of concurrent connections; ALB scales to handle 100,000+ requests/second. If your service is HTTP-based, ALB's routing flexibility almost always justifies the ~1ms overhead.
+
+---
+
+#### Q4: How does a load balancer perform health checks and handle unhealthy instances?
+**What interviewers look for**: Knowledge of check intervals, failure thresholds, and the operational considerations around false positives.
+
+**Answer framework**:
+1. **Active health checks**: LB periodically sends a lightweight request (TCP ping, HTTP GET `/health`) to each backend. If N consecutive checks fail (unhealthy threshold, typically 2–3), the instance is removed from the pool. If M consecutive checks succeed (healthy threshold, typically 2), it's re-added.
+2. **Deep health checks**: A shallow `/health` returning 200 OK doesn't prove the DB connection is working. A deep check (`GET /health/deep` that pings DB and cache) prevents routing traffic to a server that's up but broken. Trade-off: deep checks take longer (5–30s interval vs. 5s for shallow).
+3. **Graceful shutdown**: When deploying new instances, the outgoing instance sends a SIGTERM, stops accepting new connections but finishes existing ones (connection draining, 30–300 seconds). The LB detects it as draining, stops sending new requests, then marks it removed. This prevents 502 errors during rolling deploys.
+
+**Key numbers to mention**: AWS ALB default health check: 30-second interval, 5-second timeout, 5 consecutive failures to mark unhealthy. For faster failure detection, use 10-second interval, 2 failures. At 500ms timeout, a failing check costs 500ms × 2 checks = 1 second to detect. Connection draining default: 300 seconds (5 minutes) — tune to match your P99 request duration.
+
+---
+
+#### Q5: How would you design load balancing for a WebSocket-heavy real-time application?
+**What interviewers look for**: Awareness that WebSockets are long-lived and stateful, requiring different balancing strategies than HTTP APIs.
+
+**Answer framework**:
+1. **Initial HTTP → WebSocket upgrade**: The HTTP request that triggers the WebSocket upgrade can use any LB algorithm. But once the connection is established, it must stay on the same backend for its entire lifetime (minutes to hours).
+2. **Sticky connections with least-connections**: Use least-connections to pick the initial server, then set a long-lived sticky session (cookie or IP hash) to pin that client to the chosen backend. The LB passes subsequent WebSocket frames to the same backend without re-routing.
+3. **Backplane for server-to-server messaging**: Client A (connected to Server 1) sends a message to Client B (connected to Server 2). Server 1 must route the message to Server 2. Use Redis Pub/Sub as the backplane — all servers subscribe to the same channel; any server can publish to any client regardless of which backend they're connected to.
+
+**Key numbers to mention**: A WebSocket connection holds an open TCP connection indefinitely. With 50,000 concurrent WebSocket users per server and 5 servers, each server handles 10,000 connections. When Server 2 dies, 10,000 users lose their connection and reconnect — design clients to reconnect with exponential backoff (100ms, 200ms, 400ms, max 30s) to avoid a [thundering herd](/problems-at-scale/availability/thundering-herd).
+
+---
+
 **Remember:** The best load balancer is invisible to users—they just experience fast, reliable service. Start with Round Robin, add health checks, then optimize algorithms based on your traffic patterns.

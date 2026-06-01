@@ -416,6 +416,151 @@ The strangler fig migration itself is not changing — but the tooling making th
 
 ---
 
+## 🎯 Interview Questions
+
+### Common Interview Questions on Strangler Fig Migration
+
+#### Q1: How would you migrate a monolith to microservices without downtime?
+**What interviewers look for**: A concrete migration plan with rollback capability at each step. "Big-bang rewrite" is immediately disqualifying. They want incremental, reversible steps.
+
+**Answer framework**:
+1. Phase 1 — Facade first: deploy a reverse proxy (Nginx, Envoy, AWS ALB) in front of the monolith before writing any new service code. All traffic routes through the facade to the monolith. Zero behavior change, but now you have a routing layer
+2. Phase 2 — Extract one service: choose the first service by business capability (not technical layer). Extract it, build the Anti-Corruption Layer to translate domain models, deploy it. Configure the facade to route that service's traffic to the new service; everything else still goes to the monolith
+3. Phase 3 — Parallel run: for 7 days, run both monolith and new service for the extracted feature. Compare responses. Discrepancy rate < 0.1% for 7 consecutive days = ready to cut over
+4. Phase 4 — Repeat: one service at a time. The monolith shrinks. When all features are extracted, decommission the monolith
+5. Rollback at any point: update one routing rule in the facade. Takes 5 seconds, not a redeployment
+
+**Key numbers to mention**: Facade overhead: 0.3-0.8ms added latency per request. Parallel run doubles load on extracted service — size it for full production traffic. Discrepancy threshold: < 0.1% over 7 days before cutover. Never delete monolith code paths until dual-write period ends.
+
+---
+
+#### Q2: What is the strangler fig pattern and when would you use it?
+**What interviewers look for**: Whether you know the "why" — when it's appropriate vs when it's overkill vs when you'd choose something else.
+
+**Answer framework**:
+1. Named for the strangler fig tree that grows around a host tree, eventually replacing it. Applied to software: wrap the existing system with a facade, route new functionality to new services, gradually starve the old system of work until it can be safely decommissioned
+2. Use it when: you have a stable-but-hard-to-change monolith in production, the monolith handles significant revenue (you cannot take downtime), and you need to extract specific capabilities to allow independent scaling or team autonomy
+3. Do not use it when: the monolith is actively failing (use targeted hot-fixes first), when the system is small enough to rewrite safely (< 6 months, single team), or when the monolith's behavior is so undocumented that parallel-run comparison is meaningless
+4. The pattern requires three components working together: Facade/Proxy (routing), Anti-Corruption Layer (domain model translation), Parallel Run (correctness validation). Skip any of these and the migration will produce a distributed monolith or data inconsistency
+
+**Key numbers to mention**: Big-bang rewrite failure rate is high (Netscape 6, Longhorn). First service extraction: 4-8 weeks to production value. Full monolith decomposition for a 500K-line codebase: 18-36 months realistic estimate.
+
+---
+
+#### Q3: What is an Anti-Corruption Layer and why is it critical during migration?
+**What interviewers look for**: Understanding that domain model purity matters and that skipping the ACL creates hidden technical debt.
+
+**Answer framework**:
+1. The ACL is a translation layer between the new microservice's clean domain model and the monolith's legacy data shapes. It prevents the monolith's naming conventions, encoding choices, and business logic quirks from "corrupting" the new service
+2. Real example: monolith stores `acct_status` as `CHAR(1)` with values `A/S/D`, `cust_tier` as integer `1/2/3`, `created_dt` as Unix integer. The new User Service should speak `status: 'active'|'suspended'|'deleted'`, `plan: 'free'|'pro'|'enterprise'`, `createdAt: Date`. The ACL translates between these
+3. The hidden cost of skipping it: a fintech skipped ACL and stored amounts as integers (cents). Six months later, they needed GBP support — the new service had no currency concept. A 3-week backfill of 50M records plus a maintenance-window schema migration. The ACL would have forced the domain model decision on day one
+4. ACL must translate in both directions during dual-write: new service → ACL → monolith DB (for writes), monolith DB → ACL → new service (for reads/migrations)
+
+**Key numbers to mention**: ACL translation cost: < 1ms per record for field mapping. ID mapping table lookups: ~0.1ms with Redis cache. Dual-write latency addition: 5-20ms on write path (monolith write). ACL translation test coverage should exceed 90% including legacy data edge cases.
+
+---
+
+#### Q4: How do you handle data migration during a strangler fig?
+**What interviewers look for**: The hardest part of any migration — data ownership, dual-write consistency, and when to cut over data.
+
+**Answer framework**:
+1. Dual-write period: while both monolith and new service are live, all writes must go to both. Options: application-level dual-write (write to both in code, accept 5-20ms overhead) or CDC-based (monolith writes to its DB, Debezium captures WAL changes, Kafka topic → new service consumer applies them). CDC is preferred — it eliminates write amplification in the application tier
+2. The data ownership cutover is the hardest step. Before cutover: monolith is authoritative. During parallel run: both should agree. After cutover: new service is authoritative, monolith reads from new service's API or its own now-stale copy
+3. Exit criteria for dual-write: discrepancy rate < 0.1% for 7 consecutive days. Monitor `dual_write_lag_seconds` — should be < 1 second. If dual-write lag > 30 seconds, route all writes back to monolith and page on-call
+4. Data that can't easily be dual-written (large blobs, event logs): snapshot-and-backfill. Stop writes briefly (< 5 minutes), snapshot the data, load into new service, resume with CDC
+
+**Key numbers to mention**: CDC replication lag (Debezium → Kafka): typically 100-500ms. Parallel run discrepancy threshold: < 0.1% for 7 days before cutover. Dual-write lag alert: > 30 seconds = route back to monolith. Full data migration for 500M records: plan for 1-3 weeks with live CDC catchup.
+
+---
+
+#### Q5: How do you choose which service to extract first?
+**What interviewers look for**: Strategic thinking about migration sequencing — not just technical feasibility but business value and risk management.
+
+**Answer framework**:
+1. Not the easiest service: extracting the simplest, least-used service first gives you migration experience but zero business value. After 6 months, you have one microservice and no progress on the high-value core. Migration fatigue kills the project
+2. Not the most complex service: extracting the most coupled, most critical service first maximizes risk. A partial extraction leaves two sources of truth for the most important data
+3. Right criteria: (a) highest change frequency — most developer pain, most ROI from extraction; (b) clear data ownership — no tables shared with other capabilities; (c) well-defined internal API in the monolith — less ACL surface area; (d) manageable coupling — few other services depend on it
+4. Practical tool: generate a coupling heatmap from git history (which files change together) and a dependency graph (which modules call each other). The service with high change frequency and low coupling is the ideal first extraction
+
+**Key numbers to mention**: Ideal first service: < 20% of monolith's code, < 5 shared data tables with other services, > 30% of recent change commits. Use `git log --stat | grep filename` to find highest-churn modules programmatically.
+
+---
+
+#### Q6: What is parallel run and when do you stop it?
+**What interviewers look for**: Understanding of shadow testing as a validation gate, and concrete criteria for what "good enough" looks like.
+
+**Answer framework**:
+1. Parallel run sends the same request to both monolith and new service concurrently. One is authoritative (monolith during validation). Responses are compared asynchronously without adding to response latency. Discrepancies are logged with the specific field that diverged
+2. This reveals: domain model translation bugs in the ACL, business logic gaps (the monolith has 10 years of edge case handling the new service missed), data migration gaps (historical records that didn't convert correctly)
+3. Stop criteria: discrepancy rate < 0.1% for 7 consecutive days AND all remaining discrepancies are known, accepted, and documented (e.g., "monolith returns deprecated field X that new service intentionally omits"). No open unknowns
+4. Double the load cost: parallel run doubles upstream calls. Size the new service for full production traffic before starting parallel run. Use shadow traffic (fire-and-forget, don't block response) for initial validation; full synchronous parallel run only for final pre-cutover confidence
+
+**Key numbers to mention**: Shadow traffic overhead: doubles downstream calls. Comparison log storage: ~500 bytes per comparison × RPS × 7 days. Discrepancy threshold: 0.1% over 7 days. Typical parallel run duration: 2-4 weeks for a well-specified service, longer for services with complex business logic.
+
+---
+
+#### Q7: How do you handle rollback if the new microservice has a critical bug after cutover?
+**What interviewers look for**: Whether you've pre-planned rollback as a first-class concern, not an afterthought.
+
+**Answer framework**:
+1. Rollback is a routing rule change: update the facade config to route traffic back to the monolith. With Nginx/Envoy/ALB, this takes 5 seconds. The monolith's code path must still exist — never delete it until you've confirmed the new service is stable for 30+ days
+2. During dual-write period, monolith data is still current — routing back is completely safe. After ending dual-write (monolith data is stale), rollback requires re-enabling CDC or dual-write to resync the monolith before routing traffic back
+3. Test rollback in staging before cutover: the rollback that has never been tested will fail in production at 2 AM. Run a full rollback drill, verify data consistency, document the runbook with exact commands
+4. Mark monolith code paths with deprecation annotations (not deleted): `// DEPRECATED: routing to user-service, delete after 2026-06-01`. This makes it easy to find and eventually remove, while keeping it available for rollback
+
+**Key numbers to mention**: Rollback time with facade routing: < 5 seconds. Monolith code retention after cutover: minimum 30 days, ideally 90 days. Dual-write data lag after routing back: 0 (data was never deleted from monolith during dual-write period).
+
+---
+
+## 💡 Pseudocode Walkthrough
+
+```pseudocode
+// Strangler Fig — Progressive Traffic Migration
+// Facade routes traffic based on extraction state
+
+ROUTING_TABLE = {
+  "/api/v1/users":  { handler: "user-service",  state: EXTRACTED },
+  "/api/v1/orders": { handler: "monolith",       state: PARALLEL_RUN, pct: 100 },
+  "/api/v1/products":{ handler: "monolith",      state: PENDING },
+  // default: all other paths → monolith
+}
+
+function routeRequest(request):
+  path = request.path
+  config = ROUTING_TABLE[path] ?? { handler: "monolith", state: PENDING }
+
+  if config.state == EXTRACTED:
+    return forwardTo(config.handler, request)
+
+  if config.state == PARALLEL_RUN:
+    // Run both, compare, return authoritative (monolith)
+    [legacyResp, newResp] = await parallel(
+      monolith.call(request),
+      newService.call(request)
+    )
+    compareAndLog(request, legacyResp, newResp)  // async, non-blocking
+    return legacyResp  // monolith is authoritative during parallel run
+
+  // PENDING or default: everything goes to monolith
+  return forwardTo("monolith", request)
+
+// Anti-Corruption Layer translation
+function translateUserFromLegacy(legacyUser):
+  return {
+    id:        idMapping.getOrCreate(legacyUser.usr_id),
+    email:     legacyUser.usr_email_1,
+    status:    { 'A': 'active', 'S': 'suspended', 'D': 'deleted' }[legacyUser.acct_status],
+    plan:      { 1: 'free', 2: 'pro', 3: 'enterprise' }[legacyUser.cust_tier],
+    createdAt: new Date(legacyUser.created_dt * 1000)  // Unix → ISO timestamp
+  }
+
+// Cutover decision: when parallel_run discrepancy_rate < 0.1% for 7 days
+// Update ROUTING_TABLE state: PARALLEL_RUN → EXTRACTED
+// Monitor for 30 days before deleting monolith code path
+```
+
+---
+
 ## Decision Framework Checklist `[All Levels]`
 
 - [ ] Identified first extraction candidate based on business capability boundary (not technical layer)
@@ -430,6 +575,14 @@ The strangler fig migration itself is not changing — but the tooling making th
 - [ ] Migration health dashboard live: traffic ratio, discrepancy rate, dual-write lag
 - [ ] Team agreement on when monolith code path is deleted (after dual-write period)
 - [ ] ACL translation tests have >90% coverage including edge cases from legacy data analysis
+
+## Next Steps
+
+- **Interview Prep**: Practice monolith migration questions → [Monolith to Microservices Interview Q&A](/12-interview-prep/system-design/scale-and-reliability/monolith-to-microservices)
+- **Data Layer**: How CDC (Debezium) enables dual-write for migrations → [Change Data Capture](/10-architecture/concepts/change-data-capture)
+- **Traffic Routing**: Service mesh VirtualService handles facade routing natively → [Service Mesh Architecture](./service-mesh-architecture)
+- **Deployment Safety**: Blue-green and canary strategies complement the migration facade → [Deployment Strategies](./deployment-strategies-deep-dive)
+- **Resilience During Migration**: Protect new services with bulkheads while they mature → [Bulkhead Pattern](./bulkhead-pattern)
 
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*
