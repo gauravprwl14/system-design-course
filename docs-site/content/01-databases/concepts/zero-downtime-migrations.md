@@ -477,5 +477,388 @@ AND pg_index.indexrelid = pg_class.oid;
 - [ ] Monitor `pg_stat_activity` for lock waits during migrations — have a kill procedure ready for blocking queries
 
 ---
+
+## Level 2 — Deep Dive
+
+### The Expand-Contract Pattern in Full Detail `[Staff+]`
+
+The expand/contract pattern is the **universal solution** for any breaking schema change — column renames, type changes, splitting or merging columns. It works because it never requires both old and new code to agree on the schema simultaneously. Each phase is individually safe to roll back.
+
+**The 4 phases for every breaking schema change**:
+
+```mermaid
+sequenceDiagram
+    participant DB as Database State
+    participant OldCode as Old Application Code
+    participant NewCode as New Application Code
+    participant Migration as Background Migration
+
+    Note over DB,Migration: Phase 1 — EXPAND (backward compatible addition)
+    DB->>DB: ALTER TABLE orders ADD COLUMN amount DECIMAL(10,2)
+    Note over DB: old column 'amt' still exists, new column 'amount' added (nullable)
+    OldCode->>DB: Writes amt=100 only (unaware of new column)
+    NewCode->>DB: Writes amt=100 AND amount=100 (dual-write, reads from amount)
+
+    Note over DB,Migration: Phase 2 — MIGRATE (backfill + dual-write period)
+    Migration->>DB: UPDATE orders SET amount=amt WHERE amount IS NULL LIMIT 2500
+    Note over Migration: Runs in batches with sleep, ~6-8 hours for 2B rows
+    OldCode->>DB: Still writing to amt only (safe — migration handles backfill)
+    NewCode->>DB: Dual-writing to amt AND amount
+
+    Note over DB,Migration: Phase 3 — SWITCH (new code reads new column exclusively)
+    Note over NewCode: Deploy: read from 'amount' only, still dual-write both columns
+    NewCode->>DB: Reads amount, writes amt AND amount
+    Note over DB: Verify: SELECT count(*) FROM orders WHERE amount IS NULL → 0
+
+    Note over DB,Migration: Phase 4 — CONTRACT (remove old column — now safe)
+    DB->>DB: ALTER TABLE orders DROP COLUMN amt
+    Note over DB: Fast catalog-only change, < 1ms, old code already retired
+    NewCode->>DB: Writes amount only, reads amount only
+```
+
+**Phase breakdown**:
+
+| Phase | DB Change | Code Change | Duration | Rollback |
+|-------|-----------|-------------|----------|---------|
+| 1 — Expand | Add new column (nullable) | New code dual-writes both columns, reads new-first | Minutes (fast DDL) | Drop new column |
+| 2 — Migrate | Backfill data in batches | No code change needed | Hours (background job) | Stop job, leave new column empty |
+| 3 — Switch | None | New code reads from new column exclusively | Minutes (deployment) | Redeploy to read old column |
+| 4 — Contract | Drop old column | Remove dual-write from code | Minutes (fast DDL) | Cannot undo without restoring old column |
+
+**Critical constraint**: Phases 1 and 4 are separated by at least 2 full deployments. You cannot skip from Phase 1 to Phase 4 — old code still running in production will write to the old column and break if it's gone.
+
+**Minimum safe dual-write period**: Until you have verified (a) all application instances have deployed the new code reading the new column and (b) `SELECT count(*) FROM orders WHERE amount IS NULL` returns 0. In a large fleet with rolling deployments, this is typically 24-72 hours.
+
+---
+
+### Large Table Migration Tools — Comparison `[Senior]` → `[Staff+]`
+
+| Tool | Database | Mechanism | Safe Copy Rate | Replica Lag Monitoring | Cutover Lock | When to Use |
+|------|----------|-----------|---------------|----------------------|--------------|-------------|
+| **gh-ost** | MySQL | Shadow table + binlog replay | ~50k rows/min (tunable) | Yes — pauses automatically when lag > `max-lag-millis` | 50–200ms | Any MySQL table rewrite (type change, column add on old MySQL) |
+| **pt-online-schema-change** | MySQL | Triggers on original table | ~50k rows/min | Manual — check `Seconds_Behind_Master` separately | 1–5s (trigger removal) | Legacy MySQL environments; avoid on write-heavy tables (trigger overhead) |
+| **CREATE INDEX CONCURRENTLY** | PostgreSQL | Multi-pass background build | Not row-based — I/O bound | No built-in pausing | None (SHARE UPDATE EXCLUSIVE only) | All PostgreSQL index additions |
+| **pg_repack** | PostgreSQL | Shadow table + log trigger | I/O bound (~100MB/s) | Yes (watch replica lag manually) | < 1s | PostgreSQL table bloat removal or type changes |
+
+**When to pick gh-ost vs pt-osc**:
+
+```
+Write-heavy table (>1k writes/sec)?
+├── YES → gh-ost (binlog replay has lower overhead than triggers)
+└── NO  → Either works; pt-osc simpler to set up
+
+Need to pause/resume mid-migration?
+├── YES → gh-ost (built-in pause via flag file: touch /tmp/gh-ost.pause)
+└── NO  → Either works
+
+MySQL 5.7 or below without row-based binlog?
+├── YES → pt-osc (gh-ost requires row-based replication)
+└── NO  → gh-ost preferred
+```
+
+**gh-ost replica lag protection in depth**:
+
+```bash
+# gh-ost monitors replica lag on the specified replicas
+# When lag exceeds --max-lag-millis, it pauses the row copy loop
+# When lag recovers, it automatically resumes
+gh-ost \
+  --throttle-control-replicas="replica1.db.internal,replica2.db.internal" \
+  --max-lag-millis=1500 \        # pause copy if any replica lags > 1.5s
+  --throttle-additional-flag-file=/tmp/gh-ost.throttle  # manual pause control
+```
+
+**Monitoring an active gh-ost migration**:
+
+```bash
+# Connect to gh-ost's built-in socket for status
+echo "status" | nc -U /tmp/gh-ost.orders.sock
+
+# Output includes:
+# Migrating `mydb`.`orders`; Ghost table is `mydb`.`_orders_gho`
+# Migration started at ...
+# chunk-size: 1000; max-lag-millis: 1500ms
+# Rows copied: 450000000/2000000000; 22.5%; ETA: 9h45m
+# Replica lag: 120ms; throttled: false
+```
+
+---
+
+### Backfill Strategies for 1-Billion-Row Tables `[Staff+]`
+
+A new column with `NOT NULL` or a computed value requires backfilling existing rows. At 1B rows, naive `UPDATE orders SET amount = amt` will:
+- Hold row-level locks on millions of rows simultaneously
+- Generate a massive transaction in the WAL/binlog
+- Cause replica lag that can spike to minutes
+- Potentially OOM the database server's write buffer
+
+**The correct approach — batched update with rate limiting**:
+
+```python
+import psycopg2
+import time
+
+def backfill_column(conn_string, batch_size=2500, sleep_ms=20):
+    """
+    Backfill orders.amount from orders.amt in batches.
+    Rate-limited to prevent replica lag and write amplification.
+    """
+    conn = psycopg2.connect(conn_string)
+    conn.autocommit = True
+    cur = conn.cursor()
+
+    # Get the ID range to process
+    cur.execute("SELECT MIN(id), MAX(id) FROM orders WHERE amount IS NULL")
+    min_id, max_id = cur.fetchone()
+
+    if min_id is None:
+        print("Backfill already complete.")
+        return
+
+    processed = 0
+    current_id = min_id
+
+    while current_id <= max_id:
+        next_id = current_id + batch_size * 10  # scan window larger than batch
+
+        # Update a bounded batch — avoids full table scan per iteration
+        cur.execute("""
+            UPDATE orders
+            SET amount = amt
+            WHERE id >= %s AND id < %s
+              AND amount IS NULL
+        """, (current_id, next_id))
+
+        rows_updated = cur.rowcount
+        processed += rows_updated
+
+        # Rate limiting: sleep between batches to allow replica to catch up
+        time.sleep(sleep_ms / 1000.0)
+
+        # Progress logging every 100k rows
+        if processed % 100_000 == 0:
+            print(f"Processed {processed:,} rows, current id range: {current_id}-{next_id}")
+
+        current_id = next_id
+
+    conn.close()
+    print(f"Backfill complete. Total rows updated: {processed:,}")
+```
+
+**Sizing the backfill job**:
+
+| Table size | Batch size | Sleep between batches | Estimated duration | Replica lag risk |
+|-----------|-----------|----------------------|--------------------|-----------------|
+| 100M rows | 2,500 | 10ms | ~1.1 hours | Low |
+| 500M rows | 2,500 | 20ms | ~5.6 hours | Low-Medium |
+| 1B rows | 2,500 | 30ms | ~11 hours | Medium |
+| 2B rows | 1,000 | 50ms | ~28 hours | Medium (reduce if lag spikes) |
+
+**Background worker with progress tracking** (production pattern):
+
+```sql
+-- Track backfill progress in a dedicated table
+CREATE TABLE migration_progress (
+    migration_name TEXT PRIMARY KEY,
+    last_processed_id BIGINT DEFAULT 0,
+    total_rows BIGINT,
+    rows_processed BIGINT DEFAULT 0,
+    started_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    completed_at TIMESTAMPTZ
+);
+
+INSERT INTO migration_progress (migration_name, total_rows)
+VALUES ('orders.amount_backfill', (SELECT count(*) FROM orders WHERE amount IS NULL));
+
+-- Worker updates progress on each batch
+UPDATE migration_progress
+SET last_processed_id = %s,
+    rows_processed = rows_processed + %s,
+    updated_at = NOW()
+WHERE migration_name = 'orders.amount_backfill';
+```
+
+**Verification before cutover** — never cut over without this check:
+
+```sql
+-- 1. Verify no NULL values remain
+SELECT count(*) AS remaining_nulls
+FROM orders
+WHERE amount IS NULL;
+-- Must be 0 before Phase 3 (Switch)
+
+-- 2. Spot-check value accuracy (sample 1000 rows)
+SELECT
+    id,
+    amt,
+    amount,
+    amt = amount AS values_match
+FROM orders
+ORDER BY RANDOM()
+LIMIT 1000;
+-- All values_match should be TRUE
+
+-- 3. Verify row counts haven't drifted
+SELECT
+    count(*) FILTER (WHERE amount IS NOT NULL) AS backfilled,
+    count(*) FILTER (WHERE amount IS NULL) AS remaining,
+    count(*) AS total
+FROM orders;
+```
+
+**Dual-write period length**: Keep both columns active until (a) zero NULLs in new column, (b) all application pods have deployed new code, and (c) 24 hours have elapsed to catch any delayed or batched writes from cron jobs, event replay, or async workers that might reference the old column name.
+
+---
+
+### Real Company Examples `[Staff+]`
+
+#### GitHub: 1.5TB Table Migration with gh-ost
+
+GitHub's `merge_queue_entries` and related tables crossed 1.5TB during their Git merge queue feature rollout. The table received ~8,000 writes/second at peak, with 12 replicas serving read traffic globally.
+
+**The challenge**: Adding a new index for query performance required a full table scan. On MySQL, this meant a native `ALTER TABLE ... ADD INDEX` would block writes for an estimated 14 hours.
+
+**Their approach** (from GitHub Engineering blog, 2023):
+1. Used gh-ost with `--chunk-size=500` (smaller than default 1000 to reduce replication pressure)
+2. Set `--max-lag-millis=500` (aggressive — paused copy if any replica lagged > 500ms)
+3. Ran the copy over 2 days with automatic pause/resume through traffic spikes
+4. Monitored replication lag on all 12 replicas continuously via custom alerting on `Seconds_Behind_Master`
+5. Scheduled the final cutover for Sunday 3am PST — the lowest-traffic window
+6. Total cutover lock time: 180ms (within their p99 latency budget of 200ms)
+
+**Key lesson**: gh-ost's pause-on-lag feature meant the migration automatically slowed down during business hours and sped up at night without manual intervention. The 2-day migration ran unattended with a PagerDuty alert only if lag exceeded 2 seconds.
+
+**Monitoring query they used during migration**:
+```sql
+SHOW SLAVE STATUS\G
+-- Watch: Seconds_Behind_Master < 1 = healthy
+-- Watch: Relay_Log_Space growing = gh-ost keeping up with binlog
+```
+
+#### Stripe: Moving $500B/Year Payment Processing Without Downtime
+
+Stripe's migration story (published in their engineering blog, 2022) involved moving their core payment processing from a single-region MySQL cluster to a distributed database (Vitess + MySQL sharding) without downtime on a system processing $500B/year in payments.
+
+**Constraints**:
+- Zero tolerance for payment duplication or loss (idempotency keys must survive migration)
+- Payment records must be globally consistent at all times
+- Existing MySQL schemas had 7 years of organic growth — 40+ tables with complex FK relationships
+
+**Their expand-contract approach**:
+1. **Dual-write layer**: Introduced a payment abstraction layer that wrote to both old MySQL and new Vitess for 6 months
+2. **Shadow reads**: New Vitess reads ran in "shadow mode" — results compared against MySQL truth but not served to users
+3. **Divergence detection**: Any row where shadow read diverged from MySQL truth triggered an alert; reconciliation ran automatically
+4. **Incremental traffic shift**: Moved 1% → 5% → 25% → 50% → 100% of read traffic to Vitess over 4 weeks after shadow validation
+5. **Write cutover**: Once reads were fully on Vitess and shadow comparison showed 0 divergence for 72 hours, writes cutover in a single atomic switch
+
+**Key numbers**:
+- 6 months dual-write period
+- 0 payment processing incidents during migration
+- 72-hour zero-divergence requirement before cutover
+- Shadow read comparison found 3 bugs in the new write path before any real traffic shifted
+
+**Key lesson from Stripe**: The dual-write period is expensive (2x write load) but it is the only way to validate correctness before cutover. They treated the shadow comparison infrastructure as mandatory, not optional.
+
+---
+
+### Common Migration Mistakes `[Senior]` → `[Staff+]`
+
+#### Mistake 1: No Rollback Plan Before Executing
+
+**Root cause**: Engineers treat migrations as one-way operations. They plan the forward path (add column, backfill, drop old column) but not the reverse path (what if the new code is buggy and needs to be reverted 2 hours into Phase 2?).
+
+**The failure**: Mid-backfill, the new application code starts causing errors. The team needs to roll back the deployment. But the database is now half-backfilled: some rows have `amount` set, some have `NULL`. The old code doesn't write to `amount`, so rolling back the code means `amount` will never be populated for new rows. The data is now inconsistent.
+
+**The fix**: Before starting any migration, document:
+1. How to roll back Phase 1 (drop new column — safe if no code depends on it yet)
+2. How to roll back Phase 2 (stop backfill job; new column remains partially filled but code falls back to old column)
+3. How to roll back Phase 3 (redeploy old code; old column still exists because Phase 4 hasn't run)
+4. Phase 4 is irreversible — only run after 48-hour stability confirmation
+
+```sql
+-- Rollback script for Phase 1 (prepared before Phase 1 runs):
+-- IF Phase 1 needs to be reverted:
+ALTER TABLE orders DROP COLUMN amount;
+-- Safe because no application code has been deployed that reads 'amount' yet
+```
+
+#### Mistake 2: Not Testing on Production-Size Data
+
+**Root cause**: Engineers test migrations on staging databases that are 1/100th the size of production. A migration that takes 3 minutes on a 20M-row staging table takes 5 hours on a 2B-row production table — and behaves differently under concurrent production write load.
+
+**The failure scenario**: A startup tests `CREATE INDEX CONCURRENTLY` on staging (200GB) and sees it complete in 8 minutes. They schedule it for production (2TB) expecting a 1-hour window. It takes 9 hours. During those 9 hours, the `SHARE UPDATE EXCLUSIVE` lock (which blocks `VACUUM`) causes dead tuple accumulation. Table bloat grows 15% during the index build. The index is valid but now there's a follow-up bloat problem requiring pg_repack.
+
+**The fix**:
+1. Always estimate production duration: `(production_row_count / staging_row_count) × staging_duration × 1.5` (add 50% for production write load overhead)
+2. For pg_repack and gh-ost: run a 15-minute sample with `--execute=false` (dry run) to measure actual copy speed on production hardware
+3. Use `pg_size_pretty(pg_relation_size('orders'))` to confirm table size before scheduling
+4. Run a timing test on a production replica (read-only, no impact) before scheduling on primary
+
+```bash
+# gh-ost dry run — measures actual speed without making changes
+gh-ost \
+  --database=mydb --table=orders \
+  --alter="ADD COLUMN discount_pct DECIMAL(5,2)" \
+  --execute=false \        # DRY RUN — no changes made
+  --verbose
+# Output includes: "estimated rows: 2000000000; copy speed: 42000 rows/sec; ETA: 13h09m"
+```
+
+#### Mistake 3: Forgetting to Update Indexes After Column Type Change
+
+**Root cause**: Engineers change a column's type (e.g., `INT` → `BIGINT`, `VARCHAR(50)` → `VARCHAR(255)`) using gh-ost or pg_repack — correctly, with zero downtime. They verify the column type is updated. But they forget that indexes on that column store the old type's sort order and encoding.
+
+**The failure scenario**: A table has `user_id INT` with an index `idx_user_id`. The column is migrated to `user_id BIGINT` using gh-ost. gh-ost rebuilds the table with the new schema and the new index — but only if `--alter` explicitly includes any index changes. If `--alter="MODIFY COLUMN user_id BIGINT"` is used without explicitly recreating the index, the rebuilt index may have inconsistent internal pages on MySQL 5.7 (the index was built against the old schema format during the copy phase).
+
+**The failure with expressions**: An expression index `CREATE INDEX idx_lower_email ON users (LOWER(email))` breaks if `email` changes from `VARCHAR(100)` to `TEXT` — the index expression is invalidated because the input type changed. PostgreSQL marks it INVALID silently.
+
+**The fix**:
+```sql
+-- After any column type change, always verify index validity
+-- PostgreSQL:
+SELECT indexname, indexdef, pg_index.indisvalid
+FROM pg_indexes
+JOIN pg_class ON pg_class.relname = pg_indexes.indexname
+JOIN pg_index ON pg_index.indexrelid = pg_class.oid
+WHERE tablename = 'users';
+-- Any indisvalid = FALSE → rebuild that index immediately
+
+-- For expression indexes, explicitly drop and recreate after type change:
+DROP INDEX CONCURRENTLY idx_lower_email;
+CREATE INDEX CONCURRENTLY idx_lower_email ON users (LOWER(email));
+
+-- MySQL: run ANALYZE TABLE after gh-ost migration to update index statistics
+ANALYZE TABLE orders;
+
+-- Verify index is being used (not full scans):
+EXPLAIN SELECT * FROM users WHERE LOWER(email) = 'user@example.com';
+```
+
+**Check index sizes before and after**: An unexpected size change (>10%) in an index after migration is a signal that the index structure changed and should be investigated.
+
+---
+
+## Key Takeaways / TL;DR `[All Levels]`
+
+- **Always set `lock_timeout = '5s'` before any DDL** — a 2ms `ALTER TABLE` can queue 4,000 connections and cause a multi-minute outage via PostgreSQL's FIFO lock queue
+- **Expand/Contract = 4 phases, minimum 2 deployments** — never rename or drop a column in a single deployment; dual-write period must be minimum 24-72 hours
+- **gh-ost for MySQL table rewrites: 50-200ms cutover** vs hours of downtime with native `ALTER TABLE`; set `--max-lag-millis=1500` and `--throttle-control-replicas` for safety
+- **Backfill 1B rows safely**: batch size 2,500 rows + 20-30ms sleep = ~11 hours, replica lag stays < 200ms; verify with `count(*) WHERE new_col IS NULL = 0` before cutover
+- **Test on production-size data**: staging at 1% scale gives 100x optimistic timing estimates; always do a dry-run on a production replica before scheduling migrations
+
+---
+
+## References
+
+- 📖 [GitHub Engineering: gh-ost — Triggerless Online Schema Migrations](https://github.blog/engineering/infrastructure/gh-ost-github-s-online-schema-migrations-for-mysql/) — GitHub's original announcement with architecture details
+- 📖 [Stripe Engineering: Online Migrations at Scale](https://stripe.com/blog/online-migrations) — Four-step dual-write pattern used for $500B/year payment infrastructure
+- 📖 [Braintree: Safe Operations for High Volume PostgreSQL](https://www.braintreepayments.com/blog/safe-operations-for-high-volume-postgresql/) — Practical guide to lock_timeout, CREATE INDEX CONCURRENTLY pitfalls
+- 📚 [PostgreSQL Documentation: CREATE INDEX CONCURRENTLY](https://www.postgresql.org/docs/current/sql-createindex.html#SQL-CREATEINDEX-CONCURRENTLY) — Official docs including failure modes and invalid index handling
+- 📚 [pg_repack Documentation](https://reorg.github.io/pg_repack/) — Official pg_repack usage, flags, and known limitations
+- 📖 [Xata: pgroll — Zero-downtime schema migrations for PostgreSQL](https://xata.io/blog/pgroll-schema-migrations-postgres) — Multi-version schema approach automating the expand/contract pattern
+- 📺 [Percona Live: pt-online-schema-change vs gh-ost](https://www.youtube.com/watch?v=e1oBRvSJiFk) — Direct comparison of trigger-based vs binlog-based approaches at scale
+
+---
 *Written by Gaurav Porwal — 10+ Year Engineer | Tech Lead | Product Owner | Business-Minded Builder*
 *Last updated: 2026-03-18*

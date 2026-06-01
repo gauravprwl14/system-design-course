@@ -324,6 +324,271 @@ Cold start for new users: use destination-level popularity scores (most-booked i
 
 ---
 
+## Agent Architecture
+
+The travel planning agent operates as a multi-turn, tool-using LLM loop. Each user request triggers a structured agent cycle: plan tools to call, execute them in parallel where possible, evaluate results, decide whether to call more tools or synthesize the final answer.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant PE as Preference Extractor
+    participant SO as Search Orchestrator
+    participant CS as Constraint Solver
+    participant IS as Itinerary Synthesizer
+    participant LLM as LLM (GPT-4 / Claude)
+
+    U->>O: "Plan 5 days in Kyoto, $3k, April"
+    O->>PE: Extract structured preferences
+    PE->>LLM: Extraction prompt + user message
+    LLM-->>PE: JSON preference object
+    PE-->>O: {destination, budget, dates, style}
+
+    O->>SO: Parallel search (flights+hotels+activities)
+    SO-->>O: Raw candidates (200+ options)
+
+    O->>CS: Apply hard + soft constraints
+    CS->>LLM: Evaluate soft preference trade-offs
+    LLM-->>CS: Ranked + filtered shortlist
+    CS-->>O: 3-5 options per category
+
+    O->>IS: Synthesize day-by-day itinerary
+    IS->>LLM: Compose narrative + validate logic
+    LLM-->>IS: Draft itinerary
+    IS->>IS: Validate transit times via Maps API
+    IS-->>O: Final itinerary
+
+    O-->>U: Structured itinerary + booking links
+
+    Note over U,O: User can refine: "swap temple for cooking class"
+    U->>O: Refinement request
+    O->>CS: Diff-based update (not full re-plan)
+    CS-->>O: Updated day(s) only
+    O-->>U: Diff view of changes
+```
+
+The key design choice is keeping the LLM out of tool-execution hot paths. The LLM is only invoked for: (1) preference extraction, (2) soft constraint ranking, (3) narrative synthesis, and (4) validation of logical order. Raw API calls — flight search, hotel availability, Maps routing — are all executed by deterministic tool code, not the LLM. This keeps latency predictable and costs controllable.
+
+---
+
+## Tool/Function Registry
+
+The agent has access to a registry of callable tools. Each tool is defined with a JSON Schema that the LLM uses to decide whether and how to call it.
+
+```mermaid
+graph TD
+    LLM[LLM Planner] --> TR[Tool Registry]
+    TR --> T1[search_flights\nparams: origin, dest, dates, passengers]
+    TR --> T2[search_hotels\nparams: city, checkin, checkout, guests, max_price]
+    TR --> T3[search_activities\nparams: city, date, category, max_price_per_person]
+    TR --> T4[search_restaurants\nparams: city, date, dietary_restrictions, cuisine_style]
+    TR --> T5[get_travel_time\nparams: origin_coords, dest_coords, mode]
+    TR --> T6[check_opening_hours\nparams: place_id, date]
+    TR --> T7[get_user_profile\nparams: user_id]
+    TR --> T8[save_itinerary\nparams: user_id, itinerary_json]
+
+    T1 --> C1[Cache: 4h TTL]
+    T2 --> C2[Cache: 1h TTL]
+    T3 --> C3[Cache: 24h TTL]
+    T4 --> C3
+    T5 --> C4[Cache: 7d TTL]
+    T6 --> C5[Cache: 12h TTL]
+```
+
+**Tool selection logic**: The orchestrator determines which tools to call based on the preference object — it does not ask the LLM to pick tools for every step. The LLM is only asked to reason about ambiguous cases (e.g., "user said 'a few activities' — interpret as 2 or 3 per day?").
+
+**Error handling when tools fail**:
+
+| Failure Type | Detection | Fallback Strategy |
+|-------------|-----------|-------------------|
+| API timeout (>5s) | Deadline exceeded | Return cached data with staleness warning |
+| Rate limit (429) | HTTP status | Try secondary provider, then queue |
+| No results found | Empty response | Broaden constraints (expand date range ±2 days) |
+| Price changed >20% | Re-verify on shortlist | Re-run constraint solver with updated prices |
+| Restaurant closed | Opening hours mismatch | Auto-swap with nearest alternative, notify user |
+
+**Tool call budget per session**: maximum 50 external API calls. Counter tracked at orchestrator level. If budget exhausted before itinerary is complete, the orchestrator switches to cache-only mode with clear staleness warnings.
+
+---
+
+## Prompt Engineering
+
+### System Prompt Structure
+
+The system prompt follows a strict instruction hierarchy. Outer layers constrain inner layers — user instructions cannot override safety or tool-use rules.
+
+```
+SYSTEM PROMPT (condensed example):
+
+You are a travel planning assistant. Your job is to help users create 
+day-by-day itineraries that satisfy their budget and preferences.
+
+## Role and Boundaries
+- You plan travel itineraries only. Decline unrelated requests politely.
+- Never invent prices, opening hours, or availability. Use tool outputs only.
+- If a constraint conflict is detected, surface it explicitly — do not silently degrade.
+
+## Tool Usage Rules
+- Always call get_user_profile before making recommendations.
+- Call search_flights and search_hotels in parallel, not sequentially.
+- After building a shortlist, always re-verify prices via live API call before 
+  presenting final itinerary.
+- Never present an itinerary where consecutive activities have < 30 min gap 
+  without flagging it as "tight schedule."
+
+## Output Format
+- Return itinerary as structured JSON first, then render as markdown for display.
+- Always include: activity name, start time, end time, cost estimate, booking link.
+- Include a daily cost subtotal and running total against budget.
+
+## Context Management
+- If conversation exceeds 8 turns, summarize previous turns as a compact 
+  preference snapshot and continue from there.
+- User's stated preferences override inferred preferences when they conflict.
+```
+
+### Context Management Strategy
+
+LLM context fills up quickly in multi-turn planning sessions. The agent uses a **rolling summary pattern**:
+- Turns 1-4: full conversation history in context
+- After turn 4: compress prior turns into a "preference snapshot" (< 200 tokens) that captures what was decided, what was rejected, and current itinerary state
+- The snapshot is prepended to each new turn instead of full history
+- This keeps token cost bounded at ~$0.02-0.05 per session regardless of length
+
+---
+
+## Failure Modes
+
+### Hallucination
+
+**When it happens**: The LLM generates plausible-sounding but fabricated information — a restaurant that doesn't exist, a flight time that's wrong, a temple described as "15 minutes from Kyoto Station" when it's 45 minutes.
+
+**Detection strategies**:
+1. **Grounding check**: Any factual claim (price, location, hours) must be sourced from a tool call result. Claims without a source are flagged.
+2. **Consistency validation**: Cross-check generated transit times against Maps API output. If LLM says "5 min walk" but Maps API says 25 min, override the LLM.
+3. **Entity validation**: Validate restaurant/hotel names against the IDs returned by search tools. If a name appears in narrative but not in search results, it's fabricated.
+
+**Mitigation**: Enforce a "citations required" policy — the itinerary synthesizer must reference a tool call result ID for every specific fact. Any fact without a citation is replaced with "details TBC" and triggers a live tool call.
+
+### Loop Detection
+
+**When it happens**: The agent gets stuck in a refinement loop — "re-plan day 3" → constraint solver finds no valid options → asks LLM to relax constraints → LLM tightens them again → repeat.
+
+**Detection**: Count refinement iterations per day. If a single day has been re-planned > 3 times in one session, the orchestrator breaks the loop.
+
+**Resolution**:
+1. Surface the conflict explicitly to the user: "We've tried 4 approaches for Day 3 and can't satisfy both proximity and budget. Which matters more?"
+2. Offer a pre-computed fallback itinerary that sacrifices one constraint
+3. Log the constraint pattern for offline analysis to improve future constraint solver rules
+
+### Cost Control: Token Budget Management
+
+| Stage | Token Usage | Cost Estimate |
+|-------|------------|---------------|
+| Preference extraction | ~500 input + 200 output | $0.002 |
+| Soft constraint ranking (per category) | ~800 input + 300 output | $0.004 |
+| Itinerary synthesis | ~2,000 input + 1,000 output | $0.012 |
+| Validation pass | ~1,500 input + 200 output | $0.007 |
+| **Total per session (GPT-4o pricing)** | **~6,000 tokens** | **~$0.025** |
+
+**Hard token limits**: each LLM call has a max_tokens cap. If the context approaches the cap, the orchestrator compresses the candidate list (50 options → top 10 by score) before passing to the LLM.
+
+**Early termination**: If the user hasn't interacted for > 60 seconds during multi-turn planning, the session is paused and state saved. Resuming uses the saved state rather than restarting — saving ~$0.015 per interrupted session.
+
+---
+
+## Production Considerations
+
+### Latency Budget
+
+Each planning session involves multiple LLM calls and external API calls. The latency budget must be carefully partitioned:
+
+| Step | P50 | P95 | Notes |
+|------|-----|-----|-------|
+| Preference extraction (LLM) | 800ms | 1.5s | Single LLM call, low token count |
+| Parallel API search (flights+hotels+activities) | 2.5s | 6s | Network-bound, run in parallel |
+| Constraint solving + LLM ranking | 1.2s | 3s | LLM call with candidate list |
+| Itinerary synthesis (LLM) | 1.5s | 4s | Largest LLM call, most output tokens |
+| Maps API validation | 400ms | 1s | Batch call for all day-pairs |
+| **Total E2E** | **~6s** | **~16s** | Well within 30s P95 target |
+
+If any step exceeds its budget, the orchestrator has a **progressive disclosure** fallback: return partial results ("Here are your flight options while we finalize hotels...") rather than holding the full response until everything is ready.
+
+### Cost Per Query
+
+At GPT-4o pricing (~$0.005/1k input tokens, $0.015/1k output tokens):
+- Typical session: $0.02-$0.05 per planning session
+- Complex session (many refinements): up to $0.15
+- At 10,000 sessions/day: $200-$500/day in LLM API costs
+- Cache hit rate of 60% on API calls reduces external API costs by ~$150/day
+
+### SLA Targets and Fallback to Non-AI Path
+
+| SLA Tier | Response Time | AI Path | Fallback |
+|----------|--------------|---------|----------|
+| Initial acknowledgment | < 1s | Always AI | — |
+| First results shown | < 10s | Parallel search | Show cached results if search slow |
+| Full itinerary | < 30s | Full AI pipeline | Pre-generated template itinerary |
+| If LLM unavailable | — | Circuit breaker triggers | Rule-based itinerary builder |
+
+The **non-AI fallback** is a rules-based itinerary generator that uses popularity rankings and pre-defined day templates. It produces lower quality but always responds within 5 seconds. Users see a banner: "Using quick planner mode — AI planning temporarily unavailable."
+
+---
+
+## How Google Built Google Trips (and AI Overviews for Travel)
+
+Google's travel AI effort provides one of the best-documented real examples of a multi-source, constraint-satisfying travel planning system at scale.
+
+**Scale**: Google Flights processes over 5 billion flight price queries per day across its infrastructure. Google Hotels indexes 1.8 million properties with real-time price sync. Google Maps provides routing for 1 billion+ users monthly.
+
+**Key architectural decision — Knowledge Graph anchoring**: Google does not rely on the LLM to know what exists. Instead, every entity (hotel, activity, restaurant) is first resolved against the Google Knowledge Graph, which has authoritative data (coordinates, hours, ratings, categories) for 1.5 billion places. The LLM operates over entity IDs, not free-text names. This eliminates hallucination about place facts entirely.
+
+**Non-obvious choice — Semantic caching over exact-match caching**: When two users ask for "budget hotels in Kyoto near Gion" and "cheap accommodation Kyoto walking distance Gion," Google's system treats these as the same query via semantic embedding similarity, not string matching. This increases effective cache hit rate from ~20% (exact match) to ~65% (semantic match), reducing live API calls by 3×.
+
+**Specific numbers from Google I/O 2024 Travel AI announcement**:
+- AI Overviews for travel queries cover 200+ countries
+- Sub-2 second response for itinerary suggestions
+- 40% of travel searches now engage with AI-generated suggestions before clicking any result
+
+**Source**: Google I/O 2024 keynote, Google Travel Blog (blog.google/products/travel/ai-travel-planning/), and Google Research publications on entity-grounded generation.
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing**: Whether you understand the boundary between AI-handled ambiguity (preference extraction, soft trade-offs, narrative synthesis) and deterministic-handled facts (prices, hours, routing). Strong candidates keep the LLM in the reasoning layer, not the data layer.
+
+**Common mistakes candidates make**:
+
+1. **Using the LLM to call tools sequentially instead of in parallel.** "First search flights, then search hotels..." — this adds 2-3s latency per step and puts you at 15-20s easily. The orchestrator should fire all independent searches simultaneously.
+
+2. **Not accounting for price staleness.** Candidates design a caching layer but forget to re-verify shortlisted prices before presenting the final itinerary. The user books based on cached $180/night and finds $340 at checkout — this is a trust-destroying bug.
+
+3. **Trusting the LLM for geographic facts.** "The LLM knows the transit time between Arashiyama and Fushimi Inari." No it doesn't — not reliably. Every transit time in the itinerary must come from a Maps API call, not LLM inference.
+
+**The insight that separates good from great answers**: The best candidates propose a **constraint conflict escalation path** — instead of silently degrading (swap luxury hotel for budget without telling user), they surface the trade-off explicitly and let the user choose. This is the actual user experience differentiator. Any system can find hotels; only a good one tells you "luxury + $2k budget + 7 days in Tokyo is geometrically impossible — here are your three options."
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Initial response SLA | < 10s P95 | Use parallel API calls, not sequential |
+| Full itinerary SLA | < 30s P95 | With progressive disclosure fallback at 10s |
+| External API call budget | 50 calls per session | Prevents rate-limit hits; enforced at orchestrator |
+| Cache TTL — flights | 4 hours | Price changes more slowly for non-peak routes |
+| Cache TTL — hotels | 1 hour | Peak-season surge pricing can change hourly |
+| Cache TTL — activities | 24 hours | Activity availability rarely changes intraday |
+| Semantic cache hit rate | ~65% | vs ~20% for exact-match caching (Google's approach) |
+| Budget buffer | 15% contingency | Absorbs price staleness between search and booking |
+| Min activity gap | 30 min walking / 60 min transit | Prevents physically impossible itineraries |
+| LLM cost per session | $0.02-$0.15 | GPT-4o pricing; complex refinement sessions cost more |
+| Concurrent sessions | 1,000 | At 33 req/s sustained; 165-330 external calls/s |
+| Google Flights queries | 5 billion/day | Scale context for the production version of this problem |
+
+---
+
 ## 📚 Resources & References
 
 | Resource | Type | What You'll Learn |

@@ -1231,6 +1231,290 @@ The spike at 6pm–10pm reflects social media sharing (people click links in the
 
 ---
 
+---
+
+## Component Deep Dive 1: Key Generation Service (KGS)
+
+The Key Generation Service is the most critical and most misunderstood component in a production URL shortener. It sits at the intersection of correctness (no duplicate short codes), performance (sub-millisecond key vending), and fault tolerance (the system must still work when KGS crashes).
+
+### How It Works Internally
+
+The KGS operates as a two-tier key pool. A background generator continuously fills a `unused_keys` table in a dedicated PostgreSQL instance with pre-verified Base62 codes. Each KGS process instance also maintains an **in-memory hot buffer** of 10,000 keys loaded from the DB at startup. When a web server needs a key, it calls the KGS HTTP endpoint, which pops from the in-memory buffer and returns within microseconds — no DB round-trip per request.
+
+The in-memory buffer is refilled when it drops below 1,000 keys: the KGS executes a single atomic SQL transaction that DELETEs 10,000 rows from `unused_keys` and returns them. This "delete-and-return" pattern ensures a key cannot be handed out twice even under concurrent KGS instances, because each instance draws from a non-overlapping range.
+
+### Why Naive Approaches Fail at Scale
+
+**Naive approach 1 — Generate on demand with DB uniqueness check**: Every shorten request hashes the URL, checks the DB, retries on collision. At 1,160 writes/sec, if even 0.01% collide, that is 0.7 collision-retries/sec — acceptable. But at 100,000 writes/sec (Black Friday), 0.01% becomes 10 collision-retries/sec, each requiring an additional DB read. Multiply by p99 retry chains of 3–4 attempts and you have 40 extra DB reads/sec on a write-hot table.
+
+**Naive approach 2 — Atomic counter per-service**: Using Redis `INCR` as a global counter eliminates collisions but creates a single Redis hotspot. At 100K writes/sec, a single Redis node handles roughly 100K `INCR` commands/sec — it can cope, but a network partition to that Redis node freezes all URL creation worldwide. The counter is both a performance ceiling and a single point of failure.
+
+**KGS solution**: By pre-generating keys in bulk and distributing them to in-memory buffers, each web server can generate short codes at the speed of local memory — **< 1 microsecond per key** — with zero cross-service coordination during normal operation.
+
+```mermaid
+sequenceDiagram
+    participant BG as Background Generator
+    participant KDB as KGS Database (unused_keys)
+    participant KGS as KGS Instance (in-memory buffer: 10K keys)
+    participant WS as URL Web Server
+
+    loop Every 60s or when stock < 100M
+        BG->>KDB: INSERT INTO unused_keys (SELECT generate_random_base62()) × 1M
+        Note over KDB: ~1B keys stored at all times
+    end
+
+    loop On startup + when buffer < 1000
+        KGS->>KDB: DELETE FROM unused_keys LIMIT 10000 RETURNING key
+        KDB-->>KGS: [key1, key2, ... key10000]
+        Note over KGS: Buffer refilled atomically
+    end
+
+    WS->>KGS: GET /next-key
+    KGS-->>WS: key (from in-memory buffer, <1µs)
+    WS->>WS: INSERT (key, long_url) into url_mappings DB
+```
+
+### KGS Fault Tolerance
+
+If a KGS instance crashes, the keys in its in-memory buffer are lost — abandoned, never used. With 10,000 keys per buffer, that is 10,000 wasted 7-char codes out of 3.5 trillion — a loss of 0.0000003%. Acceptable. On restart, KGS loads a fresh batch.
+
+For high availability, run two KGS instances (primary + standby). The standby watches the primary via heartbeat. On failover, the standby activates in under 5 seconds. Web servers configure a retry with exponential backoff, so a brief KGS outage during failover causes < 200ms increased p99 write latency, not a hard failure.
+
+### KGS Implementation Options
+
+| Approach | Latency | Throughput | Trade-off |
+|----------|---------|------------|-----------|
+| On-demand hash + DB check | 5–50ms (includes retry) | ~5K writes/sec | Simple, no extra service; breaks at high write rates |
+| Atomic Redis INCR counter | ~1ms (Redis RTT) | ~100K/sec | Redis SPOF; sequential codes are enumerable (security risk) |
+| KGS with in-memory buffer | < 0.001ms (memory lookup) | **>500K/sec** | Requires dedicated service; 10K keys lost on crash (negligible) |
+
+---
+
+## Component Deep Dive 2: Redis Caching Layer
+
+The Redis cluster is the read engine of the entire system. With a 100:1 read-to-write ratio and peak reads of 347,000/sec, Redis is not an optimization — it is a structural necessity. Without it, PostgreSQL would need to serve 300K SELECT queries/second, which would require 150+ database replicas.
+
+### Internal Mechanics
+
+The cache stores a flat key-value mapping: `short_code` (8-byte string) → `long_url` (average 200-byte string). No JSON wrapping, no complex serialization. At ~260 bytes per entry and a working set of ~170GB, a 4-node Redis cluster with 64GB RAM each covers the hot 20% of URLs comfortably.
+
+Redis Cluster uses consistent hashing to distribute keys across nodes. The keyspace is divided into 16,384 hash slots. Each node owns a subset of slots. Short codes map to slots via `CRC16(short_code) % 16384`. This means a lookup for `xK9mZ2` always routes to the same node — no broadcast, no coordination.
+
+### Scale Behavior at 10× Load
+
+At baseline (115K reads/sec), each of 4 Redis nodes handles ~29K reads/sec — well within Redis's single-node limit of ~100K simple GET commands/sec.
+
+At 10× load (1.15M reads/sec), each node handles ~290K reads/sec. This exceeds single-node capacity. Two mitigations:
+
+1. **Read replicas**: Add one replica per primary. Route all GET operations to replicas. The primary only handles writes (SET). This doubles read capacity to ~200K reads/sec per shard = 800K cluster-wide.
+2. **Local in-process LRU**: Each application server (50 instances) maintains a local 1,000-entry LRU cache with a 10-second TTL. The top 1,000 URLs account for ~30% of all traffic. With 50 servers × 1,000 entries, the top URLs are absorbed locally without touching Redis.
+
+```mermaid
+graph TD
+    subgraph APP_SERVERS["50 URL Service Instances"]
+        LRU1["Local LRU\n1,000 entries\nTTL: 10s\nHits: ~30% of reads"]
+        LRU2["Local LRU\n1,000 entries"]
+        LRUN["..."]
+    end
+
+    subgraph REDIS_CLUSTER["Redis Cluster (4 Primary + 4 Replica)"]
+        direction LR
+        P1["Primary 1\nSlots 0–4095"]
+        R1["Replica 1"]
+        P2["Primary 2\nSlots 4096–8191"]
+        R2["Replica 2"]
+        P3["Primary 3\nSlots 8192–12287"]
+        R3["Replica 3"]
+        P4["Primary 4\nSlots 12288–16383"]
+        R4["Replica 4"]
+        P1 --- R1
+        P2 --- R2
+        P3 --- R3
+        P4 --- R4
+    end
+
+    subgraph DB["PostgreSQL Replicas"]
+        DBR["DB Replica Pool\n(last resort, <1% of reads)"]
+    end
+
+    LRU1 -->|"Cache miss (~70%)"| REDIS_CLUSTER
+    LRU2 --> REDIS_CLUSTER
+    REDIS_CLUSTER -->|"Cache miss (<5%)"| DB
+```
+
+### Cache Consistency
+
+When a URL is deleted or updated, the cache entry must be invalidated. The write path does `DEL short_code` in Redis immediately after the DB UPDATE. This creates a **write-through invalidation** pattern. There is a brief window (< 1ms) where the DB has the new state but Redis still has the old value — acceptable for redirects.
+
+For deleted URLs, write a **tombstone**: `SET short_code "DELETED" EX 3600`. This prevents thundering herds where 10,000 concurrent requests for a deleted URL all miss the cache and hammer the DB simultaneously.
+
+---
+
+## Component Deep Dive 3: Database Sharding and Storage
+
+At 91.5TB of raw data over 5 years with 1,160 writes/sec average and 3,500 writes/sec peak, a single PostgreSQL instance is insufficient. The sharding design must optimize for the dominant access pattern: redirect lookup by `short_code`.
+
+### Sharding Key Selection
+
+**Shard by `short_code`**, not by `user_id`. The rationale:
+
+- 99.9% of queries are `SELECT long_url WHERE short_code = ?` (redirect path)
+- Sharding by `short_code` guarantees every redirect query hits exactly one shard
+- Sharding by `user_id` would force redirect queries to broadcast across all shards (unknown which shard has this short_code) or maintain a reverse-index table — unnecessary complexity
+
+With 4 shards and consistent hashing on `short_code`, each shard holds ~22.9TB at full 5-year capacity. Shard boundaries are defined by hash ranges, not alphabetical prefixes — this distributes load evenly regardless of the Base62 character distribution in the code space.
+
+### Write Amplification Control
+
+Each URL shortening operation writes to exactly one shard (the one that owns the `short_code` hash). There is no cross-shard transaction. The KGS ensures the `short_code` is unique before it is assigned, so there is no collision-check read on the write path — pure INSERT, no SELECT-then-INSERT.
+
+At 3,500 peak writes/sec across 4 shards: **875 writes/sec per shard**. PostgreSQL handles 20,000–30,000 simple INSERTs/sec on modern hardware. At 875/sec, the database is operating at roughly 3% of capacity — massive headroom.
+
+### Replication and Read Scaling
+
+Each shard has 2 read replicas. All redirect-path SELECT queries route to replicas. The primary handles only INSERTs (write path). At 115,700 reads/sec across 4 shards × 2 replicas = 8 read nodes: **14,463 reads/sec per read replica** — comfortable.
+
+---
+
+## Data Model
+
+Full schema with actual field names, types, constraints, and indexes:
+
+```sql
+-- Main URL mappings table (sharded by hash of short_code)
+CREATE TABLE url_mappings (
+    short_code      VARCHAR(8)      NOT NULL,
+    long_url        TEXT            NOT NULL CHECK (length(long_url) <= 2048),
+    user_id         BIGINT,                          -- NULL for anonymous submissions
+    created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+    expires_at      TIMESTAMPTZ,                     -- NULL = never expires
+    is_active       BOOLEAN         NOT NULL DEFAULT TRUE,
+    is_custom_alias BOOLEAN         NOT NULL DEFAULT FALSE,
+    click_count     BIGINT          NOT NULL DEFAULT 0,  -- updated async via Kafka consumer
+    ip_address      INET,                            -- creator's IP (for abuse prevention)
+    user_agent      VARCHAR(512),                    -- creator's browser/client
+
+    CONSTRAINT url_mappings_pkey PRIMARY KEY (short_code)
+);
+
+-- Index for "show my URLs" dashboard queries
+CREATE INDEX idx_url_mappings_user_created
+    ON url_mappings (user_id, created_at DESC)
+    WHERE user_id IS NOT NULL;
+
+-- Index for background expiry worker
+CREATE INDEX idx_url_mappings_expires
+    ON url_mappings (expires_at)
+    WHERE expires_at IS NOT NULL AND is_active = TRUE;
+
+-- Optional: deduplication index (only if idempotency required)
+-- WARNING: TEXT index on long_url can be large. Use hash index instead:
+CREATE INDEX idx_url_mappings_long_url_hash
+    ON url_mappings USING HASH (long_url);
+
+
+-- KGS unused keys pool (separate PostgreSQL instance)
+CREATE TABLE kgs_unused_keys (
+    key             CHAR(7)         NOT NULL,
+    created_batch   INT             NOT NULL,  -- batch ID, for monitoring
+    created_at      TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT kgs_unused_keys_pkey PRIMARY KEY (key)
+);
+
+-- Index for fast atomic DELETE LIMIT 10000 RETURNING key
+CREATE INDEX idx_kgs_unused_keys_created
+    ON kgs_unused_keys (created_at);
+
+
+-- Analytics click events table (ClickHouse, not PostgreSQL)
+-- Schema shown for reference:
+CREATE TABLE click_events (
+    short_code      LowCardinality(String),
+    clicked_at      DateTime,
+    ip_address      IPv4,
+    country_code    LowCardinality(FixedString(2)),
+    referrer        String,
+    user_agent      String,
+    device_type     LowCardinality(String)   -- 'mobile', 'desktop', 'tablet'
+) ENGINE = MergeTree()
+  PARTITION BY toYYYYMM(clicked_at)
+  ORDER BY (short_code, clicked_at);
+```
+
+**Key design decisions in this schema:**
+- `short_code` is `VARCHAR(8)` not `BIGINT` — the primary key is the short code itself, enabling direct lookup without an ID-to-code translation step
+- `click_count` is denormalized into `url_mappings` for fast display but is never updated on the hot redirect path — only via async Kafka consumer batches
+- `expires_at` uses a partial index (only rows where `expires_at IS NOT NULL AND is_active = TRUE`) to keep the index small and the expiry worker fast
+- ClickHouse uses `LowCardinality` for `short_code` and `country_code` because these columns have limited distinct values relative to row count — significant compression and query speed improvement
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| **10× baseline** (1.15M reads/sec) | Single Redis primary per shard | CPU spikes to 80%, GET latency increases from 0.5ms to 5ms | Add Redis read replicas; enable local in-process LRU caches on app servers |
+| **10× baseline** (11,600 writes/sec) | KGS in-memory buffer drain faster than refill | Web servers receive "KGS buffer empty" errors; p99 write latency jumps 100ms | Scale KGS to 3 instances with independent buffer pools; lower refill threshold from 1,000 to 5,000 |
+| **100× baseline** (11.5M reads/sec) | CDN capacity on single region | CDN origin-pull saturation; increased cache-miss rate | Expand to multi-region deployment (US-East, EU-West, APAC); each region has its own Redis + DB replica |
+| **100× baseline** (116K writes/sec) | PostgreSQL primary write throughput | Write queue backlog; INSERT latency > 100ms | Add 2 more shard nodes (4 → 8 shards); use connection pooling via PgBouncer |
+| **1000× baseline** (115M reads/sec) | Redis cluster memory exhaustion | Cache eviction rate climbs; DB hit rate rises above 20% | Tiered cache: L1 = Memcached for raw redirect bytes (cheaper per GB), L2 = Redis for richer data; add more Redis nodes |
+| **1000× baseline** (1.16M writes/sec) | KGS Database (unused_keys table) | Key vending throughput hits DB write ceiling | Pre-shard unused_keys across 4 KGS DB nodes by key prefix range; each KGS instance targets one shard |
+
+---
+
+## How Bitly Built This
+
+Bitly is the originator of commercial URL shortening at scale. By 2012 they were processing **6 billion clicks per month** (≈2,300 clicks/sec average, with peaks above 20,000 clicks/sec) across over 1 billion stored links. Their architecture choices were non-obvious and instructive.
+
+**Technology stack (2012–2015):**
+- **Storage**: MySQL sharded by `short_code` hash — same conclusion as this design, arrived at independently. They ran 6 MySQL shards with 2 replicas each.
+- **Cache**: They used both **Memcached** (for raw redirect resolution at maximum throughput) and **Redis** (for richer click analytics and rate limiting). The two-cache strategy was a key architectural insight: Memcached has lower per-byte overhead than Redis and is faster for simple string lookups — critical when serving billions of redirects.
+- **Key generation**: Bitly used a **Zookeeper-coordinated range-based counter** rather than a KGS. Each API server was assigned a numeric range (e.g., server 1 gets IDs 1–100,000; server 2 gets IDs 100,001–200,000). When a server exhausts its range, it requests a new range from Zookeeper atomically. This avoided a dedicated key service while still eliminating per-request coordination.
+- **Analytics decoupling**: Click events were immediately written to a local in-process queue, then batched and forwarded to **NSQ** (their own open-source message queue, later released publicly), which fed into a Hadoop pipeline for analytics aggregation.
+- **Redirect optimization**: Bitly served redirects directly from Nginx using **ngx_lua** to do Redis lookups inside Nginx, bypassing the application server entirely for cache hits. This reduced redirect latency from ~20ms (app server path) to ~3ms (Nginx + Redis path).
+
+**The non-obvious decision**: Most engineers would put the entire redirect path through the application tier for observability and control. Bitly moved hot-path redirects into Nginx itself, accepting reduced visibility (no application logs for cache hits) in exchange for 7× lower latency and significantly reduced CPU load on app servers. At 20,000 redirects/sec peak, this saved roughly 40 application server instances.
+
+**Source**: Bitly Engineering Blog — "Lessons Learned Building Distributed Systems" (2013); NSQ open-source announcement (bitly/nsq on GitHub, 2013).
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** Can you reason about trade-offs at each layer — not just name the components, but explain why each design choice was made and what breaks without it? The interviewer is also watching for whether you volunteer the 301 vs 302 nuance and the KGS vs hash debate without being prompted.
+
+**Common mistakes candidates make:**
+
+1. **Proposing MD5 hash without addressing birthday paradox math**: Saying "we hash the URL and take 7 characters" without calculating collision probability at 183 billion URLs makes it clear you haven't thought about scale. At 183B URLs and 62^7 = 3.5T codes, the birthday probability is approximately (183B)² / (2 × 3.5T) — showing this math signals you understand randomness at scale.
+
+2. **Designing a symmetric read/write architecture**: Treating the write path and read path as equally important. The system is 100:1 read-heavy. Spending half the design time on the write path (which handles 1,160 req/sec) while neglecting the read path (115,700 req/sec) is a fundamental misallocation of design effort. Lead with read path optimization.
+
+3. **Using 301 redirects for "better performance"**: Many candidates default to 301 thinking "permanent redirect = faster". This is technically true for subsequent browser requests (they never hit your server) but it makes analytics permanently broken — you can never count how many times a link was clicked after a user's browser has cached it. In a product where analytics is a core paid feature (bit.ly Pro), this is a fatal error.
+
+**The insight that separates good from great answers:** Pointing out that the KGS's in-memory buffer not only eliminates collision-check round-trips but also means the web servers are *decoupled from both the key service AND the database* during normal operation — a key is available in memory, and the DB write is fire-and-forget from the perspective of key uniqueness. The correctness guarantee (no duplicate keys) was established when the KGS pre-loaded the buffer; the web server never needs to validate it again. This is a subtle correctness-via-pre-computation insight that most candidates miss.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Read:write ratio | **100:1** | 10B reads vs 100M writes per day; optimize every layer for reads |
+| Peak read throughput | **347,000 req/sec** | 3× average of 115,700/sec; size cache and Redis for peak, not average |
+| Peak write throughput | **3,500 writes/sec** | 3× average of 1,160/sec; KGS in-memory buffer handles this easily |
+| Redis cluster size | **~170GB working set** | Hot 20% of URLs; fits in 4-node cluster of 64GB each |
+| Short code space (7 chars) | **3.5 trillion** | 62^7; 19× safety margin over 183B URLs in 5 years |
+| Short code space (8 chars) | **218 trillion** | 62^8; use if extending retention beyond 5 years |
+| KGS buffer per instance | **10,000 keys** | Keys lost on crash = 10K out of 3.5T = 0.0000003% waste |
+| Bloom filter RAM for 183B entries | **~25GB** | ~1 bit/entry; eliminates 99.9% of collision-check DB reads in hash approach |
+| CDN cache hit rate | **~40%** | For popular URLs with 5-min CDN TTL; eliminates those requests from origin entirely |
+| Analytics batch window | **10 seconds** | 115K clicks/sec → 1 UPDATE per URL per 10s → ~10K DB updates/sec (manageable) |
+| Bitly peak traffic (2013) | **20,000 clicks/sec** | Real-world validation of this architecture at production scale |
+| DB storage (5 years) | **91.5TB raw / 183TB replicated** | 183B URLs × 500 bytes × 2× replication factor |
+
+---
+
 ## References
 
 - 📖 [System Design Interview – Alex Xu, Chapter 8](https://www.amazon.com/System-Design-Interview-insiders-Second/dp/B08CMF2CQF) — The canonical interview prep treatment of this problem

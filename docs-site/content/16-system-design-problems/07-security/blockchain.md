@@ -321,6 +321,274 @@ Execution isolation:
 
 ---
 
+## Component Deep Dive 1: Consensus Engine
+
+The consensus engine is the most critical architectural component in any blockchain system. It is the mechanism by which thousands of independent, untrusted nodes agree on which transactions are valid and in what order they were recorded — without any central coordinator.
+
+### How It Works Internally
+
+In **Proof of Work**, each miner independently collects transactions from the mempool, assembles a candidate block, and iterates over a 32-bit nonce field in the block header. For each nonce value, the miner computes `SHA256(SHA256(header))` and checks whether the resulting hash is numerically less than the current difficulty target. At Bitcoin's peak hashrate (~600 EH/s in 2024), the global network collectively performs roughly 600 × 10^18 hashes per second. Finding a valid nonce is probabilistic: expected attempts = 2^256 / target. Difficulty adjusts every 2,016 blocks (approximately two weeks) to keep average block time at 600 seconds regardless of total hashrate.
+
+In **Proof of Stake** (Ethereum post-Merge, September 2022), validators lock 32 ETH in a deposit contract. Each epoch (32 slots × 12 seconds = ~6.4 minutes), the beacon chain pseudo-randomly selects one validator per slot as the block proposer using RANDAO (a commit-reveal randomness scheme). The remaining validators are divided into committees that attest to the proposed block. A block is considered finalized after two consecutive justified checkpoints — known as Casper FFG — which takes approximately 2 epochs (~13 minutes) for economic finality, though the chain advances every 12 seconds.
+
+In **PBFT** (used in Hyperledger Fabric), a known primary node proposes a block. All replicas exchange `PREPARE` and `COMMIT` messages. A block finalizes when `2f + 1` replicas (where f = number of tolerated Byzantine failures) broadcast COMMIT. This produces immediate, deterministic finality with zero forks — but the O(n²) message complexity limits practical validator sets to roughly 20–100 nodes.
+
+### Why Naive Approaches Fail at Scale
+
+A simple "first-write-wins" or "majority vote" approach breaks down when nodes are Byzantine (actively malicious, not just slow). Naive majority vote over a gossip network can be manipulated: a malicious node sends conflicting votes to different partitions simultaneously, causing a fork that never resolves. The Sybil attack — creating thousands of fake identities — makes any vote-based scheme trivially exploitable unless identity has a real cost (electricity for PoW, staked capital for PoS, known identity for PBFT).
+
+### Consensus Internals Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant M as Miner/Proposer
+    participant V1 as Validator 1
+    participant V2 as Validator 2
+    participant V3 as Validator 3
+    participant Chain as Finalized Chain
+
+    M->>V1: PRE-PREPARE (block B, seq=100)
+    M->>V2: PRE-PREPARE (block B, seq=100)
+    M->>V3: PRE-PREPARE (block B, seq=100)
+
+    V1->>V2: PREPARE (hash(B), seq=100)
+    V1->>V3: PREPARE (hash(B), seq=100)
+    V2->>V1: PREPARE (hash(B), seq=100)
+    V2->>V3: PREPARE (hash(B), seq=100)
+    V3->>V1: PREPARE (hash(B), seq=100)
+    V3->>V2: PREPARE (hash(B), seq=100)
+
+    Note over V1,V3: Collected 2f+1 PREPAREs → send COMMIT
+
+    V1->>V2: COMMIT (hash(B), seq=100)
+    V1->>V3: COMMIT (hash(B), seq=100)
+    V2->>V1: COMMIT (hash(B), seq=100)
+    V3->>V1: COMMIT (hash(B), seq=100)
+
+    Note over V1,V3: Collected 2f+1 COMMITs → FINALIZED
+
+    V1->>Chain: Append block B
+    V2->>Chain: Append block B
+    V3->>Chain: Append block B
+```
+
+### Consensus Mechanism Trade-offs
+
+| Approach | Latency | Throughput | Decentralization | Failure Tolerance |
+|----------|---------|------------|-----------------|-------------------|
+| PoW (Bitcoin) | ~60 min probabilistic finality | 3–7 TPS | Maximum (10,000+ nodes) | 50% hashrate attack cost |
+| PoS (Ethereum) | 12 sec slot / 13 min economic finality | 15–100 TPS base layer | High (500,000+ validators) | Slashing deters 33% attack |
+| PBFT (Hyperledger) | <1 sec deterministic finality | 1,000–3,000 TPS | Low (20–100 known validators) | Tolerates (N-1)/3 Byzantine |
+
+---
+
+## Component Deep Dive 2: Merkle Tree and State Trie
+
+The Merkle tree is the cryptographic data structure that makes tamper-detection efficient and enables lightweight clients to participate without downloading the full chain.
+
+### Internal Mechanics
+
+Each transaction in a block is hashed individually: `H(Tx) = SHA256(TX_bytes)`. Adjacent hashes are concatenated and hashed again to form parent nodes. This continues until a single root hash remains. The Merkle root is embedded in the block header, so any modification to any transaction — even flipping a single bit — cascades up to produce a completely different root hash, which invalidates the block's PoW.
+
+For **Merkle proofs** (SPV — Simplified Payment Verification, used in Bitcoin mobile wallets): to prove that transaction T is included in a block with 4,096 transactions, a prover needs only 12 hashes (log₂(4096)) rather than all 4,096 transactions. The verifier recomputes the root and compares against the block header.
+
+Ethereum extends this concept to a **Merkle Patricia Trie** — a combination of Patricia (radix) trie and Merkle tree — to store the entire world state (account balances, nonces, contract storage). Three separate tries exist per block:
+- **State Trie**: maps 20-byte address → account object `{nonce, balance, storageRoot, codeHash}`
+- **Transaction Trie**: all transactions in this block
+- **Receipt Trie**: execution receipts (gas used, logs, status)
+
+Each block header contains the roots of all three tries, enabling cryptographic verification of any piece of state at any block height.
+
+### Behavior at 10x Load
+
+At 10x transaction volume (e.g., moving from 15 TPS to 150 TPS), the Merkle tree depth increases by ~3 levels (log₂(10) ≈ 3.3). This means block assembly time grows logarithmically — not linearly — so the structure scales well. However, the state trie becomes the bottleneck: with 10x more accounts and contracts, trie lookups require more disk I/O (each trie node is a separate database read). Ethereum's LevelDB backend historically showed 100–500 ms state lookups under heavy load. This drove the move to SNAP sync (downloading flat key-value snapshots instead of traversing the trie) which reduced sync times from weeks to hours.
+
+```mermaid
+graph TD
+    Root["Merkle Root\n(in Block Header)"]
+    H12["H(H1+H2)"]
+    H34["H(H3+H4)"]
+    H1["H(Tx1)\nAlice→Bob 1 ETH"]
+    H2["H(Tx2)\nBob→Carol 0.5 ETH"]
+    H3["H(Tx3)\nContract Deploy"]
+    H4["H(Tx4)\nSwap on Uniswap"]
+
+    Root --> H12
+    Root --> H34
+    H12 --> H1
+    H12 --> H2
+    H34 --> H3
+    H34 --> H4
+
+    Proof["SPV Proof for Tx1:\nProvide [H2, H34]\nVerifier computes:\nH(H(Tx1)+H2) = H12\nH(H12 + H34) = Root ✓"]
+    H1 -. "proof path" .-> Proof
+```
+
+---
+
+## Component Deep Dive 3: P2P Network and Transaction Mempool
+
+The mempool (memory pool) is the staging area for unconfirmed transactions on every full node. It is a critical and often underappreciated bottleneck in blockchain systems.
+
+### Technical Decisions
+
+Each full node maintains an in-memory pool of valid, unconfirmed transactions. When a user broadcasts a transaction, it propagates via gossip: a node receives it, validates it (signature check, sufficient balance/UTXO, nonce is sequential), then forwards it to connected peers. Bitcoin's mempool defaults to 300 MB; Ethereum's to 5,000 transactions per account slot. During peak congestion (NFT mints, DeFi liquidations), mempools can hold 150,000+ transactions.
+
+**Fee prioritization**: Miners and validators select transactions by fee density (fee per byte in Bitcoin; gas price × gas limit in Ethereum). This creates a fee market — during congestion, users bid higher fees to get included sooner. In May 2021, Ethereum average gas prices reached 500+ Gwei ($50+ per simple transfer) during peak DeFi activity.
+
+**Mempool eviction**: To prevent memory exhaustion, low-fee transactions are evicted when the mempool is full. Bitcoin Core evicts transactions below a minimum relay fee (currently 1 satoshi/byte). Ethereum clients evict the lowest-nonce pending transactions for an address if the address has too many pending.
+
+**Replace-by-Fee (RBF)**: Bitcoin allows a user to rebroadcast a transaction with a higher fee to replace a stuck low-fee transaction, as long as the new transaction signals RBF and the fee is at least 1 sat/byte higher.
+
+---
+
+## Data Model
+
+### Bitcoin UTXO Set (LevelDB)
+
+```sql
+-- Conceptual schema (Bitcoin stores this in LevelDB, not SQL)
+-- UTXO Set: only unspent outputs — ~80 million entries as of 2024, ~5 GB RAM
+CREATE TABLE utxo_set (
+    txid          CHAR(64)  NOT NULL,   -- SHA256d hex (32 bytes)
+    output_index  INT       NOT NULL,   -- vout index within transaction
+    amount        BIGINT    NOT NULL,   -- satoshis (1 BTC = 100,000,000 sat)
+    locking_script BYTEA   NOT NULL,   -- scriptPubKey (P2PKH, P2SH, P2WPKH, etc.)
+    block_height  INT       NOT NULL,   -- block where this UTXO was created
+    coinbase       BOOLEAN  NOT NULL,   -- true if from coinbase (mining reward)
+    PRIMARY KEY (txid, output_index)
+);
+
+-- Transaction index (optional, txindex=1 flag)
+CREATE TABLE transactions (
+    txid          CHAR(64)  PRIMARY KEY,
+    block_hash    CHAR(64)  NOT NULL,
+    block_height  INT       NOT NULL,
+    tx_index      INT       NOT NULL,   -- position within block
+    raw_tx        BYTEA     NOT NULL,   -- full serialized transaction
+    INDEX idx_block_height (block_height)
+);
+
+-- Block headers (stored in flat files + index in LevelDB)
+CREATE TABLE block_headers (
+    block_hash     CHAR(64) PRIMARY KEY,
+    height         INT      NOT NULL UNIQUE,
+    version        INT      NOT NULL,
+    prev_hash      CHAR(64) NOT NULL,
+    merkle_root    CHAR(64) NOT NULL,
+    timestamp      INT      NOT NULL,   -- Unix timestamp
+    bits           INT      NOT NULL,   -- encoded difficulty target
+    nonce          INT      NOT NULL,
+    tx_count       INT      NOT NULL,
+    INDEX idx_height (height),
+    INDEX idx_prev_hash (prev_hash)
+);
+```
+
+### Ethereum World State (LevelDB / Merkle Patricia Trie)
+
+```json
+// Account object stored in state trie (key = keccak256(address))
+{
+  "address": "0x742d35Cc6634C0532925a3b8D4C9c3d93b2e3A8F",
+  "nonce": 142,
+  "balance": "1500000000000000000",
+  "storage_root": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+  "code_hash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+}
+
+// ERC-20 token contract storage slot (key = keccak256(address, slot_index))
+{
+  "slot": "0x000000000000000000000000742d35cc...00000000000000000000000000000000",
+  "value": "0x0000000000000000000000000000000000000000000000008ac7230489e80000"
+}
+
+// Transaction receipt
+{
+  "tx_hash": "0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b",
+  "block_number": 19500000,
+  "transaction_index": 42,
+  "from": "0x742d35Cc6634C0532925a3b8D4C9c3d93b2e3A8F",
+  "to": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  "gas_used": 46109,
+  "cumulative_gas_used": 3812954,
+  "status": 1,
+  "logs": [
+    {
+      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000742d35cc...",
+        "0x000000000000000000000000d8da6bf2..."
+      ],
+      "data": "0x0000000000000000000000000000000000000000000000000000000005F5E100"
+    }
+  ]
+}
+```
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| 10x baseline (70 TPS on Ethereum) | Mempool congestion | Gas prices spike 5–10x; transactions pending for hours | Fee market auto-adjusts (EIP-1559 base fee burns); users set priority fee |
+| 100x baseline (1,500 TPS) | State trie I/O (LevelDB) | Block processing time exceeds slot time (12 sec); nodes fall behind chain tip | SNAP sync; verkle trees (planned Ethereum upgrade reducing proof size 6–8x) |
+| 1,000x baseline (15,000 TPS) | P2P gossip bandwidth | 1 MB blocks every 12 sec = ~5 Mbps per peer connection × 50 peers = 250 Mbps per full node; consumer nodes drop off | Erasure coding (Danksharding): split block into 128 shards, each node stores only 2 shards |
+| 10,000x baseline | Base-layer consensus itself | Cannot achieve global BFT consensus at this speed without sacrificing decentralization | Layer 2 rollups (ZK-Rollup or Optimistic Rollup): batch 1,000–10,000 txns off-chain, post single proof on-chain |
+
+---
+
+## How Ethereum Built This
+
+Ethereum's transition from Proof of Work to Proof of Stake (The Merge, September 15, 2022) is one of the most significant real-world examples of live blockchain re-architecture at scale — replacing the consensus engine of a $200B+ network without downtime.
+
+**Scale**: At merge time, Ethereum had ~1 million active addresses, processed ~1.2 million transactions per day, and held $60B in DeFi smart contracts. Any consensus failure would have been catastrophic.
+
+**Technology choices**: The beacon chain (Ethereum's PoS coordination layer) launched in December 2020 as a parallel chain. For 21 months it ran alongside the PoW chain, accumulating 425,000+ validators who each deposited 32 ETH (~$40,000 at merge prices). The merge itself was a TTD (Terminal Total Difficulty) trigger — when the PoW chain reached a pre-agreed cumulative difficulty of 58,750,000,000,000,000,000,000, execution clients handed off block production to consensus clients permanently.
+
+**Non-obvious decision — client diversity**: The Ethereum Foundation deliberately maintained 5+ independent consensus client implementations (Prysm, Lighthouse, Teku, Nimbus, Lodestar) and 3+ execution clients (Geth, Nethermind, Besu). The goal: no single client exceeds 33% of validators. A bug in any one client affects at most 33% of stake — not enough to finalize a bad block. This was proven when a Prysm bug in 2023 caused that client subset to miss attestations for ~30 minutes without affecting finality.
+
+**Numbers**: Post-merge, Ethereum energy consumption dropped 99.95% (from ~112 TWh/year to ~0.01 TWh/year). Validator count grew to 900,000+ by 2024, representing ~28 million ETH staked (~23% of total supply). Block time stabilized at exactly 12 seconds (±0 seconds variance vs ±30 seconds variance with PoW).
+
+Source: [Ethereum.org — The Merge](https://ethereum.org/en/roadmap/merge/)
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** Whether the candidate understands the fundamental three-way tension in distributed consensus (speed vs. decentralization vs. security — the Blockchain Trilemma), and whether they can reason about concrete failure modes rather than just reciting mechanism names.
+
+**Common mistakes candidates make:**
+
+1. **Treating TPS as the only scalability metric.** Candidates say "just increase block size to get more TPS" without recognizing the second-order effect: larger blocks require more bandwidth per node, which prices out home validators, which reduces decentralization, which weakens the security model. Bitcoin deliberately capped blocks at 1 MB to preserve node count.
+
+2. **Ignoring finality vs. confirmation.** Candidates say "Bitcoin confirms in 10 minutes" but miss that a single confirmation is probabilistically reversible — a 6-confirmation wait (~60 minutes) gives practical finality because reversing requires re-mining 6 blocks faster than the honest chain advances. Ethereum PoS provides economic finality (slashing) rather than probabilistic finality.
+
+3. **Conflating consensus and execution.** Candidates describe consensus as "how transactions are processed." In reality, consensus determines which set of transactions is canonical; execution (EVM, WASM) processes them. These are separate layers — a chain can swap VMs (Ethereum is considering RISC-V for the EVM) without changing consensus.
+
+**The insight that separates good from great answers:** The blockchain trilemma is not solved by base-layer changes alone — it is solved by separating concerns across layers. Base layer optimizes for security and decentralization (slow, 15–100 TPS). Layer 2 rollups (Optimism, Arbitrum, zkSync) inherit the base layer's security guarantees while executing transactions off-chain at 1,000–10,000 TPS and posting compressed proofs on-chain. This is why Ethereum's roadmap explicitly treats L2s as the execution layer, not a workaround.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Bitcoin block time | 10 minutes | Difficulty adjusts every 2,016 blocks to maintain this |
+| Bitcoin practical finality | 6 blocks (~60 min) | Probability of reversal after 6 blocks: ~0.1% |
+| Ethereum slot time (PoS) | 12 seconds | Hard-coded; one block proposed per slot |
+| Ethereum economic finality | ~13 minutes | Two justified checkpoints (Casper FFG) |
+| Bitcoin full chain size (2024) | ~600 GB | Growing at ~52 GB/year |
+| Ethereum state size (2024) | ~1.1 TB (archive) / 200 GB (pruned) | Archive stores every historical state root |
+| PBFT max validators | ~100 nodes | O(n²) message complexity beyond this is impractical |
+| Ethereum validator count (2024) | 900,000+ | Each stakes 32 ETH; 33% threshold = 288,000 validators |
+| L2 rollup TPS (Arbitrum/Optimism) | 2,000–4,000 TPS | With EIP-4844 blobs, targeting 10,000+ TPS |
+| Bitcoin global hashrate (2024) | ~600 EH/s | 600 × 10^18 SHA-256 hashes per second |
+
+---
+
 ## 📚 Resources & References
 
 | Resource | Type | What You'll Learn |
@@ -329,3 +597,4 @@ Execution isolation:
 | [Ethereum Developer Documentation](https://ethereum.org/en/developers/docs/) | 📚 Book | EVM, smart contracts, account model, PoS |
 | [ByteByteGo — Blockchain Explained](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Visual walkthrough of blockchain concepts |
 | [Mastering Bitcoin — Andreas Antonopoulos](https://github.com/bitcoinbook/bitcoinbook) | 📚 Book | Deep technical reference for Bitcoin architecture |
+| [Ethereum — The Merge](https://ethereum.org/en/roadmap/merge/) | 📖 Article | Official documentation on the PoW→PoS transition, energy impact, and validator mechanics |

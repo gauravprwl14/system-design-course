@@ -41,7 +41,15 @@ references:
 9. [Key Design Decisions](#9-key-design-decisions)
 10. [Interview Questions](#10-interview-questions)
 11. [Key Takeaways](#11-key-takeaways)
-12. [References](#12-references)
+12. [Component Deep Dive 1: Single-Use Enforcement with Redis](#component-deep-dive-1-single-use-enforcement-with-redis)
+13. [Component Deep Dive 2: Batch Code Generation Pipeline](#component-deep-dive-2-batch-code-generation-pipeline)
+14. [Component Deep Dive 3: Fraud Detection Layer](#component-deep-dive-3-fraud-detection-layer)
+15. [Data Model](#data-model)
+16. [Scale Bottlenecks](#scale-bottlenecks)
+17. [How Shopify Built This](#how-shopify-built-this)
+18. [Interview Angle](#interview-angle)
+19. [Key Numbers to Remember](#key-numbers-to-remember)
+20. [References](#20-references)
 
 ---
 
@@ -324,11 +332,305 @@ Query patterns:
 
 ---
 
+## Component Deep Dive 1: Single-Use Enforcement with Redis
+
+Single-use enforcement is the hardest correctness problem in a coupon system. At 1,667 redemptions/sec peak, even a 1ms window of non-atomicity means two concurrent requests can both see a code as "unused" and both succeed — resulting in double discounts and revenue leakage.
+
+### Why Naive Approaches Fail
+
+**Naive approach 1 — Check-then-set in application code:**
+```
+if not db.exists(code): # request A reads: code unused
+    db.mark_used(code)  # request B also reads: code unused before A writes
+                        # both proceed — double redemption
+```
+This is a classic TOCTOU (time-of-check/time-of-use) race. With 1,667 concurrent requests, the probability of two requests hitting the same code in the same millisecond is nonzero — especially if a code has been shared on social media and 10,000 users try it simultaneously.
+
+**Naive approach 2 — Database row lock:**
+```sql
+SELECT * FROM coupons WHERE code = 'ABC123' FOR UPDATE;
+UPDATE coupons SET current_uses = current_uses + 1 WHERE code = 'ABC123';
+```
+`SELECT FOR UPDATE` acquires a row-level lock which is correct, but at 1,667 writes/sec across 100M rows, PostgreSQL lock contention drives average query latency from 2ms to 50–200ms. Connection pool exhaustion (default 100 connections) becomes a hard ceiling at ~5,000 concurrent users.
+
+### Redis SET NX — Internals
+
+Redis processes commands in a single-threaded event loop. `SET key value NX` is atomic by design — no two clients can interleave their check and write. The sequence diagram below shows the correct behavior under concurrent load:
+
+```mermaid
+sequenceDiagram
+    participant A as User A (request)
+    participant B as User B (request)
+    participant R as Redis (single-threaded)
+    participant DB as PostgreSQL
+
+    A->>R: SET coupon:used:ABC123 "userA:ord1:ts" NX EX 1800
+    B->>R: SET coupon:used:ABC123 "userB:ord2:ts" NX EX 1800
+    Note over R: Commands serialized in event loop
+    R-->>A: OK (key set — A wins)
+    R-->>B: nil (key exists — B loses)
+    A->>DB: INSERT coupon_redemptions ...
+    A->>R: PERSIST coupon:used:ABC123
+    B-->>B: Return "Coupon already redeemed"
+```
+
+The EX 1800 (30-minute TTL) handles the abandoned-cart case: if User A puts the code in their cart but never checks out, the key expires and the code becomes available again. After successful payment, `PERSIST` removes the TTL to make the lock permanent.
+
+### Trade-off Table: Enforcement Approaches
+
+| Approach | Write Latency | Throughput Ceiling | Failure Mode | Recovery |
+|----------|--------------|-------------------|--------------|----------|
+| Redis SET NX | < 1ms | ~500k ops/sec per node | Redis unavailable | Fallback to DB lock |
+| PostgreSQL SELECT FOR UPDATE | 2–200ms under load | ~5,000 writes/sec (connection pool) | Lock contention, pool exhaustion | Read replicas don't help (locks need primary) |
+| Optimistic locking (version field) | 2ms happy path, retry on conflict | ~10k/sec before retry storms | High contention → retry loops | Exponential backoff + circuit breaker |
+
+At 1,667 redemptions/sec, only Redis SET NX comfortably handles the load with sub-millisecond latency and a hardware ceiling of ~500k ops/sec on a single Redis node — 300× headroom.
+
+---
+
+## Component Deep Dive 2: Batch Code Generation Pipeline
+
+Generating 10M unique codes at campaign launch is a write-heavy bulk operation that must complete before the campaign goes live. Doing this inline with user requests would be catastrophic — each code generation involves a uniqueness check, a DB write, and (optionally) a Redis load.
+
+### Internal Mechanics
+
+The generation pipeline runs asynchronously in a worker pool. Each worker handles an independent shard of the code space:
+
+```mermaid
+graph LR
+    Campaign[Campaign Service] -->|Publish event| Queue[Message Queue\nKafka]
+    Queue --> W1[Worker 1\n0–1M codes]
+    Queue --> W2[Worker 2\n1M–2M codes]
+    Queue --> W3[Worker 3\n2M–3M codes]
+    Queue --> W4[... Worker 10\n9M–10M codes]
+    W1 -->|COPY batch| PG[(PostgreSQL\ncoupons table)]
+    W2 -->|COPY batch| PG
+    W3 -->|COPY batch| PG
+    W4 -->|COPY batch| PG
+    PG -->|Load first 100k| Redis[(Redis SET\navailable_codes)]
+    Redis --> CampaignReady[Campaign Status: READY]
+```
+
+Each worker generates codes in-memory using Python's `secrets` module (cryptographically secure random), deduplicates within its own batch using a set, then uses PostgreSQL's `COPY FROM STDIN` to bulk-insert. `COPY` bypasses the SQL parser and WAL logging overhead for individual statements — achieving 2M rows/minute per worker versus ~100k rows/minute for individual `INSERT` statements.
+
+### Scale Behavior at 10x Load
+
+At baseline (10M codes, 10 campaigns), generation completes in ~5 minutes. At 10x load (100M codes, 100 campaigns), the bottleneck shifts:
+
+- **CPU**: Code generation is CPU-bound (CSPRNG + set dedup). 10 workers × 10x = 100 workers needed. Worker pool auto-scales on a Kubernetes HPA targeting CPU > 60%.
+- **PostgreSQL write throughput**: `COPY` throughput peaks at ~20M rows/minute per table partition on an 8-core RDS instance. With 100 concurrent workers hitting the same table, write amplification causes I/O saturation. Fix: partition `coupons` table by `campaign_id` — each partition accepts writes independently.
+- **Redis memory**: Loading 100M codes into Redis at 20 bytes each = 2 GB. At 10x, this exceeds a single Redis node's recommended memory ceiling. Fix: use Redis Cluster sharded by `campaign_id`, and only load the "hot" first 1% (100k codes per campaign) into Redis — remaining codes stay in PostgreSQL and are loaded lazily.
+
+### Trade-off: Pre-generation vs. On-Demand
+
+| Approach | Generation Cost | Redemption Latency | Waste Risk | Complexity |
+|----------|----------------|-------------------|------------|------------|
+| Pre-generate all 10M | 5 min up-front, 0 at redemption | < 1ms (Redis) | Up to 9.9M unused codes per campaign | Medium |
+| Generate on-demand | 0 up-front | 5–15ms (CSPRNG + DB write) | Zero waste | Low |
+| Hybrid (pre-gen 100k, lazy rest) | 30 sec for first batch | < 1ms for first 100k, 5ms for the rest | Minimal | High |
+
+The hybrid approach is optimal for campaigns where demand is uncertain — pre-generate a "warm" pool of 100k codes to handle the initial burst, then generate more in the background as the pool drains.
+
+---
+
+## Component Deep Dive 3: Fraud Detection Layer
+
+The fraud detection layer sits between the validation service and the checkout flow. It operates on three signals — IP-level velocity, user-level policy, and code-guessing patterns — and must complete in under 5ms to keep the total validation latency under 50ms.
+
+### IP-Level Velocity Detection
+
+Redis sorted sets enable sliding-window rate limiting without a separate time-series database:
+
+```
+ZADD fraud:ip:{ip}:redemptions {current_timestamp} {event_uuid}
+ZREMRANGEBYSCORE fraud:ip:{ip}:redemptions 0 {timestamp_minus_60s}
+count = ZCARD fraud:ip:{ip}:redemptions
+EXPIRE fraud:ip:{ip}:redemptions 300
+```
+
+This pattern (token-bucket via sorted set) counts events in the last 60 seconds without a cron job. At the threshold (5 per minute), the IP is added to a blocklist (`SADD blocked_ips {ip}` with 1-hour TTL). The cost is ~5 Redis ops per request — roughly 1ms overhead.
+
+### User-Level Campaign Policy
+
+The one-code-per-campaign-per-user rule is a DB read that cannot be served from Redis alone because the redemption history may span previous sessions. The query runs against a read replica:
+
+```sql
+SELECT 1 FROM coupon_redemptions cr
+JOIN coupons c ON c.code = cr.code
+WHERE cr.user_id = $1
+  AND c.campaign_id = $2
+  AND cr.created_at > NOW() - INTERVAL '30 days'
+LIMIT 1;
+```
+
+With indexes on `(user_id, campaign_id)` this runs in < 2ms at 100k redemptions/day. At 1,000x scale (1M redemptions/day), the index still performs but read replica lag may cause a 1–5s staleness window — meaning a user could theoretically redeem twice within that window. Fix: use `user_id % N` routing to Redis counters per campaign as a first-pass check, with DB as authoritative source.
+
+### Code-Guessing Attack Detection
+
+Attackers attempting brute-force enumeration generate a detectable signal: high invalid-code rate per IP. A valid Base58(8) code space has 128 trillion possibilities; even 10,000 guesses per second would take 4 billion years to exhaust. But attackers only need to find valid codes, not all codes — and with 10M valid codes in 128T space, the hit rate is 1 in 12.8 million. Blocking after 5 invalid attempts in 60 seconds reduces their effective throughput to 7,200 guesses/day per IP — making enumeration economically infeasible.
+
+---
+
+## Data Model
+
+Full normalized schema covering all system components:
+
+```sql
+-- Campaigns: top-level discount configuration
+CREATE TABLE campaigns (
+  campaign_id       BIGSERIAL PRIMARY KEY,
+  name              VARCHAR(200) NOT NULL,
+  discount_type     VARCHAR(20) NOT NULL CHECK (discount_type IN ('percent','fixed','free_shipping','bogo')),
+  discount_value    NUMERIC(10,2) NOT NULL,
+  min_order_value   NUMERIC(10,2) DEFAULT 0,
+  max_uses_global   BIGINT,               -- NULL = unlimited
+  max_uses_per_user INT DEFAULT 1,
+  starts_at         TIMESTAMPTZ NOT NULL,
+  expires_at        TIMESTAMPTZ NOT NULL,
+  status            VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft','generating','ready','active','paused','expired')),
+  created_by        BIGINT NOT NULL,       -- admin user ID
+  created_at        TIMESTAMPTZ DEFAULT NOW(),
+  updated_at        TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Individual coupon codes (one row per code)
+CREATE TABLE coupons (
+  code              VARCHAR(12) PRIMARY KEY,
+  campaign_id       BIGINT NOT NULL REFERENCES campaigns(campaign_id),
+  assigned_to_user  BIGINT,               -- NULL = unassigned (pool code)
+  assigned_at       TIMESTAMPTZ,
+  status            VARCHAR(20) DEFAULT 'available'
+                    CHECK (status IN ('available','assigned','redeemed','expired','voided')),
+  max_uses          INT DEFAULT 1,
+  current_uses      INT DEFAULT 0,
+  created_at        TIMESTAMPTZ DEFAULT NOW()
+) PARTITION BY HASH (campaign_id);        -- 16 partitions by campaign_id
+
+CREATE INDEX idx_coupons_campaign_status ON coupons(campaign_id, status);
+CREATE INDEX idx_coupons_assigned_user ON coupons(assigned_to_user) WHERE assigned_to_user IS NOT NULL;
+
+-- Redemption events (append-only, never updated)
+CREATE TABLE coupon_redemptions (
+  redemption_id     BIGSERIAL PRIMARY KEY,
+  code              VARCHAR(12) NOT NULL,  -- soft ref, not FK (for perf)
+  campaign_id       BIGINT NOT NULL,       -- denormalized for fast campaign queries
+  user_id           BIGINT NOT NULL,
+  order_id          BIGINT NOT NULL,
+  session_id        VARCHAR(64),
+  discount_amount   NUMERIC(10,2) NOT NULL,
+  order_total       NUMERIC(10,2) NOT NULL,
+  ip_address        INET NOT NULL,
+  user_agent        TEXT,
+  device_fingerprint VARCHAR(64),
+  status            VARCHAR(20) DEFAULT 'success'
+                    CHECK (status IN ('success','reversed','expired')),
+  created_at        TIMESTAMPTZ DEFAULT NOW()
+) PARTITION BY RANGE (created_at);        -- monthly partitions
+
+CREATE INDEX idx_redemptions_code ON coupon_redemptions(code);
+CREATE INDEX idx_redemptions_user_campaign ON coupon_redemptions(user_id, campaign_id);
+CREATE INDEX idx_redemptions_ip ON coupon_redemptions(ip_address, created_at);
+CREATE INDEX idx_redemptions_order ON coupon_redemptions(order_id);
+
+-- Audit log (all attempts including failures)
+CREATE TABLE coupon_audit_log (
+  log_id            BIGSERIAL PRIMARY KEY,
+  code              VARCHAR(12),
+  user_id           BIGINT,
+  order_id          BIGINT,
+  action            VARCHAR(40) NOT NULL
+                    CHECK (action IN (
+                      'REDEEMED','REJECTED_USED','REJECTED_EXPIRED',
+                      'REJECTED_INVALID','REJECTED_FRAUD','REJECTED_LIMIT',
+                      'REVERSED','VOIDED'
+                    )),
+  failure_reason    TEXT,
+  discount_amount   NUMERIC(10,2),
+  ip_address        INET,
+  user_agent        TEXT,
+  created_at        TIMESTAMPTZ DEFAULT NOW()
+) PARTITION BY RANGE (created_at);        -- monthly partitions, 7-year retention
+
+-- Redis key schema (documented here for reference)
+-- coupon:used:{code}             → "{user_id}:{order_id}:{ts}"   NX EX 1800
+-- coupon:count:{campaign_id}     → integer counter (INCR)
+-- campaign:{id}:available_codes  → SET of unassigned codes (SPOP)
+-- fraud:ip:{ip}:redemptions      → ZSET of {timestamp}:{uuid}
+-- fraud:ip:{ip}:invalid_codes    → integer counter EX 60
+-- blocked_ips                    → SET of blocked IPs (SADD/SISMEMBER)
+```
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| **10x baseline** (16,670 redemptions/sec) | Redis single-node write throughput (500k ops/sec ceiling) | P99 latency spikes to 10ms; occasional timeouts on SET NX | Redis Cluster with 6 nodes (3 primary + 3 replica); shard by code hash |
+| **10x baseline** | PostgreSQL audit log write rate (~167k rows/sec) | WAL write amplification; disk I/O at 100%; replica lag > 30s | Async audit writes via Kafka → dedicated append-only Postgres; partition by month |
+| **100x baseline** (166,700 redemptions/sec) | Fraud detection DB read replica | per-user campaign check query latency > 100ms; read replica can't keep up | Cache per-user campaign redemption flags in Redis (TTL 5min); accept 5-min stale window |
+| **100x baseline** | Validation service horizontal pod count | k8s scheduler can't provision pods fast enough for sudden bursts | Pre-warm 50 pods during scheduled sale events; set HPA min-replicas to 20 |
+| **1000x baseline** (1.67M redemptions/sec) | PostgreSQL `coupons` table — `current_uses` column hot update | Row-level lock contention on high-traffic codes; deadlocks | Replace `current_uses` column with Redis INCR; sync to DB in batches every 10 seconds |
+| **1000x baseline** | Network bandwidth between validation service and Redis Cluster | Each validation requires ~5 Redis round trips; at 1.67M/sec = 8.35M Redis ops/sec | Lua scripts to batch multiple Redis ops into a single round trip; reduces to 1 op per redemption |
+
+---
+
+## How Shopify Built This
+
+Shopify's coupon and discount system powers over 1.75 million merchants and processes more than 500 million discount redemptions per year — roughly 1,580 redemptions/sec average, spiking to 100,000+/sec during BFCM (Black Friday / Cyber Monday).
+
+**Technology stack**: Ruby on Rails application layer, MySQL (with Vitess sharding) for the `DiscountCode` and `DiscountAllocation` tables, Redis for atomic single-use enforcement and rate limiting.
+
+**Specific numbers**: During BFCM 2023, Shopify processed 61 million orders in 24 hours (4.2M orders/hour peak), with a large fraction applying discount codes. Their engineering team reported sustaining 3.1 million checkouts/minute at peak — approximately 51,000 checkout/sec, a meaningful portion of which involve coupon validation.
+
+**Non-obvious architectural decision**: Shopify does not store coupon validity in a centralized Redis cluster. Instead, each shopify store's discount codes are sharded to a pod (a MySQL + Redis pair) based on `shop_id`. This means a coupon validation for store A never contends with store B — even if store B has 50,000 concurrent users. The trade-off is that cross-store discount logic (rare) requires a cross-shard join, which is intentionally not supported.
+
+**The uniqueness check**: Shopify uses MySQL's unique index on `(code, shop_id)` as the final arbiter of uniqueness, with an optimistic create-on-first-use pattern. The Redis `SET NX` layer handles the hot path (< 1ms), and MySQL handles persistence. Redis state is treated as a cache — on cache miss, they fall through to MySQL with `INSERT IGNORE` semantics to guarantee exactly-one insertion.
+
+**Source**: Shopify Engineering Blog — "Handling Black Friday Traffic" (2023), and the open-source `shopify/shipit-engine` deployment architecture talks at RailsConf 2019.
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** Whether you understand that correctness under concurrent writes requires atomic primitives (not application-level checks), and whether you can reason about the performance trade-offs between Redis and relational databases at 1,667 writes/sec.
+
+**Common mistakes candidates make:**
+
+1. **Using a DB SELECT then UPDATE without a lock**: Candidates often say "check if code is used in the DB, then mark it used." This ignores the TOCTOU race — two concurrent requests both read "not used" and both proceed. Redis SET NX or SELECT FOR UPDATE is required.
+
+2. **Choosing SELECT FOR UPDATE without acknowledging the throughput ceiling**: Some candidates correctly identify database locking but don't account for connection pool exhaustion (100 connections × 5ms = 500 concurrent lock holders max → ~10k/sec ceiling, not 100k/min).
+
+3. **Generating codes on-demand at redemption time**: Under a 100k/minute flash sale, generating and persisting a new code for every new user (for "claim a code" flows) causes write amplification. Pre-generation separates the write-heavy generation workload from the latency-sensitive validation path.
+
+**The insight that separates good from great answers:** Explicitly modeling the two-phase commit between Redis and PostgreSQL — SET NX in Redis is a reservation, not a final commit. The code is only truly redeemed when the PostgreSQL row is inserted and the Redis key's TTL is removed via PERSIST. This two-phase approach gracefully handles cart abandonment (TTL expires → code becomes claimable again) without a separate cleanup job.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Redis SET NX latency | < 1ms | Single-use enforcement, single Redis node |
+| Redis single-node throughput | ~500k ops/sec | Ceiling before needing Redis Cluster |
+| PostgreSQL SELECT FOR UPDATE ceiling | ~5,000 writes/sec | Limited by 100-connection pool × 20ms avg lock time |
+| PostgreSQL COPY throughput | ~2M rows/min | Bulk code generation per worker process |
+| 10M code generation time | ~5 minutes | 10 workers × 1M codes each via COPY |
+| Base58(8) code space | 128 trillion combinations | 58^8; 10M codes = 0.008% of space |
+| Fraud detection latency budget | < 5ms total | 3 Redis ops + 1 DB read replica query |
+| Redis memory per 10M codes | ~200 MB | 20 bytes per key (SET NX pattern) |
+| Audit log growth | ~500 MB/day | At 5M redemptions/day × 100 bytes/event |
+| Cart hold TTL | 30 minutes (1800 seconds) | EX 1800 on SET NX; PERSIST on payment success |
+
+---
+
 ## 📚 Resources & References
 
 | Resource | Type | What You'll Learn |
 |----------|------|------------------|
 | [ByteByteGo — Unique ID Generation](https://www.youtube.com/@ByteByteGo) | 📺 YouTube | Code generation strategies and uniqueness guarantees |
-| [Redis SET NX Documentation](https://redis.io/commands/setnx/) | 📚 Book | Atomic single-use enforcement patterns |
+| [Redis SET NX Documentation](https://redis.io/commands/setnx/) | 📚 Docs | Atomic single-use enforcement patterns |
 | [Stripe Coupon API](https://stripe.com/docs/api/coupons) | 📖 Blog | Industry-standard coupon system design |
 | [High Scalability — Coupon Systems](https://highscalability.com) | 📖 Blog | Scale patterns for promotional code systems |
+| [Shopify Engineering — BFCM Infrastructure](https://shopify.engineering) | 📖 Blog | How Shopify handles 61M orders in 24 hours |
+| [Redis Sorted Sets for Rate Limiting](https://redis.io/docs/manual/patterns/twitter-clone/) | 📚 Docs | Sliding-window rate limiting with ZADD/ZRANGEBYSCORE |

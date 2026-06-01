@@ -327,7 +327,273 @@ Shrinkage root causes tracked:
 
 ---
 
-## 📚 Resources & References
+## Component Deep Dive 1: Reservation Engine
+
+The reservation engine is the most critical architectural component in the inventory management system. Its job is deceptively simple — atomically check whether stock is available and, if so, claim it — but at scale, every naive implementation fails in a different and painful way.
+
+### How It Works Internally
+
+The reservation engine executes a two-phase commit against a single PostgreSQL row. Phase 1 (reserve) runs at order placement: it opens a transaction, acquires a row-level lock on `(warehouse_id, sku_id)`, checks that `qty_on_hand - qty_reserved >= order_qty`, increments `qty_reserved`, inserts into the `inventory_reservations` ledger, and commits. Phase 2 (deduct) runs at shipment: it decrements both `qty_on_hand` and `qty_reserved` atomically, and marks the reservation `CONFIRMED`. Cancellation is a compensating transaction that only decrements `qty_reserved`.
+
+The row-level lock is key. PostgreSQL's `SELECT ... FOR UPDATE` acquires an exclusive lock on the matching row, serializing concurrent reservations for the same SKU at the same warehouse. At 12 peak orders/second with a lock hold time under 5ms, lock contention is negligible — that yields at most 0.06 reservations queued per row at any moment.
+
+### Why Naive Approaches Fail at Scale
+
+**Check-then-set without locking** (optimistic pattern): Thread A reads `qty_available = 5`, Thread B reads `qty_available = 5`, both see sufficient stock, both reserve 4 units — oversell of 3 units results. Even with a `WHERE qty_available >= order_qty` clause, two concurrent `UPDATE` statements without FOR UPDATE can race on the read.
+
+**Application-level locking** (distributed lock in Redis): introduces a second system to fail. If Redis goes down during a reservation, is the lock held or not? Now you need lock TTL logic, heartbeat renewal, and lock recovery — complexity that a single DB row lock avoids entirely.
+
+**Event sourcing without current-state check**: deriving `qty_available` by replaying the event log is correct for audit but too slow for reservation. Replaying 10,000 events per SKU per check adds seconds of latency.
+
+### Sequence Diagram: Successful Reservation
+
+```mermaid
+sequenceDiagram
+    participant OS as Order Service
+    participant IS as Inventory Service
+    participant Redis as Redis Cache
+    participant DB as PostgreSQL
+
+    OS->>IS: reserve(order_id, warehouse_id, sku_id, qty=5)
+    IS->>Redis: GET stock:{wh}:{sku}
+    Redis-->>IS: 20 (cache hit)
+    IS->>IS: 20 >= 5? YES → proceed
+    IS->>DB: BEGIN; SELECT ... FOR UPDATE WHERE wh=? AND sku=?
+    DB-->>IS: row locked, qty_on_hand=22, qty_reserved=2 → available=20
+    IS->>DB: UPDATE inventory SET qty_reserved=7 WHERE ...
+    IS->>DB: INSERT INTO inventory_reservations (status=RESERVED)
+    IS->>DB: COMMIT
+    IS->>Redis: DECRBY stock:{wh}:{sku} 5 → 15
+    IS-->>OS: reservation_id=8841, status=RESERVED
+```
+
+### Implementation Options Trade-off
+
+| Approach | Latency | Throughput | Trade-off |
+|----------|---------|------------|-----------|
+| Pessimistic row lock (PostgreSQL FOR UPDATE) | 2–8ms | ~500 reservations/sec per SKU | Correct; contention rises sharply above 500 req/sec per hot SKU |
+| Optimistic + Redis atomic DECRBY | 1–3ms | ~50,000 reservations/sec | Fast; requires Redis HA and careful cache-DB sync; risk of inconsistency on Redis crash |
+| Serialized queue per SKU (in-memory actor) | 0.5–2ms | ~10,000/sec per actor | Low latency; requires sticky routing to actor node; complex failover |
+
+At 12 peak orders/sec, pessimistic row locking is the correct default. The Redis path becomes necessary only above approximately 800–1,000 orders/sec per popular SKU.
+
+---
+
+## Component Deep Dive 2: Multi-Warehouse Allocation Engine
+
+The allocation engine decides which warehouse (or warehouses) fulfills a given order. It is the system's spatial optimizer — balancing stock availability, geographic proximity to the customer, shipping cost, and split-shipment policy.
+
+### Internal Mechanics
+
+When an order arrives, the allocation engine first queries the inventory service for all warehouses that have `qty_available >= order_qty` for each SKU in the order. It then scores each candidate warehouse using a weighted function:
+
+```
+score = w1 × (1 / distance_km) + w2 × (qty_available / order_qty) + w3 × (1 / shipping_cost)
+```
+
+Typical weights: `w1 = 0.5` (minimize distance), `w2 = 0.3` (prefer well-stocked), `w3 = 0.2` (minimize cost). The warehouse with the highest score is selected as primary. If no single warehouse can fulfill the entire order, the engine enters split mode — it greedily assigns from the nearest warehouse until the order is fully covered.
+
+### Scale Behavior at 10x Load
+
+At baseline (12 orders/sec), a single allocation engine thread handles requests synchronously in under 10ms. At 10x (120 orders/sec), the bottleneck shifts to the `SELECT ... ORDER BY distance_km` query over 50 warehouse rows — still fast given 50 is a tiny result set. At 100x (1,200 orders/sec), the primary pressure is reservation contention on popular SKUs at popular warehouses (e.g., the nearest warehouse to 40% of customers gets hammered). Mitigation: virtual warehouse sharding — split a single physical warehouse into multiple logical inventory pools in the DB, each with its own row lock.
+
+### Allocation Flow Diagram
+
+```mermaid
+graph TD
+    A[Order Arrives\n5× SKU-123 → Atlanta GA] --> B{Any single WH\nwith qty ≥ 5?}
+    B -->|Yes| C[Score warehouses\ndistance + stock + cost]
+    C --> D[Select top-score WH\nAtlanta WH: 50km, qty=20]
+    D --> E[Reserve 5 units\nat Atlanta WH]
+    E --> F[Return WH assignment]
+
+    B -->|No| G[Split mode:\nfind combo of WHs\nthat covers qty=5]
+    G --> H[Atlanta WH: qty=3\nCharlotte WH: qty=2]
+    H --> I{Customer policy?}
+    I -->|Ship ASAP| J[Reserve split\n2 shipments]
+    I -->|Ship complete| K[Backorder or\nwait for restock]
+```
+
+| Approach | Latency | Accuracy | Downside |
+|----------|---------|----------|---------|
+| Greedy nearest-first | 2–5ms | Good | May cause distant WHs to stay overstocked |
+| LP optimization (linear programming) | 50–200ms | Optimal | Too slow for real-time; use for nightly batch rebalancing |
+| Pre-computed routing table | <1ms | Approximate | Stale during flash sales; needs refresh every 60s |
+
+---
+
+## Component Deep Dive 3: Redis Stock Cache Layer
+
+The Redis cache layer is the system's read-performance multiplier. Without it, every stock check hits PostgreSQL — at 100k orders/day with 3 SKUs each, that's 300k reads/day average but up to 3,000 reads/sec during flash sales. PostgreSQL can handle this, but with a 10–20ms latency per read under load versus <1ms from Redis.
+
+### Technical Decisions
+
+**Key structure**: `stock:{warehouse_id}:{sku_id}` → integer (`qty_available`). Using a single integer rather than a hash avoids deserialization overhead and allows atomic `DECRBY`/`INCRBY` operations.
+
+**Warm-up strategy**: On service start, the top 10,000 SKUs by 30-day order volume are pre-loaded from PostgreSQL. This covers >99% of order volume. Long-tail SKUs (the remaining 990,000) are loaded on first cache miss with a 300-second TTL.
+
+**Write-through discipline**: Every DB reservation update is followed immediately by `DECRBY` in Redis within the same application-level operation (not the same DB transaction — Redis doesn't participate in DB transactions). If the Redis write fails after a successful DB commit, the cache becomes stale. The reconciliation path: a background job every 60 seconds scans for stale keys by comparing Redis values to DB reads for the top 1,000 SKUs, overwriting diverged values.
+
+**Eviction policy**: `allkeys-lru` — let Redis evict cold SKUs automatically under memory pressure. A cold SKU eviction simply causes the next read to go to DB and repopulate, which is acceptable.
+
+**Key expiry for flash sales**: During a flash sale event, popular-SKU keys are given an explicit TTL of 600 seconds with a tag. When the sale ends, the event engine calls `DEL` on all tagged keys, forcing a fresh DB read. This prevents stale "sold out" signals persisting after emergency stock replenishment.
+
+---
+
+## Data Model (Extended)
+
+The existing data model (Section 4) covers the core `inventory` and `inventory_reservations` tables. The full production schema also requires:
+
+```sql
+-- Warehouses reference table
+CREATE TABLE warehouses (
+  warehouse_id    SERIAL PRIMARY KEY,
+  name            VARCHAR(100) NOT NULL,
+  latitude        NUMERIC(9,6) NOT NULL,
+  longitude       NUMERIC(9,6) NOT NULL,
+  timezone        VARCHAR(50) NOT NULL,
+  active          BOOLEAN DEFAULT TRUE,
+  max_capacity    INT,          -- total SKU slots
+  fulfillment_sla_hours INT DEFAULT 24
+);
+
+-- SKU master catalog
+CREATE TABLE skus (
+  sku_id          BIGSERIAL PRIMARY KEY,
+  merchant_id     BIGINT NOT NULL,
+  external_sku    VARCHAR(100),           -- supplier SKU code
+  name            VARCHAR(255) NOT NULL,
+  category        VARCHAR(100),
+  unit_weight_g   INT,
+  requires_cold   BOOLEAN DEFAULT FALSE,  -- cold chain flag
+  is_hazmat       BOOLEAN DEFAULT FALSE,
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX ON skus(merchant_id);
+CREATE INDEX ON skus(external_sku);
+
+-- Purchase orders (for reorder tracking)
+CREATE TABLE purchase_orders (
+  po_id           BIGSERIAL PRIMARY KEY,
+  supplier_id     BIGINT NOT NULL,
+  warehouse_id    INT NOT NULL REFERENCES warehouses,
+  sku_id          BIGINT NOT NULL REFERENCES skus,
+  qty_ordered     INT NOT NULL,
+  qty_received    INT DEFAULT 0,
+  unit_cost       NUMERIC(10,2),
+  status          VARCHAR(20) DEFAULT 'OPEN',  -- OPEN, PARTIAL, RECEIVED, CANCELLED
+  ordered_at      TIMESTAMPTZ DEFAULT NOW(),
+  expected_at     TIMESTAMPTZ,
+  received_at     TIMESTAMPTZ,
+  UNIQUE (supplier_id, warehouse_id, sku_id, status)  -- prevent duplicate open POs
+);
+CREATE INDEX ON purchase_orders(sku_id, warehouse_id, status);
+
+-- Cycle count records
+CREATE TABLE cycle_counts (
+  count_id        BIGSERIAL PRIMARY KEY,
+  warehouse_id    INT NOT NULL REFERENCES warehouses,
+  sku_id          BIGINT NOT NULL REFERENCES skus,
+  zone            VARCHAR(20),
+  counted_by      BIGINT,              -- user_id of warehouse staff
+  system_qty      INT NOT NULL,        -- qty_on_hand at time of count
+  physical_qty    INT NOT NULL,        -- actual counted
+  delta           INT GENERATED ALWAYS AS (physical_qty - system_qty) STORED,
+  status          VARCHAR(20) DEFAULT 'PENDING',  -- PENDING, APPROVED, ADJUSTED
+  counted_at      TIMESTAMPTZ DEFAULT NOW(),
+  reviewed_by     BIGINT,
+  reviewed_at     TIMESTAMPTZ
+);
+CREATE INDEX ON cycle_counts(warehouse_id, status);
+CREATE INDEX ON cycle_counts(counted_at DESC);
+
+-- Inventory event log (append-only, for audit)
+CREATE TABLE inventory_events (
+  event_id        BIGSERIAL PRIMARY KEY,
+  warehouse_id    INT NOT NULL,
+  sku_id          BIGINT NOT NULL,
+  event_type      VARCHAR(30) NOT NULL,  -- INBOUND, RESERVE, DEDUCT, CANCEL, ADJUST
+  delta_qty       INT NOT NULL,          -- positive = increase, negative = decrease
+  reference_id    BIGINT,                -- order_id, po_id, or count_id
+  reference_type  VARCHAR(30),           -- ORDER, PO, CYCLE_COUNT
+  actor_id        BIGINT,                -- user or service that triggered event
+  created_at      TIMESTAMPTZ DEFAULT NOW()
+) PARTITION BY RANGE (created_at);
+
+-- Partition monthly for retention management
+CREATE TABLE inventory_events_2026_06 PARTITION OF inventory_events
+  FOR VALUES FROM ('2026-06-01') TO ('2026-07-01');
+```
+
+**Critical indexes**:
+- `inventory(warehouse_id, qty_available) WHERE qty_available > 0` — allocation queries use this partial index to skip zero-stock rows
+- `inventory_events(sku_id, warehouse_id, created_at DESC)` — audit trail queries per SKU
+- `purchase_orders(sku_id, warehouse_id, status)` — reorder deduplication check
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| 10x baseline (120 orders/sec) | PostgreSQL row lock contention on top-20 SKUs | Reservation latency spikes from 5ms to 50–200ms; timeout errors on hot products | Move hot SKUs to Redis atomic DECRBY; DB update becomes async write-behind |
+| 100x baseline (1,200 orders/sec) | Redis single-node throughput ceiling (~100k ops/sec but shared with all services) | Cache miss rate rises; Redis CPU >80%; DECRBY latency >5ms | Redis Cluster with hash slots per warehouse prefix; read replicas for stock checks |
+| 100x baseline | Kafka `inventory-events` topic consumer lag | Reorder Service falls behind; reorder triggers delayed by minutes | Increase partitions from 8 to 64; add consumer replicas; prioritize reorder topic |
+| 1000x baseline (12,000 orders/sec) | PostgreSQL cannot sustain 12k writes/sec even with batching | DB CPU saturates; WAL disk I/O maxes out; replication lag grows | Shard `inventory` table by `warehouse_id` across 10 PostgreSQL instances; each shard owns 5 warehouses |
+| 1000x baseline | Allocation engine scoring (50-warehouse scan × 12k/sec) | 600k DB reads/sec for allocation queries; query planner can't use indexes efficiently | Cache warehouse stock snapshot in Redis hash `wh_stock:{warehouse_id}` updated every 1 second; allocation reads from Redis |
+
+**The 1,000x scenario in practice**: Amazon's peak fulfillment processing during Prime Day 2023 was approximately 375 orders/second globally — still only ~31x the baseline in this design. Reaching 1,000x (12,000 orders/sec) requires a business operating at Amazon's scale with this exact data model, making the 1,000x row an aspirational ceiling rather than an expected operating point for most organizations.
+
+---
+
+## How Shopify Built This
+
+Shopify operates one of the largest multi-merchant inventory systems in the world, processing over 5 million orders per day across hundreds of thousands of merchants as of 2024. Their inventory architecture is public knowledge from several Rails At Scale and Shopify Engineering blog posts.
+
+**Technology choices**: Shopify's inventory system is built on MySQL (not PostgreSQL) using Rails ActiveRecord. Every merchant's inventory record is sharded across MySQL pods using a consistent hashing scheme based on `shop_id`. Each shard handles ~3,000 shops. Inventory rows are co-located with order rows for the same shop, enabling single-shard transactions for the common case (same-merchant reservation).
+
+**Specific numbers**: At peak (Black Friday 2023), Shopify processed approximately 4.2 million orders in a single hour — roughly 1,167 orders per second globally. With an average of 2.3 SKUs per order, that is approximately 2,683 inventory reservation writes per second. They handled this without Redis caching for inventory — MySQL InnoDB row locks at 2,700 writes/sec is within MySQL's throughput envelope (typically 5,000–10,000 writes/sec on NVMe-backed instances).
+
+**Non-obvious architectural decision**: Shopify uses "inventory ledgers" rather than a mutable current-quantity field. Rather than `UPDATE inventory SET qty_available = qty_available - 5`, they `INSERT INTO inventory_ledger (sku_id, delta=-5, reason='SALE')`. Current availability is computed as `SUM(delta)`. This makes the system append-only (no UPDATE lock contention) and gives a complete audit trail for free. The tradeoff: `SUM` query over a growing ledger is slow, so they maintain a "snapshot" row periodically (similar to a B-tree checkpoint), from which they replay only the delta since last snapshot.
+
+**Source**: [Shopify Engineering — Deconstructing the Monolith (2019)](https://shopify.engineering/deconstructing-the-monolith-designing-software-that-maximizes-developer-productivity) and [Shopify Tech Talks — Scaling for Black Friday](https://shopify.engineering/scaling-shopify-s-partner-platform).
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** Whether you can design a concurrent write system that prevents data races (overselling) while maintaining sub-100ms latency — balancing correctness guarantees against throughput requirements.
+
+**Common mistakes candidates make:**
+
+1. **Jumping straight to Redis without a DB** — Candidates say "use Redis atomic DECRBY to reserve" but forget that Redis is volatile. If the Redis node crashes between the DECRBY and the DB write, inventory is effectively oversold. A DB is the source of truth; Redis is an acceleration layer. Always explain the write-through pattern and what happens on Redis failure.
+
+2. **Using optimistic locking at low traffic** — Optimistic locking (read, check, CAS) sounds clever but generates retry storms on any hot SKU. At 12 orders/sec, a row lock is held for under 5ms — contention is mathematically irrelevant. Choosing optimistic locking here shows lack of calibration between traffic numbers and mechanism overhead.
+
+3. **Ignoring reservation expiry** — Candidates model "reserve at checkout, deduct at payment" but never address what happens if the user abandons the cart. Reserved inventory is invisible to other customers. Without TTL-based expiry on reservations (e.g., 30-minute hold), a small number of abandoned carts during peak traffic can cause legitimate customers to see false "out of stock" errors.
+
+**The insight that separates good from great answers:** Great candidates recognize that the two hardest consistency problems are not reservation (which is well-understood) but *reservation-to-deduction coordination across a distributed order pipeline* and *cache-DB divergence during restock events*. Specifically: what happens if the shipment service crashes after deducting `qty_on_hand` but before marking the reservation `CONFIRMED`? The answer is idempotency keys — each deduction carries the `reservation_id` as an idempotent key, and the shipment service uses it to detect and safely retry the deduction without double-decrement.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Inventory records | 50M rows | 1M SKUs × 50 warehouses |
+| PostgreSQL row lock hold time | 2–5ms | Single reservation at 12 peak orders/sec |
+| Peak reservation throughput (DB) | ~500/sec per hot SKU | Before Redis becomes necessary |
+| Redis DECRBY throughput | ~100,000 ops/sec | Single Redis node; use Cluster beyond this |
+| Cache hit rate (top 1% SKUs) | >99% | Top 10k SKUs cover >99% of order volume |
+| Cycle count cadence | 2% of SKUs/day | Full warehouse counted every 50 days |
+| Reorder safety stock formula | `Z × σ × √(lead_time)` | Z=2.33 for 99% service level |
+| Shopify Black Friday peak | ~1,167 orders/sec | 4.2M orders in 1 hour (BF 2023) |
+| ABC analysis split | 10% / 20% / 70% | A/B/C items by count; 70% / 25% / 5% of spend |
+| Reservation TTL (cart hold) | 30 minutes | Release reserved stock if order not confirmed |
+
+---
+
+
 
 | Resource | Type | What You'll Learn |
 |----------|------|------------------|

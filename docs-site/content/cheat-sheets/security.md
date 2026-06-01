@@ -548,3 +548,200 @@ graph TD
 - **Decision**: mTLS for service-to-service auth (mutual certificate verification); service mesh (Istio/Linkerd) for enforcing zero trust in Kubernetes at scale
 - **Trap**: Treating zero trust as a product to buy, not a principle to implement — zero trust is achieved incrementally by enforcing authentication + authorization on every service call, not by installing a single tool
 - → [Full article](../12-interview-prep/question-bank/security-auth/zero-trust-architecture)
+
+---
+
+## 13. Zero Trust Architecture Checklist
+
+**Zero Trust Checklist** — 5 principles + implementation order for existing systems
+
+| Principle | What it means | Implementation |
+|-----------|--------------|----------------|
+| **Verify explicitly** | Authenticate + authorize every request | mTLS between services, per-request JWT |
+| **Least privilege** | Minimum access needed for the task | IAM scoped roles, short-lived tokens |
+| **Assume breach** | Design as if attacker is already inside | Microsegmentation, lateral movement detection |
+| **Microsegmentation** | Isolate workloads, not just perimeter | Network policies (Kubernetes), VPC security groups |
+| **Continuous validation** | Re-verify access during session lifetime | Token TTL ≤15 min, continuous device posture checks |
+
+**Implementation order for existing systems:**
+1. Enforce mTLS between all internal services (Istio/Linkerd sidecar)
+2. Replace long-lived credentials with short-lived tokens (TTL ≤15 min)
+3. Add network policies: deny-by-default, allow only known service pairs
+4. Deploy identity-aware proxy in front of every internal service
+5. Enable continuous logging + lateral movement alerting (GuardDuty, SIEM)
+
+- **Key number:** 80% of breaches involve lateral movement after initial entry (Verizon DBIR) — perimeter model fails once the attacker is inside
+- **Decision:** Start with mTLS + short-lived tokens / move to service mesh (Istio) for Kubernetes-native enforcement at scale
+- **Trap:** Declaring "zero trust done" after installing a VPN replacement — zero trust is never a product; it is an ongoing policy of enforce-verify-log on every hop
+
+---
+
+## 14. mTLS Setup Decision
+
+**mTLS vs API keys vs JWT** — when to use mutual TLS, certificate rotation, and Envoy vs app-level
+
+| | mTLS | API Key | JWT |
+|-|------|---------|-----|
+| **Auth direction** | Mutual — both sides verify | Server verifies client key | Server verifies token signature |
+| **Revocation** | CRL / OCSP (near-instant) | Delete key from DB (instant) | Wait for expiry or maintain denylist |
+| **Rotation** | Certificate renewal (SPIFFE/SPIRE auto-rotate) | Manual or secret-manager-driven | Short TTL (15 min) + refresh token |
+| **Overhead** | TLS handshake adds ~1–2 ms | ~0.1 ms DB/cache lookup | ~0.1 ms local verify |
+| **Best for** | Service-to-service (M2M), zero trust mesh | 3rd-party integrations, simple client auth | User-facing APIs, stateless auth |
+
+**Envoy sidecar vs app-level mTLS:**
+
+| | Envoy / Istio sidecar | App-level (in-code) |
+|-|-----------------------|---------------------|
+| **Language support** | Any language, transparent | Per-library integration |
+| **Cert management** | Automatic (SPIFFE SVID rotation) | Manual or SDK |
+| **Operational cost** | Service mesh overhead (~5% CPU) | Zero extra infra |
+| **Use when** | Kubernetes, polyglot, large fleet | Single-language, small service count |
+
+**Certificate rotation strategy:**
+```
+Leaf cert:    24h TTL  — SPIFFE SVID auto-rotated by agent
+Intermediate: 30 days  — rotated by Vault PKI or cert-manager
+Root CA:      1 year   — rotated offline with overlap window
+```
+
+- **Key number:** SPIFFE SVID leaf cert TTL = **24h**; rotation happens automatically every ~12h before expiry
+- **Decision:** Use mTLS (Istio) for service mesh east-west traffic / API keys for external partner integrations / JWT for user auth
+- **Trap:** Rotating root CA without an overlap window — services that have cached the old CA cert will reject new leaf certs immediately; always run old + new CA in parallel for at least one full leaf TTL cycle
+
+---
+
+## 15. Secret Rotation Best Practices
+
+**Secret rotation** — Vault dynamic secrets vs static rotation, rotation frequency by type
+
+| | Vault Dynamic Secrets | Static Secret Rotation |
+|-|-----------------------|------------------------|
+| **How** | Vault generates unique short-lived cred per request | Scheduled replacement of one long-lived secret |
+| **Revocation** | Lease expiry — automatic, no service restart needed | Manual delete or Secrets Manager rotation lambda |
+| **Blast radius** | Single cred per service instance | All services using same secret exposed |
+| **Zero-downtime** | Built-in (lease TTL overlap) | Must implement dual-write/dual-read pattern |
+| **Use when** | DB passwords, cloud creds at scale | API keys, simpler environments |
+
+**Rotation frequency by secret type:**
+
+| Secret type | Recommended TTL / Rotation | Rationale |
+|------------|---------------------------|-----------|
+| DB password (dynamic) | **24h** lease | High blast radius, easy to rotate with Vault |
+| DB password (static) | **7 days max** | Longer = higher breach window |
+| API key (3rd-party) | **90 days** | External coordination needed |
+| Service-to-service API key | **30 days** | Automate via Secrets Manager |
+| TLS leaf cert (internal) | **24h** (SPIFFE) | Auto-rotated, short blast radius |
+| TLS intermediate cert | **30 days** | Needs overlap window |
+| Root CA cert | **1 year** | Offline rotation, long overlap |
+| Signing key (JWT) | **90 days** | Overlap window = both keys valid during rotation |
+
+**Zero-downtime rotation pattern:**
+```
+Phase 1: Add new secret alongside old — both accepted
+Phase 2: Roll out new secret to all service instances
+Phase 3: Verify all traffic using new secret (metrics)
+Phase 4: Remove old secret (no service restart needed)
+```
+
+- **Key number:** A 90-day API key rotation cycle means the average breach exposure window is **45 days** — shorten TTL to reduce window
+- **Decision:** Vault dynamic secrets for DB creds at scale / Secrets Manager static rotation for API keys with external providers
+- **Trap:** Rotating a secret without zero-downtime strategy — the old secret is deleted before all service instances reload, causing immediate auth failures in production; always use the add-then-remove pattern
+
+---
+
+## 16. JWT vs Session Token Decision
+
+**JWT vs session token** — stateless vs stateful auth, revocation trade-off, latency numbers
+
+| | JWT (stateless) | Session token (stateful) |
+|-|-----------------|--------------------------|
+| **Server lookup** | None — local signature verify | Redis lookup every request |
+| **Revocation** | Cannot revoke before expiry (or maintain denylist) | Instant — delete from Redis |
+| **Decode latency** | ~**0.1 ms** (HMAC-SHA256 local verify) | ~**0.5 ms** (Redis GET round-trip) |
+| **Horizontal scale** | Any node verifies — no shared state | All nodes need Redis access |
+| **Token size** | ~200–400 bytes (base64 header+payload+sig) | ~20 bytes (opaque session ID) |
+| **Best for** | Stateless APIs, microservices, mobile | Banking, medical — instant revocation required |
+
+**When you need revocation with JWT:**
+```
+Option A: Short TTL (15 min) + refresh token — breach window capped at 15 min
+Option B: JWT denylist in Redis — re-adds lookup latency (defeats stateless benefit)
+Option C: Opaque access token + token introspection — like session but with OAuth2 semantics
+```
+
+- **Key number:** JWT decode ~**0.1 ms**; Redis session lookup ~**0.5 ms** — 5× slower, but still negligible vs DB query (~5 ms); the real trade-off is revocation, not latency
+- **Decision:** JWT for microservices and public APIs where instant revocation is not required / session tokens for financial, medical, or admin portals where compromised tokens must be killed immediately
+- **Trap:** Setting JWT TTL to 24h or longer — a stolen JWT is valid for the full TTL with no way to revoke it; always use 15-min access token + refresh token pattern
+
+---
+
+## 17. OAuth2 Flow Decision Table
+
+**OAuth2 flows** — which flow to use for each client type
+
+| Flow | Client type | Token recipient | Use case |
+|------|------------|-----------------|---------|
+| **Authorization Code + PKCE** | Public (SPA, mobile) | Front-end client | User login in browser or mobile app |
+| **Authorization Code** | Confidential (server-side) | Backend server | Traditional web app with backend |
+| **Client Credentials** | Server (no user context) | Backend service | Service-to-service / M2M |
+| **Device Code** | Limited input device | Device (polls for token) | CLI tools, Smart TVs, IoT |
+| **Implicit** (deprecated) | Legacy SPA | Front-end client | **Do not use** — replaced by PKCE |
+
+**Quick decision rule:**
+```
+Has a human user?
+  ├─ Yes + Public client (SPA/mobile) → Authorization Code + PKCE
+  ├─ Yes + Confidential (server-side) → Authorization Code
+  └─ Yes + No keyboard/browser       → Device Code
+No human user (service-to-service)?
+  └─ Client Credentials
+```
+
+- **Key number:** PKCE `code_verifier` is a random string of **43–128 characters** (SHA-256 hashed to `code_challenge`); prevents authorization code interception even over HTTP redirect
+- **Decision:** Always PKCE for public clients / Client Credentials for M2M / never Implicit (tokens in URL fragment leak via browser history and referrer headers)
+- **Trap:** Using Client Credentials flow for user authentication — Client Credentials issues tokens for the *service*, not the user; there is no user identity in the token; use Authorization Code + PKCE for any flow involving a real user login
+
+---
+
+## 18. Rate Limiting for Security
+
+**Rate limiting** — per-IP vs per-user vs per-API-key, and why per-IP fails against botnets
+
+| Strategy | Scope | Bypass risk | Best for |
+|----------|-------|-------------|---------|
+| **Per-IP** | Source IP | Distributed botnets (1 req/IP across 100k IPs) | Basic abuse from single sources |
+| **Per-user** | Authenticated user ID | Attacker creates many accounts | Authenticated API abuse |
+| **Per-API-key** | Issued API key | Key sharing or key theft | B2B integrations, external APIs |
+| **Per-device** | Device fingerprint | Fingerprint spoofing | Bot detection, login protection |
+| **Global endpoint** | Request count to endpoint | Legitimate traffic caught | Nuclear option for DDoS |
+
+**Why per-IP fails against distributed botnets:**
+```
+Botnet: 100,000 IPs × 1 req/min = 100,000 req/min to your endpoint
+Per-IP limit of 10 req/min: each IP is under the limit → no block
+Result: effective 100k req/min attack with zero IP-level blocks
+Fix: combine per-IP + per-endpoint global rate + behavioral scoring (burst detection)
+```
+
+**Defense-in-depth rate limiting stack:**
+```
+Layer 1: Per-IP limit      → blocks naive scanners
+Layer 2: Per-user limit    → blocks credential stuffing with many accounts
+Layer 3: Per-API-key limit → controls B2B partner abuse
+Layer 4: Global endpoint   → emergency circuit breaker
+Layer 5: Behavioral WAF    → detects bot patterns (Cloudflare Bot Management)
+```
+
+**Redis sliding window (token bucket pattern):**
+```python
+key = f"rate:{user_id}:{endpoint}"
+count = redis.INCR(key)
+if count == 1:
+    redis.EXPIRE(key, 60)   # 60-second window
+if count > 100:
+    raise HTTP429()
+```
+
+- **Key number:** Cloudflare blocks ~**150 billion** threats/day using behavioral + per-IP rate limiting combined; per-IP alone would miss ~60% of bot traffic
+- **Decision:** Per-API-key for authenticated external APIs / per-user for logged-in app endpoints / add global endpoint limit as a DDoS circuit breaker
+- **Trap:** Relying solely on per-IP rate limiting for login endpoints — a botnet with 50,000 IPs can each send 5 login attempts (well under any per-IP threshold) and try 250,000 credential pairs before triggering a single block; combine per-IP with per-account lockout and CAPTCHA

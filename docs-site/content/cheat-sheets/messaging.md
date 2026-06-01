@@ -431,3 +431,146 @@ graph LR
 
 [Deep dive: SQS / SNS / EventBridge →](../12-interview-prep/quick-reference/aws-cloud/sqs-sns-eventbridge)
 [Deep dive: Kinesis Streaming →](../12-interview-prep/quick-reference/aws-cloud/kinesis-streaming)
+
+---
+
+## 11. Kafka Partition Sizing Formula
+
+**Kafka Partition Sizing** — formula to right-size partitions for throughput and consumer parallelism.
+
+| | Under-partitioned | Over-partitioned |
+|-|-------------------|------------------|
+| **Symptom** | Consumer lag grows, throughput ceiling hit | Excessive rebalancing, high metadata overhead |
+| **Risk** | Producer back-pressure | Zookeeper/controller overload |
+| **Fix** | Increase partitions (one-time, no data loss) | Merge topics or reduce retention |
+
+```
+partitions = max(
+  throughput_MB_s / producer_MB_s_per_partition,
+  consumer_count
+)
+```
+
+- **Key number:** Sweet spot is **100–500 partitions per broker**; beyond 4,000 partitions per cluster degrades controller performance.
+- **Decision:** Use partition count = consumer count when consumer throughput is the bottleneck / use throughput formula when producer throughput is the bottleneck.
+- **Trap:** Adding partitions is a one-way operation for a topic — you can increase but not decrease without recreating the topic. Over-provisioning is safer than under.
+
+---
+
+## 12. Dead Letter Queue (DLQ) Design
+
+**Dead Letter Queue** — holding queue for messages that failed processing after max retries.
+
+| | Retry in-queue | DLQ | Discard |
+|-|----------------|-----|---------|
+| **When** | Transient error (network, timeout) | Persistent/logic error after N retries | Stale / irrelevant data |
+| **Risk** | Queue head-of-line blocking | Messages pile up unnoticed | Data loss |
+| **Monitoring** | Consumer error rate | DLQ depth alarm | Loss metrics |
+
+- **Key number:** Route to DLQ after **3 retries** with exponential backoff — **1s, 2s, 4s**; total wait ≈ 7s before DLQ.
+- **Decision:** Retry when failure is transient (DB blip, downstream timeout) / DLQ when failure is deterministic (schema mismatch, business rule violation).
+- **Trap:** No alarm on DLQ depth — messages silently accumulate for days. Always set a CloudWatch / Datadog alarm when DLQ depth > 0.
+
+---
+
+## 13. Exactly-Once Semantics
+
+**Exactly-Once Semantics** — guarantee each message is processed exactly once, not zero or more times.
+
+| | At-most-once | At-least-once | Exactly-once |
+|-|-------------|---------------|--------------|
+| **Delivery** | Drop on failure | Retry until ack | Idempotent + transactional |
+| **Duplicates** | None | Possible | None |
+| **Throughput** | Highest | High | **~30% lower** |
+| **Complexity** | Low | Medium | High |
+| **Kafka API** | acks=0 | acks=all, no idempotent | `enable.idempotence=true` + transactions |
+
+```
+# Kafka exactly-once producer config
+enable.idempotence=true
+acks=all
+transactional.id=<unique-per-producer>
+max.in.flight.requests.per.connection=5
+```
+
+- **Key number:** Exactly-once adds **~30% throughput overhead** vs at-least-once due to two-phase commit across producer + broker.
+- **Decision:** Use exactly-once for financial ledgers, inventory deductions / use at-least-once + idempotent consumer for most event pipelines (cheaper).
+- **Trap:** Enabling `enable.idempotence=true` alone is NOT exactly-once end-to-end — it only covers producer → broker. Consumer must also be idempotent or use Kafka transactions.
+
+---
+
+## 14. Kafka Streams vs Flink vs Spark Streaming
+
+**Stream Processing Frameworks** — comparison of latency, state, and operational complexity.
+
+| | Kafka Streams | Apache Flink | Spark Structured Streaming |
+|-|--------------|--------------|---------------------------|
+| **Latency** | **~10ms** | **~10ms** | **1–5 seconds** |
+| **State management** | RocksDB local state | RocksDB + remote checkpoint | Spark memory / external store |
+| **Fault tolerance** | Kafka changelog topic | Distributed snapshots (Chandy-Lamport) | WAL + RDD lineage |
+| **Deployment** | Embedded in app, no cluster | Separate Flink cluster | Spark cluster (YARN/K8s) |
+| **Exactly-once** | Yes (with Kafka transactions) | Yes (native) | Yes (with idempotent sinks) |
+| **Learning curve** | Low (Java lib) | High (custom DSL, cluster ops) | Medium (Spark SQL familiar) |
+| **Best for** | Kafka-native microservices | Complex event processing, ML pipelines | Batch + streaming unified, SQL analytics |
+
+- **Key number:** Kafka Streams and Flink both achieve **~10ms** end-to-end latency; Spark Streaming is **1–5s** (micro-batch model).
+- **Decision:** Use Kafka Streams when your team already runs Kafka and needs lightweight stateful processing / use Flink for complex CEP or sub-10ms SLA / use Spark when you need unified batch + stream SQL.
+- **Trap:** Kafka Streams scales only as far as your partition count — if you need more parallelism than partitions, you must repartition first.
+
+---
+
+## 15. Message Ordering Guarantees
+
+**Message Ordering** — scoped guarantees; global ordering is impossible at production scale.
+
+| | Scope | Max Throughput | Mechanism |
+|-|-------|---------------|-----------|
+| **Kafka** | Per partition | Partition I/O limit (~100 MB/s) | Producer key → consistent partition |
+| **SQS FIFO** | Per message group ID | 300 TPS (3K batched) | Group ID serializes consumers |
+| **Kinesis** | Per shard | 1 MB/s write per shard | Partition key → shard |
+| **Global ordering** | All messages | **Single partition ceiling** | Not viable at scale |
+
+```mermaid
+graph TD
+    G[Need ordering?] -->|No| A[SQS Standard\nunlimited TPS]
+    G -->|Yes - per entity| B[Kafka: key=entity_id\nSQS FIFO: groupId=entity_id]
+    G -->|Yes - global| C[Single partition\nor SQS FIFO single group\n⚠️ throughput ceiling]
+```
+
+- **Key number:** Global ordering requires a **single partition** (or single FIFO group) — throughput ceiling is one partition's I/O (~100 MB/s Kafka, 300 TPS SQS FIFO).
+- **Decision:** Use per-entity ordering (partition key = user_id / order_id) for 99% of cases / accept global ordering only when business truly requires total ordering (rare).
+- **Trap:** Developers add ordering requirements "just in case" — this forces single-partition design and kills horizontal scalability. Challenge every global ordering requirement.
+
+---
+
+## 16. Outbox Pattern
+
+**Outbox Pattern** — solves dual-write atomicity between DB state and event publishing.
+
+| | Naive dual-write | Outbox pattern | CDC-based outbox |
+|-|-----------------|----------------|-----------------|
+| **Atomicity** | ❌ Race condition | ✅ Single DB transaction | ✅ Single DB transaction |
+| **Publisher** | App writes to queue directly | Polling worker reads outbox | Debezium / CDC reads WAL |
+| **Latency** | Low (direct) | Medium (poll interval) | Low (WAL tail ~ms) |
+| **Operational overhead** | Low setup, high failure risk | Medium (worker to maintain) | High (CDC infra) |
+| **Missed events on crash** | Yes | No | No |
+
+```
+-- Every business write includes:
+BEGIN TRANSACTION
+  INSERT INTO orders (id, status, ...) VALUES (...)
+  INSERT INTO outbox (id, aggregate_type, event_type, payload)
+    VALUES (uuid(), 'ORDER', 'OrderPlaced', '{...}')
+COMMIT
+
+-- Outbox publisher (polling):
+SELECT * FROM outbox WHERE published=false ORDER BY created_at LIMIT 100
+→ publish each to Kafka/SQS
+→ UPDATE outbox SET published=true WHERE id IN (...)
+```
+
+- **Key number:** Outbox adds exactly **1 extra DB write per business event** — negligible overhead vs guaranteed delivery.
+- **Decision:** Use polling publisher when CDC infra is unavailable and latency of seconds is acceptable / use CDC (Debezium) when sub-second event latency is required.
+- **Trap:** Polling the outbox table without an index on `(published, created_at)` causes full table scans at scale. Always add a partial index on unpublished rows.
+
+---

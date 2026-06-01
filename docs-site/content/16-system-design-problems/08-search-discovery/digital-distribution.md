@@ -348,6 +348,258 @@ Free apps:
 
 ---
 
+## Component Deep Dive 1: CDN Distribution Layer
+
+The CDN distribution layer is the most performance-critical component — it directly determines whether 100M devices can download apps without the origin servers melting. A naive approach of serving all traffic from a central S3 bucket would saturate at roughly 10 Gbps even with horizontal scaling, nowhere near the 500 Gbps peak demand during major app launches.
+
+### How It Works Internally
+
+CDN PoPs (Points of Presence) are distributed globally — typically 200-400 locations. Each PoP holds a partial cache of app binaries. When a device requests an app, the request routes to the nearest PoP via Anycast DNS. If the PoP has it cached, it serves locally. If not, it fetches from origin (S3) and caches — this is pull-through caching.
+
+The key insight is URL immutability: every app version URL is `/{app_id}/{version}/{content_hash}.ipa`. Because the content hash is embedded in the URL, the binary for a given URL never changes. This lets CDN nodes set `Cache-Control: immutable, max-age=31536000` — a 1-year TTL with no revalidation. A PoP that has cached v2.3 of an app will never send a conditional GET back to origin for that same URL.
+
+**Pre-warming vs pull-through**: Top 1000 apps (covering 99% of daily download volume) are pushed proactively to all PoPs at publish time. When WhatsApp releases an update, the CDN publisher script immediately enqueues a push job to all 350 PoPs before a single user requests it. Long-tail apps (the other 9.99 million) use pull-through — they get cached at individual PoPs on first request in that region.
+
+**Byte-range requests**: Devices support resumable downloads via HTTP Range requests. CDN PoPs handle range requests transparently — a 100MB app download interrupted at 60MB resumes from byte 62,914,560 without re-downloading. This is critical in mobile environments with flaky connections.
+
+```mermaid
+sequenceDiagram
+    participant D as Device
+    participant DNS as Anycast DNS
+    participant PoP as CDN PoP (nearest)
+    participant Origin as S3 Origin
+
+    D->>DNS: Resolve cdn.appstore.com
+    DNS-->>D: 104.18.X.X (nearest PoP IP)
+    D->>PoP: GET /apps/com.whatsapp/4.2.1/a3f9c.ipa
+    alt Cache HIT
+        PoP-->>D: 200 OK (binary, from cache)
+    else Cache MISS
+        PoP->>Origin: GET /apps/com.whatsapp/4.2.1/a3f9c.ipa
+        Origin-->>PoP: 200 OK (binary)
+        PoP-->>D: 200 OK (binary, now cached)
+    end
+    D->>PoP: GET /apps/com.whatsapp/4.2.1/a3f9c.ipa Range: bytes=62914560-
+    PoP-->>D: 206 Partial Content (resume from offset)
+```
+
+### CDN Implementation Options
+
+| Approach | Latency | Throughput | Trade-off |
+|----------|---------|------------|-----------|
+| Single-origin (S3 only) | 50–200ms | ~10 Gbps max | Simple, but origin melts at peak launch |
+| CDN pull-through (no pre-warm) | 5–30ms (cache hit) / 200ms (miss) | 500+ Gbps | Good for long-tail; first requester per PoP pays full latency |
+| CDN push pre-warm + pull fallback | 5–20ms for top apps | 500+ Gbps | Best performance; higher operational complexity and CDN storage cost |
+
+---
+
+## Component Deep Dive 2: Delta Update Pre-computation Pipeline
+
+Delta updates are where the system earns back most of its bandwidth budget. At 5M updates/day with an average app size of 100MB, full downloads would cost 500TB/day from origin — with deltas, this drops to roughly 50TB (90% reduction). The challenge is generating and storing these patches efficiently before any device requests them.
+
+### Internal Mechanics
+
+When a new app version v2.4 is approved and signed, the patch server triggers a pre-computation job. It fetches the new binary and the last 3 approved versions (v2.3, v2.2, v2.1) from S3, then computes binary diffs using bsdiff or xdelta3.
+
+**Why 3 versions?** Historical data shows version distribution: ~70% of users are on the immediately previous version, ~20% are one version older, ~5% are two versions older. Pre-computing 3 back covers 95%+ of users. Computing further back gives diminishing returns and generates increasingly large (less efficient) patches.
+
+**Patch storage naming convention:**
+```
+s3://app-patches/{app_id}/from-{old_hash}-to-{new_hash}.patch
+```
+
+The device sends its current version hash in the update check request. The server looks up the pre-computed patch. If no patch exists (e.g., user is 4 versions behind), the server returns the full binary URL instead.
+
+### Scale Behavior at 10x Load
+
+At baseline, 100k new uploads/day × 3 patches each = 300k bsdiff operations/day. At 10x (1M uploads/day), naive sequential processing would require 10x the patch servers. The solution is a Kafka-backed worker pool — upload events queue in Kafka, patch workers consume and write to S3. Adding workers is elastic. The patch computation itself is CPU-bound (bsdiff for a 100MB binary takes ~15 seconds on a 4-core worker), so horizontal scaling directly addresses the throughput gap.
+
+```mermaid
+graph LR
+    NewVersion[New Signed Binary\nS3 Event] --> PatchQueue[Kafka\npatch-compute topic]
+    PatchQueue --> W1[Worker 1\nbsdiff]
+    PatchQueue --> W2[Worker 2\nbsdiff]
+    PatchQueue --> W3[Worker N\nbsdiff]
+    W1 --> PatchStore[(S3\nPatch Files)]
+    W2 --> PatchStore
+    W3 --> PatchStore
+    PatchStore --> PatchIndex[(Patch Index DB\nPostgres)]
+    Device[Device Update Check] --> PatchIndex
+    PatchIndex -->|Patch URL or full binary URL| Device
+```
+
+| Approach | Patch Size | CPU Cost | Device Memory |
+|----------|-----------|----------|---------------|
+| bsdiff (suffix array) | Best compression (~5–10% of app) | High (loads full files in RAM) | Low (apply is streaming) |
+| xdelta3 / VCDIFF | Moderate (~10–15% of app) | Low (streaming, O(1) memory) | Very low |
+| Google BSDiff variant (courgette) | Excellent for PE/ELF binaries | Moderate | Low |
+
+---
+
+## Component Deep Dive 3: Gradual Rollout Controller
+
+The rollout controller decides which users receive which version of an app at any given moment. It is the safety mechanism that prevents a buggy update from simultaneously breaking 100M devices.
+
+### Technical Design
+
+User assignment is deterministic and stateless: `hash(device_id + app_id + version_id) % 10000`. If the result is less than the current rollout threshold (expressed as basis points — 100 = 1%), the device receives the new version URL; otherwise it receives the previous stable version URL.
+
+Deterministic hashing ensures a device always gets the same assignment for a given rollout state — it won't flip back and forth between versions across update checks. It also means rollout segments are stable user cohorts, which is essential for crash attribution.
+
+**Automated pause triggers** are implemented as a streaming consumer on crash telemetry events. The rollout service maintains a rolling 30-minute P99 crash rate per version. When new-version crash rate exceeds 2× the 7-day baseline for old version, the service automatically sets `rollout_threshold = 0` and pages the on-call engineer. No human needs to be watching a dashboard at 3am.
+
+**Emergency rollback** is distinct from rollout pause: a rollback publishes a new version record pointing to the old binary. Since version URLs are immutable, devices that already downloaded the new version will re-download the old one — there is no "undo" for already-installed binaries at the OS level.
+
+```mermaid
+graph TD
+    UpdateCheck[Device Update Check\nGET /apps/{id}/latest] --> RolloutSvc[Rollout Controller]
+    RolloutSvc --> HashFn["hash(device_id + version_id) % 10000"]
+    HashFn -->|< threshold| NewVersion[Return new version URL]
+    HashFn -->|>= threshold| OldVersion[Return stable version URL]
+    CrashTelemetry[Crash Telemetry\nKafka stream] --> Monitor[Crash Rate Monitor]
+    Monitor -->|Rate > 2x baseline| AutoPause[Set threshold = 0\nPage on-call]
+    RolloutSvc --> RolloutDB[(Rollout Config DB\nRedis)]
+```
+
+---
+
+## Data Model
+
+The core tables that power app distribution, update routing, and license enforcement:
+
+```sql
+-- App catalog
+CREATE TABLE apps (
+    app_id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    bundle_id       VARCHAR(255) UNIQUE NOT NULL,  -- e.g. com.instagram.ios
+    developer_id    UUID NOT NULL REFERENCES developers(developer_id),
+    category        VARCHAR(64) NOT NULL,           -- social, productivity, games
+    age_rating      SMALLINT NOT NULL,              -- 4, 9, 12, 17
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- App versions (one row per approved version)
+CREATE TABLE app_versions (
+    version_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    app_id           UUID NOT NULL REFERENCES apps(app_id),
+    version_string   VARCHAR(32) NOT NULL,           -- e.g. "4.2.1"
+    build_number     BIGINT NOT NULL,
+    binary_sha256    CHAR(64) NOT NULL,              -- content hash (also in CDN URL)
+    signed_s3_key    TEXT NOT NULL,                  -- s3://apps-signed/{app_id}/{version_id}/app.ipa
+    file_size_bytes  BIGINT NOT NULL,
+    review_status    VARCHAR(32) NOT NULL,           -- pending, auto_pass, approved, rejected
+    signature_cert   TEXT NOT NULL,                  -- PEM cert used to sign
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    approved_at      TIMESTAMPTZ,
+    UNIQUE (app_id, version_string)
+);
+CREATE INDEX idx_app_versions_app_status ON app_versions(app_id, review_status, approved_at DESC);
+
+-- Rollout configuration (updated by rollout controller)
+CREATE TABLE rollout_configs (
+    app_id              UUID NOT NULL REFERENCES apps(app_id),
+    target_version_id   UUID NOT NULL REFERENCES app_versions(version_id),
+    rollout_bps         SMALLINT NOT NULL DEFAULT 0,  -- basis points: 100 = 1%, 10000 = 100%
+    stable_version_id   UUID NOT NULL REFERENCES app_versions(version_id),
+    paused              BOOLEAN NOT NULL DEFAULT false,
+    pause_reason        TEXT,
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (app_id)
+);
+
+-- Pre-computed delta patches
+CREATE TABLE delta_patches (
+    patch_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    app_id           UUID NOT NULL REFERENCES apps(app_id),
+    from_version_id  UUID NOT NULL REFERENCES app_versions(version_id),
+    to_version_id    UUID NOT NULL REFERENCES app_versions(version_id),
+    patch_s3_key     TEXT NOT NULL,
+    patch_sha256     CHAR(64) NOT NULL,
+    patch_size_bytes BIGINT NOT NULL,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (from_version_id, to_version_id)
+);
+CREATE INDEX idx_delta_patches_lookup ON delta_patches(app_id, to_version_id, from_version_id);
+
+-- License records
+CREATE TABLE licenses (
+    license_id     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id        UUID NOT NULL,
+    app_id         UUID NOT NULL REFERENCES apps(app_id),
+    purchase_type  VARCHAR(32) NOT NULL,   -- one_time, subscription, free
+    purchase_at    TIMESTAMPTZ NOT NULL,
+    expires_at     TIMESTAMPTZ,            -- NULL for one-time purchases
+    grace_until    TIMESTAMPTZ,            -- non-null during payment retry window
+    UNIQUE (user_id, app_id)
+);
+CREATE INDEX idx_licenses_user ON licenses(user_id);
+```
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| 10x baseline (1M uploads/day) | Patch compute workers | Patch queue depth grows; devices fall back to full downloads; CDN origin bandwidth spikes | Autoscale worker pool via Kafka consumer group; increase worker instance count elastically |
+| 10x baseline (50M downloads/day) | CDN origin (S3) | Cache miss rate rises for long-tail apps; S3 GET latency p99 degrades; download error rate increases | Expand pre-warm list from top 1k to top 10k apps; add CDN origin shield (single intermediate cache between PoPs and S3) |
+| 100x baseline (500M downloads/day) | Rollout Config DB | Update check latency increases; rollout decisions slow; cascading timeouts on devices | Move rollout config to Redis Cluster (sub-millisecond reads); cache rollout config in CDN edge logic with 5s TTL |
+| 100x baseline | License verification service | License check latency spikes; apps fail to launch for valid users | Add Redis cache layer for license responses (TTL: 1 hour for valid licenses); circuit-breaker for offline grace mode |
+| 1000x baseline (5B downloads/day) | CDN peering and egress costs | Network egress bill explodes; CDN SLA violations at extreme PoP saturation | Peer with ISPs directly (Apple/Google run their own CDN infrastructure); use multicast delivery for top apps in carrier networks |
+
+---
+
+## How Google Built This: Google Play Store
+
+Google Play serves 2.5 billion active Android devices across 190 countries, distributing over 3 million apps. Their engineering blog posts and Android Developers Summit talks reveal several non-obvious architectural decisions.
+
+**APK splitting and AAB format**: In 2018 Google introduced the Android App Bundle (AAB) format. Instead of uploading one APK, developers upload a single AAB. Google Play's servers then generate device-specific APKs — delivering only the screen densities, CPU architectures (arm64, x86), and language resources needed by each device. A monolithic APK for a popular game might be 120MB. The device-specific APK for an arm64 phone with English locale might be 45MB — a 62% size reduction without the developer writing a single extra line of code. This is implemented as a server-side split/repack pipeline that runs after review approval.
+
+**File-by-file delta compression**: Google's "File-by-File" patching (published as an open-source tool, archive-patcher) goes beyond binary-level bsdiff. APKs are ZIP archives; File-by-File unzips both old and new APK, diffs individual files (Java class files, resources, native libs), then recompresses. Result: patches average 65% smaller than bsdiff patches for typical app updates. Google reported this saved 6 petabytes of user download bandwidth in the first 6 months after rollout (source: Android Developers Blog, 2016).
+
+**Dynamic delivery at update check time**: The Play Store client on a device sends its device fingerprint (CPU ABI list, screen density, installed languages, current APK version) in the update check request. The server-side delivery engine computes the optimal combination of base APK + configuration splits + delta patch in real time per device. This happens at roughly 50,000 update check requests per second globally.
+
+**Staged rollouts**: Google Play's developer console exposes rollout percentage as a slider (0–100%). Internally, assignment uses `crc32(package_name + device_id) % 10000`. Developers can also target rollouts by country or Android version. Automated rollout halt is triggered when the ANR (App Not Responding) rate in the Firebase Crashlytics signal stream exceeds configurable thresholds.
+
+Source: [Android Developers Blog — Smaller APKs with file-by-file patching](https://android-developers.googleblog.com/2016/12/saving-data-safely-with-app-updates.html), Google I/O 2019 "What's New in Android App Bundles."
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** Whether the candidate understands the end-to-end lifecycle of a binary artifact — from developer upload through security review, signing, CDN distribution, and safe rollout — and whether they can reason about the bandwidth and compute economics at 100M-device scale.
+
+**Common mistakes candidates make:**
+
+1. **Skipping code signing entirely.** Many candidates design the storage and CDN layers but never mention how a device verifies a binary is genuine. The interviewer will probe: "What stops a MITM from injecting a malicious binary?" The answer requires HSM-backed signing and on-device signature verification — without this the system has a critical security hole.
+
+2. **Proposing push-based update notifications at scale.** Candidates often say "we'll push a notification to all devices when a new version is available." Pushing simultaneously to 1 billion devices is a self-inflicted thundering herd — all devices wake up and hammer the download infrastructure at the same moment. The correct answer is pull-based: devices check for updates on their own schedule (app launch, background refresh), with jitter.
+
+3. **Ignoring delta updates for the bandwidth math.** If a candidate estimates 5M downloads/day × 100MB = 500TB/day and designs purely for that, they miss the 90% reduction achievable with delta updates. An interviewer noticing this will ask "how do you reduce CDN costs?" — missing delta updates signals unfamiliarity with how app stores actually work.
+
+**The insight that separates good from great answers:** Pre-computing delta patches for the last 3 versions at publish time rather than generating patches on-demand per device request. On-demand patch generation would require the origin server to hold both binaries in memory and run bsdiff synchronously for each device — non-starter at 50,000 update checks/second. Pre-computation turns a latency-sensitive operation into a background batch job, and the patch is served directly from CDN cache just like any other immutable artifact.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Full app average size | 100 MB | Baseline for bandwidth math |
+| Delta patch size | 10 MB (10% of full) | bsdiff for minor version update |
+| Google File-by-File patch size | ~3.5 MB (3.5% of full) | Using archive-patcher on APK internals |
+| Daily download volume (500GB peak) | 500 Gbps peak throughput | Major app launch (e.g., Facebook update) |
+| CDN bandwidth saving (delta) | 90% | From 500 TB/day to ~50 TB origin egress |
+| Rollout canary window | 1% of users on day 1 | ~1M users for a 100M install base |
+| Automated pause trigger | 2× crash rate increase | Compared to 7-day baseline on old version |
+| Patch pre-compute depth | Last 3 versions | Covers 95% of active users |
+| bsdiff compute time | ~15 seconds | For 100MB binary on 4-core worker |
+| Review SLA (automated) | < 1 hour | Automated static + dynamic analysis |
+| Review SLA (manual) | 48 hours (Apple) / 72 hours (Google) | Human reviewer queue |
+| Google Play update checks | ~50,000 req/sec | Global steady-state |
+
+---
+
 ## 📚 Resources & References
 
 | Resource | Type | What You'll Learn |

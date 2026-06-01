@@ -10,4 +10,5 @@ export default {
   "ml-ai-engineer": "🤖 ML / AI Engineer",
   "security-engineer": "🔒 Security Engineer",
   "mobile-engineer": "📱 Mobile Engineer",
+  "technical-program-manager": "🗂️ Technical Program Manager",
 }

@@ -285,6 +285,322 @@ Software updates:
 
 ---
 
+---
+
+## Component Deep Dive 1: Track Fusion Engine (Kalman Filter at Scale)
+
+The Track Fusion Engine is the most critical component in the entire ATC system. Every downstream decision — conflict detection, sector assignment, controller alerts — depends on having an accurate, low-latency position estimate for each aircraft. Getting this wrong by even 50 meters in the horizontal plane can mean the difference between a valid alert and a catastrophic miss.
+
+### How It Works Internally
+
+The Kalman filter maintains a probabilistic state estimate for each aircraft: a 6-dimensional state vector [x, y, z, vx, vy, vz] representing 3D position and velocity, plus a 6x6 covariance matrix encoding uncertainty in each dimension. When a new radar observation arrives, the filter performs two steps:
+
+**Predict step**: Project the current state forward in time using the aircraft's known velocity. The covariance grows with elapsed time (uncertainty increases when no observation arrives).
+
+**Update step**: Incorporate the new radar measurement, weighting it against the prediction by the relative uncertainty of each. A high-quality ADS-B GPS reading (±10m) gets much higher weight than a degraded PSR echo at 100km range (±200m).
+
+When multiple radar sources observe the same aircraft simultaneously, the Kalman filter fuses them by treating each observation as an independent measurement update in sequence, yielding a statistically optimal estimate that is more accurate than any single source.
+
+### Why Naive Approaches Fail
+
+The simplest approach — "take the most recent radar ping and use that as position" — fails for three reasons: (1) Different radar types have wildly different latencies and accuracies, so last-write-wins produces a noisy, jittery position stream; (2) ADS-B data at 2Hz and PSR data at 0.1Hz cannot be naively merged; (3) During sensor dropouts (aircraft entering dead zone between radar sweeps), you have no position at all unless you maintain a predictive model. The Kalman filter solves all three by maintaining a continuous state estimate that degrades gracefully under missing observations rather than going blank.
+
+### Track Fusion Internals
+
+```mermaid
+sequenceDiagram
+    participant ADS_B as ADS-B (2Hz)
+    participant SSR as SSR Radar (0.2Hz)
+    participant PSR as PSR Radar (0.1Hz)
+    participant Fusion as Kalman Filter Engine
+    participant Redis as Redis State Store
+    participant Conflict as Conflict Detector
+
+    Note over Fusion: t=0: State = [lat,lon,alt,vx,vy,vz] + Covariance P
+
+    ADS_B->>Fusion: position_update(lat,lon,alt, t=0.5s)
+    Fusion->>Fusion: Predict: x_pred = F * x_prev + noise
+    Fusion->>Fusion: Update: K = P*H' * (H*P*H' + R)^-1
+    Fusion->>Fusion: x_new = x_pred + K*(z - H*x_pred)
+    Fusion->>Redis: HSET flight:UAL123 {lat,lon,alt,vx,vy,vz,uncertainty}
+    Fusion->>Conflict: publish(flight_update_event)
+
+    SSR->>Fusion: position_update(lat,lon,alt, t=5s)
+    Fusion->>Fusion: Second update pass, higher R (sensor noise)
+    Fusion->>Redis: HSET flight:UAL123 {updated_state}
+
+    Note over Fusion: PSR dropout — no observation for 15s
+    Fusion->>Fusion: Predict-only step: propagate state forward
+    Fusion->>Fusion: Covariance P grows → uncertainty flag set
+    Fusion->>Redis: HSET flight:UAL123 {extrapolated_state, uncertain=true}
+```
+
+### Trade-off Table: Track Fusion Approaches
+
+| Approach | Latency | Accuracy | Complexity | Failure Mode |
+|----------|---------|----------|------------|--------------|
+| Kalman Filter (standard) | 1–2ms per update | ±15m fused | High (matrix math, covariance tracking) | Diverges if process noise model is wrong |
+| Last-write-wins (no fusion) | <0.1ms | ±100–200m (radar limited) | Trivial | Jittery positions; no prediction during dropout |
+| Particle Filter | 10–50ms per update | ±5m (non-linear motion) | Very high | Computationally expensive; overkill for commercial aviation |
+
+The Kalman filter is the industry standard because its computational cost (a few matrix multiplications per aircraft per update) is negligible at 10,000 aircraft scale — roughly 1 CPU-core-millisecond per 5-second radar sweep cycle — while delivering optimal statistical fusion across heterogeneous sensor types.
+
+---
+
+## Component Deep Dive 2: Conflict Detection Engine
+
+The Conflict Detection Engine runs continuously in the background, checking whether any two aircraft are on trajectories that will violate ICAO minimum separation standards within the next 20 minutes. It is sector-scoped, stateless per run (reads from Redis), and must complete a full sector scan within the 5-second radar update window.
+
+### Internal Mechanics
+
+For each sector (approximately 20 aircraft per sector on average), the engine iterates all pairs, projects each aircraft's trajectory forward using a piecewise-linear model — constant velocity for the first 5 minutes, then flight-plan-following for 5–20 minutes — and computes the minimum approach distance along the combined trajectory segment.
+
+The closest-point-of-approach (CPA) calculation is the mathematical core:
+
+```
+Given two aircraft A and B with:
+  positions: pA, pB (3D vectors, NM units)
+  velocities: vA, vB (3D vectors, kts)
+
+Relative position: dp = pB - pA
+Relative velocity: dv = vB - vA
+
+Time to CPA: t_cpa = -(dp · dv) / (dv · dv)
+  (dot product; clamped to [0, 20min])
+
+Distance at CPA: d_cpa = |dp + dv × t_cpa|
+  (Euclidean distance in 3D, lat/lon converted to NM)
+
+Conflict if: d_cpa < separation_standard AND t_cpa < 20min
+```
+
+This is O(1) per pair and runs in nanoseconds. At 95,000 pairs/sec, a single CPU core handles the full global conflict check load with headroom to spare.
+
+### Scale Behavior at 10x Load
+
+At 10x the nominal load (100,000 simultaneous flights), the sector-based partition still holds: if sector sizes remain ~20 aircraft, the pair-check math scales linearly with sector count (5,000 sectors vs 500), not quadratically with flight count. The bottleneck shifts to Kafka consumer throughput (20,000 updates/sec instead of 2,000) and Redis read latency (100,000 HGET/sec for state reads). Redis Cluster with 10 shards handles 1M ops/sec trivially, so 100,000 reads/sec is well within budget.
+
+### Conflict Engine Architecture
+
+```mermaid
+graph TD
+    Kafka[Kafka: flight-positions\npartitioned by sector_id] --> Consumer[Sector Consumer Pool\n500 consumer instances]
+    Consumer --> StateRead[Redis HGETALL\nflight state per aircraft]
+    StateRead --> PairGen[Pair Generator\nN*(N-1)/2 pairs]
+    PairGen --> CPA[CPA Calculator\nconstant-velocity projection]
+    CPA --> PlanAware[Flight-Plan Projection\n5-20 min range]
+    PlanAware --> Threshold{Separation\nViolated?}
+    Threshold -->|Yes| AlertDedup[Alert Dedup Store\nRedis SET with TTL]
+    AlertDedup -->|New conflict| AlertKafka[Kafka: conflict-alerts]
+    AlertKafka --> AlertSvc[Alert Service\n→ Controller Workstation]
+    Threshold -->|No| Drop[Discard]
+```
+
+### Trade-off Table: Conflict Detection Approaches
+
+| Approach | Pairs Checked | Accuracy | Latency | Scale Ceiling |
+|----------|--------------|----------|---------|---------------|
+| Per-sector (current) | 190/sector × 500 = 95k/5s | High within sector | <50ms | Linear with sector count |
+| Global (all flights) | 50M pairs/5s | Same | Infeasible (CPU-bound) | Does not scale beyond ~2,000 flights |
+| Spatial index (R-tree) | Only nearby pairs | High | <5ms | Excellent — sub-linear with density |
+
+Using an R-tree spatial index (querying only aircraft within 50nm of each other) would reduce pair checks from 95,000 to roughly 5,000/sec even at full scale, at the cost of implementation complexity. Current production ATC systems use sector partitioning because sectors are operationally meaningful (already defined for controller assignment) and conflict-detection granularity matches controller responsibility boundaries.
+
+---
+
+## Component Deep Dive 3: Alert Deduplication and Delivery Layer
+
+The Alert layer faces a unique engineering challenge: it must be low-latency (alert within 1 second of detection), high-reliability (every genuine conflict must reach the controller), but also low-noise (repeated alerts for the same conflict erode controller trust and cause alert fatigue). These goals are in direct tension.
+
+### Technical Implementation
+
+Deduplication uses a Redis SET keyed by `conflict:{flight_a_id}:{flight_b_id}` with a TTL of 30 seconds. When a conflict pair is detected, the engine attempts a Redis SETNX (set if not exists). If the key already exists, the conflict is a duplicate and suppressed. If SETNX succeeds, an alert is emitted and the key expires in 30 seconds — at which point, if the conflict is still active on the next scan cycle, a fresh alert fires. This avoids both duplicate spam and indefinite suppression.
+
+### Alert Delivery Protocol
+
+Alert messages are published to a dedicated `conflict-alerts` Kafka topic (separate from position data), consumed by the Alert Service, which maintains a WebSocket connection to each Controller Workstation (CWP). The CWP renders alerts as overlays on the radar display and triggers audio tones through dedicated speakers — a separate audio subsystem independent of the display rendering pipeline, so a screen freeze does not mute the alert.
+
+### Failure Mode: Alert Service Crash
+
+If the Alert Service crashes, alerts must not be silently dropped. The Kafka consumer group offset is committed only after the WebSocket delivery is acknowledged by the CWP. If the CWP is unreachable, the alert stays in the Kafka topic unconsumed. The Alert Service uses a dead-letter queue for alerts that fail delivery after 3 retries within 500ms, which triggers a supervisor notification — the supervisor's station receives all failed alerts directly.
+
+| Alert Property | Implementation Detail |
+|----------------|----------------------|
+| Dedup window | 30-second Redis key TTL per flight pair |
+| Delivery guarantee | Kafka at-least-once + CWP ack |
+| Audio independence | Separate audio daemon, not tied to display process |
+| Auto-clear trigger | Separation > 150% of minimum → SREM key from dedup store |
+| Escalation path | 3 missed acks → supervisor dead-letter queue |
+
+---
+
+## Data Model
+
+### Redis: Live Flight State (HSET, one key per flight)
+
+```
+Key: flight:{flight_id}
+Type: Hash
+TTL: 60 seconds (auto-expires if no update received — flight gone or squawk lost)
+
+Fields:
+  flight_id       VARCHAR(10)   "UAL123"
+  callsign        VARCHAR(10)   "UAL123"
+  squawk          VARCHAR(4)    "1234"   -- Mode-A transponder code
+  lat             FLOAT8        40.1234  -- WGS-84 degrees
+  lon             FLOAT8        -74.5678
+  alt_ft          INT4          35000    -- pressure altitude, feet
+  heading_deg     FLOAT4        270.0    -- true heading
+  speed_kts       FLOAT4        480.0    -- groundspeed
+  climb_rate_fpm  FLOAT4        -200.0   -- feet per minute (negative = descending)
+  vx              FLOAT8        -138.7   -- velocity x component, NM/min (derived)
+  vx              FLOAT8        0.0      -- velocity y component
+  vz              FLOAT8        -0.2     -- velocity z component, thousands ft/min
+  sector_id       VARCHAR(20)   "NEYE_HIGH"
+  origin          VARCHAR(4)    "KEWR"   -- ICAO airport code
+  destination     VARCHAR(4)    "KLAX"
+  aircraft_type   VARCHAR(6)    "B738"
+  data_source     VARCHAR(8)    "ADS-B"  -- ADS-B | SSR | PSR | FUSED
+  uncertainty_m   FLOAT4        12.5     -- position uncertainty radius, meters
+  last_updated    INT8          1711800000  -- Unix epoch ms
+```
+
+### PostgreSQL: Flight Plans (relational, updated at filing)
+
+```sql
+-- Flight plan (filed before departure, immutable once airborne)
+CREATE TABLE flight_plans (
+  plan_id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  flight_id        VARCHAR(10) NOT NULL,            -- "UAL123"
+  origin_icao      CHAR(4) NOT NULL,                -- "KEWR"
+  dest_icao        CHAR(4) NOT NULL,                -- "KLAX"
+  filed_at         TIMESTAMPTZ NOT NULL,
+  etd              TIMESTAMPTZ NOT NULL,            -- estimated departure
+  eta              TIMESTAMPTZ NOT NULL,            -- estimated arrival
+  cruising_alt_ft  INT NOT NULL,                    -- filed altitude, e.g. 35000
+  route_string     TEXT NOT NULL,                   -- "HAPIE DCT BETTE DCT HTO ..."
+  aircraft_type    VARCHAR(6) NOT NULL,             -- "B738"
+  wake_category    CHAR(1) NOT NULL,                -- H/M/L/J (Heavy/Medium/Light/Super)
+  created_at       TIMESTAMPTZ DEFAULT now()
+);
+
+-- Route waypoints (parsed from route_string for trajectory projection)
+CREATE TABLE route_waypoints (
+  id            BIGSERIAL PRIMARY KEY,
+  plan_id       UUID REFERENCES flight_plans(plan_id),
+  sequence_num  INT NOT NULL,
+  fix_name      VARCHAR(10) NOT NULL,               -- "BETTE", "JFK", "V23"
+  lat           FLOAT8 NOT NULL,
+  lon           FLOAT8 NOT NULL,
+  alt_ft        INT,                                -- assigned altitude at this fix
+  eta_offset_s  INT                                 -- seconds from departure
+);
+CREATE INDEX idx_route_waypoints_plan ON route_waypoints(plan_id, sequence_num);
+
+-- Active conflicts (written by conflict engine, read by alert service)
+CREATE TABLE active_conflicts (
+  conflict_id   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  flight_a      VARCHAR(10) NOT NULL,
+  flight_b      VARCHAR(10) NOT NULL,
+  detected_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  cpa_time      TIMESTAMPTZ,                        -- projected time of closest approach
+  cpa_dist_nm   FLOAT4,                             -- projected min separation in NM
+  cpa_vert_ft   INT,                                -- projected vertical separation in ft
+  severity      VARCHAR(10) NOT NULL,               -- CRITICAL | HIGH | MEDIUM | INFO
+  sector_id     VARCHAR(20),
+  resolved_at   TIMESTAMPTZ,
+  resolution    TEXT,                               -- "altitude change by UAL123"
+  UNIQUE (flight_a, flight_b, detected_at)
+);
+CREATE INDEX idx_active_conflicts_severity ON active_conflicts(severity, resolved_at);
+```
+
+### InfluxDB: Historical Radar Tracks (time-series)
+
+```
+Measurement: radar_track
+Tags (indexed):
+  flight_id   "UAL123"
+  sector_id   "NEYE_HIGH"
+  data_source "ADS-B"
+Fields:
+  lat           40.1234
+  lon          -74.5678
+  alt_ft        35000
+  speed_kts     480.0
+  heading_deg   270.0
+  uncertainty_m 12.5
+Timestamp: 1711800000000000000  (nanosecond precision)
+
+Retention policy: 90 days raw (2,000 writes/sec × 200B × 86400s = 34GB/day → 3TB/quarter)
+Downsampled: 1-year aggregates (1 point/minute per flight) for accident investigation
+```
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| 2x baseline (20,000 flights) | Kafka consumer lag | Position data arrives stale; conflict alerts delayed | Add Kafka partitions (by sector_id); scale consumer instances horizontally |
+| 5x baseline (50,000 flights) | Redis read throughput | HGET latency spikes from <1ms to 10–50ms; Kalman filter inputs delayed | Redis Cluster with 5+ shards; pipeline multi-HGET per sector batch |
+| 10x baseline (100,000 flights) | Alert WebSocket fan-out | Alert Service can't sustain 1,000 concurrent WebSocket connections at <1s latency | Alert Service horizontal scaling behind L4 load balancer; sticky sessions per sector |
+| 50x baseline (500,000 flights) | Sector manager query performance | Sector assignment queries on PostgreSQL saturate connection pool | Shard flight_plans table by region; cache sector assignments in Redis per flight |
+| 100x baseline (1,000,000 flights) | InfluxDB write path | Write buffer overflow; track data lost | Kafka-backed write buffer; InfluxDB cluster with write sharding by flight_id hash |
+
+Realistic ceiling for a single regional ATC facility: approximately 5,000–8,000 simultaneous aircraft. At the FAA ARTCC (Air Route Traffic Control Center) level, a single center handles 1,000–3,000 aircraft in its airspace at peak. Global scope (10,000+ flights) requires a federated architecture where individual ARTCC systems coordinate via the SWIM (System Wide Information Management) protocol rather than a single monolithic deployment.
+
+---
+
+## How the FAA Built NextGen
+
+The FAA's **NextGen** program, launched in 2007 and still being deployed, is the real-world implementation of the architecture described in this article. By 2024, the FAA had equipped over 50,000 aircraft with ADS-B Out transponders and deployed 700+ ADS-B ground stations covering the contiguous United States.
+
+**Technology choices**: The FAA chose a publish-subscribe architecture for position data distribution, implemented through the SWIM (System Wide Information Management) bus — a standards-based messaging backbone (JMS/AMQP) that allows ATC automation systems, airlines, and approved third parties to subscribe to position feeds. This replaces point-to-point radar data circuits with a shared data bus, reducing integration complexity for each new consumer.
+
+**Specific numbers**: ADS-B ground stations process approximately 10 million position messages per hour across the National Airspace System (NAS) — roughly 2,800 messages/second. The Traffic Flow Management System (TFMS) ingests this data and runs a national-level conflict prediction model that looks 3–8 hours ahead, coordinating ground stops and departure metering to prevent sector overloads before they occur.
+
+**Non-obvious architectural decision**: The FAA deliberately kept radar (PSR/SSR) operational alongside ADS-B rather than shutting it down. The reason: ADS-B depends on the aircraft's own GPS receiver and transponder. If a pilot inadvertently turns off the transponder, or a GPS jamming/spoofing event occurs, the aircraft becomes invisible to ADS-B but still appears on independent radar. The fusion of independent sensor types (radar detects without aircraft cooperation; ADS-B provides accurate self-reported data) creates a defense-in-depth position system that no single point of failure can blind.
+
+**Source**: FAA NextGen Implementation Plan 2024 (faa.gov/nextgen) and FAA ADS-B Rule (14 CFR Part 91.225).
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** Whether you can reason about a safety-critical, hard-real-time system where failure means human casualties. They want to see that you apply different availability, consistency, and latency standards than you would for a consumer app — and that you understand the operational constraints (controllers, sectors, airspace) that drive technical decisions.
+
+**Common mistakes candidates make:**
+
+1. **Designing for active-active replication.** Many candidates default to "multi-region active-active" for high availability. In ATC, active-active introduces split-brain risk — two nodes disagree on which controller owns a sector or which alert has been acknowledged. For safety-critical systems, hot standby with deterministic single-primary is the correct pattern.
+
+2. **Ignoring the human loop.** Candidates design the system as if alerts are automatically resolved. In reality, the controller is the decision-maker — the system's job is to give them accurate information fast enough to act. Design questions like "what happens if the controller doesn't respond in 30 seconds?" reveal whether you understand that the system exists to support humans, not replace them.
+
+3. **Global O(N²) conflict detection.** Almost every candidate who hasn't thought about this first suggests checking all pairs globally. With 10,000 flights, that's 50 million pair checks every 5 seconds — infeasible. The insight is that two aircraft 3,000 miles apart cannot possibly collide in the next 20 minutes, so spatial partitioning (sectors) is the natural optimization. Get to this quickly.
+
+**The insight that separates good from great answers:** Recognizing that alert fatigue is as dangerous as missed alerts. An ATC system that generates too many false positive alerts trains controllers to ignore alerts — which is the direct cause of the TCAS (Traffic Collision Avoidance System) being added to aircraft themselves as a last-resort backstop when ground ATC fails. The deduplication and suppression logic is not a nice-to-have UX feature; it is a safety requirement.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| ICAO horizontal separation minimum | 5 nm (radar: 3 nm) | Below this distance → conflict alert required |
+| ICAO vertical separation minimum | 1,000 ft (RVSM: 1,000 ft above FL290) | Standard separation in cruise |
+| Radar update rate (SSR) | 1 sweep / 4–10 seconds | Drives the 5-second conflict scan window |
+| ADS-B position accuracy | ±10 m (GPS) vs ±100 m (PSR) | 10x accuracy improvement over legacy radar |
+| ADS-B update rate | 2 Hz (every 500 ms) | 10x more frequent than radar sweeps |
+| Conflict detection horizon | 20 minutes | Beyond this, flight plan changes make prediction unreliable |
+| Pair checks per sector scan | 190 pairs (20 aircraft per sector) | Per-sector optimization reduces 50M global pairs to 95k |
+| Alert latency requirement | < 1 second detection-to-display | Non-negotiable; drives push delivery over pull |
+| System availability target | 99.9999% (six nines) | ~32 seconds downtime per year allowed |
+| FAA ADS-B network throughput | ~2,800 position messages/sec | Covers full US NAS with 700+ ground stations |
+| Hot standby failover time | < 2 seconds | Beyond this, controllers notice a gap in position data |
+| Historical track retention | 90 days raw, 1 year downsampled | Accident investigation requirement (ICAO Annex 11) |
+
+---
+
 ## 📚 Resources & References
 
 | Resource | Type | What You'll Learn |
