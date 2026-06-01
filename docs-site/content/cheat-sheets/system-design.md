@@ -1283,4 +1283,109 @@ flowchart TD
 
 ---
 
-*Last updated: 2026-03-27*
+---
+
+## 17. Capacity Planning, Serverless, Platform Engineering & Interview Level Signals
+
+### Capacity Planning Quick Reference
+**Capacity planning** — sizing infrastructure headroom before traffic kills you
+
+| Resource | Target (normal) | Target (peak) | Rule |
+|----------|----------------|---------------|------|
+| CPU | ≤70% sustained | ≤85% burst | 3× headroom rule |
+| Memory | ≤70% used | ≤85% | Keep 30% free |
+| Storage | Current usage | Project 18 months out | 20% monthly growth doubles in 3-4 months |
+| Network | ≤60% link capacity | ≤80% | Burst headroom for retries |
+
+- **Key number:** 20% monthly growth = capacity doubles every **3–4 months** (rule of 72: 72 ÷ 20 ≈ 3.6)
+- **Decision:** Use 3× headroom for stateless compute (cheap to over-provision); 1.5× for storage (expensive at scale)
+- **Trap:** Planning capacity for average load, not peak — Twitter Super Bowl: pre-scale 1h before kickoff; peak is 10–100× average for event-driven systems
+
+---
+
+### Serverless Limits to Memorize
+**Serverless limits** — AWS Lambda cold start, concurrency, and break-even thresholds
+
+| Runtime | Cold start | Warm invoke |
+|---------|-----------|-------------|
+| Go | ~50ms | <1ms |
+| Node.js | ~200ms | <1ms |
+| Python | ~300ms | <1ms |
+| JVM (Java/Kotlin) | **3–10s** | <5ms |
+
+| Limit | Default | Max (requestable) |
+|-------|---------|------------------|
+| Concurrent executions / region | **1,000** | 10,000+ |
+| Burst concurrency / min | **3,000** | — |
+| Max execution duration | **15 min** | — |
+
+- **Key number:** JVM cold start = **3–10s** — use Provisioned Concurrency or switch runtime for latency-sensitive paths
+- **Decision:** Serverless when utilization <30% of equivalent EC2; EC2/containers when sustained utilization >30% (break-even point)
+- **Trap:** Not accounting for concurrent execution limits — 1,000/region default; a traffic spike triggers `TooManyRequestsException` without requesting a limit increase in advance
+
+---
+
+### Platform Engineering DORA Metrics
+**DORA metrics** — four signals that predict software delivery performance
+
+| Metric | Elite | High | Medium | Low |
+|--------|-------|------|--------|-----|
+| Deployment frequency | Multiple/day | Weekly | Monthly | Every 6+ months |
+| Lead time for changes | **<1h** | <1 week | 1–6 months | >6 months |
+| MTTR (mean time to restore) | **<1h** | <1 day | 1–7 days | >6 months |
+| Change failure rate | **<15%** | <30% | 16–30% | >45% |
+
+- **Key number:** IDP (Internal Developer Platform) adoption → **25% faster onboarding** for new engineers (DORA 2023 report)
+- **Decision:** Invest in self-service platform tooling when dev teams >10; the overhead of shared-ops hand-offs costs more than platform build
+- **Trap:** Optimizing deployment frequency without improving MTTR — shipping faster with no fast recovery amplifies blast radius; fix your rollback story first
+
+---
+
+### Multi-Tenancy Decision
+**Multi-tenancy models** — database isolation trade-offs for SaaS products
+
+| Model | Isolation | Cost | Max tenants | Use when |
+|-------|-----------|------|-------------|---------|
+| **Database-per-tenant** | Full (separate DB) | High | ~1,000s | Strict compliance, large enterprise |
+| **Schema-per-tenant** | Strong (schema separation) | Medium | ~10,000s | Mid-market SaaS |
+| **Shared schema + RLS** | Soft (row-level security) | Low | **100,000+** | SMB/high-volume SaaS |
+
+- **Key number:** Shared schema breaks at >**10k tenants** due to index bloat; Salesforce runs 150k+ orgs on shared Oracle DB with custom partitioning since 1999
+- **Decision:** Database-per-tenant when GDPR data residency or contractual isolation is required; shared schema with RLS for cost-efficient high-volume multi-tenancy
+- **Trap:** Starting with database-per-tenant "for safety" — operationally unsustainable at 1,000+ tenants (connection limits, migration complexity); design your isolation level for your target scale from day 1
+
+---
+
+### Incident Response Numbers
+**Incident response** — target SLAs for detection, resolution, and post-mortems
+
+| Stage | Elite target | Metric |
+|-------|-------------|--------|
+| MTTD (mean time to detect) | **<5 min** | Alert → on-call page |
+| MTTR P1 | **<30 min** | Page → service restored |
+| Post-mortem | **within 48h** | While memory is fresh |
+| Fast burn alert | 2% of error budget in 1h | Triggers P1 page |
+| Slow burn alert | 5% of error budget in 6h | Triggers P2 ticket |
+
+- **Key number:** Fast burn = consuming **2% of 30-day error budget in 1 hour** — at 99.9% SLO that's ~43 min/month budget, meaning 52 seconds of failure in 1 hour triggers the alert
+- **Decision:** Use multi-window burn-rate alerts (1h + 6h windows) over static threshold alerts — reduces false positives by ~80% compared to raw error rate alerts
+- **Trap:** Writing post-mortems beyond 48h post-incident — engineers forget precise timeline and causal chain; blameless post-mortem template must be filled within 48h while the on-call engineer still recalls the sequence
+
+---
+
+### Staff vs Senior Interview Signals
+**Staff vs senior signals** — what interviewers look for at each engineering level
+
+| Level | Scope | Key signal | Sample answer shape |
+|-------|-------|-----------|---------------------|
+| **Senior** | Component / service | Technical trade-offs with numbers | "I'd choose X over Y because latency is 10ms vs 50ms and we're write-heavy" |
+| **Staff** | System / org | Org trade-offs + migration path | "I'd choose X, and here's how we migrate 3 teams off the old system in 2 sprints" |
+| **Principal** | Problem definition | Defines the problem before solving it | "Before we design this, let me challenge whether we need this component at all" |
+
+- **Key number:** Staff-level answers include org buy-in strategy — **>50% of staff interviews** are failed on the "how do you get teams to adopt this?" question, not the technical answer
+- **Decision:** Senior → optimize for correctness; Staff → optimize for adoption + reversibility; Principal → optimize for problem framing
+- **Trap:** Treating a staff-level design question as a pure technical exercise — interviewers at staff level explicitly want to hear migration path, team impact, and rollback plan; a technically perfect design with no adoption strategy scores below a "good enough" design with a clear rollout plan
+
+---
+
+*Last updated: 2026-06-01*

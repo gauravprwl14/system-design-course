@@ -626,3 +626,92 @@ graph LR
 - **Decision**: Preload from DB for known hot sets (top-N products, feature flags, user sessions for active users); canary rollout to let new instances warm before receiving full traffic
 - **Trap**: `FLUSHALL` in production without a warming plan — same as cold start but mid-traffic at peak; always use key-level invalidation (`DEL key`) instead of full flush
 - → [Full article](../12-interview-prep/question-bank/caching-performance/cache-warming-strategies)
+
+---
+
+## 14. Advanced Caching Patterns
+
+### Cache Stampede — Probabilistic Early Expiration Formula
+
+**Cache stampede prevention** — eliminate dog-pile without locks using XFetch algorithm
+
+| Solution | Lock needed | Latency overhead | Complexity |
+|-|-------------|-----------------|-----------|
+| **Redis mutex (SETNX)** | Yes | Wait time for blocked requests | Low |
+| **Probabilistic early expiry (XFetch)** | No | Slight over-refresh before TTL | Medium |
+| **Stale-while-revalidate** | No | None (serves stale) | Low |
+| **Singleflight** | No (dedup at app layer) | None for concurrent duplicates | Medium |
+
+- **Key number:** XFetch formula — refresh when `current_time - delta × beta × ln(rand()) > expiry_time`; simplified: refresh early at `TTL × (1 - random × 0.1)` to spread recomputation across 10% of TTL window
+- **Decision:** Use mutex when you need exactly one rebuild; use XFetch/probabilistic when near-zero extra DB load matters more than occasional over-refresh; use singleflight (Go `golang.org/x/sync/singleflight`) to coalesce identical in-flight requests at app layer
+- **Trap:** Adding jitter to TTL alone does NOT prevent stampede for a single ultra-hot key — jitter helps when many keys expire simultaneously, but one hot key still needs mutex or XFetch
+
+---
+
+### CDN Edge Compute
+
+**CDN edge compute** — running logic at edge nodes vs origin Lambda for sub-10ms global response
+
+| | Cloudflare Workers | Lambda@Edge |
+|-|-------------------|------------|
+| **Cold start** | **0ms** (always warm, V8 isolates) | **~100ms** cold start |
+| **Runtime** | V8 JavaScript (no Node.js APIs) | Node.js / Python / full runtime |
+| **Max CPU time** | 50ms (free), 30s (paid) | 30s |
+| **Memory** | 128 MB | 128–10,240 MB |
+| **Location** | 300+ PoPs globally | CloudFront edge (~50 locations) |
+| **DB access** | No direct DB (use KV, Durable Objects) | No direct DB (stateless, no VPC) |
+| **Pricing** | $0.15/million requests | $0.60/million requests + Lambda duration |
+| **Use for** | Auth checks, redirects, A/B testing, response transforms | Heavy compute, large packages, AWS service integration |
+
+- **Key number:** Cloudflare Workers cold start = **0ms** (V8 isolates pre-warmed); Lambda@Edge cold start = **~100ms**; edge latency to user = **<10ms** vs origin ~100–500ms
+- **Decision:** Use Workers for stateless transforms (auth header injection, geo-redirects, A/B flags, request coalescing); use Lambda@Edge when you need full Node.js runtime or AWS SDK; use neither for anything requiring a DB connection (stateless only at edge)
+- **Trap:** Trying to connect to a database from edge functions — no persistent connections, no VPC access at edge; use Cloudflare KV (eventual) or Durable Objects (strong) for edge-local state
+
+---
+
+### Multi-Layer Cache Coherence (Invalidation Ordering)
+
+**Multi-layer cache coherence** — correct invalidation order across L1 → L2 → L3 to prevent stale reads
+
+| Layer | Tool | Latency (hit) | Miss adds |
+|-|------|--------------|----------|
+| **L1 — in-process** | Node.js LRU Map | <0.1ms | +0.5ms to L2 |
+| **L2 — distributed** | Redis | 0.3–2ms | +5–50ms to origin |
+| **L3 — CDN edge** | CloudFront / Cloudflare | <10ms | +100–500ms to origin |
+
+**Correct invalidation order (write propagation):**
+```
+1. Write to DB (source of truth)
+2. Invalidate L3 CDN  (CloudFront CreateInvalidation)
+3. Invalidate L2 Redis (DEL key or publish invalidation event)
+4. Invalidate L1 in-process (broadcast via Redis pub/sub to all app instances)
+```
+**Wrong order (stale read window):** Invalidate L1 first → L2 still serves stale → L1 re-populates with stale L2 data before L2 is invalidated.
+
+- **Key number:** L1 miss → L2 lookup adds **0.5ms**; L2 miss → origin adds **5–50ms**; L3 CDN miss → origin adds **100–500ms**; invalidate outermost layer first (CDN → Redis → in-process)
+- **Decision:** Use Redis pub/sub to broadcast L1 invalidations to all app instances in real time; set L1 TTL ≤ 30s as safety net even with pub/sub invalidation; set L3 CDN `stale-while-revalidate` only for truly public non-personalized content
+- **Trap:** Invalidating L1 in-process on one app instance but forgetting to broadcast to the other 49 instances — each server has a stale in-process copy; pub/sub broadcast is required for fleet-wide consistency
+
+---
+
+### Write-Around Cache Pattern
+
+**Write-around** — writes bypass the cache entirely; cache populated only on read
+
+| Pattern | Write path | Cache populated by | Data loss risk | Best for |
+|-|------------|-------------------|---------------|---------|
+| **Write-through** | Cache + DB (sync) | Every write | None | Read-heavy, always-fresh data |
+| **Write-behind** | Cache (async to DB) | Every write | **Yes** — crash before flush | High-throughput, loss-tolerant writes |
+| **Write-around** | DB only (bypass cache) | Read on cache miss | None | Write-heavy data rarely re-read |
+
+**When write-around causes problems:**
+- Freshly written data is NOT in cache → next read = cache miss → DB hit → adds latency for the writing user
+- High write + high immediate-read patterns → 100% miss on own writes (e.g., feed write then instant feed read)
+
+**When write-around is correct:**
+- Log ingestion, audit trails, batch imports — written once, read rarely or in bulk queries
+- Large media uploads — written to S3/blob store, cached only when served
+
+- **Key number:** Write-around = 0 cache pollution on write; first read after write = **100% cache miss** (always hits DB); use when write-to-read ratio > 10:1 for that data type
+- **Decision:** Write-through when the writing user will immediately read back; write-around when data is write-heavy and rarely accessed again (audit logs, bulk imports, media); write-behind when throughput matters more than durability (counters, metrics)
+- **Trap:** Using write-around for user profile updates — user writes profile change, immediately reads it back, gets cache miss, DB hit returns stale (replication lag), or causes N-fold DB load spike; use write-through or explicit cache update for any write the user immediately reads

@@ -642,3 +642,113 @@ graph TD
 - **Decision**: WAL-based PITR (PostgreSQL) for RPO <5 min without hot standby cost; hot standby for RTO <30 seconds
 - **Trap**: Testing backups only by taking them, never by restoring — restoring from a corrupt backup during an incident is the worst time to discover it fails; run quarterly restore drills
 - → [Full article](../12-interview-prep/question-bank/databases/database-backup-recovery)
+
+---
+
+### Multi-Tenancy Patterns
+**Multi-tenancy** — 3 isolation models with row-level security trade-offs for SaaS
+
+| | Shared Tables | Separate Schemas | Isolated DB |
+|-|--------------|-----------------|-------------|
+| Tenant density | 10K+ per DB | 100–1K per DB | 1 per DB |
+| Data isolation | App-enforced (RLS) | Schema-level | Full |
+| Cost per tenant | Lowest | Medium | $50–500/mo (RDS) |
+| Noisy neighbor risk | High | Medium | None |
+| Migration complexity | Simple (shared DDL) | Per-schema rollout | Per-DB rollout |
+
+- **Key number:** RLS overhead <5% when `tenant_id` index exists; without index, RLS causes full table scans
+- **Decision:** Use shared tables + RLS for SMB SaaS (1K–100K tenants) / isolated DB only for enterprise with SOC2/HIPAA compliance requirements
+- **Trap:** Relying on app-level `WHERE tenant_id = ?` alone — one missing filter leaks all tenants' data; enforce RLS at DB level: `ALTER TABLE orders ENABLE ROW LEVEL SECURITY`
+
+---
+
+### Zero-Downtime Migrations
+**Zero-downtime migrations** — expand-contract pattern for schema changes on 100M+ row tables
+
+| | gh-ost | pt-osc |
+|-|--------|--------|
+| Mechanism | Binary log streaming (no triggers) | Triggers on source table |
+| Pauseable | Yes (throttle mid-run) | Limited |
+| Replication impact | Low (async binlog) | Higher (trigger overhead) |
+| Safe throughput | **50K rows/min** | ~20K rows/min |
+| Best for | Large tables >10GB, high write rate | Simpler setup, smaller tables |
+
+**Expand-contract pattern — 4 phases:**
+1. **Expand**: Add new column (nullable, no constraint)
+2. **Dual-write**: App writes to both old + new column
+3. **Backfill**: Migrate existing rows to new column (gh-ost/pt-osc)
+4. **Contract**: Drop old column once reads switched to new
+
+- **Key number:** gh-ost safe rate 50K rows/min → 2 billion rows = ~11 hours; plan maintenance window accordingly
+- **Decision:** Use gh-ost when table >10GB or write rate >1K TPS; pt-osc for simpler one-off migrations on smaller tables
+- **Trap:** Running `ALTER TABLE` directly on 100M+ row tables — holds `ACCESS EXCLUSIVE` lock for minutes, blocking all reads/writes; always use online DDL tools
+
+---
+
+### Change Data Capture (CDC)
+**CDC** — stream database changes to downstream systems with <1s latency
+
+| | Debezium (WAL-based) | Triggers | Polling |
+|-|---------------------|----------|---------|
+| Latency | **<1s end-to-end** | <100ms | 1s–60s |
+| DB overhead | Low (log tailing) | High (per-row trigger) | Low–Medium |
+| Missed events | Never (WAL is durable) | Possible (trigger errors) | Possible (race) |
+| Schema changes | Handled automatically | Manual trigger update | Manual query update |
+| Setup complexity | Medium (Kafka + connector) | Low | Low |
+
+**WAL-based vs trigger-based:**
+- WAL: reads Postgres/MySQL replication stream — no app changes needed, zero write amplification
+- Triggers: fire SQL on every INSERT/UPDATE/DELETE — adds latency to every write path
+
+- **Key number:** Debezium latency <1s end-to-end (WAL tail → Kafka → consumer); trigger-based CDC adds 10–30% write overhead
+- **Decision:** Use Debezium + Kafka for event-driven microservices, audit logs, search indexing, cache invalidation; use polling only for simple low-frequency sync (< 1K events/min)
+- **Trap:** Using triggers for CDC on high-write tables — triggers execute synchronously in the write transaction, adding latency to every insert; switch to WAL-based CDC for write-heavy workloads
+
+---
+
+### Capacity Planning for Databases
+**Capacity planning** — connection pool sizing, storage growth, and CPU utilization formulas
+
+| Resource | Formula / Rule | Notes |
+|----------|---------------|-------|
+| **Connection pool size** | `cores × 2 + disk_spindles` | HikariCP default; SSDs count as 1 spindle |
+| **Max DB connections** | `pool_size × app_instances < DB_max_conn` | PostgreSQL default max: 100 |
+| **Storage growth** | `avg_row_bytes × daily_inserts × days × 1.3` (30% index overhead) | Add WAL/temp space buffer |
+| **RAM for buffer pool** | Target: 80–90% of working set fits in RAM | Check `pg_statio_user_tables` cache hit ratio |
+| **CPU sweet spot** | **80% sustained utilization** | Above 80% → queueing delays compound nonlinearly |
+
+**Storage growth example:**
+```
+1KB row × 100K inserts/day × 365 days × 1.3 overhead = ~47 GB/year
+```
+
+- **Key number:** PostgreSQL sweet spot is 80% CPU utilization; above that, query latency degrades nonlinearly due to I/O and lock contention
+- **Decision:** Pool size = `(cores × 2) + spindles` for CPU-bound workloads; increase only if queries are I/O-bound (check `pg_stat_activity` wait events)
+- **Trap:** Setting pool size = max DB connections ÷ app instances — ignores that most connections are idle; use PgBouncer transaction mode to multiplex 10K app connections onto 50 real DB connections
+
+---
+
+### MVCC and Isolation Levels
+**MVCC** — how databases prevent read/write conflicts using snapshot versions instead of locks
+
+**Anomaly prevention by isolation level:**
+
+| Isolation Level | Dirty Read | Non-Repeatable Read | Phantom Read | Lost Update | Write Skew |
+|----------------|-----------|--------------------|--------------|-----------:|----------:|
+| READ UNCOMMITTED | Possible | Possible | Possible | Possible | Possible |
+| READ COMMITTED (PG default) | Prevented | Possible | Possible | Possible | Possible |
+| REPEATABLE READ (MySQL default) | Prevented | Prevented | Possible* | Prevented | Possible |
+| **SERIALIZABLE** | Prevented | Prevented | Prevented | Prevented | Prevented |
+
+*PostgreSQL REPEATABLE READ also prevents phantoms via MVCC snapshots.
+
+**When to use SERIALIZABLE:**
+- Financial double-spend prevention (account balance checks)
+- Inventory reservation (last-item race conditions)
+- Anywhere write skew would cause incorrect business outcomes
+
+**MVCC mechanics:** Each row version has `xmin`/`xmax` transaction IDs. Readers see consistent snapshot from transaction start — no read locks, writers don't block readers.
+
+- **Key number:** SERIALIZABLE adds 10–20% throughput overhead in PostgreSQL (SSI implementation); old MVCC table bloat from long-running transactions can cause `pg_toast` table growth — run `VACUUM` regularly
+- **Decision:** READ COMMITTED for most web APIs; REPEATABLE READ for inventory/booking systems; SERIALIZABLE only for strict financial consistency where write skew is unacceptable
+- **Trap:** Using `SELECT FOR UPDATE` to simulate serializable behavior across multiple rows — this works for single-row locks but misses write skew anomalies across rows; use SERIALIZABLE isolation for multi-row consistency invariants
