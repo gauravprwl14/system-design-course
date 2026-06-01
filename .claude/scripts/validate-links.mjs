@@ -12,9 +12,17 @@
  */
 
 import { readFileSync, existsSync, statSync } from 'node:fs';
+import { glob as fsGlob } from 'node:fs/promises';
 import { join, dirname, resolve as resolvePath, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { glob } from 'glob';
+
+const glob = async (pattern, { cwd, absolute }) => {
+  const results = [];
+  for await (const entry of fsGlob(pattern, { cwd, absolute })) {
+    results.push(entry);
+  }
+  return results;
+};
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, '../../');
