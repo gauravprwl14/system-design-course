@@ -827,3 +827,68 @@ graph TD
 ---
 
 *Last updated: 2026-03-27*
+
+---
+
+### Lambda Limits Reference
+**AWS Lambda** — limits every engineer must know before designing serverless systems
+
+| Limit | Value | Design Implication |
+|-------|-------|--------------------|
+| Max execution time | **15 minutes** | Long tasks → Step Functions or ECS Fargate |
+| Max memory | **10 GB** | Also controls vCPU allocation (1792MB = 1 vCPU) |
+| Max payload (sync) | **6 MB** | Large payloads → put in S3, pass reference |
+| Max payload (async) | **256 KB** | SQS message max for Lambda trigger |
+| Deployment package | **50 MB zip / 250 MB unzipped** | Large deps → Lambda Layers |
+| /tmp storage | **10 GB** (ephemeral) | Temp files only — not persistent |
+| Concurrent executions | **1,000 default/region** | Request quota increase before launch |
+| Burst limit | **3,000/min** | Sudden traffic spike → SQS buffer + Lambda |
+| API Gateway timeout | **29 seconds** | Async pattern for slow Lambda behind API GW |
+
+**Cold starts by runtime**: Go 50ms | Node.js 200ms | Python 300ms | JVM 3-10s
+- **Mitigation**: Provisioned Concurrency (cost: $0.0000041/GB-hour) eliminates cold starts
+- **Lambda SnapStart** (JVM): restore from snapshot, 90% cold start reduction for Java
+- **Decision**: Lambda wins vs EC2 below ~30% utilization; above that EC2 Reserved is cheaper
+- **Key number**: Lambda $0.0000166/GB-second; 1M invocations/month at 256MB × 500ms = ~$1.07
+- **Trap**: Not setting reserved concurrency — without it, one Lambda can exhaust the entire account limit (1000), starving other functions
+
+---
+
+### EKS vs ECS vs Fargate Decision
+**Container orchestration on AWS** — when to use each
+
+| | EKS | ECS | Fargate |
+|-|-----|-----|---------|
+| **Control plane cost** | $0.10/hr ($73/mo) | Free | N/A |
+| **Ecosystem** | Kubernetes (OSS, multi-cloud) | AWS-native | Serverless containers |
+| **Operational overhead** | High (k8s expertise needed) | Low | Minimal |
+| **Portability** | High (runs anywhere) | Low (AWS-only) | Low (AWS-only) |
+| **Node management** | You manage EC2 nodes | You manage EC2 nodes | AWS manages nodes |
+| **Startup time** | 10-60s | 10-30s | 30-90s (slower) |
+| **Networking** | VPC CNI / Calico / Cilium | awsvpc (1 ENI/task) | awsvpc |
+
+- **Use EKS when**: multi-cloud portability matters, heavy OSS ecosystem (Istio, Argo, Flux), team has Kubernetes expertise
+- **Use ECS when**: AWS-only, simpler ops, tight AWS integration (ELB, IAM, CloudWatch native)
+- **Use Fargate when**: ops-light, spiky workloads, don't want to manage nodes at all (pay ~30% premium vs EC2)
+- **Key number**: EKS control plane is $73/month flat — cost-effective at >3 nodes; break-even vs ECS at medium scale
+- **Trap**: Using Fargate for always-on high-RPS services — Fargate's 30-90s cold start (task launch) and 30% price premium hurts for steady-state workloads
+
+---
+
+### S3 Storage Tiers
+**S3 storage classes** — tiering by access frequency
+
+| Tier | $/GB/month | Min storage | Retrieval | Use for |
+|------|-----------|-------------|-----------|---------|
+| Standard | $0.023 | None | Immediate | Hot data, frequent access |
+| Intelligent-Tiering | $0.023 + $0.0025/1k objects | 30 days | Immediate | Unknown access patterns |
+| Standard-IA | $0.0125 | 30 days | Immediate | Monthly backups |
+| One Zone-IA | $0.01 | 30 days | Immediate | Reproducible data (non-critical) |
+| Glacier Instant | $0.004 | 90 days | Milliseconds | Quarterly archives |
+| Glacier Flexible | $0.0036 | 90 days | Minutes-hours | Annual compliance archives |
+| Glacier Deep Archive | $0.00099 | 180 days | 12 hours | 7-year regulatory retention |
+
+- **Key number**: Standard → Deep Archive = **23× cheaper** per GB, but 12h retrieval
+- **Decision**: Lifecycle policy — transition to Standard-IA after 30 days, Glacier after 90 days, Deep Archive after 365 days
+- **Trap**: Retrieving many small objects from Glacier — per-request retrieval costs add up; batch into larger archives before archiving
+

@@ -11,5 +11,6 @@ export default {
   "chaos-engineering": "Chaos Engineering",
   "cqrs-pattern": "CQRS Pattern",
   "contract-testing": "Contract Testing",
-  "integration-testing": "Integration Testing"
+  "integration-testing": "Integration Testing",
+  "strangler-fig-migration-poc": "Strangler Fig Migration POC"
 }

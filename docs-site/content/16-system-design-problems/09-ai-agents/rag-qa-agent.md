@@ -767,6 +767,413 @@ def dedup_by_document_version(chunks: list[Chunk]) -> list[Chunk]:
 
 ---
 
+## Agent Architecture
+
+The RAG Q&A agent processes every incoming request through a deterministic pipeline with conditional branches. Unlike open-ended LLM agents that can call arbitrary tools in loops, a RAG agent follows a fixed retrieval-then-generate pattern — with one critical decision gate: whether the knowledge base contains sufficient evidence to answer at all.
+
+```mermaid
+flowchart TD
+    Start([User Query]) --> RateLimit{Rate Limit\nCheck}
+    RateLimit -->|Exceeded| Reject[429 Too Many Requests]
+    RateLimit -->|OK| SemanticCache{Semantic\nCache Hit?\n≥0.95 sim}
+    SemanticCache -->|HIT| CachedResp[Return Cached Answer\n+ cached citations\n~2ms total]
+    SemanticCache -->|MISS| QueryExpand[Query Processor\n- Spell correction\n- Keyword extraction\n- HyDE expansion if sim<0.60]
+    QueryExpand --> EmbedQuery[Embed Query\ntext-embedding-3-small\n1536-dim, ~1ms]
+    EmbedQuery --> ParallelSearch{Parallel\nRetrieval}
+    ParallelSearch --> VecSearch[Vector ANN Search\nHNSW top-20\n~20ms]
+    ParallelSearch --> BM25Search[BM25 Keyword Search\nElasticsearch top-20\n~5ms]
+    VecSearch --> RRFMerge[RRF Fusion\nMerge → top-30 candidates\n<1ms]
+    BM25Search --> RRFMerge
+    RRFMerge --> ConfidenceGate{Top-1 chunk\ncosine ≥ 0.70?}
+    ConfidenceGate -->|NO| OutOfScope[Return out-of-scope\n'I don't have information on this'\nLog as coverage gap]
+    ConfidenceGate -->|YES| Rerank[Cross-Encoder Reranking\nCohere rerank-v3\ntop-30 → top-5\n~40ms]
+    Rerank --> VersionDedup[Version Dedup\nKeep latest chunk\nper doc_id]
+    VersionDedup --> CtxAssemble[Context Assembly\nBuild prompt:\nsystem_prompt + top-5 + query\n~3,590 tokens total]
+    CtxAssemble --> LLMCall[LLM Call\nGPT-4o mini or Claude Haiku\nStreaming SSE, TTFT ~400ms\nfull response ~1,400ms]
+    LLMCall --> GroundCheck[Groundedness Check\nNLI entailment async\nDoes answer follow from chunks?]
+    GroundCheck -->|score≥0.80| FinalResp[Return Answer\n+ citations + confidence]
+    GroundCheck -->|0.50-0.79| Disclaimer[Return Answer\n+ 'based on available info' disclaimer]
+    GroundCheck -->|score<0.50| Suppressed[Return 'insufficient information'\nLog for editorial review]
+    FinalResp --> CacheWrite[Write to Semantic Cache\nTTL: 1h dynamic / 24h static]
+    CacheWrite --> Done([Response to User])
+```
+
+**Why this agent does not loop**: Agentic loops (where the model decides what tool to call next) add unpredictable latency (each extra LLM call = 1-5s) and cost. For a Q&A use case with a bounded knowledge base, a deterministic pipeline with explicit confidence gates produces better latency SLAs and is far easier to debug and audit.
+
+---
+
+## Tool/Function Registry
+
+The RAG agent exposes a small, well-scoped set of tools. Each tool has strict input validation and timeout budgets so that a single slow tool cannot blow the total latency SLA.
+
+```mermaid
+classDiagram
+    class ToolRegistry {
+        +tools: dict[str, Tool]
+        +register(name, tool): void
+        +call(name, params): ToolResult
+        +list_tools(): list[ToolSchema]
+    }
+
+    class EmbeddingTool {
+        +name: "embed_text"
+        +model: "text-embedding-3-small"
+        +max_tokens: 8192
+        +timeout_ms: 100
+        +call(text: str): float[1536]
+    }
+
+    class VectorSearchTool {
+        +name: "vector_search"
+        +index: PineconeIndex
+        +top_k: 20
+        +timeout_ms: 50
+        +call(vector, namespace, filter): list[Chunk]
+    }
+
+    class KeywordSearchTool {
+        +name: "keyword_search"
+        +client: ElasticsearchClient
+        +top_k: 20
+        +timeout_ms: 30
+        +call(query, index): list[Chunk]
+    }
+
+    class RerankerTool {
+        +name: "rerank"
+        +model: "cohere-rerank-v3"
+        +top_n: 5
+        +timeout_ms: 100
+        +call(query, documents): list[RankedChunk]
+    }
+
+    class LLMTool {
+        +name: "generate_answer"
+        +model: "gpt-4o-mini"
+        +max_output_tokens: 500
+        +timeout_ms: 3000
+        +streaming: true
+        +call(system_prompt, context, query): AsyncStream
+    }
+
+    class GroundnessTool {
+        +name: "check_groundedness"
+        +model: "cross-encoder/nli-deberta-v3-small"
+        +timeout_ms: 200
+        +call(answer, chunks): float
+    }
+
+    ToolRegistry --> EmbeddingTool
+    ToolRegistry --> VectorSearchTool
+    ToolRegistry --> KeywordSearchTool
+    ToolRegistry --> RerankerTool
+    ToolRegistry --> LLMTool
+    ToolRegistry --> GroundnessTool
+```
+
+### Tool Selection Logic
+
+The pipeline selects tools deterministically (not via LLM reasoning), based on the query state:
+
+| State | Tools Called | Reason |
+|-------|-------------|--------|
+| Cache hit (sim ≥ 0.95) | None | Skip all tools, return cache |
+| Normal query | embed + vector_search + keyword_search + rerank + generate + groundedness | Full pipeline |
+| Low initial confidence (top-1 < 0.60) | Also calls HyDE expansion (one extra LLM call) | Expand query before retrieval |
+| Out-of-scope (top-1 < 0.70) | embed + vector_search only | No LLM call — save cost |
+
+### Error Handling When Tools Fail
+
+```python
+class ToolExecutor:
+    async def call_with_fallback(self, tool_name: str, params: dict) -> ToolResult:
+        try:
+            result = await asyncio.wait_for(
+                self.registry.call(tool_name, params),
+                timeout=self.tools[tool_name].timeout_ms / 1000
+            )
+            return result
+        except asyncio.TimeoutError:
+            self.metrics.increment(f"tool.timeout.{tool_name}")
+            if tool_name == "rerank":
+                # Reranker timeout: fall back to RRF scores, skip reranking
+                return ToolResult(fallback=True, data=params["rrf_candidates"][:5])
+            elif tool_name == "keyword_search":
+                # BM25 timeout: fall back to vector-only search
+                return ToolResult(fallback=True, data=[])
+            elif tool_name == "generate_answer":
+                # LLM timeout: no fallback possible — return 503
+                raise ServiceUnavailableError("LLM service timeout")
+        except Exception as e:
+            self.metrics.increment(f"tool.error.{tool_name}")
+            raise
+```
+
+**Key principle**: The reranker and BM25 search have graceful degradation paths. The LLM call does not — if the LLM times out, the query fails. This is by design: returning a cached or fabricated answer is worse than returning a clear error.
+
+---
+
+## Prompt Engineering
+
+### System Prompt Structure
+
+The system prompt is the single most important lever for hallucination control. It must be explicit about what the model is and is not allowed to do.
+
+```
+SYSTEM PROMPT (sent on every query, ~500 tokens):
+
+You are a Q&A assistant for [Company]. Your role is to answer questions 
+using ONLY the provided context chunks.
+
+STRICT RULES:
+1. Every factual claim MUST be followed by a citation: [CHUNK_ID]
+2. If the context does not contain sufficient information to answer 
+   the question, respond EXACTLY with:
+   {"answer": "I don't have enough information to answer this question.",
+    "citations": [], "confidence": 0.0}
+3. Do NOT use prior knowledge from your training data
+4. Do NOT speculate, extrapolate, or make assumptions
+5. If context chunks contradict each other, cite both and note the conflict:
+   "Note: Sources disagree on this point — [CHUNK_A] states X while [CHUNK_B] states Y"
+6. Respond ONLY in valid JSON matching this schema:
+   {"answer": string, "citations": string[], "confidence": float}
+
+CONTEXT:
+{{injected_chunks}}
+
+USER QUESTION:
+{{user_query}}
+```
+
+### Context Management
+
+At 3,590 tokens per query (< 3% of GPT-4's 128k window), token budget is not a constraint today. But at 10× scale or with larger documents, context overflow becomes real.
+
+```python
+class ContextAssembler:
+    MAX_CONTEXT_TOKENS = 8_000   # hard ceiling, leaves room for system + output
+    CHUNK_TOKEN_BUDGET = 512     # per chunk
+    MAX_CHUNKS = 5               # reranker top-N
+
+    def assemble(self, chunks: list[RankedChunk], query: str) -> str:
+        """
+        Priority order when truncating:
+        1. Always include top-1 chunk (highest relevance)
+        2. Include chunks 2-5 in order until token budget exhausted
+        3. Truncate individual chunks from the bottom if needed
+        """
+        context_parts = []
+        tokens_used = len(tokenizer.encode(SYSTEM_PROMPT_TEMPLATE))
+
+        for i, chunk in enumerate(chunks):
+            chunk_tokens = len(tokenizer.encode(chunk.text))
+            if tokens_used + chunk_tokens > self.MAX_CONTEXT_TOKENS:
+                if i == 0:
+                    # Must include at least top-1, truncate it
+                    truncated = tokenizer.decode(
+                        tokenizer.encode(chunk.text)[:self.MAX_CONTEXT_TOKENS - tokens_used - 50]
+                    )
+                    context_parts.append(f"[{chunk.chunk_id}] {truncated}...")
+                break  # skip remaining chunks
+            context_parts.append(f"[{chunk.chunk_id}] {chunk.text}")
+            tokens_used += chunk_tokens
+
+        return "\n\n".join(context_parts)
+```
+
+### Instruction Hierarchy
+
+```
+Level 1 (highest priority): System prompt rules (citation, JSON schema, no fabrication)
+Level 2: Context chunks (injected at query time)
+Level 3: User query (lowest — cannot override Level 1 rules via prompt injection)
+```
+
+**Prompt injection defense**: Users cannot override the system prompt rules through clever query phrasing (e.g., "Ignore previous instructions and..."). The JSON output schema enforcement means the model must produce parseable output — if it doesn't, the response is rejected with a parse error and the user gets a "service error" rather than an injected response.
+
+---
+
+## Failure Modes
+
+### Hallucination: When It Happens, How to Detect, How to Mitigate
+
+**When hallucination occurs in RAG** (in order of frequency):
+
+| Trigger | Frequency | Example |
+|---------|-----------|---------|
+| Coverage gap: no relevant chunk in top-5 | ~40% of hallucinations | User asks about a product not in the knowledge base |
+| Contradictory chunks: two chunks give different facts | ~25% | Old policy + new policy both retrieved |
+| Partial answer: truth spans multiple chunks, only some retrieved | ~20% | Multi-step procedure where step 3 is in a different doc |
+| Over-confidence: model extrapolates from weakly relevant chunk | ~15% | Chunk mentions refund policy; LLM extrapolates to exchange policy |
+
+**Detection**: RAGAS `faithfulness` metric runs offline (not on every query — too slow). For online detection, use the NLI groundedness check (DeBERTa-v3-small, ~50ms on GPU). Threshold 0.80 catches ~85% of hallucinations with ~10% false positive rate.
+
+**Mitigation stack** (in order of application):
+1. Pre-LLM: reject if top-1 cosine < 0.70 (no-answer gate)
+2. In-prompt: citation enforcement + explicit "say I don't know" instruction
+3. Post-LLM: NLI groundedness check, suppress if < 0.50
+
+### Loop Detection
+
+This RAG pipeline is non-agentic (no loops), so infinite loops are not a concern. However, if HyDE query expansion is triggered, it makes one additional LLM call. Guard with a `max_expansion_calls = 1` flag.
+
+```python
+async def query_pipeline(query: str, expansion_count: int = 0) -> Answer:
+    MAX_EXPANSIONS = 1  # never expand more than once
+    ...
+    if top_score < 0.60 and expansion_count < MAX_EXPANSIONS:
+        expanded_query = await hyde_expand(query)
+        return await query_pipeline(expanded_query, expansion_count + 1)
+```
+
+### Cost Control: Token Budget Management
+
+```
+Per-query token budget:
+  System prompt:   500 tokens  (fixed, cached with prompt caching)
+  Context chunks:  2,560 tokens (5 × 512)
+  User query:      ~30 tokens
+  Output:          ~500 tokens
+  Total:           ~3,590 tokens
+
+Cost at GPT-4o mini ($0.00015 input / $0.0006 output per 1K tokens):
+  Input:  3,090 × $0.00015 / 1000 = $0.000464
+  Output:   500 × $0.0006  / 1000 = $0.000300
+  Total:  $0.000764 per query
+
+At 1,000 QPS sustained:
+  Queries/day: 86,400,000
+  But with 35% cache hit: 56,160,000 LLM-reaching queries
+  Daily LLM cost: 56,160,000 × $0.000764 = ~$42,906/day
+
+Cost controls:
+1. Semantic cache: 35% of queries never hit LLM → saves ~$15,017/day
+2. Prompt caching (Anthropic/OpenAI): system prompt cached → saves ~25% of input cost
+3. Model routing: 80% of simple queries → GPT-4o mini, 20% complex → GPT-4o
+4. Early termination: out-of-scope queries skip LLM entirely
+```
+
+**Hard limits**: Set per-user query rate limits (e.g., 100 queries/hour for free tier) and a global daily spend cap in the LLM API billing settings to prevent runaway cost from a bug or abuse.
+
+---
+
+## Production Considerations
+
+### Latency Budget Breakdown
+
+```
+Total target P50: 1,500ms
+Total target P99: 2,500ms
+
+Component budgets:
+  API gateway + auth:        10ms
+  Query processing:           5ms
+  Semantic cache lookup:      5ms  (Redis, O(1))
+  Query embedding:            1ms  (in-process model) / 20ms (API call)
+  Parallel vector+BM25 search: 20ms (parallel, wait for slower = BM25 ~20ms)
+  RRF merge:                 <1ms
+  Reranking (Cohere API):    50ms  (biggest controllable latency)
+  Context assembly:           2ms
+  LLM streaming (TTFT):     400ms  (first token — user sees text starting)
+  LLM full response:       1,400ms  (P50 for 500-token output)
+  Groundedness check:        50ms  (async — doesn't block response delivery)
+  Response serialization:     5ms
+  Network (p99 overhead):    50ms
+                          --------
+  Total P50:             ~1,948ms  (within 2s target with caching at 35%)
+```
+
+**TTFT optimization**: Stream the LLM response directly to the client via Server-Sent Events (SSE). The user sees the first tokens at ~400ms — even though the full response takes 1.4s, perceived responsiveness is high.
+
+### SLA Targets and Alerting
+
+| Metric | SLA Target | Alert Threshold | PagerDuty |
+|--------|-----------|----------------|-----------|
+| P50 latency | < 1,500ms | > 1,800ms for 5 min | No |
+| P99 latency | < 2,500ms | > 3,000ms for 2 min | Yes |
+| Hallucination rate | < 5% | > 8% over 1h window | Yes |
+| Cache hit rate | > 30% | < 20% sustained 30 min | No |
+| Vector DB availability | 99.9% | Any error spike > 1% | Yes |
+| LLM error rate | < 1% | > 2% for 1 min | Yes |
+| Out-of-scope rate | Monitor only | > 40% — content gap | Slack alert |
+
+### Fallback to Non-AI Path
+
+When the LLM service is degraded (>2% error rate), automatically fall back to a **deterministic retrieval-only response**:
+
+```python
+async def query_with_fallback(query: str) -> Answer:
+    if llm_circuit_breaker.is_open():
+        # Fallback: return top-3 chunks directly, no LLM synthesis
+        chunks = await retrieve_top_k(query, k=3)
+        return Answer(
+            answer=None,
+            raw_chunks=chunks,
+            mode="retrieval_only",
+            message="Showing relevant documents — AI synthesis temporarily unavailable"
+        )
+    return await full_rag_pipeline(query)
+```
+
+This degrades gracefully: users still get relevant document snippets rather than a 503 error.
+
+---
+
+## How Notion Built Its AI Q&A System
+
+Notion's AI product (launched 2023, reaching 4M+ users within 6 months) is one of the most publicly documented production RAG deployments at scale.
+
+**Scale**: Notion processes tens of millions of AI queries per day across workspaces containing, in aggregate, billions of blocks of content. Each user's workspace is a private knowledge base — RAG must retrieve from the correct tenant's content only, making multi-tenancy a first-class concern.
+
+**Key technology choices**:
+- **Embedding model**: OpenAI `text-embedding-ada-002` (now migrated to `text-embedding-3-small`), embedded at write time for every block update
+- **Vector store**: Notion built a custom vector index layered on top of their existing Postgres infrastructure using pgvector, rather than adopting a dedicated vector DB. This avoided a new operational dependency but required careful index partitioning by workspace_id
+- **Chunking unit**: Notion's natural chunking unit is a "block" — their fundamental content primitive (paragraph, heading, bullet, etc.). Blocks are 20-200 tokens each — much smaller than typical 512-token chunks. This means retrieval returns more, smaller units, requiring more aggressive reranking
+- **Tenant isolation**: Every vector search is filtered by `workspace_id` at the index level — a hard namespace boundary enforced before ANN search, not after. This is critical: post-hoc tenant filtering on ANN results can leak cross-tenant data if the filter isn't applied inside the index
+
+**Non-obvious architectural decision**: Notion chose to **embed on every block write** rather than batching. This means their embedding pipeline must handle Notion's full write throughput (~10,000 block writes/sec during peak). They built a dedicated embedding queue with backpressure, prioritizing recently-edited blocks to minimize freshness lag. The result: vector index freshness is < 30 seconds for active documents, far better than the 5-minute target in our design above.
+
+**Numbers**: Notion's AI Q&A reduced support ticket volume by 25% in their help center use case. Their reranker improved answer relevance by 31% over vector-only retrieval in A/B testing.
+
+**Source**: Notion Engineering Blog — "Building AI-Powered Search in Notion" (2023); Simon Last's talks at AI Engineer Summit 2023.
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing**: Your ability to design a system where correctness (no hallucinations) and performance (sub-2s latency) are in direct tension — and your depth on the retrieval layer, which most candidates gloss over in favor of talking about LLMs.
+
+**Common mistakes candidates make**:
+
+1. **Treating RAG as "just call an LLM with context"**: Candidates describe a naive pipeline — embed query, ANN search, stuff into prompt, return answer — without addressing chunking strategy, hybrid search, or hallucination detection. This is the most common failure. The interviewer expects you to know that retrieval quality is the primary lever on answer quality, not the LLM.
+
+2. **Ignoring the no-answer case**: Most candidates design for the happy path and never address what happens when no relevant document exists. In production, ~20-30% of queries fall outside the knowledge base. A system that hallucinates on these is worse than a system that gracefully says "I don't know."
+
+3. **Conflating embedding models and generative models**: Candidates say "we use GPT-4 to embed queries" — GPT-4 is a generative model, not an embedding model. Using the wrong model family for embeddings signals a gap in understanding. Embedding models (text-embedding-3-small, Cohere Embed, BGE) are encoder-only and produce fixed-length vectors. Generative models (GPT-4, Claude) produce text.
+
+**The insight that separates good from great answers**: Chunking strategy has a larger impact on end-to-end answer quality than any choice of LLM. Moving from naive fixed-size chunking to semantic chunking improves Precision@5 from 0.61 to 0.83 — that's a 36% improvement in retrieval quality before the LLM is even involved. Conversely, no amount of prompt engineering can fix an answer if the wrong chunks were retrieved in the first place. Great candidates anchor their design discussion on chunking and retrieval before they ever discuss the LLM.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| ANN search latency | 20ms | HNSW index, Pinecone, 200M vectors |
+| Cross-encoder reranking | 40-50ms | 20 candidates, Cohere rerank-v3 |
+| LLM P50 latency | ~1,400ms | GPT-4o mini, 500-token output |
+| TTFT with streaming | ~400ms | Time-to-first-token, perceived responsiveness |
+| Cosine threshold for no-answer | 0.70 | Below this, declare out-of-scope |
+| Semantic cache hit rate | 35% | Near-duplicate queries in production |
+| Daily LLM cost at 1k QPS | ~$42,906 before caching | GPT-4o mini pricing |
+| Precision@5 — naive RAG | 0.61 | Fixed-size chunks, vector-only |
+| Precision@5 — advanced RAG | 0.83 | Semantic chunks + hybrid + rerank |
+| Hallucination rate target | < 5% | RAGAS faithfulness score |
+| Vector index freshness | < 5 min | Priority docs: < 30 sec (Notion-style) |
+| Total chunks at 10M docs | 200M | 10M docs × 20 chunks at 512 tokens |
+
+---
+
 ## References
 
 - 📖 [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (Lewis et al., 2020)](https://arxiv.org/abs/2005.11401)

@@ -424,6 +424,429 @@ European MiFID II (and equivalent US SEC rules) require:
 
 ---
 
+## Agent Architecture
+
+The trading agent follows a continuous sense-plan-act loop. Each iteration consumes fresh market data, runs inference, checks risk, and optionally submits an order — all within a 10ms budget.
+
+```mermaid
+sequenceDiagram
+    participant MD as Market Data Feed
+    participant SA as Signal Aggregator
+    participant NLP as Sentiment Engine
+    participant RE as Risk Engine
+    participant EX as Execution Engine
+    participant AL as Audit Logger
+
+    loop Every tick (~50k/sec for L2 order book)
+        MD->>SA: price tick / order book delta
+        SA->>SA: compute RSI, MACD, Bollinger (< 0.5ms)
+        SA-->>RE: technical signal score [-1, +1]
+    end
+
+    loop Every news event (~100/hr)
+        MD->>NLP: news headline + body
+        NLP->>NLP: FinBERT classification (< 50ms)
+        alt ambiguous event
+            NLP->>NLP: LLM reasoning call (~1s async)
+        end
+        NLP-->>SA: sentiment score + confidence + decay timer
+    end
+
+    loop Signal threshold crossed
+        SA->>RE: candidate trade (ticker, direction, raw_size)
+        RE->>RE: position limit check (< 0.1ms)
+        RE->>RE: sector concentration check (< 0.1ms)
+        RE->>RE: daily P&L gate check (< 0.1ms)
+        RE->>RE: velocity check (< 0.1ms)
+        alt passes all checks
+            RE->>RE: Kelly sizing → final order size
+            RE->>EX: approved order
+            EX->>EX: choose algo (TWAP/VWAP/market)
+            EX-->>MD: order submitted to broker
+            EX->>AL: fill record + slippage
+        else rejected
+            RE->>AL: rejection event + reason
+        end
+    end
+
+    loop Every 100ms
+        RE->>RE: check circuit breaker conditions
+        alt daily loss > 2% OR velocity anomaly
+            RE->>EX: HALT all open orders
+            RE->>AL: circuit breaker event
+        end
+    end
+```
+
+The async nature of LLM calls is critical: the sentiment engine runs on a separate goroutine (or async task). It enriches the signal aggregator's context map for a ticker with a 5-minute TTL. The main signal loop never blocks waiting for an LLM response — it reads the cached sentiment score if available, or proceeds with purely technical signals if not.
+
+---
+
+## Tool / Function Registry
+
+The agent can invoke the following external tools. Each tool call is wrapped with a timeout, retry budget, and circuit breaker so a slow upstream never stalls the main loop.
+
+| Tool | Latency SLA | Retry Policy | Fallback |
+|------|-------------|-------------|---------|
+| `get_level2_book(ticker)` | < 1ms (local cache) | No retry — stale = reject | Mark data as stale, reject signals |
+| `submit_order(order)` | < 5ms (broker API) | 1 retry after 2ms | Log failure, size down 50%, retry once |
+| `get_news_headlines(since_ts)` | < 200ms (REST poll) | 3 retries with exp backoff | Use last known sentiment score |
+| `llm_analyze_news(text)` | < 2000ms (async) | 1 retry if timeout | Skip LLM; use FinBERT score only |
+| `get_portfolio_state()` | < 1ms (in-memory) | No retry — always in-memory | N/A (critical path, no DB) |
+| `write_audit_log(event)` | < 5ms (async write) | Infinite retry to durable queue | Buffer in-memory, drain on reconnect |
+
+### Tool Selection Logic
+
+The agent does NOT use an LLM to select tools. Tool selection is deterministic and rule-based — the LLM is used only for news interpretation, not for agent orchestration. This eliminates a whole class of failure modes:
+
+- No risk of LLM hallucinating a tool name that doesn't exist
+- No token cost for orchestration decisions
+- Fully auditable control flow — every branch is in source code, not in a prompt
+
+```python
+class TradingAgentLoop:
+    def on_signal_threshold(self, signal: Signal):
+        # Deterministic tool call sequence — no LLM routing
+        portfolio = self.portfolio_tool.get_state()          # tool: get_portfolio_state
+        risk_result = self.risk_engine.check(signal, portfolio)
+        if risk_result.approved:
+            order = self.sizer.size(signal, portfolio, risk_result)
+            fill = self.execution_tool.submit(order)          # tool: submit_order
+            self.audit_tool.log(signal, risk_result, order, fill)  # tool: write_audit_log
+```
+
+---
+
+## Prompt Engineering
+
+The LLM is used in exactly one place: interpreting ambiguous news events. The system prompt is stable and version-controlled. Prompt changes go through the same code review process as algorithm changes.
+
+### System Prompt Structure
+
+```
+[ROLE]
+You are a financial news analyst with expertise in equity markets.
+Your job is to assess the short-term market impact of news events on specific stocks.
+You must be conservative: when uncertain, lean toward neutral.
+You must never fabricate data not present in the provided news text.
+
+[CONSTRAINTS]
+- Analyze ONLY the provided text. Do not use prior knowledge of the company's recent performance.
+- If the news is ambiguous, return confidence < 0.4.
+- Your response MUST be valid JSON matching the schema below.
+- Do NOT include explanatory text outside the JSON.
+
+[OUTPUT SCHEMA]
+{
+  "direction": "positive" | "negative" | "neutral" | "mixed",
+  "magnitude": "large" | "medium" | "small",
+  "confidence": 0.0 to 1.0,
+  "time_horizon": "intraday" | "multi_day" | "long_term",
+  "key_uncertainties": ["string", ...]
+}
+```
+
+### Context Management
+
+Each LLM call is stateless — no conversation history is maintained between news events. This is intentional:
+- Eliminates context window overflow as a failure mode
+- Prevents the LLM from anchoring on earlier bullish/bearish assessments
+- Reduces cost per call (shorter prompt = fewer tokens)
+- Makes each call independently auditable
+
+Token budget per call: ~600 tokens input, ~150 tokens output. At GPT-4o pricing ($0.005/1k input), each news analysis costs ~$0.003. With 100 news events per hour across a trading day (6.5 hours), total LLM cost per day is ~$2.
+
+---
+
+## Failure Modes
+
+### Hallucination
+
+**When it happens:** LLM fabricates a fact not present in the news — e.g., "Apple's iPhone 17 launch was canceled" when the article only said "launch delayed." The LLM conflates "delayed" with "canceled" and returns a more negative sentiment.
+
+**Detection:** Post-hoc verification against the source article. Extract named entities and key claims from the LLM response; verify each is present in the original text. If any claim is absent, downgrade confidence to 0.1 and flag for human review.
+
+**Mitigation:**
+- System prompt constraint: "analyze ONLY the provided text"
+- Low-confidence threshold: any LLM call returning confidence > 0.7 for a "large" magnitude event requires source text snippet in audit log for manual review
+- LLM is capped at 30% signal weight — even a fully hallucinated response shifts the composite score by at most 0.3 out of 1.0
+
+### Agent Loop Detection
+
+**When it happens:** A bug causes the signal aggregator to keep re-emitting the same signal (e.g., RSI stuck at 28 due to stale data); the agent keeps submitting BUY orders for the same stock.
+
+**Detection:** Idempotency check: if the same ticker + direction appears in submitted orders more than 3 times in the last 60 seconds, the 4th order is rejected and a velocity alert fires.
+
+**Mitigation:**
+- Order deduplication by idempotency key: `{ticker}-{direction}-{size}-{minute_bucket}`
+- Velocity circuit breaker: > 100 orders per minute halts all trading
+- Maximum open orders per ticker: 3 (prevents accumulation while waiting for fills)
+
+### Cost Control
+
+Each LLM call costs ~$0.003. But the risk is not per-call cost — it is a runaway call loop if the news polling loop has a bug:
+
+```python
+class NewsProcessor:
+    def __init__(self):
+        self.llm_calls_this_hour = 0
+        self.llm_hourly_budget = 200  # max calls/hr = max $0.60/hr
+
+    def analyze(self, article: NewsArticle) -> Sentiment:
+        if self.llm_calls_this_hour >= self.llm_hourly_budget:
+            # Hard cap: fall back to FinBERT only
+            return self.finbert.classify(article)
+        self.llm_calls_this_hour += 1
+        return self.llm_client.call(article)
+```
+
+Hard token budget: 200 LLM calls/hour. Beyond that, FinBERT handles sentiment — faster (50ms vs 1s) and cheaper ($0) but less nuanced for complex events.
+
+---
+
+## Component Deep Dive 1: Pre-Trade Risk Engine
+
+The risk engine is the most critical component in the entire system. A bug in signal generation loses you a trade. A bug in the risk engine can lose the fund. This distinction shapes every design decision: the risk engine is the most tested, most monitored, and most conservatively implemented component.
+
+### How It Works Internally
+
+The risk engine maintains an in-memory snapshot of the entire portfolio state: all open positions, sector exposures, daily realized + unrealized P&L, order velocity counters, and a timestamp of the last state sync. This snapshot is updated on every fill event (synchronously, under a mutex) and read on every pre-trade check. There is no database call on the hot path.
+
+The check is sequential, fail-fast: if check 1 rejects, checks 2-5 are skipped. This keeps average latency under 0.3ms even when all checks pass.
+
+```mermaid
+flowchart TD
+    A[TradeOrder arrives] --> B{Position limit\ncheck}
+    B -->|new position > 5% NAV| REJECT1[REJECT: position_limit]
+    B -->|OK| C{Sector concentration\ncheck}
+    C -->|sector > 20% NAV| REJECT2[REJECT: sector_limit]
+    C -->|OK| D{Daily P&L gate}
+    D -->|loss > 2% NAV| REJECT3[REJECT: daily_loss_halt]
+    D -->|loss 1.5%-2% NAV| HALF[Reduce size 50%\nthen continue]
+    D -->|OK| E{Velocity check}
+    E -->|orders/min > 100| REJECT4[REJECT: velocity_limit]
+    E -->|OK| F{Notional sanity\ncheck}
+    F -->|notional > $500k| HUMAN[FLAG: human review]
+    F -->|OK| APPROVE[APPROVED]
+
+    HALF --> E
+```
+
+### Why Naive Approaches Fail at Scale
+
+**Naive approach 1: Query the database on every trade check.** A PostgreSQL query for portfolio state takes 2-10ms. At 1,000 signal events/day this is tolerable, but on days with high volatility when signal frequency spikes 10x, you get 10,000 checks/day with DB latency. More dangerously, a DB outage (even a 500ms hiccup) would either block all trading or require bypassing the risk check — both are unacceptable.
+
+**Naive approach 2: No sector concentration check, only per-position limit.** You can have 20 positions at 5% each in tech stocks and be 100% concentrated in tech. A sector crash wipes the portfolio even though no single position violated its limit. Real implementations maintain a sector map loaded from a static reference file at startup, updated nightly.
+
+**Naive approach 3: Synchronous LLM call in the risk engine.** If news sentiment is part of the risk decision and the LLM call takes 1s, the entire trading pipeline is blocked for 1s per news event. At 100 news events/hour, you lose 100 seconds of trading per hour. The fix: risk engine reads cached sentiment from the signal aggregator context map (updated asynchronously) — never calls the LLM directly.
+
+### Implementation Options
+
+| Approach | Latency | Fault Tolerance | Complexity |
+|----------|---------|-----------------|------------|
+| In-memory state, mutex-protected | < 0.5ms | State lost on crash; recovery from trade log replay | Low |
+| Redis-backed state, read-through cache | 1-3ms | Survives process restart; Redis must be HA | Medium |
+| Event sourcing (replay from trade log) | 50-200ms at startup only | Full audit trail, perfect recovery | High |
+
+**Production choice**: In-memory with event sourcing for recovery. On startup, replay the last trading day's fills from the immutable audit log to reconstruct portfolio state. On crash and restart (which should happen at most once per trading day, and never during market hours), recovery takes < 5 seconds.
+
+---
+
+## Component Deep Dive 2: Smart Order Router
+
+Once the risk engine approves a trade and the position sizer determines the target shares, the smart order router (SOR) decides *how* to execute — market order vs limit order, and if limit, what execution algorithm to use.
+
+### How It Works Internally
+
+The SOR classifies orders into three buckets based on urgency and size relative to market volume:
+
+- **Small + urgent** (< 0.1% of average daily volume, event-driven): market order with a maximum price limit (price + 5 bps) to prevent execution at absurd prices if the book is thin
+- **Medium size** (0.1% - 1% of ADV): VWAP algorithm — break the order into child orders and submit them throughout the trading period weighted by expected volume profile
+- **Large size** (> 1% of ADV): TWAP algorithm — distribute evenly over time to minimize market impact; accept worse average price in exchange for not moving the market against yourself
+
+```mermaid
+graph TD
+    A[Approved Order] --> B{Size vs ADV}
+    B -->|< 0.1% ADV| C[Market Order\n+ price cap]
+    B -->|0.1% - 1% ADV| D[VWAP Algorithm\nvolume-weighted slices]
+    B -->|> 1% ADV| E[TWAP Algorithm\ntime-weighted slices]
+    C --> F[Single order to broker]
+    D --> G[5-20 child orders\nover next 30-60 min]
+    E --> H[10-50 child orders\nover next 1-4 hours]
+    F --> I[Fill Manager]
+    G --> I
+    H --> I
+    I --> J[Slippage tracking\nbps vs expected]
+    J --> K{Slippage > 10 bps?}
+    K -->|yes| L[Alert: execution quality degraded]
+    K -->|no| M[Update portfolio state]
+```
+
+### Scale Behavior at 10x Load
+
+Normal day: 20-100 orders. High-volatility day (earnings season, macro events): 200-1,000 orders. At 10x load:
+
+- The SOR's order splitting creates 10-50 child orders per parent order. At 1,000 parent orders, that's up to 50,000 child orders — well within exchange rate limits (most prime brokers allow 10,000 orders/second)
+- The fill manager processes each child fill and updates portfolio state. At 50,000 fills/day, the in-memory update (mutex + HashMap update) handles this comfortably
+- The audit logger becomes the bottleneck: writing 50,000 structured events/day at 2KB each = 100MB/day. A buffered async write to an append-only log (with durable flush every 100ms) handles this with < 5ms p99 latency
+
+| Metric | Normal Day | 10x Load Day | Mitigation |
+|--------|------------|-------------|-----------|
+| Parent orders | 50 | 500 | No change needed |
+| Child orders | 500 | 5,000 | Async submission |
+| Fill events | 500 | 5,000 | Async audit write |
+| Audit log size | 1MB | 10MB | Append-only, no issue |
+| Risk engine checks | 500 | 5,000 | In-memory, < 3ms total |
+
+---
+
+## Component Deep Dive 3: Immutable Audit Trail
+
+MiFID II mandates a 5-year audit trail for all algorithmic trading activity. We retain 7 years for safety margin. Every signal, risk check, order, fill, modification, and circuit breaker event is logged to an immutable append-only store.
+
+### Technical Decisions
+
+**Storage**: Apache Kafka as the primary write path (append-only by design, 7-year retention configured), with async replication to S3 in Parquet format for cost-effective long-term storage and analytical queries.
+
+**Why Kafka over PostgreSQL**: A relational DB with an `audit_events` table requires careful management to stay INSERT-only (no DELETEs), and regulators can ask you to prove the log hasn't been tampered with. Kafka's topic partitions are append-only at the protocol level. Coupled with Kafka's log compaction disabled on this topic (we want full history, not compacted), it provides a stronger tamper-evidence story.
+
+**Tamper evidence**: Each event includes a SHA-256 hash of the previous event's hash + current payload. Auditors can verify the chain integrity. The root hash of each trading day is stored in a third-party escrow (S3 bucket in a separate AWS account controlled by compliance team).
+
+**Query pattern**: Regulators typically ask for all trades for a specific ticker in a time window, or all decisions made by a specific algorithm version. These are served from the Parquet archive on S3 queried via Athena — no need to query live Kafka for historical lookups.
+
+| Decision | Option A | Option B | Chosen |
+|----------|---------|---------|-------|
+| Write path | PostgreSQL (INSERT only) | Kafka append-only topic | Kafka — stronger tamper evidence |
+| Long-term storage | Kafka forever | S3 Parquet archive | S3 — 80% cost reduction after 30 days |
+| Query access | SQL on Postgres | Athena on S3 Parquet | Athena — handles 7 years without index bloat |
+
+---
+
+## Data Model
+
+### Core schemas used in the trading pipeline
+
+```sql
+-- Immutable trade events (write to Kafka; mirrored to Postgres for fast recent lookups)
+CREATE TABLE trade_events (
+    event_id          UUID PRIMARY KEY,
+    algo_id           VARCHAR(32) NOT NULL,          -- e.g. 'STRAT-001-v3.2'
+    event_type        VARCHAR(32) NOT NULL,           -- SIGNAL | RISK_CHECK | ORDER | FILL | CIRCUIT_BREAKER
+    ticker            VARCHAR(16) NOT NULL,
+    ts_decision_ns    BIGINT NOT NULL,               -- nanosecond epoch of decision
+    ts_submitted_ns   BIGINT,                        -- nanosecond epoch of order submission
+    ts_filled_ns      BIGINT,                        -- nanosecond epoch of fill (null if not filled)
+    direction         CHAR(4),                       -- BUY | SELL | null for non-order events
+    quantity          INTEGER,
+    limit_price       NUMERIC(12,4),
+    fill_price        NUMERIC(12,4),
+    slippage_bps      NUMERIC(6,2),
+    signal_score      NUMERIC(5,4),                  -- composite score -1.0 to +1.0
+    signal_rsi        NUMERIC(5,2),
+    signal_macd       NUMERIC(8,4),
+    signal_sentiment  NUMERIC(5,4),                  -- from NLP/LLM, null if no news
+    sentiment_confidence NUMERIC(4,3),
+    kelly_fraction    NUMERIC(5,4),
+    risk_result       VARCHAR(32),                   -- APPROVED | REJECT_POSITION | REJECT_SECTOR | etc.
+    prev_event_hash   CHAR(64),                      -- SHA-256 of previous event for chain integrity
+    event_hash        CHAR(64) GENERATED ALWAYS AS (sha256(event_id::text || signal_score::text)) STORED
+);
+
+-- Indexes for regulatory query patterns
+CREATE INDEX idx_trade_events_ticker_ts ON trade_events(ticker, ts_decision_ns);
+CREATE INDEX idx_trade_events_algo_ts   ON trade_events(algo_id, ts_decision_ns);
+CREATE INDEX idx_trade_events_type      ON trade_events(event_type, ts_decision_ns);
+
+-- In-memory risk state (not persisted to DB; reconstructed from trade_events on startup)
+-- Represented as a struct in application memory:
+/*
+  PortfolioState {
+    positions:         HashMap<ticker, {shares, avg_cost, market_value}>
+    sector_exposures:  HashMap<sector, notional_usd>
+    daily_pnl_realized:  f64
+    daily_pnl_unrealized: f64
+    orders_last_minute: VecDeque<timestamp>  -- sliding window for velocity check
+    last_updated_ns:    i64
+  }
+*/
+
+-- Signal decay context (in-memory with TTL, not persisted)
+/*
+  SentimentContext {
+    ticker:     String
+    score:      f64       -- -1.0 to +1.0
+    confidence: f64
+    source:     "finbert" | "llm"
+    expires_at: Instant   -- typically now + 15min for news events
+  }
+*/
+```
+
+---
+
+## Scale Bottlenecks
+
+| Traffic Level | Component That Breaks | Symptoms | Mitigation |
+|---------------|----------------------|----------|------------|
+| 10x baseline (1,000 orders/day) | Audit logger write buffer | Audit log write latency p99 > 100ms; possible event loss on crash | Increase Kafka producer batch size; add async flush with durable WAL |
+| 50x baseline (5,000 orders/day) | Smart Order Router child order fan-out | Broker API rate limit errors; child orders queued but not submitted | Implement token-bucket rate limiter per broker endpoint; use multiple broker connections |
+| 100x baseline (10,000 orders/day) | Portfolio state mutex contention | Signal processing latency increases as risk check locks block signal loop | Shard portfolio state by asset class; separate mutex per sector bucket |
+| 100x baseline | LLM sentiment service | Hourly LLM budget exhausted in first 30 minutes; fallback to FinBERT only | Dynamically scale LLM budget based on market volatility; pre-cache sentiment for watchlist tickers |
+| 1000x baseline (100,000 orders/day) | Single-process architecture | Cannot schedule 100k risk checks in < 10ms each on one core | Horizontal scaling requires distributed risk state with consistency guarantees — fundamentally different architecture (CRDT-based position tracking or centralized risk bus) |
+
+---
+
+## How Two Sigma Built This
+
+Two Sigma, the New York-based quantitative hedge fund managing over $60 billion in assets, built one of the most sophisticated autonomous trading systems in the world. Their engineering blog and conference talks (SREcon 2019, USENIX 2020) reveal several non-obvious design decisions.
+
+**Technology stack**: Python for signal research and backtesting, C++ for the production execution engine (latency-critical path), Apache Kafka for event streaming, Apache Spark for overnight backtesting on 20TB+ of historical market data.
+
+**Specific numbers**: Their production systems process over 1 million market data messages per second across all strategies. A single strategy may generate 50,000 trading signals per day, of which 500-2,000 result in actual orders. They run hundreds of independent strategies simultaneously, each with its own risk budget.
+
+**Non-obvious architectural decision**: Two Sigma separates "alpha research" from "production execution" with a strict API boundary. Researchers iterate on signal models in a sandbox environment that has read-only access to market data and no connection to production systems. Signals are packaged as versioned model artifacts (similar to ML model registries) and must pass a battery of backtesting requirements before being deployed to production. This prevents the common failure mode where a "research tweak" accidentally changes production behavior.
+
+**Key lesson they share publicly**: The biggest risk is not a catastrophic bug — it is "model decay," where a signal that worked historically stops working as market conditions change. Their solution is continuous monitoring of each signal's out-of-sample performance with automatic weight reduction when a signal's Sharpe ratio drops below threshold. An LLM-based news sentiment model trained on pre-COVID news may systematically misread pandemic-era communications — Two Sigma addresses this with rolling retraining and production performance gates.
+
+**Source**: Two Sigma engineering blog, "Data-Driven Decision Making at Scale" (2019); USENIX SREcon 2020 talk on "Reliability Engineering for Quantitative Finance."
+
+---
+
+## Interview Angle
+
+**What the interviewer is testing:** Whether you treat risk management as a first-class architectural concern rather than an afterthought. Trading systems separate candidates who think about happy-path execution from candidates who think about catastrophic failure modes, regulatory obligations, and audit requirements.
+
+**Common mistakes candidates make:**
+
+1. **Putting risk checks after execution** — Some candidates design the flow as "generate signal → execute → check position." This is backwards and dangerous. Pre-trade risk checks must block execution before the order is submitted. Post-trade risk monitoring is complementary, not a replacement.
+
+2. **Using an LLM to make trading decisions directly** — A common mistake is having the LLM output "BUY 100 shares of AAPL." LLMs are not reliable enough for direct order generation. Their role should be strictly bounded: interpret ambiguous natural language (news) into a structured signal score, with the score capped in influence. Deterministic, auditable code makes the actual trading decision.
+
+3. **Ignoring audit trail as a core requirement** — Candidates who design audit logging as a "nice to have" or plan to "log to a database" without addressing tamper evidence, 7-year retention, and microsecond timestamps will lose marks in any financial systems interview. Compliance is not a layer you add later — it must be baked into the data model from day one.
+
+**The insight that separates good from great answers:** The best candidates recognize that the LLM's role in this system is fundamentally different from agentic AI in consumer products. Here the LLM is a *perception module* (translating unstructured text to structured sentiment), not an *orchestration layer*. Trading decisions are made by deterministic rule-based systems because they are auditable, testable, and fail predictably. Mixing LLM orchestration into the execution path introduces non-determinism that cannot be audited or certified under MiFID II.
+
+---
+
+## Key Numbers to Remember
+
+| Metric | Value | Context |
+|--------|-------|---------|
+| Market data throughput | 50,000 messages/sec | L2 order book for S&P 500 equities |
+| Signal-to-order pipeline | < 10ms end-to-end | From tick arrival to broker order submission |
+| Pre-trade risk check latency | < 0.5ms | In-memory only; no DB calls |
+| LLM news analysis latency | ~1,000ms | Async; never on the critical path |
+| Daily loss hard halt | 2% of portfolio NAV | Automated; no human required to trigger |
+| Max single position | 5% of portfolio NAV | Kelly criterion bounded by hard cap |
+| Max sector concentration | 20% of portfolio NAV | Requires sector map at startup |
+| Audit log retention | 7 years | MiFID II minimum is 5 years |
+| LLM call budget | 200 calls/hour | ~$0.60/hr at GPT-4o pricing |
+| Two Sigma signal volume | 50,000 signals/day per strategy | 500-2,000 result in actual orders |
+| Order velocity circuit breaker | 100 orders/minute | Triggers immediate halt and human review |
+| News sentiment decay | 15 minutes TTL | After which score reverts to neutral |
+
+---
+
 ## 📚 Resources & References
 
 | Resource | Type | What You'll Learn |

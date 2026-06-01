@@ -26,5 +26,9 @@ export default {
   "redis-lua-rate-limiting": "Lua Rate Limiting",
   "redis-lua-leaderboards": "Lua Leaderboards",
   "redis-lua-workflows": "Lua Workflows",
-  "redis-lua-performance-benchmarks": "Lua Performance Benchmarks"
+  "redis-lua-performance-benchmarks": "Lua Performance Benchmarks",
+  "redis-bloom-filter-poc": "Bloom Filter POC",
+  "redis-sentinel-failover-poc": "Sentinel Failover POC",
+  "redis-geosearch-poc": "Geo Search POC",
+  "redis-pubsub-vs-streams-poc": "Pub/Sub vs Streams Comparison"
 }

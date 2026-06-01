@@ -7,5 +7,6 @@ export default {
   "load-testing-k6": "Load Testing with k6",
   "health-check-patterns": "Health Check Patterns",
   "elk-stack-poc": "ELK Stack POC",
-  "synthetic-monitoring-poc": "Synthetic Monitoring POC"
+  "synthetic-monitoring-poc": "Synthetic Monitoring POC",
+  "alertmanager-routing-poc": "AlertManager Routing POC"
 }

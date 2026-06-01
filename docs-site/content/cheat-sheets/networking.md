@@ -599,3 +599,133 @@ graph LR
 - **Decision**: Incident Commander (IC) = coordinator, not the technical debugger — most senior engineer should be debugging, not coordinating; IC time-boxes decisions ("10 min to diagnose, then rollback")
 - **Trap**: IC is also the person debugging — no one is coordinating communication, status page, and role assignments; the technical lead becomes the IC and the incident sprawls; designate IC separately from technical lead at declaration
 - → [Full article](../12-interview-prep/question-bank/observability-sre/incident-response-systems)
+
+---
+
+## 13. Real-Time Transport Protocol Decision Table
+
+**WebRTC vs WebSocket vs SSE vs Long-Poll** — pick the right real-time transport for your use case
+
+| | WebRTC | WebSocket | SSE | Long-Poll |
+|-|--------|-----------|-----|-----------|
+| **Direction** | P2P bidirectional | Bidirectional | Server→Client only | Server→Client (simulated) |
+| **Latency** | Sub-100ms (peer-to-peer) | ~1–5ms server-routed | ~10–50ms | ~100–500ms |
+| **Browser support** | All modern browsers (no IE) | All modern browsers | All modern browsers + EventSource API | Universal (HTTP 1.1+) |
+| **Server cost** | Low (P2P) / High (TURN relay) | Medium (persistent conn per user) | Low (chunked HTTP) | High (thread-per-request model) |
+| **Proxy/firewall** | ⚠️ STUN/TURN needed | ⚠️ May be blocked on port 80/443 | ✅ Plain HTTP | ✅ Plain HTTP |
+| **Use when** | Video/audio calls, P2P data | Chat, collaboration, gaming | Notifications, live feeds, dashboards | Legacy browser support, strict firewalls |
+
+- **Key number:** WebRTC STUN round-trip <100ms; TURN relay adds 50–200ms; ~15–20% of calls require TURN (symmetric NAT)
+- **Decision:** WebRTC for P2P media/data where server cost matters; WebSocket for bidirectional server-routed data; SSE for server-push only (simpler, auto-reconnects); Long-poll only for legacy environments
+- **Trap:** Assuming WebRTC is always P2P — 15–20% of clients are behind symmetric NAT and must relay through TURN; budget for TURN bandwidth (can equal full media stream cost)
+
+---
+
+## 14. gRPC vs REST vs GraphQL
+
+**API protocol selection** — choosing based on protocol, type safety, browser support, and latency
+
+| | REST/JSON | gRPC/Protobuf | GraphQL |
+|-|-----------|--------------|---------|
+| **Protocol** | HTTP/1.1 or HTTP/2 | HTTP/2 only | HTTP/1.1 or HTTP/2 |
+| **Type safety** | None (runtime) | Compile-time (.proto schema) | Schema-defined (SDL), runtime |
+| **Browser support** | ✅ Full native | ⚠️ Requires gRPC-Web proxy | ✅ Full native |
+| **Latency** | Baseline | **5–10× faster** (binary Protobuf) | Similar to REST (JSON) |
+| **Streaming** | None (webhooks workaround) | ✅ Bidirectional streaming | Subscriptions via WebSocket |
+| **Tooling** | Postman, curl, OpenAPI | protoc, Evans, BloomRPC | GraphQL Playground, Altair |
+| **Caching** | ✅ HTTP cache (GET) | ❌ No native HTTP caching | ❌ No built-in (query-based) |
+| **Use when** | Public APIs, browser clients | Internal microservices, high-throughput | Mobile clients, multiple data shapes |
+
+- **Key number:** gRPC is **5–10× faster** than REST for the same payload due to Protobuf binary encoding; Protobuf payload is **5–10× smaller** than JSON
+- **Decision:** gRPC for internal service-to-service (typed, fast, streaming); REST for public-facing or browser-facing APIs; GraphQL when multiple clients need different data shapes (mobile vs web vs third-party)
+- **Trap:** Using gRPC for browser clients directly — browsers cannot send HTTP/2 trailers required by gRPC; you must add Envoy or a gRPC-Web proxy layer, which negates the simplicity benefit
+
+---
+
+## 15. WebRTC Key Numbers
+
+**WebRTC architecture numbers** — STUN, TURN, SFU vs MCU bandwidth and CPU costs
+
+| Component | Value | Notes |
+|-----------|-------|-------|
+| **STUN round-trip** | <100ms | ICE candidate gathering |
+| **TURN relay latency added** | 50–200ms | Symmetric NAT traversal |
+| **Calls needing TURN** | ~15–20% | Symmetric NAT / corporate firewalls |
+| **SFU bandwidth** | O(N) per publisher | Server forwards each stream to N subscribers |
+| **MCU bandwidth** | O(1) per publisher | Server mixes all streams into one |
+| **MCU CPU** | O(N) | Mixing N streams is CPU-intensive |
+| **Signaling server** | WebSocket | Out-of-band offer/answer exchange (SDP) |
+| **ICE connection time** | 1–3s | STUN candidate selection |
+
+| | SFU (Selective Forwarding Unit) | MCU (Multipoint Control Unit) |
+|-|---------------------------------|-------------------------------|
+| **Bandwidth at server** | O(N) — forwards each stream | O(1) — one mixed output |
+| **CPU at server** | Low | O(N) — mixing cost |
+| **Client receives** | N individual streams | 1 mixed stream |
+| **Client CPU** | Higher (decode N streams) | Lower (decode 1 stream) |
+| **Used by** | Zoom, Google Meet, Twilio | Legacy conferencing, low-bandwidth clients |
+
+- **Key number:** 15–20% of WebRTC calls require TURN relay; TURN bandwidth = full media stream cost; budget TURN infrastructure at 20% of total call volume
+- **Decision:** SFU for modern group calls (lower server cost, higher quality); MCU for legacy clients or bandwidth-constrained mobile endpoints
+- **Trap:** Deploying WebRTC without TURN — works fine in development (same network), fails in production for 15–20% of users behind symmetric NAT; always provision TURN
+
+---
+
+## 16. DNS TTL Strategy
+
+**DNS TTL tradeoffs** — fast failover vs cache efficiency vs query volume
+
+| TTL | Failover speed | Query volume | Cost | Use case |
+|-----|---------------|-------------|------|---------|
+| **60s** | ~60–120s globally | High (every 60s per client) | Higher | Failover-critical services, planned migrations |
+| **300s** | ~5 min | Medium | Medium | Standard production services |
+| **3600s** | ~1 hour | Low | Low | Stable infrastructure (DB primaries, internal services) |
+| **86400s (24h)** | Up to 24h | Very low | Lowest | Static content, CDN origins |
+
+```
+DNS propagation = TTL (not "48 hours" — that's a myth for modern resolvers)
+```
+
+- **Key number:** TTL=60s for failover-critical services; TTL=3600s for stable infrastructure; lower TTL to **60s at least 48h before any planned IP change** to flush existing cached records
+- **Decision:** Low TTL (60s) for load-balanced endpoints with health-check failover; high TTL (3600s+) for stable, rarely-changing records to reduce resolver query volume
+- **Trap:** Changing DNS with a high TTL in place — if TTL=86400s and you flip the IP, old clients keep hitting the dead IP for up to 24 hours; pre-lower TTL to 60s at least one full TTL period before making the change
+
+---
+
+## 17. HTTP/2 vs HTTP/3 Differences
+
+**HTTP/2 vs HTTP/3** — multiplexing, HOL blocking, and connection migration
+
+| | HTTP/2 | HTTP/3 |
+|-|--------|--------|
+| **Transport** | TCP | QUIC (UDP-based) |
+| **Multiplexing** | ✅ Multiple streams per connection | ✅ Multiple streams per connection |
+| **HOL blocking (HTTP layer)** | ✅ Eliminated | ✅ Eliminated |
+| **HOL blocking (transport layer)** | ❌ TCP-level HOL (one lost packet blocks all streams) | ✅ Eliminated (QUIC streams are independent) |
+| **Connection migration** | ❌ IP change = reconnect | ✅ Connection ID survives IP change |
+| **0-RTT reconnect** | ❌ | ✅ QUIC 0-RTT |
+| **Firewall support** | ✅ Widely supported | ⚠️ UDP port 443 blocked in some enterprise networks |
+| **TLS** | TLS 1.2/1.3 (separate) | TLS 1.3 built-in to QUIC |
+| **Benefit over predecessor** | 5–10× less overhead vs HTTP/1.1 | **30% latency reduction** on lossy mobile networks |
+
+- **Key number:** HTTP/3 QUIC reduces latency on lossy mobile networks by **~30%** vs HTTP/2 TCP; one dropped packet in HTTP/2 TCP blocks all streams; HTTP/3 QUIC each stream recovers independently
+- **Decision:** HTTP/2 for all modern web traffic (universal browser + CDN support); HTTP/3 for mobile-heavy products or high-packet-loss environments (gaming, video streaming, mobile apps)
+- **Trap:** Assuming HTTP/2 eliminates all HOL blocking — HTTP/2 eliminates application-layer HOL but TCP still has transport-layer HOL; a single dropped TCP packet stalls all multiplexed streams until retransmitted; only HTTP/3 QUIC fully solves this
+
+---
+
+## 18. Load Balancing Algorithm Decision
+
+**LB algorithm selection** — round-robin, least-connections, IP hash, consistent hash
+
+| Algorithm | Distribution | Session affinity | Cache friendliness | Best for |
+|-----------|-------------|-----------------|-------------------|---------|
+| **Round Robin** | Equal turns | ❌ | ❌ | Stateless, equal-cost requests |
+| **Weighted Round Robin** | Proportional to weight | ❌ | ❌ | Mixed capacity servers, canary deploys |
+| **Least Connections** | Fewest active connections | ❌ | ❌ | Variable-duration requests (uploads, streaming) |
+| **IP Hash** | Hash of client IP | ✅ (same client → same server) | ❌ | Stateful apps, sticky sessions without cookies |
+| **Consistent Hash** | Hash of key (URL, user ID) | ✅ (same key → same node) | ✅ High (same content → same cache node) | Cache tiers, distributed storage |
+
+- **Key number:** Consistent hashing with virtual nodes — when a node is added/removed, only **1/N keys** are remapped (vs naive hashing which remaps ~N-1/N keys); use **150–200 virtual nodes per physical node**
+- **Decision:** Round-robin for stateless equal-cost services; Least-connections for variable-cost requests (file uploads, long queries); IP Hash for sticky sessions (simple stateful app); Consistent Hash for cache layers and distributed storage (maximize cache hit rate on topology changes)
+- **Trap:** Using IP Hash with a small client population (e.g., internal tools behind a corporate NAT) — all traffic appears as one IP, routing everything to one backend node; use consistent hash on user ID or session token instead
