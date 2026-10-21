@@ -18,8 +18,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const glob = async (pattern, { cwd, absolute }) => {
   const results = [];
-  for await (const entry of fsGlob(pattern, { cwd, absolute })) {
-    results.push(entry);
+  for await (const entry of fsGlob(pattern, { cwd })) {
+    results.push(absolute ? join(cwd, entry) : entry);
   }
   return results;
 };
