@@ -2,6 +2,7 @@ export default {
   index: { title: '📱 Social Platforms' },
   'twitter': { title: '🐦 Twitter / X' },
   'instagram': { title: '📸 Instagram' },
+  'instagram-assets-series': { title: '📸 Instagram Asset Management (Series)' },
   'reddit': { title: '🔴 Reddit' },
   'spotify': { title: '🎵 Spotify' },
   'pastebin': { title: '📋 Pastebin' },

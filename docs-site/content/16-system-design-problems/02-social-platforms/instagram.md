@@ -782,6 +782,7 @@ Instagram uses **option A** (filter at read time) for its simplicity and O(1) wr
 
 ## 14. Related Concepts
 
+- [Instagram Asset Management series](/16-system-design-problems/02-social-platforms/instagram-assets-series) — Deep dive into the media path: upload pipeline, image serving, video transcoding and streaming, feed loading, Stories/Reels, storage cost (12 articles)
 - [Design Twitter](./twitter) — Similar fan-out problem with text content; Instagram's hybrid model is directly analogous to Twitter's
 - [Notification System](../03-communication/notification-system) — Instagram notifications (likes, comments, follows) share the multi-channel delivery architecture
 - [Rate Limiter](../05-infrastructure/rate-limiter) — Instagram's upload API uses token bucket rate limiting per user (60 uploads/hour)
